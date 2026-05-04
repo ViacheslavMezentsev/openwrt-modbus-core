@@ -1,0 +1,11 @@
+out/
+repo/
+*.ipk
+*.tar.gz
+*.sha256
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak

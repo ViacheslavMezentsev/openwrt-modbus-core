@@ -1,0 +1,34 @@
+name: CI - modbus-rtu-core
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install minimal dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 binutils make
+
+      - name: Build package
+        run: make build
+
+      - name: Run lightweight tests
+        run: make test
+
+      - name: Verify package structure
+        run: make verify
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: modbus-rtu-core-ipk
+          path: out/*.ipk
