@@ -1,0 +1,10 @@
+Package: modbus-demo
+Version: 0.1.0
+Architecture: all
+Depends: modbus-rtu-core, lua, luci-lib-jsonc, uhttpd
+Section: utils
+Priority: optional
+Maintainer: Viacheslav Mezentsev <viacheslavmezentsev@gmail.com>
+Description: Demo subscriber module for modbus-rtu-core.
+ Tracks core events, keeps a lightweight module status file and exposes a
+ basic diagnostics page through uhttpd.

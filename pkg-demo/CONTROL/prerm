@@ -1,0 +1,12 @@
+#!/bin/sh
+[ "$IPKG_INSTROOT" ] || {
+    if [ -x /etc/init.d/modbus-demo ]; then
+        /etc/init.d/modbus-demo stop >/dev/null 2>&1
+        /etc/init.d/modbus-demo disable >/dev/null 2>&1
+    fi
+
+    rm -f /tmp/modbus/demo-status.json
+    rm -f /tmp/modbus/demo-state.json
+
+    exit 0
+}

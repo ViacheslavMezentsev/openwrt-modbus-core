@@ -1,0 +1,139 @@
+#!/usr/bin/lua
+
+local json = require("luci.jsonc")
+
+local EVENT_LOG = "/tmp/modbus/events-core.jsonl"
+local STATUS_FILE = "/tmp/modbus/demo-status.json"
+local STATE_FILE = "/tmp/modbus/demo-state.json"
+local SLEEP_SECONDS = 2
+
+local function read_json_file(path, default)
+    local file = io.open(path, "r")
+    if not file then
+        return default
+    end
+
+    local content = file:read("*a")
+    file:close()
+
+    if not content or content == "" then
+        return default
+    end
+
+    local decoded = json.parse(content)
+    if type(decoded) == "table" then
+        return decoded
+    end
+
+    return default
+end
+
+local function file_exists(path)
+    local file = io.open(path, "r")
+    if file then
+        file:close()
+        return true
+    end
+    return false
+end
+
+local function write_json_file(path, payload)
+    local tmp = path .. ".tmp"
+    local file = io.open(tmp, "w")
+    if not file then
+        return false
+    end
+
+    file:write(json.stringify(payload))
+    file:close()
+    os.rename(tmp, path)
+    return true
+end
+
+local function count_lines(path)
+    local file = io.open(path, "r")
+    if not file then
+        return 0
+    end
+
+    local count = 0
+    for _ in file:lines() do
+        count = count + 1
+    end
+    file:close()
+    return count
+end
+
+local function read_events_since(path, from_line)
+    local file = io.open(path, "r")
+    if not file then
+        return {}, from_line
+    end
+
+    local events = {}
+    local line_number = 0
+    for line in file:lines() do
+        line_number = line_number + 1
+        if line_number > from_line then
+            local decoded = json.parse(line)
+            if type(decoded) == "table" then
+                events[#events + 1] = decoded
+            end
+        end
+    end
+    file:close()
+
+    return events, line_number
+end
+
+local function sleep()
+    os.execute("sleep " .. tostring(SLEEP_SECONDS))
+end
+
+local state = read_json_file(STATE_FILE, { last_line = 0 })
+local last_line = tonumber(state.last_line) or 0
+
+if last_line == 0 and file_exists(EVENT_LOG) then
+    last_line = math.max(0, count_lines(EVENT_LOG) - 1)
+end
+
+write_json_file(STATUS_FILE, {
+    module = "modbus-demo",
+    status = "starting",
+    processed_events = 0,
+    last_line = last_line,
+    last_kind = nil,
+    last_ts = nil
+})
+
+while true do
+    local events, new_last_line = read_events_since(EVENT_LOG, last_line)
+    local current = read_json_file(STATUS_FILE, {
+        module = "modbus-demo",
+        status = "running",
+        processed_events = 0,
+        last_line = last_line
+    })
+
+    current.module = "modbus-demo"
+    current.status = "running"
+    current.last_line = new_last_line
+    current.poll_interval = SLEEP_SECONDS
+    current.updated_at = os.time()
+
+    for _, event in ipairs(events) do
+        current.processed_events = (tonumber(current.processed_events) or 0) + 1
+        current.last_kind = event.kind or event.type or "unknown"
+        current.last_ts = event.ts
+        current.last_event = event
+    end
+
+    if #events == 0 and file_exists(EVENT_LOG) and new_last_line == 0 then
+        current.status = "waiting_for_events"
+    end
+
+    write_json_file(STATUS_FILE, current)
+    write_json_file(STATE_FILE, { last_line = new_last_line })
+    last_line = new_last_line
+    sleep()
+end
