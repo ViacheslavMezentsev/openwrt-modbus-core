@@ -26,11 +26,15 @@ make test
 make verify
 make deploy-core
 make deploy-demo
+make install-ipk
+make test-opkg
 make router-clean
 make repo
 ```
 
 `make router-clean` очищает временные списки `opkg` и загруженные `.ipk` на роутере после тестовых установок.
+`make install-ipk` устанавливает собранные `.ipk` на роутер через `opkg`.
+`make test-opkg` прогоняет полный lifecycle-test: unmanaged cleanup, install, verify и cleanup.
 
 ## Demo module
 

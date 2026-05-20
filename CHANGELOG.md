@@ -17,3 +17,12 @@
 - Added demo CGI and a simple diagnostics web page served by `uhttpd`.
 - Extended the local build and verify flow to include the demo package.
 - Deployed and validated the module on the router end-to-end against live `modbusd` heartbeat events.
+
+## opkg-lifecycle-2026-05-05
+
+- Switched package assembly to an `opkg`-compatible `.ipk` layout for OpenWrt 19.07.
+- Added router-side `.ipk` installation tooling for `modbus-rtu-core` and `modbus-demo`.
+- Added an `opkg` lifecycle test script covering install, validation, cleanup and reinstall flow.
+- Confirmed on-router installation through `opkg install` with both packages registered in the package database.
+- Confirmed package-managed startup of `modbusd` and `modbus-demo` after installation.
+- Confirmed live status delivery from the demo module after package installation.
