@@ -9,6 +9,9 @@ echo "[verify] checking required files"
 [ -f "$CONTROL_FILE" ]
 [ -f "$PROJECT_ROOT/pkg/etc/init.d/modbus-rtu-core" ]
 [ -f "$PROJECT_ROOT/pkg/usr/bin/modbusd" ]
+[ -f "$PROJECT_ROOT/pkg-demo/CONTROL/control" ]
+[ -f "$PROJECT_ROOT/pkg-demo/etc/init.d/modbus-demo" ]
+[ -f "$PROJECT_ROOT/pkg-demo/usr/bin/modbus-demo" ]
 
 echo "[verify] checking executable bits in package sources"
 for file in \
@@ -17,6 +20,11 @@ for file in \
     "$PROJECT_ROOT/pkg/etc/init.d/modbus-rtu-core" \
     "$PROJECT_ROOT/pkg/usr/bin/modbusd" \
     "$PROJECT_ROOT/pkg/www/cgi-bin/modbus-core-status" \
+    "$PROJECT_ROOT/pkg-demo/CONTROL/postinst" \
+    "$PROJECT_ROOT/pkg-demo/CONTROL/prerm" \
+    "$PROJECT_ROOT/pkg-demo/etc/init.d/modbus-demo" \
+    "$PROJECT_ROOT/pkg-demo/usr/bin/modbus-demo" \
+    "$PROJECT_ROOT/pkg-demo/www/cgi-bin/modbus-demo-status" \
     "$PROJECT_ROOT/scripts/build-ipk.sh" \
     "$PROJECT_ROOT/scripts/deploy.sh" \
     "$PROJECT_ROOT/scripts/ci_verify.sh"

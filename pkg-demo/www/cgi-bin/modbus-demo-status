@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "Content-Type: application/json"
+echo "Cache-Control: no-cache"
+echo ""
+cat /tmp/modbus/demo-status.json 2>/dev/null || echo '{"module":"modbus-demo","status":"unavailable"}'

@@ -1,0 +1,11 @@
+#!/bin/sh
+[ "$IPKG_INSTROOT" ] || {
+    mkdir -p /tmp/modbus
+
+    if [ -x /etc/init.d/modbus-demo ]; then
+        /etc/init.d/modbus-demo enable >/dev/null 2>&1
+        /etc/init.d/modbus-demo restart >/dev/null 2>&1
+    fi
+
+    exit 0
+}

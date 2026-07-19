@@ -21,14 +21,22 @@
 
 ```bash
 make build
+make build-demo
 make test
 make verify
 make deploy-core
+make deploy-demo
 make router-clean
 make repo
 ```
 
 `make router-clean` очищает временные списки `opkg` и загруженные `.ipk` на роутере после тестовых установок.
+
+## Demo module
+
+`pkg-demo` is the first test subscriber module. It consumes core events from
+`/tmp/modbus/events-core.jsonl`, keeps its own status file in `/tmp/modbus`,
+and exposes a tiny UI through `uhttpd`.
 
 ## Примечание по железу
 
