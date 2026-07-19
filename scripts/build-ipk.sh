@@ -56,6 +56,6 @@ printf "2.0\n" > "$FINAL_DIR/debian-binary"
 mv "$STAGING_DIR/control.tar.gz" "$FINAL_DIR/"
 mv "$STAGING_DIR/data.tar.gz" "$FINAL_DIR/"
 
-(cd "$FINAL_DIR" && ar rcs "$IPK_FILE" debian-binary control.tar.gz data.tar.gz)
+(cd "$FINAL_DIR" && tar czf "$IPK_FILE" ./debian-binary ./control.tar.gz ./data.tar.gz)
 
 echo "Built: $IPK_FILE"

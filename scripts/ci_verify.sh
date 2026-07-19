@@ -35,14 +35,24 @@ do
     }
 done
 
+[ -x "$PROJECT_ROOT/scripts/install-ipk-on-router.sh" ] || {
+    echo "FAIL: file must be executable: $PROJECT_ROOT/scripts/install-ipk-on-router.sh" >&2
+    exit 1
+}
+
+[ -x "$PROJECT_ROOT/scripts/test-opkg-lifecycle.sh" ] || {
+    echo "FAIL: file must be executable: $PROJECT_ROOT/scripts/test-opkg-lifecycle.sh" >&2
+    exit 1
+}
+
 echo "[verify] checking package artifacts"
 found_ipk=0
 for ipk in "$OUT_DIR"/*.ipk; do
     [ -f "$ipk" ] || continue
     found_ipk=1
-    ar t "$ipk" | grep -qx "debian-binary"
-    ar t "$ipk" | grep -qx "control.tar.gz"
-    ar t "$ipk" | grep -qx "data.tar.gz"
+    tar -tzf "$ipk" | grep -qx "\./debian-binary"
+    tar -tzf "$ipk" | grep -qx "\./control.tar.gz"
+    tar -tzf "$ipk" | grep -qx "\./data.tar.gz"
 done
 
 [ "$found_ipk" -eq 1 ] || {
