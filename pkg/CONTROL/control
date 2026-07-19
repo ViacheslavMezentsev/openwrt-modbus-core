@@ -1,0 +1,10 @@
+Package: modbus-rtu-core
+Version: 0.1.0
+Architecture: all
+Depends: lua, luci-lib-jsonc, uhttpd
+Section: utils
+Priority: optional
+Maintainer: Viacheslav Mezentsev <viacheslavmezentsev@gmail.com>
+Description: Lightweight Modbus RTU core foundation for OpenWrt.
+ Initializes runtime directories, status cache, event scaffolding and a
+ minimal procd-managed daemon without requiring the OpenWrt SDK.

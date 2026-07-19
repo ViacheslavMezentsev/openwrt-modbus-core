@@ -1,0 +1,13 @@
+#!/bin/sh
+[ "$IPKG_INSTROOT" ] || {
+    if [ -x /etc/init.d/modbus-rtu-core ]; then
+        /etc/init.d/modbus-rtu-core stop >/dev/null 2>&1
+        /etc/init.d/modbus-rtu-core disable >/dev/null 2>&1
+    fi
+
+    rm -f /tmp/modbus/events-core.fifo
+    rm -f /tmp/modbus/cache.json
+    rm -f /tmp/modbus/health.json
+
+    exit 0
+}

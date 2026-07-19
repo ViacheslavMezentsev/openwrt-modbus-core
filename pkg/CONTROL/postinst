@@ -1,0 +1,12 @@
+#!/bin/sh
+[ "$IPKG_INSTROOT" ] || {
+    mkdir -p /tmp/modbus
+    mkdir -p /etc/modbus-rtu-core/triggers.d
+
+    if [ -x /etc/init.d/modbus-rtu-core ]; then
+        /etc/init.d/modbus-rtu-core enable >/dev/null 2>&1
+        /etc/init.d/modbus-rtu-core restart >/dev/null 2>&1
+    fi
+
+    exit 0
+}

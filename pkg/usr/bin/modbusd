@@ -1,0 +1,117 @@
+#!/usr/bin/lua
+
+package.path = table.concat({
+    "/usr/lib/modbus/?.lua",
+    "/usr/lib/?.lua",
+    "/usr/lib/?/init.lua",
+    package.path
+}, ";")
+
+local cache = require("cache")
+local events = require("events")
+local triggers = require("triggers")
+
+local function trim(value)
+    if not value then
+        return nil
+    end
+    return (value:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+local function uci_get(option, default)
+    local cmd = string.format("uci -q get modbus-rtu-core.main.%s 2>/dev/null", option)
+    local pipe = io.popen(cmd)
+    if not pipe then
+        return default
+    end
+
+    local value = pipe:read("*a")
+    pipe:close()
+    value = trim(value)
+
+    if value == nil or value == "" then
+        return default
+    end
+
+    return value
+end
+
+local function sleep_seconds(seconds)
+    os.execute(string.format("sleep %d", seconds))
+end
+
+local function as_number(value, default)
+    local number = tonumber(value)
+    if number == nil then
+        return default
+    end
+    return number
+end
+
+local function snapshot(config, trigger_files)
+    cache.mark("status", "running")
+    cache.mark("started_at", cache.meta("started_at") or os.time())
+    cache.mark("last_tick", os.time())
+    cache.mark("device", config.device)
+    cache.mark("baudrate", config.baudrate)
+    cache.mark("parity", config.parity)
+    cache.mark("trigger_files", trigger_files)
+    cache.mark("runtime_dir", config.runtime_dir)
+    cache.mark("config_dir", config.config_dir)
+    cache.flush()
+end
+
+local enabled = uci_get("enabled", "1")
+if enabled ~= "1" then
+    io.stderr:write("[modbusd] disabled by UCI\n")
+    os.exit(0)
+end
+
+local config = {
+    device = uci_get("device", ""),
+    baudrate = uci_get("baudrate", "9600"),
+    parity = uci_get("parity", "N"),
+    poll_interval = as_number(uci_get("poll_interval", "5"), 5),
+    flush_interval = as_number(uci_get("flush_interval", "15"), 15),
+    runtime_dir = uci_get("runtime_dir", "/tmp/modbus"),
+    config_dir = uci_get("config_dir", "/etc/modbus-rtu-core")
+}
+
+cache.set_runtime_dir(config.runtime_dir)
+events.set_runtime_dir(config.runtime_dir)
+triggers.set_config_dir(config.config_dir)
+
+cache.ensure_runtime()
+events.ensure_runtime()
+cache.load()
+
+local trigger_files = triggers.list()
+snapshot(config, trigger_files)
+events.record({
+    kind = "daemon_started",
+    ts = os.time(),
+    device = config.device,
+    trigger_count = #trigger_files
+})
+
+local elapsed = 0
+local poll_interval = math.max(1, config.poll_interval)
+local flush_interval = math.max(poll_interval, config.flush_interval)
+
+while true do
+    sleep_seconds(poll_interval)
+    elapsed = elapsed + poll_interval
+    cache.mark("last_tick", os.time())
+
+    if elapsed >= flush_interval then
+        local files = triggers.list()
+        cache.mark("trigger_files", files)
+        cache.flush()
+        events.record({
+            kind = "daemon_heartbeat",
+            ts = os.time(),
+            trigger_count = #files
+        })
+        elapsed = 0
+    end
+end
