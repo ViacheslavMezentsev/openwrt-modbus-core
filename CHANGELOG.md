@@ -1,5 +1,12 @@
 # Changelog
 
+## bluepill-modbus-stage-6-2026-09-22
+
+- Added a USB CDC Modbus RTU server sketch for WeAct BluePill STM32F103CB.
+- Defined the initial DI, DO, AI and PWM-backed AO prototype register map.
+- Added laptop-first STM32duino and ST-Link bring-up instructions for the initial firmware flash.
+- Documented the USB CDC boundary and deferred router-side Modbus polling until the board is flashed and verified.
+
 ## core-demo-integration-stage-5-2026-09-22
 
 - Added bounded two-segment event-log rotation with persistent event sequence numbers.
