@@ -1,5 +1,13 @@
 # Changelog
 
+## validation-stage-4-2026-09-08
+
+- Added a single `make all` command for build, local tests, package validation and SHA-256 checksums.
+- Added syntax and metadata checks for shell, Lua and package-control files when the respective local tools are available.
+- Extended package validation to inspect the control and data payloads of both `.ipk` artifacts.
+- Expanded the Lua smoke tests to cover register normalization, JSON escaping and event recording.
+- Updated GitHub Actions to run the complete validation path and publish checksums with the packages.
+
 ## foundation-2026-05-04
 
 - Created the initial `modbus-rtu-core` package layout for OpenWrt 19.07.9 on MR3020 v3.

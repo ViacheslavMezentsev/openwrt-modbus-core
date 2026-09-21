@@ -18,17 +18,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lua5.1 binutils make
 
-      - name: Build package
-        run: make build
-
-      - name: Run lightweight tests
-        run: make test
-
-      - name: Verify package structure
-        run: make verify
+      - name: Build, test and verify
+        run: make all
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: modbus-rtu-core-ipk
-          path: out/*.ipk
+          path: |
+            out/*.ipk
+            out/checksums.sha256
