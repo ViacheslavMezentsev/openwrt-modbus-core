@@ -42,9 +42,15 @@ make all
 хосте он всё равно собирает пакеты и проверяет shell-скрипты и содержимое
 пакетов; те же Lua-тесты обязательно выполняются в GitHub Actions.
 
+Ядро хранит события в `/tmp/modbus/events-core.jsonl`; UCI-опция
+`event_log_max_bytes` ограничивает каждый из двух сегментов журнала. По
+умолчанию это `65536` байт для текущего файла и одного предыдущего сегмента.
+
 `make router-clean` очищает временные списки `opkg` и загруженные `.ipk` на роутере после тестовых установок.
 `make install-ipk` устанавливает собранные `.ipk` на роутер через `opkg`.
 `make test-opkg` прогоняет полный lifecycle-test: unmanaged cleanup, install, verify и cleanup.
+`make test-core-demo-router` устанавливает оба пакета, отправляет контрольное
+событие из ядра и проверяет, что `modbus-demo` получил его через CGI.
 
 ## Demo module
 

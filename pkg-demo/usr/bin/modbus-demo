@@ -3,6 +3,7 @@
 local json = require("luci.jsonc")
 
 local EVENT_LOG = "/tmp/modbus/events-core.jsonl"
+local ROTATED_EVENT_LOG = EVENT_LOG .. ".1"
 local STATUS_FILE = "/tmp/modbus/demo-status.json"
 local STATE_FILE = "/tmp/modbus/demo-state.json"
 local SLEEP_SECONDS = 2
@@ -28,96 +29,83 @@ local function read_json_file(path, default)
     return default
 end
 
-local function file_exists(path)
-    local file = io.open(path, "r")
-    if file then
-        file:close()
-        return true
-    end
-    return false
-end
-
 local function write_json_file(path, payload)
-    local tmp = path .. ".tmp"
-    local file = io.open(tmp, "w")
+    local temporary = path .. ".tmp"
+    local file = io.open(temporary, "w")
     if not file then
         return false
     end
 
     file:write(json.stringify(payload))
     file:close()
-    os.rename(tmp, path)
+    os.rename(temporary, path)
     return true
 end
 
-local function count_lines(path)
-    local file = io.open(path, "r")
-    if not file then
-        return 0
-    end
-
-    local count = 0
-    for _ in file:lines() do
-        count = count + 1
-    end
-    file:close()
-    return count
-end
-
-local function read_events_since(path, from_line)
-    local file = io.open(path, "r")
-    if not file then
-        return {}, from_line
-    end
-
+local function collect_events_since(last_seq)
     local events = {}
-    local line_number = 0
-    for line in file:lines() do
-        line_number = line_number + 1
-        if line_number > from_line then
-            local decoded = json.parse(line)
-            if type(decoded) == "table" then
-                events[#events + 1] = decoded
+    local highest_seq = last_seq
+
+    for _, path in ipairs({ROTATED_EVENT_LOG, EVENT_LOG}) do
+        local file = io.open(path, "r")
+        if file then
+            for line in file:lines() do
+                local event = json.parse(line)
+                local seq = type(event) == "table" and tonumber(event.seq) or nil
+                if seq and seq > last_seq then
+                    event.seq = seq
+                    events[#events + 1] = event
+                    highest_seq = math.max(highest_seq, seq)
+                end
             end
+            file:close()
         end
     end
-    file:close()
 
-    return events, line_number
+    table.sort(events, function(left, right)
+        return left.seq < right.seq
+    end)
+
+    return events, highest_seq
+end
+
+local function highest_sequence()
+    local _, sequence = collect_events_since(0)
+    return sequence
 end
 
 local function sleep()
     os.execute("sleep " .. tostring(SLEEP_SECONDS))
 end
 
-local state = read_json_file(STATE_FILE, { last_line = 0 })
-local last_line = tonumber(state.last_line) or 0
+local state = read_json_file(STATE_FILE, {last_seq = 0})
+local last_seq = tonumber(state.last_seq) or 0
 
-if last_line == 0 and file_exists(EVENT_LOG) then
-    last_line = math.max(0, count_lines(EVENT_LOG) - 1)
+if last_seq == 0 then
+    last_seq = highest_sequence()
 end
 
 write_json_file(STATUS_FILE, {
     module = "modbus-demo",
     status = "starting",
     processed_events = 0,
-    last_line = last_line,
+    last_seq = last_seq,
     last_kind = nil,
     last_ts = nil
 })
 
 while true do
-    local events, new_last_line = read_events_since(EVENT_LOG, last_line)
+    local events, new_last_seq = collect_events_since(last_seq)
     local current = read_json_file(STATUS_FILE, {
         module = "modbus-demo",
         status = "running",
         processed_events = 0,
-        last_line = last_line
+        last_seq = last_seq
     })
 
     current.module = "modbus-demo"
     current.status = "running"
-    current.last_line = new_last_line
+    current.last_seq = new_last_seq
     current.poll_interval = SLEEP_SECONDS
     current.updated_at = os.time()
 
@@ -128,12 +116,8 @@ while true do
         current.last_event = event
     end
 
-    if #events == 0 and file_exists(EVENT_LOG) and new_last_line == 0 then
-        current.status = "waiting_for_events"
-    end
-
     write_json_file(STATUS_FILE, current)
-    write_json_file(STATE_FILE, { last_line = new_last_line })
-    last_line = new_last_line
+    write_json_file(STATE_FILE, {last_seq = new_last_seq})
+    last_seq = new_last_seq
     sleep()
 end

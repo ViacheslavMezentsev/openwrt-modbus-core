@@ -42,6 +42,7 @@ for file in \
     "$PROJECT_ROOT/scripts/install-ipk-on-router.sh" \
     "$PROJECT_ROOT/scripts/router-clean-opkg-cache.sh" \
     "$PROJECT_ROOT/scripts/run-tests.sh" \
+    "$PROJECT_ROOT/scripts/test-core-demo-router.sh" \
     "$PROJECT_ROOT/scripts/test-opkg-lifecycle.sh"
 do
     [ -x "$file" ] || {

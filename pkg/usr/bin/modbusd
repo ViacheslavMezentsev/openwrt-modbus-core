@@ -73,12 +73,14 @@ local config = {
     parity = uci_get("parity", "N"),
     poll_interval = as_number(uci_get("poll_interval", "5"), 5),
     flush_interval = as_number(uci_get("flush_interval", "15"), 15),
+    event_log_max_bytes = as_number(uci_get("event_log_max_bytes", "65536"), 65536),
     runtime_dir = uci_get("runtime_dir", "/tmp/modbus"),
     config_dir = uci_get("config_dir", "/etc/modbus-rtu-core")
 }
 
 cache.set_runtime_dir(config.runtime_dir)
 events.set_runtime_dir(config.runtime_dir)
+events.set_max_log_bytes(config.event_log_max_bytes)
 triggers.set_config_dir(config.config_dir)
 
 cache.ensure_runtime()
