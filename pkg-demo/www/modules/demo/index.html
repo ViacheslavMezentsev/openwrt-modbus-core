@@ -106,7 +106,7 @@
         <div class="card"><div class="label">Status</div><div class="value" id="status">loading</div></div>
         <div class="card"><div class="label">Processed events</div><div class="value" id="processed">0</div></div>
         <div class="card"><div class="label">Last kind</div><div class="value" id="kind">-</div></div>
-        <div class="card"><div class="label">Last line</div><div class="value" id="line">0</div></div>
+        <div class="card"><div class="label">Last sequence</div><div class="value" id="sequence">0</div></div>
       </div>
       <pre id="json">Loading module status...</pre>
     </section>
@@ -116,7 +116,7 @@
       status: document.getElementById('status'),
       processed: document.getElementById('processed'),
       kind: document.getElementById('kind'),
-      line: document.getElementById('line'),
+      sequence: document.getElementById('sequence'),
       json: document.getElementById('json')
     };
 
@@ -128,7 +128,7 @@
         el.status.textContent = payload.status || 'unknown';
         el.processed.textContent = payload.processed_events ?? 0;
         el.kind.textContent = payload.last_kind || '-';
-        el.line.textContent = payload.last_line ?? 0;
+        el.sequence.textContent = payload.last_seq ?? 0;
         el.json.textContent = JSON.stringify(payload, null, 2);
       } catch (error) {
         el.json.textContent = `Status fetch failed: ${error.message}`;

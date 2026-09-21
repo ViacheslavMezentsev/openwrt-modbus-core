@@ -1,5 +1,13 @@
 # Changelog
 
+## core-demo-integration-stage-5-2026-09-22
+
+- Added bounded two-segment event-log rotation with persistent event sequence numbers.
+- Updated `modbus-demo` to consume rotated and active event segments by sequence number.
+- Added UCI configuration for the event-log segment size and diagnostics showing the last processed sequence.
+- Added a bounded router integration test that verifies core-to-demo event delivery and clears the `opkg` cache.
+- Confirmed on the MR3020 v3 that event-log rotation, demo CGI delivery and package-cache cleanup work together.
+
 ## validation-stage-4-2026-09-08
 
 - Added a single `make all` command for build, local tests, package validation and SHA-256 checksums.

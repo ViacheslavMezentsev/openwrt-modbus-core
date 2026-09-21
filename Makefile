@@ -2,9 +2,9 @@ PROJECT := modbus-rtu-core
 DEMO := modbus-demo
 VERSION ?= 0.1.0
 OUT_DIR := out
-HELPER_SCRIPTS := scripts/build-ipk.sh scripts/ci_verify.sh scripts/deploy.sh scripts/install-ipk-on-router.sh scripts/make_repo.sh scripts/router-clean-opkg-cache.sh scripts/run-tests.sh scripts/test-opkg-lifecycle.sh
+HELPER_SCRIPTS := scripts/build-ipk.sh scripts/ci_verify.sh scripts/deploy.sh scripts/install-ipk-on-router.sh scripts/make_repo.sh scripts/router-clean-opkg-cache.sh scripts/run-tests.sh scripts/test-core-demo-router.sh scripts/test-opkg-lifecycle.sh
 
-.PHONY: all prepare build build-core build-demo test verify checksums repo deploy-core deploy-demo install-ipk test-opkg router-clean clean
+.PHONY: all prepare build build-core build-demo test verify checksums repo deploy-core deploy-demo install-ipk test-core-demo-router test-opkg router-clean clean
 
 all: build test verify checksums
 
@@ -44,6 +44,9 @@ install-ipk: build
 
 test-opkg: build
 	./scripts/test-opkg-lifecycle.sh
+
+test-core-demo-router: build
+	./scripts/test-core-demo-router.sh
 
 router-clean:
 	./scripts/router-clean-opkg-cache.sh

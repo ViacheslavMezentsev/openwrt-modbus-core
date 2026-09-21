@@ -61,4 +61,24 @@ local event_log = event_file:read("*a")
 event_file:close()
 assert_true(event_log:find("validation event", 1, true) ~= nil, "event was not written")
 
+events.set_max_log_bytes(1024)
+for index = 1, 8 do
+    local rotate_ok, rotate_err = events.record({
+        kind = "rotation_test",
+        index = index,
+        payload = string.rep("x", 256)
+    })
+    assert_true(rotate_ok, rotate_err or "rotation event write failed")
+end
+
+local rotated_file = io.open(events.rotated_event_log_path(), "r")
+assert_true(rotated_file ~= nil, "rotated event log missing")
+rotated_file:close()
+
+local sequence_file = io.open(runtime_dir .. "/event-seq", "r")
+assert_true(sequence_file ~= nil, "event sequence file missing")
+local sequence = tonumber(sequence_file:read("*a"))
+sequence_file:close()
+assert_true(sequence and sequence >= 9, "event sequence was not advanced")
+
 print("[test_core] OK")
