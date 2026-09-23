@@ -52,6 +52,41 @@ make all
 `make test-core-demo-router` устанавливает оба пакета, отправляет контрольное
 событие из ядра и проверяет, что `modbus-demo` получил его через CGI.
 
+## Topic diagnostics
+
+```sh
+modbus topics
+modbus echo /devices/1/sample --count 5 --duration 40
+modbus hz /devices/1/sample --duration 30
+```
+
+Run these commands on the router. `topics` lists registered sources, age of the
+last publication and state; `echo` follows new JSON messages; `hz` reports the
+frequency and mean interval of new publications, not changes in values.
+`echo` without limits and `hz` without a duration run until Ctrl-C. Unknown
+topics/options are errors. If no new message arrives, `--duration` still exits.
+
+The core publishes `/core/heartbeat`, `/devices/1/sample` and
+`/devices/1/status` (replace `1` with the configured unit ID). Status is emitted
+on startup and transitions, including errors/recovery, not on a fixed schedule.
+The device topics are registered only when the BluePill profile is enabled.
+Sample arrays use offset 0 as their first element, as in demo events.
+
+Registry `topics.json` and the two event-log segments stay in the configured
+runtime directory (`/tmp/modbus` by default). Commands read them without opening
+the serial port or starting extra daemons. `MODBUS_RUNTIME_DIR` overrides the
+UCI path for diagnostics/tests. Journal gaps or sequence reset produce a stderr
+warning and reset the hz measurement window. Only retained events can be read:
+slow subscribers may miss events after two segments are overwritten.
+Publication intervals use kernel uptime, independent of wall-clock/RTC changes.
+`hz` needs two new publications to estimate rate; `age_s` keeps increasing when
+publishing stops. `topics` marks stale samples and an expired core heartbeat.
+
+See [TODO.md](TODO.md) for RTC, serial gateway and firmware-update plans.
+
+From WSL, `make test-topics-router` verifies live echo/rate output and an
+isolated journal-rotation scenario on the router (default BluePill unit 1).
+
 ## Demo module
 
 `pkg-demo` is the first test subscriber module. It consumes core events from
