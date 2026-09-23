@@ -58,6 +58,13 @@ make all
 `/tmp/modbus/events-core.jsonl`, keeps its own status file in `/tmp/modbus`,
 and exposes a tiny UI through `uhttpd`.
 
+## BluePill firmware prototype
+
+The first USB CDC Modbus RTU server for STM32F103CB is in
+[`firmware/bluepill-modbus`](firmware/bluepill-modbus). It is flashed on a
+laptop for initial bring-up, then connected to the router as `/dev/ttyACM0`.
+The core-side Modbus polling transport is the next implementation stage.
+
 ## Примечание по железу
 
 Текущий каркас не общается с `ttyACM0` и не реализует Modbus-обмен с BluePill. Это сознательно отложено до появления отдельного проекта/протокола для STM32-устройства.
