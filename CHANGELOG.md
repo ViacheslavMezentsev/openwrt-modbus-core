@@ -1,5 +1,22 @@
 # Changelog
 
+## topic-cli-stage-8
+
+- Added `modbus topics`, `echo` and `hz` with bounded count/duration options.
+- Register heartbeat, sample and transition-status topics in runtime storage.
+- Use monotonic publication timestamps, sequence cursors and explicit journal-gap warnings.
+- Added rotation, deduplication, lost-message and clock-adjustment regression tests.
+- Verified echo count, duration expiry, live frequency and rotation on OpenWrt; `make test-topics-router` reproduces these checks.
+- Recorded battery-backed RTC, multi-interface RS-485 gateway and update ideas in TODO.md.
+
+## bluepill-polling-stage-7-2026-09-24
+
+- Added a read-only BluePill profile covering DI, AI, DO and PWM setpoint readback.
+- Added bounded nonblocking USB CDC requests with CRC, length and exception validation.
+- Publish complete samples to cache and demo events, marking retained data stale on failure.
+- Tested CRC rejection, Modbus exceptions, missing unit timeout, recovery and matching live samples in core/demo CGI on MR3020 v3.
+- Added `make test-bluepill-router` and explicit IPK version selection during deployment.
+
 ## bluepill-modbus-stage-6-2026-09-22
 
 - Added a USB CDC Modbus RTU server sketch for WeAct BluePill STM32F103CB.

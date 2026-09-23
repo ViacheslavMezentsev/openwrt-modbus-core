@@ -71,6 +71,9 @@ local config = {
     device = uci_get("device", ""),
     baudrate = uci_get("baudrate", "9600"),
     parity = uci_get("parity", "N"),
+    profile = uci_get("profile", "none"),
+    unit_id = as_number(uci_get("unit_id", "1"), 1),
+    request_timeout_ms = math.max(100, math.min(2000, as_number(uci_get("request_timeout_ms", "500"), 500))),
     poll_interval = as_number(uci_get("poll_interval", "5"), 5),
     flush_interval = as_number(uci_get("flush_interval", "15"), 15),
     event_log_max_bytes = as_number(uci_get("event_log_max_bytes", "65536"), 65536),
@@ -88,6 +91,13 @@ events.ensure_runtime()
 cache.load()
 
 local trigger_files = triggers.list()
+local poller = config.profile == 'bluepill' and require('bluepill') or nil
+local poll_interval = math.max(1, config.poll_interval)
+local flush_interval = math.max(poll_interval, config.flush_interval)
+assert(events.configure_topics(poller and config.unit_id or nil, poll_interval, flush_interval))
+cache.mark('transport_status', poller and 'starting' or 'disabled')
+cache.mark('data_valid', false)
+cache.mark('transport_error', nil)
 snapshot(config, trigger_files)
 events.record({
     kind = "daemon_started",
@@ -97,13 +107,42 @@ events.record({
 })
 
 local elapsed = 0
-local poll_interval = math.max(1, config.poll_interval)
-local flush_interval = math.max(poll_interval, config.flush_interval)
+local previous_error = nil
+local previous_status = 'starting'
+events.record({kind = 'daemon_heartbeat', ts = os.time(), trigger_count = #trigger_files})
+if poller then
+    events.record({kind = 'device_status', ts = os.time(), unit = config.unit_id, status = 'starting'})
+end
 
 while true do
     sleep_seconds(poll_interval)
     elapsed = elapsed + poll_interval
     cache.mark("last_tick", os.time())
+
+    if poller then
+        local values, err = poller.poll(config)
+        local current_status = values and 'online' or 'offline'
+        if current_status ~= previous_status or err ~= previous_error then
+            events.record({kind = 'device_status', ts = os.time(), unit = config.unit_id, status = current_status, error = err})
+        end
+        previous_status = current_status
+        cache.mark('transport_status', values and 'online' or 'offline')
+        cache.mark('transport_error', err)
+        cache.mark('data_valid', values ~= nil)
+        if values then
+            for kind, registers in pairs(values) do
+                for index, value in ipairs(registers) do
+                    cache.set(config.unit_id, kind, index - 1, value)
+                end
+            end
+            cache.mark('last_success', os.time())
+            events.record({kind = 'device_sample', ts = os.time(), unit = config.unit_id, values = values})
+        elseif err ~= previous_error then
+            events.record({kind = 'device_error', ts = os.time(), unit = config.unit_id, error = err})
+        end
+        previous_error = err
+        cache.flush()
+    end
 
     if elapsed >= flush_interval then
         local files = triggers.list()
