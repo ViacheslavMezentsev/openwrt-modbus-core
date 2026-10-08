@@ -6,6 +6,9 @@
 - [x] BluePill USB CDC register polling, validity state and recovery.
 - [x] Minimal topic diagnostics: `modbus topics`, `modbus echo`, `modbus hz`.
 - [ ] Safe DO/PWM writes through the core, with range validation and readback.
+- [x] WeAct system button/LED via a trusted Lua handler, counter-based events and FC05 readback.
+- [ ] Extend the command allowlist to general DO/PWM with per-output safety policies.
+- [ ] Durable command/event recovery semantics if replay across power failure is needed (current button example intentionally does not replay).
 - [ ] Stable USB device identification and physical disconnect/reconnect tests.
 - [ ] Firmware compile CI and register-map compatibility/version checks.
 

@@ -9,6 +9,11 @@ function M.clock()
 end
 
 function M.name(event)
+    local system = {system_button='button', system_led='led', command_result='commands'}
+    if event.unit and system[event.kind] then
+        return '/devices/' .. tostring(event.unit) .. '/system/' .. system[event.kind]
+    end
+    if event.kind == 'handler_error' then return '/core/handler_errors' end
     if event.kind == 'daemon_heartbeat' then return '/core/heartbeat' end
     if event.unit and event.kind == 'device_sample' then
         return '/devices/' .. tostring(event.unit) .. '/sample'
@@ -18,11 +23,17 @@ function M.name(event)
     end
 end
 
-function M.registry(unit, poll_interval, heartbeat_interval)
+function M.registry(unit, poll_interval, heartbeat_interval, system_enabled)
     local result = {['/core/heartbeat'] = {interval = heartbeat_interval}}
     if unit then
         result['/devices/' .. tostring(unit) .. '/sample'] = {interval = poll_interval}
         result['/devices/' .. tostring(unit) .. '/status'] = {interval = 0}
+        if system_enabled then
+            for _, name in ipairs({'button','led','commands'}) do
+                result['/devices/' .. tostring(unit) .. '/system/' .. name] = {interval=0}
+            end
+            result['/core/handler_errors'] = {interval=0}
+        end
     end
     return result
 end
@@ -32,7 +43,7 @@ function M.note(registry, event)
     if not name then return end
     local item = registry[name] or {interval = 0}
     item.seq, item.ts, item.mono = event.seq, event.ts, event.mono
-    item.state = event.status or 'ok'
+    item.state = event.valid == false and 'stale' or event.status or 'ok'
     registry[name] = item
 end
 

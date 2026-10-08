@@ -33,6 +33,7 @@ if LUA_BIN="$(find_lua)"; then
     test_dir="$(mktemp -d /tmp/modbus-topics-test.XXXXXX)"
     trap 'rm -rf "$test_dir"' EXIT
     "$LUA_BIN" scripts/test_topics.lua "$test_dir"
+    "$LUA_BIN" scripts/test_handlers.lua "$test_dir"
     exit 0
 fi
 

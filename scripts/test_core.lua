@@ -16,7 +16,7 @@ local function assert_true(condition, message)
     end
 end
 
-local runtime_dir = "/tmp/openwrt-modbus-core-tests"
+local runtime_dir = arg[1] or "/tmp/openwrt-modbus-core-tests"
 cache.set_runtime_dir(runtime_dir)
 cache.ensure_runtime()
 cache.reset()

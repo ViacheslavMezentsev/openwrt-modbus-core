@@ -8,8 +8,8 @@ local max_log_bytes = 65536
 local sequence = nil
 local registry = {}
 
-function M.configure_topics(unit, poll_interval, heartbeat_interval)
-    registry = topics.registry(unit, poll_interval, heartbeat_interval)
+function M.configure_topics(unit, poll_interval, heartbeat_interval, system_enabled)
+    registry = topics.registry(unit, poll_interval, heartbeat_interval, system_enabled)
     return topics.write_registry(runtime_dir, registry)
 end
 
