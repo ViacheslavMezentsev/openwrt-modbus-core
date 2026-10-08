@@ -120,6 +120,10 @@ function M.record(event)
     payload.mono = topics.clock()
 
     local line = json.encode(payload) .. "\n"
+    -- Reject before rotation so an invalid event cannot evict retained history.
+    if #line > max_log_bytes then
+        return false, "event exceeds log size limit"
+    end
     local rotated, rotate_err = rotate_for(#line)
     if not rotated then
         return false, rotate_err

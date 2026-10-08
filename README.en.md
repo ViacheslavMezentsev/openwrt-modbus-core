@@ -76,8 +76,10 @@ System topics publish changes: age/hz describe events, not USB polling rate.
 Old presses are not replayed after reconnect. `modbusd` is the sole serial owner.
 
 Journal: `/tmp/modbus/events-core.jsonl` and `.1`, default 65536 bytes per segment,
-configured by `event_log_max_bytes`. A single oversized entry is not rejected yet;
-a strict bound needs follow-up (specification question 9.2.2). Slow subscribers can lose evicted events;
+configured by `event_log_max_bytes`. Oversized JSONL entries (including LF) are
+rejected before rotation with an explicit error, without truncating JSON or changing
+the journal or seq. File bounds do not bound serialization memory; existing files
+after a limit reduction need separate checks. Slow subscribers can lose evicted events;
 CLI warns about gaps. Monotonic intervals are independent of RTC/NTP.
 `MODBUS_RUNTIME_DIR` overrides the diagnostics/test directory.
 
@@ -85,7 +87,10 @@ CLI warns about gaps. Monotonic intervals are independent of RTC/NTP.
 
 [Agent rules](AGENTS.md), [workflow and specifications](docs/DEVELOPMENT.en.md),
 [roadmap](TODO.md), [changelog](CHANGELOG.en.md).
-The Russian-only [technical specification, revision 1.0](docs/TECHNICAL_SPECIFICATION.md)
+Local tests cover command TTL, incompatible maps, readback errors, Lua snapshots/limits
+and journal byte boundaries without hardware.
+
+The Russian-only [technical specification, revision 1.1](docs/TECHNICAL_SPECIFICATION.md)
 is a draft for agreement, with code/test traceability and explicit coverage gaps.
 The owner performs push and land; land requires successful CI for the exact
 branch HEAD. New PRs are not required. Research artifacts stay local.

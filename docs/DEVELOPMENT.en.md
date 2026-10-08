@@ -74,7 +74,7 @@ contracts, code and normal tests are public, without links to private reports.
 Adopt [embedded-tech-spec](https://github.com/ViacheslavMezentsev/demo-stm32-skills/tree/main/embedded-tech-spec).
 SKILL.md, the template and section guidance were reviewed; the skill is not
 globally installed or vendored. The [specification](TECHNICAL_SPECIFICATION.md),
-revision 1.0, is recovered from the existing code and remains a draft for agreement.
+revision 1.1, covers the implementation and agreed journal rejection policy, and remains a draft for agreement.
 Structural validation and test references do not imply approval or hardware PASS.
 
 - Russian-only specifications include revision/status/history, platform/scope,

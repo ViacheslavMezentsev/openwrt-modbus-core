@@ -10,9 +10,10 @@ Completed stages are on main; research stays local and push/land belong to the o
 - [ ] Agree the draft in `docs/TECHNICAL_SPECIFICATION.md`; resolve or explicitly defer its open questions.
 - [ ] Agree a local resilience study: USB reconnect, board/router resets, long-run resource and log bounds.
 - [ ] Promote accepted findings into tests and the next specification revision.
-- [ ] Decide the oversized-journal-entry policy and verify strict log bounds (spec question 9.2.2).
+- [x] Reject oversized JSONL before rotation and verify byte bounds with unchanged limits and initially valid segments (spec question 9.2.2).
+- [ ] Test legacy oversized segments and lowering the journal limit; file bounds do not bound serialization RAM.
 - [ ] Test demo sequence discontinuities and agree custom runtime directory support (spec question 9.2.3).
-- [ ] Close uncovered scenarios in the specification matrix: TTL expiry, map rejection, readback failure and handler API/limits.
+- [x] Cover TTL expiry, map rejection, readback failure, snapshot isolation and handler API/limits with local regressions; specification revision 1.1.
 
 ## Diagnostics and control
 

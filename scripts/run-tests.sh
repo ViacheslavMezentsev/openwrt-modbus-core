@@ -28,12 +28,14 @@ find_lua() {
 if LUA_BIN="$(find_lua)"; then
     echo "[test] using $LUA_BIN"
     cd "$PROJECT_ROOT"
-    "$LUA_BIN" scripts/test_core.lua
-    "$LUA_BIN" scripts/test_rtu.lua
     test_dir="$(mktemp -d /tmp/modbus-topics-test.XXXXXX)"
     trap 'rm -rf "$test_dir"' EXIT
+    "$LUA_BIN" scripts/test_core.lua "$test_dir/core"
+    "$LUA_BIN" scripts/test_rtu.lua
     "$LUA_BIN" scripts/test_topics.lua "$test_dir"
     "$LUA_BIN" scripts/test_handlers.lua "$test_dir"
+    "$LUA_BIN" scripts/test_resilience.lua "$test_dir"
+    "$LUA_BIN" scripts/test_events.lua "$test_dir"
     exit 0
 fi
 
