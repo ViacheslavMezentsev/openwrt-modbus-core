@@ -1,0 +1,122 @@
+#!/usr/bin/lua
+package.path = '/usr/lib/modbus/?.lua;' .. package.path
+local json = require('json')
+local topics = require('topics')
+
+local function fail(message)
+    io.stderr:write('modbus: ' .. message .. '\n')
+    os.exit(1)
+end
+
+local function help()
+    print('Usage: modbus topics')
+    print('       modbus echo TOPIC [--count N] [--duration SECONDS]')
+    print('       modbus hz TOPIC [--duration SECONDS]')
+    print('echo/hz follow new publications; Ctrl-C stops. Diagnostics never access serial.')
+end
+
+local command, topic = arg[1], arg[2]
+if command == '--help' or command == '-h' or not command then help(); return end
+if command ~= 'topics' and command ~= 'echo' and command ~= 'hz' then fail('unknown command; use --help') end
+if command == 'topics' and topic then fail('topics takes no arguments') end
+if command ~= 'topics' and (not topic or topic:sub(1, 1) ~= '/') then fail('a topic path is required') end
+
+local count, duration
+local i = 3
+while i <= #arg do
+    local key, value = arg[i], tonumber(arg[i + 1])
+    if not value or value <= 0 or value > 1000000 then fail('option needs a positive finite number') end
+    if key == '--duration' and not duration then duration = value
+    elseif key == '--count' and command == 'echo' and not count and value == math.floor(value) then count = value
+    else fail('unsupported or duplicate option: ' .. key) end
+    i = i + 2
+end
+
+local directory = os.getenv('MODBUS_RUNTIME_DIR')
+if not directory then
+    local p = io.popen('uci -q get modbus-rtu-core.main.runtime_dir 2>/dev/null')
+    directory = p and p:read('*l')
+    if p then p:close() end
+end
+if not directory or directory == '' then directory = '/tmp/modbus' end
+local function read_json(path)
+    local f = io.open(path, 'r')
+    if not f then return nil end
+    local data = f:read('*a')
+    f:close()
+    return json.decode(data)
+end
+local registry = read_json(directory .. '/topics.json')
+if type(registry) ~= 'table' then fail('topic registry unavailable; start the updated core') end
+
+if command == 'topics' then
+    local cache = read_json(directory .. '/cache.json') or {}
+    local meta, now = cache.meta or {}, topics.clock()
+    local names = {}
+    for name in pairs(registry) do names[#names + 1] = name end
+    table.sort(names)
+    print(string.format('%-30s %-12s %s', 'TOPIC', 'AGE(s)', 'STATE'))
+    local heartbeat = registry['/core/heartbeat'] or {}
+    local core_stale = heartbeat.mono and now - heartbeat.mono > math.max(5, 2 * (heartbeat.interval or 15))
+    for _, name in ipairs(names) do
+        local item = registry[name]
+        local age = item.mono and now - item.mono
+        local state = item.state or 'waiting'
+        if core_stale or (age and (age < 0 or ((item.interval or 0) > 0 and age > math.max(5, 2 * item.interval)))) then
+            state = 'stale'
+        end
+        if name:match('/sample$') and meta.data_valid == false then state = 'stale' end
+        print(string.format('%-30s %-12s %s', name, age and string.format('%.2f', math.max(0, age)) or '-', state))
+    end
+    return
+end
+if not registry[topic] then fail('unknown topic: ' .. topic .. '; use modbus topics') end
+
+local nixio = require('nixio')
+local fs = require('nixio.fs')
+local function signature()
+    local parts = {}
+    for _, suffix in ipairs({'', '.1'}) do
+        local stat = fs.stat(directory .. '/events-core.jsonl' .. suffix)
+        parts[#parts + 1] = stat and table.concat({stat.ino, stat.size, stat.mtime}, ':') or '-'
+    end
+    return table.concat(parts, '/')
+end
+local last_signature = signature()
+local initial = topics.scan(directory)
+local cursor = #initial > 0 and initial[#initial].seq or 0
+local started, displayed, delivered = topics.clock(), -1, 0
+local stats = topics.stats()
+local function report(now)
+    local rate = stats.sum > 0 and string.format('%.3f', stats.intervals / stats.sum) or 'n/a'
+    local average = stats.intervals > 0 and string.format('%.3f', stats.sum / stats.intervals) or 'n/a'
+    local age = stats.last and string.format('%.2f', math.max(0, now - stats.last)) or 'n/a'
+    print(string.format('%s hz=%s mean_s=%s messages=%d age_s=%s', topic, rate, average, stats.count, age))
+end
+io.stdout:setvbuf('no')
+while true do
+    local now = topics.clock()
+    if duration and now - started >= duration then break end
+    local messages, gaps, reset, after_gap = {}, 0, false, 0
+    local current_signature = signature()
+    if current_signature ~= last_signature then
+        cursor, messages, gaps, reset, after_gap = topics.follow(cursor, topics.scan(directory), topic)
+        last_signature = current_signature
+    end
+    if gaps > 0 or reset then
+        io.stderr:write(string.format('modbus: journal discontinuity (missing=%d, reset=%s); hz window reset\n', gaps, tostring(reset)))
+        stats = topics.stats()
+    end
+    for _, event in ipairs(messages) do
+        delivered = delivered + 1
+        if command == 'echo' then print(json.encode(event))
+        elseif event.seq >= after_gap then topics.observe(stats, event) end
+        if count and delivered >= count then return end
+    end
+    if command == 'hz' and math.floor(now - started) ~= displayed then
+        displayed = math.floor(now - started)
+        report(now)
+    end
+    nixio.nanosleep(0, 250000000)
+end
+if command == 'hz' then report(topics.clock()) end

@@ -1,10 +1,17 @@
 local json = require("json")
+local topics = require('topics')
 
 local M = {}
 
 local runtime_dir = os.getenv("MODBUS_RUNTIME_DIR") or "/tmp/modbus"
 local max_log_bytes = 65536
 local sequence = nil
+local registry = {}
+
+function M.configure_topics(unit, poll_interval, heartbeat_interval)
+    registry = topics.registry(unit, poll_interval, heartbeat_interval)
+    return topics.write_registry(runtime_dir, registry)
+end
 
 local function core_fifo()
     return runtime_dir .. "/events-core.fifo"
@@ -109,6 +116,8 @@ function M.record(event)
         payload[key] = value
     end
     payload.seq = next_sequence
+    payload.topic = topics.name(payload)
+    payload.mono = topics.clock()
 
     local line = json.encode(payload) .. "\n"
     local rotated, rotate_err = rotate_for(#line)
@@ -121,14 +130,18 @@ function M.record(event)
         return false, "event log unavailable"
     end
 
-    file:write(line)
-    file:close()
+    local written, write_err = file:write(line)
+    local closed, close_err = file:close()
+    if not written or not closed then return false, write_err or close_err end
 
     local saved, save_err = save_sequence(next_sequence)
     if not saved then
         return false, save_err
     end
 
+    topics.note(registry, payload)
+    local registered, registry_err = topics.write_registry(runtime_dir, registry)
+    if not registered then return false, registry_err end
     return true, next_sequence
 end
 

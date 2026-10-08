@@ -30,6 +30,7 @@ for file in \
     "$PROJECT_ROOT/pkg/CONTROL/prerm" \
     "$PROJECT_ROOT/pkg/etc/init.d/modbus-rtu-core" \
     "$PROJECT_ROOT/pkg/usr/bin/modbusd" \
+    "$PROJECT_ROOT/pkg/usr/bin/modbus" \
     "$PROJECT_ROOT/pkg/www/cgi-bin/modbus-core-status" \
     "$PROJECT_ROOT/pkg-demo/CONTROL/postinst" \
     "$PROJECT_ROOT/pkg-demo/CONTROL/prerm" \
@@ -69,8 +70,9 @@ if LUAC_BIN="$(find_tool luac5.1 luac)"; then
     echo "[verify] checking Lua syntax with $LUAC_BIN"
     for file in "$PROJECT_ROOT"/pkg/usr/lib/modbus/*.lua \
         "$PROJECT_ROOT/pkg/usr/bin/modbusd" \
+        "$PROJECT_ROOT/pkg/usr/bin/modbus" \
         "$PROJECT_ROOT/pkg-demo/usr/bin/modbus-demo" \
-        "$PROJECT_ROOT/scripts/test_core.lua"
+        "$PROJECT_ROOT"/scripts/test_*.lua
     do
         "$LUAC_BIN" -p "$file"
     done

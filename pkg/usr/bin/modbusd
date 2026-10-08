@@ -92,6 +92,9 @@ cache.load()
 
 local trigger_files = triggers.list()
 local poller = config.profile == 'bluepill' and require('bluepill') or nil
+local poll_interval = math.max(1, config.poll_interval)
+local flush_interval = math.max(poll_interval, config.flush_interval)
+assert(events.configure_topics(poller and config.unit_id or nil, poll_interval, flush_interval))
 cache.mark('transport_status', poller and 'starting' or 'disabled')
 cache.mark('data_valid', false)
 cache.mark('transport_error', nil)
@@ -105,8 +108,11 @@ events.record({
 
 local elapsed = 0
 local previous_error = nil
-local poll_interval = math.max(1, config.poll_interval)
-local flush_interval = math.max(poll_interval, config.flush_interval)
+local previous_status = 'starting'
+events.record({kind = 'daemon_heartbeat', ts = os.time(), trigger_count = #trigger_files})
+if poller then
+    events.record({kind = 'device_status', ts = os.time(), unit = config.unit_id, status = 'starting'})
+end
 
 while true do
     sleep_seconds(poll_interval)
@@ -115,6 +121,11 @@ while true do
 
     if poller then
         local values, err = poller.poll(config)
+        local current_status = values and 'online' or 'offline'
+        if current_status ~= previous_status or err ~= previous_error then
+            events.record({kind = 'device_status', ts = os.time(), unit = config.unit_id, status = current_status, error = err})
+        end
+        previous_status = current_status
         cache.mark('transport_status', values and 'online' or 'offline')
         cache.mark('transport_error', err)
         cache.mark('data_valid', values ~= nil)
