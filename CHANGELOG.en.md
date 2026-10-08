@@ -7,11 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Russian technical specification draft 1.0 for core/demo and WeAct map v2, including requirements, test cases, traceability and open resilience questions.
 - Project-specific development rules and a technical-specification workflow with stable requirement IDs, test cases and traceability.
 - Local-only research conventions and Git exclusions for research/manual workspaces.
 
 ### Changed
 
+- Updated the workflow to reflect signed commits through Windows Git and `git land` in WSL; the owner still verifies CI before landing.
 - Push and land belong to the owner; branch CI runs before land without requiring PRs.
 - Added paired RU/EN changelogs and refreshed README for core 0.4.0 and WeAct map v2.
 

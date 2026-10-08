@@ -5,10 +5,14 @@
 Core 0.4.0 and firmware map v2 implement router-driven button/LED control.
 Completed stages are on main; research stays local and push/land belong to the owner.
 
-- [ ] Configure/confirm signed commits and the owner-side `git land` helper in WSL.
-- [ ] Draft and agree Russian technical specification 1.0 using embedded-tech-spec; the current file is empty.
+- [x] Confirm signed commits through Windows Git and the owner-side `git land` alias in WSL (CI remains a manual prerequisite).
+- [x] Draft Russian technical specification 1.0 using embedded-tech-spec, with traceability and explicit test gaps.
+- [ ] Agree the draft in `docs/TECHNICAL_SPECIFICATION.md`; resolve or explicitly defer its open questions.
 - [ ] Agree a local resilience study: USB reconnect, board/router resets, long-run resource and log bounds.
 - [ ] Promote accepted findings into tests and the next specification revision.
+- [ ] Decide the oversized-journal-entry policy and verify strict log bounds (spec question 9.2.2).
+- [ ] Test demo sequence discontinuities and agree custom runtime directory support (spec question 9.2.3).
+- [ ] Close uncovered scenarios in the specification matrix: TTL expiry, map rejection, readback failure and handler API/limits.
 
 ## Diagnostics and control
 

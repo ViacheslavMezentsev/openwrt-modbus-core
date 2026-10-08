@@ -30,10 +30,13 @@ gh run watch <RUN_ID> --exit-status
 git land codex/project-workflow
 ```
 
-At adaptation time, no git-land executable/alias or signing configuration was
-found in WSL. The agent did not install/change either. The illustrated land
-interface is not verified for an unknown external helper. Without one, the
-owner can perform equivalent actions after CI:
+In the working environment, Windows Git signs commits through the WSL repository
+path; the key was not copied to Linux. WSL now has a `git land` alias: fetch,
+fast-forward main and the topic branch, atomically push main and delete the
+remote topic branch, then delete the local topic branch. It rejects landing
+main but does not check CI: the owner must verify a successful run for the exact
+HEAD first. These are local settings, not distributed by the repository.
+Without the helper, the owner can perform equivalent actions after CI:
 
 ```sh
 git fetch origin
@@ -70,8 +73,9 @@ contracts, code and normal tests are public, without links to private reports.
 
 Adopt [embedded-tech-spec](https://github.com/ViacheslavMezentsev/demo-stm32-skills/tree/main/embedded-tech-spec).
 SKILL.md, the template and section guidance were reviewed; the skill is not
-globally installed or vendored. The empty TECHNICAL_SPECIFICATION.md is not an
-approved contract. Preparing the initial revision is a separate stage.
+globally installed or vendored. The [specification](TECHNICAL_SPECIFICATION.md),
+revision 1.0, is recovered from the existing code and remains a draft for agreement.
+Structural validation and test references do not imply approval or hardware PASS.
 
 - Russian-only specifications include revision/status/history, platform/scope,
   functional/interface/resource requirements, verification, traceability,
