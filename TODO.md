@@ -1,5 +1,15 @@
 # Roadmap
 
+## Current state and next steps
+
+Core 0.4.0 and firmware map v2 implement router-driven button/LED control.
+Completed stages are on main; research stays local and push/land belong to the owner.
+
+- [ ] Configure/confirm signed commits and the owner-side `git land` helper in WSL.
+- [ ] Draft and agree Russian technical specification 1.0 using embedded-tech-spec; the current file is empty.
+- [ ] Agree a local resilience study: USB reconnect, board/router resets, long-run resource and log bounds.
+- [ ] Promote accepted findings into tests and the next specification revision.
+
 ## Diagnostics and control
 
 - [x] Router-only core/demo integration and bounded event journal.

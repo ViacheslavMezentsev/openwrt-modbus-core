@@ -1,91 +1,99 @@
 # Changelog
 
-## lua-button-events-stage-10
+Все заметные изменения в этом проекте документируются в этом файле ([English](CHANGELOG.en.md)).
+Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
 
-- Added opt-in map-v2 system polling at 200 ms using one persistent serial owner; general I/O retains its 5-second interval.
-- Added trusted Lua handlers with topic snapshots, a LED-only command allowlist, an eight-command queue and instruction limits.
-- Added change-only button/LED topics, command results and handler errors; retained the bounded two-segment journal.
-- Button-to-LED example uses counter parity, no replay on startup/reconnect/reset, absolute coil writes and readback.
-- Tested counter wrap, bursts, stale snapshots, lost acknowledgements, handler errors/infinite loops and queue limits.
-- Installed core 0.4.0 on the router; core/demo and topic CLI regression checks passed. Eleven physical button events produced eleven successful alternating LED commands, with no repeats during two-second holds.
-- Restart established count 11 as the new baseline without sending a command. Temporary IPK and opkg list cache were cleaned.
+## [Unreleased]
 
+### Добавлено
 
-## bluepill-cli-stage-9
+- Правила разработки под OpenWrt/WeAct и ведения ТЗ: постоянные номера требований, тест-кейсы и матрица прослеживаемости.
+- Локальный порядок исследований и исключение исследовательских/ручных стендов из Git.
 
-- Added a two-job Arduino CLI build for STM32 core 3.0.0 and modbus-esp8266 4.1.0.
-- Validate the Maple DFU vector address (0x08002000) and 56 KiB image budget.
-- Corrected Arduino pin-number types for compilation with the official STM32 core.
-- Retained the user-created Arduino sketch directory.
-- Added WeAct v1.1 map v2: reserved PA0 button/PB2 LED, debounced press counter and uptime snapshot; moved AI0 to PA2.
-- Added bounded FC05 coil writes with exact echo validation; no automatic button-to-LED logic in firmware.
-- Built and flashed the 32216-byte application through router Maple DFU alt 2; CDC returned automatically.
-- Passed debounce/wrap tests, RTU validation, hardware identity/LED readback/duplicate-write/invalid-address tests, and existing core/demo integration.
-- The new write modules were tested from isolated router /tmp storage; installed core remains read-only until the event-handler stage. Physical button presses still need an end-to-end test.
+### Изменено
 
-## topic-cli-stage-8
+- Push и land выполняет владелец; CI рабочей ветки запускается до land без PR.
+- Добавлены парные RU/EN CHANGELOG; README актуализирован для ядра 0.4.0 и WeAct map v2.
 
-- Added `modbus topics`, `echo` and `hz` with bounded count/duration options.
-- Register heartbeat, sample and transition-status topics in runtime storage.
-- Use monotonic publication timestamps, sequence cursors and explicit journal-gap warnings.
-- Added rotation, deduplication, lost-message and clock-adjustment regression tests.
-- Verified echo count, duration expiry, live frequency and rotation on OpenWrt; `make test-topics-router` reproduces these checks.
-- Recorded battery-backed RTC, multi-interface RS-485 gateway and update ideas in TODO.md.
+## История этапов
 
-## bluepill-polling-stage-7-2026-09-24
+Ниже описаны прежние работы и проверки, не повторные проверки в текущем этапе.
+Названия этапов сохранены: они не преобразованы в выдуманные релизы или даты.
+Ограничения ранних этапов могли быть сняты позднее. Версия пакета 0.4.0
+не означает, что опубликованы Git-тег или релиз.
 
-- Added a read-only BluePill profile covering DI, AI, DO and PWM setpoint readback.
-- Added bounded nonblocking USB CDC requests with CRC, length and exception validation.
-- Publish complete samples to cache and demo events, marking retained data stale on failure.
-- Tested CRC rejection, Modbus exceptions, missing unit timeout, recovery and matching live samples in core/demo CGI on MR3020 v3.
-- Added `make test-bluepill-router` and explicit IPK version selection during deployment.
+### lua-button-events-stage-10
 
-## bluepill-modbus-stage-6-2026-09-22
+- Добавлен включаемый системный опрос map v2 с интервалом 200 мс и единым владельцем serial; обычный опрос остаётся 5 с.
+- Добавлены доверенные Lua-обработчики, снимки топиков, запись только LED, очередь из восьми команд и лимит инструкций.
+- Добавлены топики изменений кнопки/LED, результатов команд и ошибок обработчиков; сохранён двухсегментный журнал.
+- Пример использует чётность счётчика, исключает повтор старых событий после запуска/переподключения/сброса, записывает абсолютное состояние и читает результат.
+- Проверены переполнение счётчика, серии нажатий, устаревшие данные, потерянный ответ, ошибки/зацикливание Lua и лимиты очереди.
+- На роутере установлен core 0.4.0; прошли проверки core/demo и CLI. 11 физических нажатий дали 11 чередующихся команд, без повторов при удержании 2 с.
+- После перезапуска счётчик 11 принят как исходный без команды. Временный IPK и кэш списков opkg очищены.
 
-- Added a USB CDC Modbus RTU server sketch for WeAct BluePill STM32F103CB.
-- Defined the initial DI, DO, AI and PWM-backed AO prototype register map.
-- Added laptop-first STM32duino and ST-Link bring-up instructions for the initial firmware flash.
-- Documented the USB CDC boundary and deferred router-side Modbus polling until the board is flashed and verified.
+### bluepill-cli-stage-9
 
-## core-demo-integration-stage-5-2026-09-22
+- Добавлена сборка Arduino CLI в два потока: STM32 Core 3.0.0, modbus-esp8266 4.1.0.
+- Проверяются адрес векторов Maple DFU `0x08002000` и лимит образа 56 КиБ.
+- Исправлены типы Arduino-пинов, сохранён перенос скетча в одноимённый каталог.
+- Добавлена карта WeAct v1.1 v2: PA0/PB2 зарезервированы, дребезг подавляется, передаются счётчик/uptime; AI0 перенесён на PA2.
+- Добавлена ограниченная по времени FC05-запись с проверкой точного эха. Локального переключения LED кнопкой нет.
+- Образ 32216 байт собран и записан через роутер в Maple alt 2; CDC вернулся автоматически.
+- Прошли тесты дребезга/переполнения, RTU, идентификации, LED/readback/повторной записи/ошибочного адреса и core/demo.
+- Запись проверялась из изолированного `/tmp`; установленное ядро на этом этапе оставалось читающим. Сквозной тест кнопки выполнен следующим этапом.
 
-- Added bounded two-segment event-log rotation with persistent event sequence numbers.
-- Updated `modbus-demo` to consume rotated and active event segments by sequence number.
-- Added UCI configuration for the event-log segment size and diagnostics showing the last processed sequence.
-- Added a bounded router integration test that verifies core-to-demo event delivery and clears the `opkg` cache.
-- Confirmed on the MR3020 v3 that event-log rotation, demo CGI delivery and package-cache cleanup work together.
+### topic-cli-stage-8
 
-## validation-stage-4-2026-09-08
+- Добавлены `modbus topics`, `echo`, `hz` с ограничениями количества/длительности.
+- Регистрируются heartbeat, sample и переходы состояния; используются монотонное время, номера событий и предупреждения о пропусках журнала.
+- Добавлены тесты ротации, устранения дублей, пропущенных сообщений и изменения часов.
+- На роутере проверены echo, завершение по времени, частота и ротация; повторный запуск: `make test-topics-router`.
+- RTC, RS-485 и обновление прошивки внесены в TODO.
 
-- Added a single `make all` command for build, local tests, package validation and SHA-256 checksums.
-- Added syntax and metadata checks for shell, Lua and package-control files when the respective local tools are available.
-- Extended package validation to inspect the control and data payloads of both `.ipk` artifacts.
-- Expanded the Lua smoke tests to cover register normalization, JSON escaping and event recording.
-- Updated GitHub Actions to run the complete validation path and publish checksums with the packages.
+### bluepill-polling-stage-7-2026-09-24
 
-## foundation-2026-05-04
+- Добавлен читающий профиль BluePill: DI, AI, DO и PWM setpoint.
+- Неблокирующий USB CDC транспорт проверяет CRC, длину и исключения с ограниченным ожиданием.
+- Полные выборки публикуются в кэш и demo; при ошибке сохранённые данные отмечаются неактуальными.
+- На MR3020 проверены CRC-ошибка, Modbus-исключения, тайм-аут отсутствующего адреса, восстановление и совпадение core/demo CGI.
+- Добавлены `make test-bluepill-router` и явный выбор версии IPK при установке.
 
-- Created the initial `modbus-rtu-core` package layout for OpenWrt 19.07.9 on MR3020 v3.
-- Added a lightweight `.ipk` build flow based on `tar` and `ar`, without the OpenWrt SDK.
-- Added WSL-to-router deployment scripts aligned with the current Ansible SSH settings.
-- Added the base runtime daemon, UCI config, `procd` init script, cache/event scaffolding and status CGI page.
-- Added lightweight verification helpers and router-side `opkg` cache cleanup tooling.
-- Removed currently unnecessary audio/video packages from the router to free overlay space while keeping `kmod-usb-acm` and switch handling intact.
+### bluepill-modbus-stage-6-2026-09-22
 
-## pkg-demo-2026-05-04
+- Добавлен первоначальный скетч USB CDC Modbus RTU под заявленный тогда STM32F103CB.
+- Задана прототипная карта DI/DO/AI/AO на PWM и инструкция первого запуска через STM32duino/ST-Link с ноутбука.
+- Разделены USB CDC и электрический RS-485; опрос ядром отложен до проверки платы.
 
-- Added the first demo subscriber package `modbus-demo`.
-- Added module init scripts, package metadata and lightweight install/remove hooks.
-- Added a Lua worker that consumes core event log entries and publishes module status into `/tmp/modbus/demo-status.json`.
-- Added demo CGI and a simple diagnostics web page served by `uhttpd`.
-- Extended the local build and verify flow to include the demo package.
-- Deployed and validated the module on the router end-to-end against live `modbusd` heartbeat events.
+### core-demo-integration-stage-5-2026-09-22
 
-## opkg-lifecycle-2026-05-05
+- Добавлены два ограниченных сегмента журнала и сохраняемый номер события.
+- Demo читает оба сегмента по номерам событий; UCI задаёт размер сегмента, CGI показывает обработанный номер.
+- Интеграционный тест проверяет доставку core/demo и чистит кэш opkg.
+- На MR3020 подтверждены ротация, доставка CGI и очистка после установки пакетов.
 
-- Switched package assembly to an `opkg`-compatible `.ipk` layout for OpenWrt 19.07.
-- Added router-side `.ipk` installation tooling for `modbus-rtu-core` and `modbus-demo`.
-- Added an `opkg` lifecycle test script covering install, validation, cleanup and reinstall flow.
-- Confirmed on-router installation through `opkg install` with both packages registered in the package database.
-- Confirmed package-managed startup of `modbusd` and `modbus-demo` after installation.
-- Confirmed live status delivery from the demo module after package installation.
+### validation-stage-4-2026-09-08
+
+- Добавлен `make all`: сборка, тесты, проверка пакетов и SHA-256.
+- Проверяются синтаксис shell/Lua при наличии инструментов, метаданные и содержимое control/data обоих IPK.
+- Расширены Lua-тесты нормализации регистров, JSON и записи событий.
+- GitHub Actions выполняет полный цикл и публикует пакеты с контрольными суммами.
+
+### foundation-2026-05-04
+
+- Создана структура modbus-rtu-core для OpenWrt 19.07.9/MR3020 v3.
+- Добавлены первоначальная лёгкая сборка через tar/ar без SDK и деплой WSL/SSH под окружение Ansible.
+- Добавлены демон, UCI/procd, кэш/события, CGI статуса, проверки и очистка opkg.
+- Для освобождения overlay удалены ненужные audio/video-пакеты; сохранены kmod-usb-acm и обработка переключателя.
+
+### pkg-demo-2026-05-04
+
+- Создан подписчик modbus-demo с init-скриптом, метаданными и хуками установки/удаления.
+- Lua-обработчик читает журнал ядра, пишет `/tmp/modbus/demo-status.json`; добавлены CGI и страница uhttpd.
+- Demo включён в сборку/проверки и проверен на роутере по heartbeat ядра.
+
+### opkg-lifecycle-2026-05-05
+
+- Сборка переведена на совместимый с opkg OpenWrt 19.07 формат IPK.
+- Добавлены установка обоих пакетов и lifecycle-тест установки, проверки, очистки и переустановки.
+- Подтверждены регистрация в opkg, запуск демонов средствами пакетов и доставка статуса demo.

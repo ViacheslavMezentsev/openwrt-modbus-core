@@ -2,9 +2,7 @@ name: CI - modbus-rtu-core
 
 on:
   push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+    branches: ['**']
 
 jobs:
   build-and-verify:

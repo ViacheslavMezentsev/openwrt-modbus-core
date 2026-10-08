@@ -9,3 +9,11 @@ repo/
 Thumbs.db
 *.tmp
 *.bak
+
+# Local research and hardware evidence never enter Git.
+/docs/research/
+/tests/manual/
+*.bin
+*.hex
+*.elf
+*.map
