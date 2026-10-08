@@ -1,6 +1,6 @@
 PROJECT := modbus-rtu-core
 DEMO := modbus-demo
-VERSION ?= 0.3.0
+VERSION ?= 0.4.0
 OUT_DIR := out
 HELPER_SCRIPTS := scripts/build-ipk.sh scripts/ci_verify.sh scripts/deploy.sh scripts/install-ipk-on-router.sh scripts/make_repo.sh scripts/router-clean-opkg-cache.sh scripts/run-tests.sh scripts/test-core-demo-router.sh scripts/test-opkg-lifecycle.sh
 

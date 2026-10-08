@@ -1,1 +1,2 @@
 /etc/config/modbus-rtu-core
+/etc/modbus-rtu-core/handlers.d/button-led.lua

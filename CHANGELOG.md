@@ -1,5 +1,16 @@
 # Changelog
 
+## lua-button-events-stage-10
+
+- Added opt-in map-v2 system polling at 200 ms using one persistent serial owner; general I/O retains its 5-second interval.
+- Added trusted Lua handlers with topic snapshots, a LED-only command allowlist, an eight-command queue and instruction limits.
+- Added change-only button/LED topics, command results and handler errors; retained the bounded two-segment journal.
+- Button-to-LED example uses counter parity, no replay on startup/reconnect/reset, absolute coil writes and readback.
+- Tested counter wrap, bursts, stale snapshots, lost acknowledgements, handler errors/infinite loops and queue limits.
+- Installed core 0.4.0 on the router; core/demo and topic CLI regression checks passed. Eleven physical button events produced eleven successful alternating LED commands, with no repeats during two-second holds.
+- Restart established count 11 as the new baseline without sending a command. Temporary IPK and opkg list cache were cleaned.
+
+
 ## bluepill-cli-stage-9
 
 - Added a two-job Arduino CLI build for STM32 core 3.0.0 and modbus-esp8266 4.1.0.

@@ -10,6 +10,7 @@ package.path = table.concat({
 local cache = require("cache")
 local events = require("events")
 local triggers = require("triggers")
+local topics = require('topics')
 
 local function trim(value)
     if not value then
@@ -72,6 +73,8 @@ local config = {
     baudrate = uci_get("baudrate", "9600"),
     parity = uci_get("parity", "N"),
     profile = uci_get("profile", "none"),
+    system_events = uci_get('system_events', '0') == '1',
+    system_poll_ms = math.floor(math.max(100, math.min(1000, as_number(uci_get('system_poll_ms', '200'), 200)))),
     unit_id = as_number(uci_get("unit_id", "1"), 1),
     request_timeout_ms = math.max(100, math.min(2000, as_number(uci_get("request_timeout_ms", "500"), 500))),
     poll_interval = as_number(uci_get("poll_interval", "5"), 5),
@@ -94,7 +97,42 @@ local trigger_files = triggers.list()
 local poller = config.profile == 'bluepill' and require('bluepill') or nil
 local poll_interval = math.max(1, config.poll_interval)
 local flush_interval = math.max(poll_interval, config.flush_interval)
-assert(events.configure_topics(poller and config.unit_id or nil, poll_interval, flush_interval))
+local system_enabled = poller and config.system_events
+cache.mark('system_events', not not system_enabled)
+cache.mark('handler_files', {})
+cache.mark('system_button', nil)
+cache.mark('system_led', nil)
+assert(events.configure_topics(poller and config.unit_id or nil, poll_interval, flush_interval, system_enabled))
+local handlers, system
+local function publish(event)
+    event.ts, event.mono = os.time(), topics.clock()
+    event.topic = topics.name(event)
+    local ok, seq = events.record(event)
+    if not ok then error('event persistence failed: ' .. tostring(seq)) end
+    event.seq = seq
+    if event.kind == 'system_button' or event.kind == 'system_led' then
+        cache.mark(event.kind, event)
+        cache.flush()
+    end
+    if handlers then handlers:observe(event.topic, event, true) end
+end
+if system_enabled then
+    handlers = require('handlers').new(config.unit_id, topics.clock, publish)
+    local fs = require('nixio.fs')
+    local directory = config.config_dir .. '/handlers.d'
+    local files = {}
+    local iter = fs.dir(directory)
+    if iter then
+        for name in iter do
+            if name:match('^[%w_-]+%.lua$') then files[#files+1] = directory .. '/' .. name end
+        end
+    end
+    table.sort(files)
+    for _, path in ipairs(files) do handlers:load(path) end
+    cache.mark('handler_files', files)
+    system = require('system_io').new(config.unit_id, handlers, publish,
+        function(topic, event) handlers:observe(topic, event, false) end, topics.clock)
+end
 cache.mark('transport_status', poller and 'starting' or 'disabled')
 cache.mark('data_valid', false)
 cache.mark('transport_error', nil)
@@ -106,24 +144,45 @@ events.record({
     trigger_count = #trigger_files
 })
 
-local elapsed = 0
 local previous_error = nil
 local previous_status = 'starting'
-events.record({kind = 'daemon_heartbeat', ts = os.time(), trigger_count = #trigger_files})
+publish({kind = 'daemon_heartbeat', ts = os.time(), trigger_count = #trigger_files})
 if poller then
-    events.record({kind = 'device_status', ts = os.time(), unit = config.unit_id, status = 'starting'})
+    publish({kind = 'device_status', ts = os.time(), unit = config.unit_id, status = 'starting'})
 end
 
+local port, connect_error
+local next_general, next_connect = 0, 0
+local next_flush = topics.clock() + flush_interval
+local function disconnect(err)
+    if port then port:close(); port = nil end
+    next_connect = topics.clock() + 1
+    if handlers then handlers:invalidate() end
+    if system then system:invalidate(err) end
+end
 while true do
-    sleep_seconds(poll_interval)
-    elapsed = elapsed + poll_interval
-    cache.mark("last_tick", os.time())
-
-    if poller then
-        local values, err = poller.poll(config)
+    cache.mark('last_tick', os.time())
+    if system then
+        if not port and topics.clock() >= next_connect then
+            port, connect_error = require('serial_rtu').open(config.device,
+                config.baudrate, config.parity, config.request_timeout_ms)
+            if not port then disconnect(connect_error) end
+        end
+        if port then
+            local state, err = system:step(port)
+            if not state then connect_error = err; disconnect(err) end
+        end
+    end
+    local now = topics.clock()
+    if poller and now >= next_general then
+        cache.mark('last_tick', os.time())
+        local values, err
+        if system and not port then err = connect_error or 'system connection unavailable'
+        else values, err = poller.poll(config, port) end
+        if not values and system then connect_error = err; disconnect(err) end
         local current_status = values and 'online' or 'offline'
         if current_status ~= previous_status or err ~= previous_error then
-            events.record({kind = 'device_status', ts = os.time(), unit = config.unit_id, status = current_status, error = err})
+            publish({kind = 'device_status', ts = os.time(), unit = config.unit_id, status = current_status, error = err})
         end
         previous_status = current_status
         cache.mark('transport_status', values and 'online' or 'offline')
@@ -136,23 +195,26 @@ while true do
                 end
             end
             cache.mark('last_success', os.time())
-            events.record({kind = 'device_sample', ts = os.time(), unit = config.unit_id, values = values})
+            publish({kind = 'device_sample', ts = os.time(), unit = config.unit_id, values = values, valid=true})
         elseif err ~= previous_error then
-            events.record({kind = 'device_error', ts = os.time(), unit = config.unit_id, error = err})
+            publish({kind = 'device_error', ts = os.time(), unit = config.unit_id, error = err})
         end
         previous_error = err
         cache.flush()
+        next_general = topics.clock() + poll_interval
     end
 
-    if elapsed >= flush_interval then
+    if topics.clock() >= next_flush then
         local files = triggers.list()
         cache.mark("trigger_files", files)
         cache.flush()
-        events.record({
+        publish({
             kind = "daemon_heartbeat",
             ts = os.time(),
             trigger_count = #files
         })
-        elapsed = 0
+        next_flush = topics.clock() + flush_interval
     end
+    if system then require('nixio').nanosleep(math.floor(config.system_poll_ms / 1000), (config.system_poll_ms % 1000) * 1000000)
+    else sleep_seconds(poll_interval) end
 end
