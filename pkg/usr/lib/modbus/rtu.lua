@@ -42,6 +42,28 @@ function M.request(unit, fn, address, count)
         math.floor(count / 256), count % 256))
 end
 
+function M.write_coil(unit, address, value)
+    if not integer(unit, 1, 247) or not integer(address, 0, 65535)
+        or type(value) ~= 'boolean' then
+        return nil, 'invalid coil request'
+    end
+    return M.frame(string.char(unit, 5, math.floor(address / 256), address % 256,
+        value and 255 or 0, 0))
+end
+
+function M.decode_write(data, request)
+    if #data < 5 then return nil, 'short response' end
+    if M.crc(data:sub(1, -3)) ~= data:byte(-2) + 256 * data:byte(-1) then
+        return nil, 'CRC mismatch'
+    end
+    if data:byte(1) ~= request:byte(1) then return nil, 'unit mismatch' end
+    if data:byte(2) == 133 and #data == 5 then
+        return nil, 'Modbus exception ' .. data:byte(3)
+    end
+    if data ~= request then return nil, 'write echo mismatch' end
+    return true
+end
+
 function M.decode(data, unit, fn, count)
     if #data < 5 then return nil, 'short response' end
     if M.crc(data:sub(1, -3)) ~= data:byte(-2) + 256 * data:byte(-1) then

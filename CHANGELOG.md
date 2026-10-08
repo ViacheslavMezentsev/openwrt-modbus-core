@@ -1,5 +1,17 @@
 # Changelog
 
+## bluepill-cli-stage-9
+
+- Added a two-job Arduino CLI build for STM32 core 3.0.0 and modbus-esp8266 4.1.0.
+- Validate the Maple DFU vector address (0x08002000) and 56 KiB image budget.
+- Corrected Arduino pin-number types for compilation with the official STM32 core.
+- Retained the user-created Arduino sketch directory.
+- Added WeAct v1.1 map v2: reserved PA0 button/PB2 LED, debounced press counter and uptime snapshot; moved AI0 to PA2.
+- Added bounded FC05 coil writes with exact echo validation; no automatic button-to-LED logic in firmware.
+- Built and flashed the 32216-byte application through router Maple DFU alt 2; CDC returned automatically.
+- Passed debounce/wrap tests, RTU validation, hardware identity/LED readback/duplicate-write/invalid-address tests, and existing core/demo integration.
+- The new write modules were tested from isolated router /tmp storage; installed core remains read-only until the event-handler stage. Physical button presses still need an end-to-end test.
+
 ## topic-cli-stage-8
 
 - Added `modbus topics`, `echo` and `hz` with bounded count/duration options.
