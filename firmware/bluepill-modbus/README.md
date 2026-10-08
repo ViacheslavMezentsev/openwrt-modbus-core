@@ -1,61 +1,101 @@
-# BluePill USB CDC Modbus RTU
+# WeAct BluePill Plus v1.1 USB Modbus RTU
 
-This sketch makes a WeAct BluePill with STM32F103CB a Modbus RTU server with
-unit ID `1`. The router sees the board through its USB CDC endpoint as
-`/dev/ttyACM0`.
+Target: STM32F103C8T6, 64 KiB Flash / 20 KiB RAM. USB CDC carries binary
+Modbus RTU, unit 1, 115200 8N1. Do not print text to Serial.
+USB is not an electrical RS-485 interface.
 
-## Scope
+## System pins and register map v2
 
-This is a bench prototype. USB CDC carries Modbus RTU bytes but is not an
-electrical RS-485 bus. The future gateway firmware will use one or more UART
-interfaces with RS-485 transceivers while retaining a separate management
-protocol to the router.
+PA0 is reserved for the active-high USER KEY, with internal pull-down.
+PB2 is reserved for the active-high system LED. The firmware does NOT
+toggle the LED on button presses: only a Modbus coil write controls it.
+The button has 30 ms debounce and a 32-bit press counter. A button held at
+startup is the baseline, not a new press. The counter resets on MCU reset.
 
-The sketch requires Arduino Core STM32 and `modbus-esp8266` version `4.1.0`.
-The library provides the RTU server API and works with Arduino platforms.
+All offsets are zero-based. Read a complete system input-register block
+in one FC04 request (address 256, count 8) for a coherent snapshot.
 
-## Register map
-
-All offsets below are zero-based Modbus addresses.
-
-| Function | Offset | Meaning |
+| Table | Offset | Meaning |
 | --- | ---: | --- |
-| Read/Write Coils (0x01/0x05/0x0F) | 0 | DO0: built-in PC13 LED, active low |
-| Read/Write Coils (0x01/0x05/0x0F) | 1 | DO1: PB0 |
-| Read Discrete Inputs (0x02) | 0 | DI0: PB12, active low with pull-up |
-| Read Discrete Inputs (0x02) | 1 | DI1: PB13, active low with pull-up |
-| Read Input Registers (0x04) | 0 | AI0: PA0 raw ADC value, `0..4095` |
-| Read Input Registers (0x04) | 1 | AI1: PA1 raw ADC value, `0..4095` |
-| Read Input Registers (0x04) | 2 | AI0 in millivolts, nominal range `0..3300` |
-| Read Input Registers (0x04) | 3 | AI1 in millivolts, nominal range `0..3300` |
-| Read Input Registers (0x04) | 4 | Firmware uptime in seconds, truncated to 16 bits |
-| Read/Write Holding Registers (0x03/0x06/0x10) | 0 | AO0 prototype: PWM duty cycle on PA8, `0..4095` |
+| Coil (FC01/05/0F) | 256 | PB2 LED, true = on; off on boot |
+| Discrete input (FC02) | 256 | Debounced PA0 button, true = pressed |
+| Input register (FC04) | 256 | Signature `0x5741` |
+| Input register | 257 | Map version `2` |
+| Input register | 258 | Capabilities `3`: bit 0 press counter, bit 1 LED |
+| Input register | 259 | Debounced button, 0 or 1 |
+| Input registers | 260..261 | Press count, high word then low word |
+| Input registers | 262..263 | MCU uptime milliseconds, high word then low word |
 
-STM32F103CB has ADC peripherals but no integrated DAC. Therefore AO0 is PWM
-for this prototype; an external DAC or an RC filter is required for a real
-analog output.
+Uptime and press count wrap modulo 2^32. On first connection/reconnect,
+consumers must establish a baseline, not replay old presses. A future
+router handler will compare counters and queue absolute LED commands;
+repeated commands then cannot double-toggle. LED coil readback confirms
+the firmware setpoint, not electrical/optical LED feedback.
 
-## First flash on a laptop
+| Table | Offset | General I/O |
+| --- | ---: | --- |
+| Coils | 0, 1 | DO0 PC13 (legacy active-low), DO1 PB0 (active-high) |
+| Discrete inputs | 0, 1 | PB12, PB13, active-low with pull-ups |
+| Input registers | 0, 1 | AI0 PA2, AI1 PA1, 12-bit raw ADC |
+| Input registers | 2, 3 | AI0, AI1 millivolts using nominal 3.3 V reference |
+| Input register | 4 | Legacy 16-bit uptime seconds |
+| Holding register | 0 | PA8 PWM, hardware duty clamped to 0..4095 |
 
-1. Install Arduino IDE 2 and add the STM32 Boards Manager URL:
-   `https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json`.
-2. Install `STM32 MCU based boards` and the Arduino library `modbus-esp8266`
-   at version `4.1.0`.
-3. Install STM32CubeProgrammer. It is required by the STM32duino upload flow.
-4. Connect an ST-Link to `GND`, `PA13/SWDIO`, and `PA14/SWCLK`. Connect its
-   `3.3V` pin only when the board is not already USB powered.
-5. In Arduino IDE select `Generic STM32F1 series`, then `BluePill F103CB`.
-   Select `STM32CubeProgrammer (SWD)` as Upload Method and
-   `CDC (generic Serial supersedes U(S)ART)` as USB Support. Keep `BOOT0` low.
-6. Open `bluepill_modbus.ino`, upload it, disconnect ST-Link, reset the board,
-   and reconnect its USB port.
+PC13 is NOT the onboard WeAct LED. PA0 was AI0 in map v1; map v2 moves
+AI0 to PA2. Existing read-only polling still works but must not label AI0
+as PA0. PWM is not a DAC; analog output requires external circuitry.
+General outputs retain their previous settings until reset or another
+write; this prototype has no link-loss safety watchdog.
 
-Do not use a serial monitor after flashing: the CDC endpoint carries binary
-Modbus frames. On Linux, reconnection should expose `/dev/ttyACM*`.
+## Build in WSL
 
-## Router handoff
+Install Arduino CLI under `~/.local/bin`, then install pinned dependencies:
 
-After connecting the flashed board to the router, verify it appears as
-`/dev/ttyACM0` and record its USB VID/PID. The next core stage will add the
-router-side Modbus master transport, stable device naming, and tests for this
-register map.
+```sh
+CLI="$HOME/.local/bin/arduino-cli"
+URL=https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+"$CLI" core update-index --additional-urls "$URL"
+"$CLI" core install STMicroelectronics:stm32@3.0.0 --additional-urls "$URL"
+"$CLI" lib install modbus-esp8266@4.1.0
+sh scripts/build-bluepill.sh
+```
+
+The build uses BluePill F103C8, USB CDC generic Serial, Maple DFU 2.0,
+size optimization with LTO, and two compiler jobs. It reuses the ignored
+`out/bluepill-build` directory. The script checks vector VMA/LMA at
+`0x08002000`, a binary size <=57344 bytes, and prints SHA-256.
+Arduino's displayed 64 KiB maximum does not deduct the bootloader;
+the script enforces the smaller limit. Override CLI with `ARDUINO_CLI`.
+
+Debounce regression test (no board required):
+
+```sh
+mkdir -p out
+g++ -std=c++11 -Wall -Wextra -Werror scripts/test_button.cpp -o out/test_button
+out/test_button
+```
+
+## Router upload and recovery
+
+Install the manufacturer's `STM32duino-bootloader-PB2.bin` once via SWD
+at `0x08000000`. Do not overwrite it with an application built for SWD.
+BOOT0 stays low. Hold KEY, press/release NRST, release KEY when PB2 blinks.
+`dfu-util -l` must show `1eaf:0003`, alt 2, Flash `0x8002000`.
+
+Copy the verified application to `/tmp/bluepill.bin` using scp from WSL.
+With the core stopped and no other serial clients, run on the router:
+
+```sh
+/etc/init.d/modbus-rtu-core stop
+dfu-util -d 1eaf:0003 -a 2 -D /tmp/bluepill.bin -R
+```
+
+Do not use alt 0, alt 1 or STM32 DfuSe `-s`. After a successful transfer,
+press NRST without KEY if needed. Confirm CDC returns and read signature
+and map version before any output tests. Then restart the core and remove
+the temporary image. USB DFU success alone is not a firmware behavior test.
+If upload fails, retain the local image and error log, re-enter the
+bootloader, and retry only after diagnosis. ST-Link remains the recovery path.
+
+References: [WeAct board and schematic](https://github.com/WeActStudio/BluePill-Plus),
+[WeAct bootloaders](https://github.com/WeActStudio/BluePill-Plus/tree/master/SDK/STM32F103C8T6/Arduino).

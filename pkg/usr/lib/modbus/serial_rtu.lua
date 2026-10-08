@@ -40,9 +40,7 @@ function M.open(device, baudrate, parity, timeout_ms)
         os.execute('stty -F ' .. device .. ' ' .. saved .. ' 2>/dev/null')
         fd:close()
     end
-    function port:read(unit, fn, address, count)
-        local request, request_err = rtu.request(unit, fn, address, count)
-        if not request then return nil, request_err end
+    local function exchange(request, unit, fn, count)
         -- Bounded drain: stale replies must not be mistaken for this request.
         for _ = 1, 8 do
             local stale = fd:read(256)
@@ -66,11 +64,25 @@ function M.open(device, baudrate, parity, timeout_ms)
             if not chunk or #chunk == 0 then return nil, 'serial read failed' end
             response = response .. chunk
             if #response >= 3 then
-                local size = response:byte(2) >= 128 and 5 or response:byte(3) + 5
+                local size = response:byte(2) >= 128 and 5
+                    or (fn == 5 and 8 or response:byte(3) + 5)
                 if size > 256 then return nil, 'oversized response' end
-                if #response >= size then return rtu.decode(response, unit, fn, count) end
+                if #response >= size then
+                    if fn == 5 then return rtu.decode_write(response, request) end
+                    return rtu.decode(response, unit, fn, count)
+                end
             end
         end
+    end
+    function port:read(unit, fn, address, count)
+        local request, err = rtu.request(unit, fn, address, count)
+        if not request then return nil, err end
+        return exchange(request, unit, fn, count)
+    end
+    function port:write_coil(unit, address, value)
+        local request, err = rtu.write_coil(unit, address, value)
+        if not request then return nil, err end
+        return exchange(request, unit, 5)
     end
     return port
 end

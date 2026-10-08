@@ -3,6 +3,17 @@ set -eu
 
 PROJECT_ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 
+if command -v g++ >/dev/null 2>&1; then
+    button_test=$(mktemp /tmp/modbus-button-test.XXXXXX)
+    trap 'rm -f "$button_test"' EXIT
+    g++ -std=c++11 -Wall -Wextra -Werror "$PROJECT_ROOT/scripts/test_button.cpp" -o "$button_test"
+    "$button_test"
+    rm -f "$button_test"
+    trap - EXIT
+else
+    echo '[test] skipped button test: install g++ locally'
+fi
+
 find_lua() {
     for candidate in lua5.1 lua; do
         if command -v "$candidate" >/dev/null 2>&1; then
