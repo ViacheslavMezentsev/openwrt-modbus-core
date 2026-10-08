@@ -13,8 +13,13 @@ if [ -f "$SSH_KEY" ]; then
     SSH_OPTS="-i $SSH_KEY $SSH_OPTS"
 fi
 
-CORE_IPK="$(ls "$OUT_DIR"/modbus-rtu-core_*.ipk | head -n 1)"
-DEMO_IPK="$(ls "$OUT_DIR"/modbus-demo_*.ipk | head -n 1)"
+if [ -n "${BUILD_VERSION:-}" ]; then
+    CORE_IPK="$OUT_DIR/modbus-rtu-core_${BUILD_VERSION}_all.ipk"
+    DEMO_IPK="$OUT_DIR/modbus-demo_${BUILD_VERSION}_all.ipk"
+else
+    CORE_IPK="$(ls "$OUT_DIR"/modbus-rtu-core_*.ipk | sort -V | tail -n 1)"
+    DEMO_IPK="$(ls "$OUT_DIR"/modbus-demo_*.ipk | sort -V | tail -n 1)"
+fi
 
 [ -f "$CORE_IPK" ] || {
     echo "ERROR: core .ipk not found in $OUT_DIR" >&2

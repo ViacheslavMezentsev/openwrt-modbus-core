@@ -17,7 +17,8 @@ find_lua() {
 if LUA_BIN="$(find_lua)"; then
     echo "[test] using $LUA_BIN"
     cd "$PROJECT_ROOT"
-    exec "$LUA_BIN" scripts/test_core.lua
+    "$LUA_BIN" scripts/test_core.lua
+    exec "$LUA_BIN" scripts/test_rtu.lua
 fi
 
 echo "[test] skipped: install lua5.1 locally to run Lua tests"

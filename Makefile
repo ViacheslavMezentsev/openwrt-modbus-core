@@ -1,6 +1,6 @@
 PROJECT := modbus-rtu-core
 DEMO := modbus-demo
-VERSION ?= 0.1.0
+VERSION ?= 0.2.0
 OUT_DIR := out
 HELPER_SCRIPTS := scripts/build-ipk.sh scripts/ci_verify.sh scripts/deploy.sh scripts/install-ipk-on-router.sh scripts/make_repo.sh scripts/router-clean-opkg-cache.sh scripts/run-tests.sh scripts/test-core-demo-router.sh scripts/test-opkg-lifecycle.sh
 
@@ -40,13 +40,17 @@ deploy-demo:
 	./scripts/deploy.sh pkg-demo $(DEMO)
 
 install-ipk: build
-	./scripts/install-ipk-on-router.sh
+	BUILD_VERSION=$(VERSION) ./scripts/install-ipk-on-router.sh
 
 test-opkg: build
-	./scripts/test-opkg-lifecycle.sh
+	BUILD_VERSION=$(VERSION) ./scripts/test-opkg-lifecycle.sh
 
 test-core-demo-router: build
-	./scripts/test-core-demo-router.sh
+	BUILD_VERSION=$(VERSION) ./scripts/test-core-demo-router.sh
+
+.PHONY: test-bluepill-router
+test-bluepill-router:
+	sh scripts/test-bluepill-router.sh
 
 router-clean:
 	./scripts/router-clean-opkg-cache.sh
