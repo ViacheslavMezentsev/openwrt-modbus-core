@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Organized documentation with an index and completed-stage archive; remaining early-plan proposals moved to TODO. Original untracked notes are retained in a local archive without publication.
+
 - Specification updated to draft 1.2 without runtime changes; bench observations remain distinct from guarantees.
 - Updated the specification to draft 1.1 with actual test coverage and the agreed oversized-entry policy.
 - Updated the workflow to reflect signed commits through Windows Git and `git land` in WSL; the owner still verifies CI before landing.

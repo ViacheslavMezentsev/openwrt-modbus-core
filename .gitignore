@@ -17,3 +17,6 @@ Thumbs.db
 *.hex
 *.elf
 *.map
+
+# Original untracked planning notes, retained locally with checksums.
+/docs/archive/legacy-notes/

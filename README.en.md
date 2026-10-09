@@ -97,3 +97,5 @@ branch HEAD. New PRs are not required. Research artifacts stay local.
 
 Bench validation results, limitations and upgrade/rollback guidance:
 [validation notes](docs/VALIDATION.en.md).
+
+Documentation and archive index: [docs](docs/README.en.md).

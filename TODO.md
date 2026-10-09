@@ -3,31 +3,32 @@
 ## Current state and next steps
 
 Core 0.4.0 and firmware map v2 implement router-driven button/LED control.
-Completed stages are on main; research stays local and push/land belong to the owner.
+Completed work is summarized in [the stage archive](docs/archive/completed-stages.en.md).
+This file lists remaining work; research stays local and push/land belong to the owner.
 
-- [x] Confirm signed commits through Windows Git and the owner-side `git land` alias in WSL (CI remains a manual prerequisite).
-- [x] Draft Russian technical specification 1.0 using embedded-tech-spec, with traceability and explicit test gaps.
 - [ ] Agree the draft in `docs/TECHNICAL_SPECIFICATION.md`; resolve or explicitly defer its open questions.
-- [x] Run agreed USB power-cycle, MCU reset, core/router restart and two-hour passive observations; retain explicit coverage limits.
-- [x] Promote restart/sequence regressions and accepted observations into specification draft 1.2 and RU/EN validation notes.
-- [x] Reject oversized JSONL before rotation and verify byte bounds with unchanged limits and initially valid segments (spec question 9.2.2).
-- [x] Test legacy oversized segments and lowering the journal limit; accept deferred rotation and legacy history loss (specification 1.3).
 - [ ] Measure serialization RAM and test filesystem failures; file bounds do not bound memory.
-- [x] Recover demo after detected sequence rollback; diagnose gaps, deduplicate and retry changing journal snapshots (local TC-37/38).
 - [ ] Validate updated demo on hardware and measure its resources after separate installation approval.
 - [ ] Agree custom runtime directory support for demo/CGI (spec question 9.2.3).
-- [x] Cover TTL expiry, map rejection, readback failure, snapshot isolation and handler API/limits with local regressions; specification revision 1.1.
+
+## Remaining work from the original plans
+
+These are candidates to scope and agree, not approved runtime requirements.
+The old FIFO examples, unconditional conffiles claims and SDK assumptions are
+superseded by the current specification and validation notes.
+
+- [ ] Write a module-author API guide for current JSONL topics, cache validity, Lua handlers, packaging and lifecycle; include a minimal example without direct serial access.
+- [ ] Decide whether declarative JSON triggers and dynamically registered polling ranges are needed beyond the current trusted Lua handlers. A file listing and register-grouping helper do not implement this contract.
+- [ ] Define and test configuration reload semantics: when restart is required, what state is retained, and whether module registration can change without interrupting polling.
+- [ ] Define release/tag and core/demo versioning policy; add owner-triggered release publication with IPKs and checksums. Current CI builds branch artifacts only.
+- [ ] Validate `make repo` and package index generation, then agree feed hosting, signing/trust and update/rollback checks. Do not disable signature verification or configure a router feed as part of documentation cleanup.
+- [ ] Decide whether optional Ansible/IDE deployment integration and application modules (schoolbell/security/radio) belong in this repository; scope separately before implementation.
 
 ## Diagnostics and control
 
-- [x] Router-only core/demo integration and bounded event journal.
-- [x] BluePill USB CDC register polling, validity state and recovery.
-- [x] Minimal topic diagnostics: `modbus topics`, `modbus echo`, `modbus hz`.
 - [ ] Safe DO/PWM writes through the core, with range validation and readback.
-- [x] WeAct system button/LED via a trusted Lua handler, counter-based events and FC05 readback.
 - [ ] Extend the command allowlist to general DO/PWM with per-output safety policies.
 - [ ] Durable command/event recovery semantics if replay across power failure is needed (current button example intentionally does not replay).
-- [x] Verify one isolated USB power-cycle recovery with unchanged tty name.
 - [ ] Stable USB identification and recovery when the tty name changes.
 - [ ] Firmware compile CI and register-map compatibility/version checks.
 
