@@ -4,7 +4,7 @@
 
 Общие контракты устройств, событий и обработчиков. Развитие регистрации пакетов, scheduler и actions принадлежит ядру; готового общего API пока нет.
 
-[ТЗ 1.6](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.md)
+[ТЗ 1.7](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.md)
 
 ТЗ остаётся черновиком. Номера требований и тестов локальны этому компоненту;
 при ссылке указывать `core`, `demo` или `schoolbell`. Ревизия ТЗ не является

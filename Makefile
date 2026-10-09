@@ -1,10 +1,11 @@
 PROJECT := modbus-rtu-core
 DEMO := modbus-demo
 VERSION ?= 0.4.0
+SCHOOLBELL_VERSION ?= 0.0.1
 OUT_DIR := out
 HELPER_SCRIPTS := scripts/build-ipk.sh scripts/ci_verify.sh scripts/deploy.sh scripts/install-ipk-on-router.sh scripts/make_repo.sh scripts/router-clean-opkg-cache.sh scripts/run-tests.sh scripts/test-core-demo-router.sh scripts/test-opkg-lifecycle.sh
 
-.PHONY: all prepare build build-core build-demo test verify checksums repo deploy-core deploy-demo install-ipk test-core-demo-router test-opkg router-clean clean
+.PHONY: all prepare build build-core build-demo build-schoolbell test verify checksums repo deploy-core deploy-demo install-ipk test-core-demo-router test-opkg router-clean clean
 
 all: build test verify checksums
 
@@ -14,13 +15,16 @@ prepare:
 	chmod +x pkg/CONTROL/postinst pkg/CONTROL/prerm pkg/etc/init.d/modbus-rtu-core pkg/usr/bin/modbusd pkg/www/cgi-bin/modbus-core-status
 	chmod +x pkg-demo/CONTROL/postinst pkg-demo/CONTROL/prerm pkg-demo/etc/init.d/modbus-demo pkg-demo/usr/bin/modbus-demo pkg-demo/www/cgi-bin/modbus-demo-status
 
-build: build-core build-demo
+build: build-core build-demo build-schoolbell
 
 build-core: prepare
 	BUILD_VERSION=$(VERSION) PKG_DIR=pkg OUT_DIR=$(OUT_DIR) ./scripts/build-ipk.sh
 
 build-demo: prepare
 	BUILD_VERSION=$(VERSION) PKG_DIR=pkg-demo OUT_DIR=$(OUT_DIR) ./scripts/build-ipk.sh
+
+build-schoolbell:
+	BUILD_VERSION=$(SCHOOLBELL_VERSION) PKG_DIR=pkg-schoolbell OUT_DIR=$(OUT_DIR) sh scripts/build-ipk.sh
 
 test:
 	./scripts/run-tests.sh

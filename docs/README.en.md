@@ -4,7 +4,7 @@
 
 | Document | Purpose |
 | --- | --- |
-| [Technical specification](core/TECHNICAL_SPECIFICATION.md) | Current requirements, tests and open questions; Russian revision 1.6 remains a draft |
+| [Technical specification](core/TECHNICAL_SPECIFICATION.md) | Current requirements, tests and open questions; Russian revision 1.7 remains a draft |
 | [Development](DEVELOPMENT.en.md) | Builds, checks, signed commits and push/land workflow |
 | [Validation and operation](VALIDATION.en.md) | Evidence limits, upgrade/rollback and diagnostics |
 | [TODO](../TODO.md) | Remaining work and proposals needing agreement |
@@ -16,9 +16,9 @@ Historical examples do not replace the current specification or DEVELOPMENT comm
 
 ## Package documentation
 
-- [Core](core/README.en.md): specification 1.6 and component history.
+- [Core](core/README.en.md): specification 1.7 and component history.
 - [Demo](packages/demo/README.en.md): specification 1.0 and consumer tests.
-- [Schoolbell](packages/schoolbell/README.en.md): specification 1.1, future package scope.
+- [Schoolbell](packages/schoolbell/README.en.md): specification 1.2, future package scope.
 
 Each component owns RU/EN README and CHANGELOG files and a Russian specification.
 The former TECHNICAL_SPECIFICATION.md is a navigation stub. New requirement/test

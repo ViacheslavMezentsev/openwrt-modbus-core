@@ -124,4 +124,6 @@ done
     exit 1
 }
 
+python3 "$PROJECT_ROOT/scripts/verify-schoolbell.py" "$OUT_DIR"
+
 echo "[verify] OK"

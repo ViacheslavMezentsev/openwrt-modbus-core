@@ -1,0 +1,8 @@
+Package: modbus-schoolbell
+Version: 0.0.1
+Architecture: all
+Section: sound
+Priority: optional
+Maintainer: Viacheslav Mezentsev
+Description: Schoolbell preview containing one sample MP3 only.
+ No scheduler, player, service, configuration, or automatic playback is included.

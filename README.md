@@ -91,7 +91,7 @@ uci commit modbus-rtu-core
 
 [Правила](AGENTS.md), [рабочий цикл и ТЗ](docs/DEVELOPMENT.md),
 [план](TODO.md), [история](CHANGELOG.md).
-Русское [ТЗ, ревизия 1.6](docs/core/TECHNICAL_SPECIFICATION.md) находится в статусе
+Русское [ТЗ, ревизия 1.7](docs/core/TECHNICAL_SPECIFICATION.md) находится в статусе
 черновика для согласования: требования связаны с кодом и тестами, пробелы отмечены явно.
 Push и land выполняет владелец; land только после успешного CI текущей ветки.
 Новые PR не требуются. Исследовательские материалы остаются локальными.
@@ -100,3 +100,7 @@ Push и land выполняет владелец; land только после �
 [памятка проверок](docs/VALIDATION.md).
 
 Навигация по документации и архиву: [docs](docs/README.md).
+
+Пример schoolbell: `make build-schoolbell` (также входит в `make all`).
+[Состояние пакета](docs/packages/schoolbell/README.md): scheduler/player ещё нет.
+Для проверки сборки на хосте требуется Python 3.8+.
