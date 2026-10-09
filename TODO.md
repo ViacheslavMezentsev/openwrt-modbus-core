@@ -8,8 +8,8 @@ Completed stages are on main; research stays local and push/land belong to the o
 - [x] Confirm signed commits through Windows Git and the owner-side `git land` alias in WSL (CI remains a manual prerequisite).
 - [x] Draft Russian technical specification 1.0 using embedded-tech-spec, with traceability and explicit test gaps.
 - [ ] Agree the draft in `docs/TECHNICAL_SPECIFICATION.md`; resolve or explicitly defer its open questions.
-- [ ] Agree a local resilience study: USB reconnect, board/router resets, long-run resource and log bounds.
-- [ ] Promote accepted findings into tests and the next specification revision.
+- [x] Run agreed USB power-cycle, MCU reset, core/router restart and two-hour passive observations; retain explicit coverage limits.
+- [x] Promote restart/sequence regressions and accepted observations into specification draft 1.2 and RU/EN validation notes.
 - [x] Reject oversized JSONL before rotation and verify byte bounds with unchanged limits and initially valid segments (spec question 9.2.2).
 - [ ] Test legacy oversized segments and lowering the journal limit; file bounds do not bound serialization RAM.
 - [ ] Test demo sequence discontinuities and agree custom runtime directory support (spec question 9.2.3).
@@ -24,7 +24,8 @@ Completed stages are on main; research stays local and push/land belong to the o
 - [x] WeAct system button/LED via a trusted Lua handler, counter-based events and FC05 readback.
 - [ ] Extend the command allowlist to general DO/PWM with per-output safety policies.
 - [ ] Durable command/event recovery semantics if replay across power failure is needed (current button example intentionally does not replay).
-- [ ] Stable USB device identification and physical disconnect/reconnect tests.
+- [x] Verify one isolated USB power-cycle recovery with unchanged tty name.
+- [ ] Stable USB identification and recovery when the tty name changes.
 - [ ] Firmware compile CI and register-map compatibility/version checks.
 
 ## Battery-backed RTC on the STM32 board

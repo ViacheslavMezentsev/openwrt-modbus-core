@@ -74,7 +74,7 @@ Arduino-путь: `sh scripts/build-bluepill.sh` с закреплёнными �
 
 Принята [embedded-tech-spec](https://github.com/ViacheslavMezentsev/demo-stm32-skills/tree/main/embedded-tech-spec).
 Изучены SKILL.md, шаблон и правила разделов; навык не установлен глобально и
-его код не скопирован в проект. [ТЗ](TECHNICAL_SPECIFICATION.md), ревизия 1.1,
+его код не скопирован в проект. [ТЗ](TECHNICAL_SPECIFICATION.md), ревизия 1.2,
 подготовлено по существующему коду и остаётся черновиком для согласования.
 Проверки структуры и ссылки на тесты не означают утверждения или аппаратного PASS.
 

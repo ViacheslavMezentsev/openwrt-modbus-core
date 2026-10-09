@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Regressions for persisted sequence recovery and cursor rollback on a fresh runtime; bounded hardware validation results and upgrade/rollback guidance.
 - Local regressions for TTL, map rejection, readback errors, snapshot/handler isolation, Lua limits and journal byte boundaries; included in normal and isolated router runners.
 - Russian technical specification draft 1.0 for core/demo and WeAct map v2, including requirements, test cases, traceability and open resilience questions.
 - Project-specific development rules and a technical-specification workflow with stable requirement IDs, test cases and traceability.
@@ -14,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Specification updated to draft 1.2 without runtime changes; bench observations remain distinct from guarantees.
 - Updated the specification to draft 1.1 with actual test coverage and the agreed oversized-entry policy.
 - Updated the workflow to reflect signed commits through Windows Git and `git land` in WSL; the owner still verifies CI before landing.
 - Push and land belong to the owner; branch CI runs before land without requiring PRs.

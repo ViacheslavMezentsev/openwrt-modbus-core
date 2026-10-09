@@ -90,7 +90,10 @@ CLI warns about gaps. Monotonic intervals are independent of RTC/NTP.
 Local tests cover command TTL, incompatible maps, readback errors, Lua snapshots/limits
 and journal byte boundaries without hardware.
 
-The Russian-only [technical specification, revision 1.1](docs/TECHNICAL_SPECIFICATION.md)
+The Russian-only [technical specification, revision 1.2](docs/TECHNICAL_SPECIFICATION.md)
 is a draft for agreement, with code/test traceability and explicit coverage gaps.
 The owner performs push and land; land requires successful CI for the exact
 branch HEAD. New PRs are not required. Research artifacts stay local.
+
+Bench validation results, limitations and upgrade/rollback guidance:
+[validation notes](docs/VALIDATION.en.md).

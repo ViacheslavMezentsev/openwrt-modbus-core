@@ -55,6 +55,20 @@ write('events-core.jsonl.1', '12\n13\n')
 write('events-core.jsonl', '14\n')
 local _, _, dropped = topics.follow(7, topics.scan(directory, decode), '/devices/1/sample')
 assert(dropped == 4, 'lost retained events not reported')
+-- TC-34: ТЗ 4.4.4. Read a new runtime after an empty interval and seq rollback.
+os.remove(directory .. '/events-core.jsonl')
+os.remove(directory .. '/events-core.jsonl.1')
+local empty_cursor, empty_batch, empty_gaps, empty_reset =
+    topics.follow(14, topics.scan(directory, decode), '/devices/1/sample')
+assert(empty_cursor == 14 and #empty_batch == 0 and empty_gaps == 0 and not empty_reset)
+write('events-core.jsonl', '1\n2\n')
+local new_cursor, new_batch, new_gaps, new_reset =
+    topics.follow(empty_cursor, topics.scan(directory, decode), '/devices/1/sample')
+assert(new_reset and new_cursor == 2 and new_gaps == 0 and #new_batch == 2)
+assert(new_batch[1].seq == 1 and new_batch[2].seq == 2)
+local _, no_replay, _, repeated_reset =
+    topics.follow(new_cursor, topics.scan(directory, decode), '/devices/1/sample')
+assert(#no_replay == 0 and not repeated_reset)
 os.remove(directory .. '/events-core.jsonl')
 os.remove(directory .. '/events-core.jsonl.1')
 print('[test_topics] OK')

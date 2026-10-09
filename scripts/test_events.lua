@@ -77,5 +77,37 @@ ok, seq = events.record(event_with_size(100, 3))
 assert(ok and seq == 3)
 assert(#assert(read(dir .. '/events-core.jsonl.1')) == limit)
 assert(#assert(read(dir .. '/events-core.jsonl')) == 100)
+-- TC-33: ТЗ 4.4.6, 4.4.7. A new module instance models a new writer process.
+-- Retain both segments and the sequence file; a restart must not replay seq=1.
+local restart_dir = root .. '/journal-restart'
+local function writer(path)
+    local instance = assert(loadfile('pkg/usr/lib/modbus/events.lua'))()
+    instance.set_runtime_dir(path)
+    instance.ensure_runtime()
+    instance.set_max_log_bytes(limit)
+    assert(instance.configure_topics(nil, 1, 1))
+    return instance
+end
+local first_writer = writer(restart_dir)
+assert(first_writer.record(event_with_size(limit, 1)))
+assert(first_writer.record(event_with_size(100, 2)))
+local active = assert(read(restart_dir .. '/events-core.jsonl'))
+local archive = assert(read(restart_dir .. '/events-core.jsonl.1'))
+local next_writer = writer(restart_dir)
+ok, seq = next_writer.record(event_with_size(100, 3))
+assert(ok and seq == 3, 'restart did not continue persisted sequence')
+assert(read(restart_dir .. '/events-core.jsonl.1') == archive)
+assert(read(restart_dir .. '/events-core.jsonl'):sub(1, #active) == active)
+assert(#read(restart_dir .. '/events-core.jsonl') == #active + 100)
+assert(tonumber(read(restart_dir .. '/event-seq')) == 3)
+-- With a fresh runtime (as after tmpfs loss), sequence starts again at one.
+local cold_dir = root .. '/journal-cold-start'
+local cold_writer = writer(cold_dir)
+ok, seq = cold_writer.record(event_with_size(100, 1))
+assert(ok and seq == 1, 'fresh runtime inherited an old sequence')
+assert(tonumber(read(cold_dir .. '/event-seq')) == 1)
+assert(not read(cold_dir .. '/events-core.jsonl.1'))
+assert(tonumber(read(restart_dir .. '/event-seq')) == 3,
+    'fresh runtime changed the retained runtime')
 topics.clock = original_clock
-print('[test_events] OK: exact byte limits, rotation, oversized rejection preserves files/seq')
+print('[test_events] OK: exact byte limits, rotation, oversized rejection preserves files/seq, restart and cold start')
