@@ -109,5 +109,61 @@ assert(tonumber(read(cold_dir .. '/event-seq')) == 1)
 assert(not read(cold_dir .. '/events-core.jsonl.1'))
 assert(tonumber(read(restart_dir .. '/event-seq')) == 3,
     'fresh runtime changed the retained runtime')
+-- TC-35: ТЗ 6.1.5, 6.1.6. Lowering the limit is lazy and may discard history.
+dir = root .. '/journal-lower-active'
+events.set_runtime_dir(dir)
+events.ensure_runtime()
+events.set_max_log_bytes(2048)
+assert(events.configure_topics(nil, 1, 1))
+assert(events.record(event_with_size(1500, 1)))
+assert(events.record(event_with_size(1500, 2)))
+local before = snapshot(dir)
+events.set_max_log_bytes(limit)
+unchanged(dir, before)
+reject(dir, event_with_size(limit+1, 3))
+ok, seq = events.record(event_with_size(100, 3))
+assert(ok and seq == 3)
+assert(#assert(read(dir .. '/events-core.jsonl')) == 100)
+assert(not read(dir .. '/events-core.jsonl.1'), 'oversized active retained old archive')
+assert(tonumber(read(dir .. '/event-seq')) == 3)
+
+-- TC-36: ТЗ 6.1.7. A large archive survives appends until active rotation.
+dir = root .. '/journal-lower-archive'
+events.set_runtime_dir(dir)
+events.ensure_runtime()
+events.set_max_log_bytes(2048)
+assert(events.configure_topics(nil, 1, 1))
+assert(events.record(event_with_size(2048, 1)))
+assert(events.record(event_with_size(100, 2)))
+before = snapshot(dir)
+events.set_max_log_bytes(limit)
+unchanged(dir, before)
+reject(dir, event_with_size(limit+1, 3))
+ok, seq = events.record(event_with_size(100, 3))
+assert(ok and seq == 3)
+assert(read(dir .. '/events-core.jsonl.1') == before['events-core.jsonl.1'])
+local retained = assert(read(dir .. '/events-core.jsonl'))
+assert(#retained == 200)
+ok, seq = events.record(event_with_size(limit, 4))
+assert(ok and seq == 4)
+assert(read(dir .. '/events-core.jsonl.1') == retained)
+assert(#assert(read(dir .. '/events-core.jsonl')) == limit)
+
+-- TC-35 also covers a legacy entry exceeding even the former limit.
+dir = root .. '/journal-legacy-active'
+local legacy_writer = writer(dir)
+local legacy = event_with_size(2500, 8)
+legacy.seq, legacy.topic, legacy.mono = 8, '/core/heartbeat', 123.25
+local function write_fixture(name, value)
+    local f = assert(io.open(dir .. '/' .. name, 'wb'))
+    assert(f:write(value)); assert(f:close())
+end
+write_fixture('events-core.jsonl', json.encode(legacy) .. '\n')
+write_fixture('event-seq', '8\n')
+ok, seq = legacy_writer.record(event_with_size(100, 9))
+assert(ok and seq == 9)
+assert(#assert(read(dir .. '/events-core.jsonl')) == 100)
+assert(not read(dir .. '/events-core.jsonl.1'))
+assert(tonumber(read(dir .. '/event-seq')) == 9)
 topics.clock = original_clock
-print('[test_events] OK: exact byte limits, rotation, oversized rejection preserves files/seq, restart and cold start')
+print('[test_events] OK: exact byte limits, rotation, oversized rejection preserves files/seq, restart, cold start and legacy limits')

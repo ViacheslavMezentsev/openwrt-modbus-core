@@ -11,7 +11,8 @@ Completed stages are on main; research stays local and push/land belong to the o
 - [x] Run agreed USB power-cycle, MCU reset, core/router restart and two-hour passive observations; retain explicit coverage limits.
 - [x] Promote restart/sequence regressions and accepted observations into specification draft 1.2 and RU/EN validation notes.
 - [x] Reject oversized JSONL before rotation and verify byte bounds with unchanged limits and initially valid segments (spec question 9.2.2).
-- [ ] Test legacy oversized segments and lowering the journal limit; file bounds do not bound serialization RAM.
+- [x] Test legacy oversized segments and lowering the journal limit; accept deferred rotation and legacy history loss (specification 1.3).
+- [ ] Measure serialization RAM and test filesystem failures; file bounds do not bound memory.
 - [ ] Test demo sequence discontinuities and agree custom runtime directory support (spec question 9.2.3).
 - [x] Cover TTL expiry, map rejection, readback failure, snapshot isolation and handler API/limits with local regressions; specification revision 1.1.
 

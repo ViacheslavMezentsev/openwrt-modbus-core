@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Legacy journal and lowered-limit regressions; agreed deferred rotation and old-history loss documented in specification draft 1.3 without runtime changes.
+
 - Regressions for persisted sequence recovery and cursor rollback on a fresh runtime; bounded hardware validation results and upgrade/rollback guidance.
 - Local regressions for TTL, map rejection, readback errors, snapshot/handler isolation, Lua limits and journal byte boundaries; included in normal and isolated router runners.
 - Russian technical specification draft 1.0 for core/demo and WeAct map v2, including requirements, test cases, traceability and open resilience questions.

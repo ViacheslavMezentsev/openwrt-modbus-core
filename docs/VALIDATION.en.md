@@ -64,3 +64,14 @@ recovery path, not the final step of a successful upgrade.
 - System topic age measures publication changes, not every USB poll.
 - Each new reboot, USB disconnect/reset and soak needs separate agreement.
   Core remains the sole serial owner; open specification questions remain open.
+
+## Lowering the journal limit
+
+Agreed policy (specification 1.3): setting the limit does not immediately change
+files. An oversized archive remains until active-segment rotation. If the active
+segment already exceeds the limit, the next accepted entry removes it and the
+old archive entirely; seq continues. This history loss is accepted; lines are
+not repacked. Rejecting a new oversized entry preserves files without cleanup.
+TC-35/36 cover these cases locally. Filesystem failures and serialization memory
+are outside these tests; both existing segments need not meet the new limit
+immediately.
