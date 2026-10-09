@@ -6,10 +6,11 @@ Core 0.4.0 and firmware map v2 implement router-driven button/LED control.
 Completed work is summarized in [the stage archive](docs/archive/completed-stages.en.md).
 This file lists remaining work; research stays local and push/land belong to the owner.
 
-- [ ] Agree the draft in `docs/TECHNICAL_SPECIFICATION.md`; resolve or explicitly defer its open questions.
+- [ ] Agree the independent core/demo/schoolbell drafts under `docs/core/` and `docs/packages/`; resolve or explicitly defer each component's questions.
+- [ ] Prototype the shared event/subscription/scheduler/action API with mock clocks and providers; specify and version the core contract before integrating schoolbell.
 - [ ] Measure serialization RAM and test filesystem failures; file bounds do not bound memory.
 - [ ] Validate updated demo on hardware and measure its resources after separate installation approval.
-- [ ] Agree custom runtime directory support for demo/CGI (spec question 9.2.3).
+- [ ] Agree custom runtime directory support for demo/CGI (demo question 8.2.1; core CGI question 9.2.3).
 
 ## Remaining work from the original plans
 

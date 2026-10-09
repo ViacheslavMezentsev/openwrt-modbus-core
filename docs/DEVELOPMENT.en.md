@@ -73,8 +73,8 @@ contracts, code and normal tests are public, without links to private reports.
 
 Adopt [embedded-tech-spec](https://github.com/ViacheslavMezentsev/demo-stm32-skills/tree/main/embedded-tech-spec).
 SKILL.md, the template and section guidance were reviewed; the skill is not
-globally installed or vendored. The [specification](TECHNICAL_SPECIFICATION.md),
-revision 1.4, covers the implementation and agreed journal rejection policy, and remains a draft for agreement.
+globally installed or vendored. The [specification](core/TECHNICAL_SPECIFICATION.md),
+revision 1.5, covers the implementation and agreed journal rejection policy, and remains a draft for agreement.
 Structural validation and test references do not imply approval or hardware PASS.
 
 - Russian-only specifications include revision/status/history, platform/scope,
@@ -102,3 +102,7 @@ with Russian equivalents. Describe behavior, not every commit. The owner
 assigns a version/date at actual release; an IPK/Makefile version is not a
 release declaration. Preserve historical stages without presenting past
 checks as tests repeated today.
+
+For component specifications and independent ownership, see the [documentation index](README.en.md).
+Shared documents describe the workflow; update requirements/changelog under the
+feature owner and state compatible contract versions for cross-component changes.

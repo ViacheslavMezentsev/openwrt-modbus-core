@@ -77,7 +77,7 @@ local function run(name, initial, phases, expected, race, unstable)
  local chunk=assert(loadfile(daemon_path)); setfenv(chunk,env)
  local ok,err=pcall(chunk); assert(not ok and err==stop,tostring(err))
 end
--- TC-37: ТЗ 4.4.8–4.4.10. Execute the real daemon with controlled I/O.
+-- demo TC-02: ТЗ demo 3.1.2–3.1.4. Execute the real daemon with controlled I/O.
 run('repeat',10,{{active={11,12}},{active={11,12}},{active={11,12,13}}},{{12,2},{12,2},{13,3}})
 run('gap',10,{{archive={15},active={18,19}},{archive={15},active={18,19}}},{{19,3,6},{19,3,6}})
 run('empty-then-reset',10,{{active=false,archive=false},{active={1,2}},{active={1,2,3}}},{{10,0},{2,2,0,1},{3,3,0,1}})
@@ -85,7 +85,7 @@ run('reset-with-gap',10,{{active={3,5}}},{{5,2,3,1}})
 run('overlap',10,{{archive={11,12},active={12,13}},{archive={11,12},active={12,13}}},{{13,3},{13,3}})
 run('fresh-start',nil,{{active={1,2}},{active={1,2,3}}},{{2,0},{3,1}})
 run('empty-start',nil,{{active=false},{active={1,2}}},{{0,0},{2,2}})
--- TC-38: ТЗ 4.4.11. Rotation between segment opens, bounded retries, partial tail.
+-- demo TC-03: ТЗ demo 3.1.5. Rotation between segment opens, bounded retries, partial tail.
 run('rotation-race',10,{{archive={9,10},active={11,12}}},{{13,3}},{archive={11,12},active={13}})
 run('unstable',10,{{active={11}},{active={11,12}}},{{10,0,0,0,1,'read_error'},{12,2,0,0,1}},nil,true)
 run('unstable-start',nil,{{active={11}},{active={11,12}},{active={11,12,13}}},{{0,0,0,0,1,'read_error'},{12,0,0,0,1},{13,1,0,0,1}},nil,true)

@@ -42,7 +42,7 @@ local function write_json_file(path, payload)
     return true
 end
 
--- TC-37/38: bounded consistency checks; no cursor advance on unstable reads.
+-- demo TC-02/03: bounded consistency checks; no cursor advance on unstable reads.
 local function read_segments()
     local segments = {}
     for index, path in ipairs({ROTATED_EVENT_LOG, EVENT_LOG}) do
