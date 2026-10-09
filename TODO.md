@@ -7,12 +7,14 @@ Completed work is summarized in [the stage archive](docs/archive/completed-stage
 This file lists remaining work; research stays local and push/land belong to the owner.
 
 - [ ] Agree the independent core/demo/schoolbell drafts under `docs/core/` and `docs/packages/`; resolve or explicitly defer each component's questions.
-- [ ] Implement and verify the accepted core lifecycle policy (specification 1.7, TC-39–46); define API version, acknowledgements/results, active stop, clock sources and quotas before integrating schoolbell.
+- [ ] Implement the public event interface (core 1.8): registration, publish/subscribe, notification isolation, API version and delivery semantics; application actions remain in clients.
 - [ ] Measure serialization RAM and test filesystem failures; file bounds do not bound memory.
 - [ ] Validate updated demo on hardware and measure its resources after separate installation approval.
 - [ ] Agree custom runtime directory support for demo/CGI (demo question 8.2.1; core CGI question 9.2.3).
 
-- [ ] Validate schoolbell audio output with the owner: select player/device, low volume, one short sample and rollback; then implement audio worker and active stop acknowledgement.
+- [ ] Implement the schoolbell-owned audio handler/worker and lifecycle policy (schoolbell 1.3). Manual madplay output is confirmed; packaged event-driven playback remains unimplemented.
+- [ ] Design the offline extension bundle/manifest and admission policy (core 1.8, section 6.4): dependency closure/ABI, RAM and storage peaks/reserves, upload limits, recovery and shared ownership.
+- [ ] Validate each functional package after reboot without network or previous /tmp; begin with isolated failure tests, obtain separate approval for hardware reboot.
 
 ## Remaining work from the original plans
 

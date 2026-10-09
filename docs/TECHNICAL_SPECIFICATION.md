@@ -2,9 +2,9 @@
 
 Актуальные документы:
 
-- [Ядро — ревизия 1.7](core/TECHNICAL_SPECIFICATION.md).
-- [Demo — ревизия 1.0](packages/demo/TECHNICAL_SPECIFICATION.md).
-- [Schoolbell — ревизия 1.2](packages/schoolbell/TECHNICAL_SPECIFICATION.md).
+- [Ядро — ревизия 1.8](core/TECHNICAL_SPECIFICATION.md).
+- [Demo — ревизия 1.1](packages/demo/TECHNICAL_SPECIFICATION.md).
+- [Schoolbell — ревизия 1.3](packages/schoolbell/TECHNICAL_SPECIFICATION.md).
 
 Это указатель для прежних ссылок, не четвёртое ТЗ. История общего документа
 сохранена в ТЗ ядра; таблица переноса требований — в его приложении D.
