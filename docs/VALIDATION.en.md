@@ -75,3 +75,24 @@ not repacked. Rejecting a new oversized entry preserves files without cleanup.
 TC-35/36 cover these cases locally. Filesystem failures and serialization memory
 are outside these tests; both existing segments need not meet the new limit
 immediately.
+
+## Demo recovery (specification 1.4)
+
+Demo starts at the tail when state is absent/zero. Empty snapshots retain the
+cursor; a lower maximum seq triggers detected-reset recovery from the available
+beginning. Duplicate seq values count once (first record wins). Status JSON has
+per-cycle `gap_events`, `sequence_reset` and per-process `missed_events`,
+`sequence_resets`. After reset, gaps count from zero; they do not estimate all
+losses across generations.
+
+The reader compares two reads of both segments, with up to three attempts per
+cycle. Unstable/failed reads produce status `read_error`, an explanatory
+`read_error` field and cumulative failed-cycle counter `read_errors`; the cursor
+is retained. The next cycle retries, returning to `running` on success.
+Incomplete tails without LF are deferred. TC-37/38 execute the real daemon with
+virtual files and a synthetic JSON codec, not the real luci.jsonc parser.
+
+Exactly-once, reset detection after catching up to the old cursor and delivery
+under continuous rotation are not guaranteed; file comparison is not a
+transaction. Status/state persistence errors and custom runtime_dir remain open.
+This version has not been installed on the router or measured on hardware.

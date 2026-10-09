@@ -36,6 +36,7 @@ if LUA_BIN="$(find_lua)"; then
     "$LUA_BIN" scripts/test_handlers.lua "$test_dir"
     "$LUA_BIN" scripts/test_resilience.lua "$test_dir"
     "$LUA_BIN" scripts/test_events.lua "$test_dir"
+    "$LUA_BIN" scripts/test_demo.lua
     exit 0
 fi
 

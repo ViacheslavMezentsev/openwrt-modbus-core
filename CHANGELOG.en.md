@@ -25,6 +25,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Demo recovers after detected sequence rollback, deduplicates snapshots, reports gaps and defers unstable journal reads after three attempts; startup without state still begins at the tail.
+
 - Oversized JSONL entries fail explicitly before rotation, preserving the active journal, archive, seq and topic registry.
 - The local cache test now uses a unique temporary directory with cleanup instead of a shared persistent path.
 

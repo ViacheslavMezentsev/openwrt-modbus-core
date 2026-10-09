@@ -42,36 +42,67 @@ local function write_json_file(path, payload)
     return true
 end
 
-local function collect_events_since(last_seq)
-    local events = {}
-    local highest_seq = last_seq
-
-    for _, path in ipairs({ROTATED_EVENT_LOG, EVENT_LOG}) do
-        local file = io.open(path, "r")
+-- TC-37/38: bounded consistency checks; no cursor advance on unstable reads.
+local function read_segments()
+    local segments = {}
+    for index, path in ipairs({ROTATED_EVENT_LOG, EVENT_LOG}) do
+        local file, err, code = io.open(path, "r")
         if file then
-            for line in file:lines() do
-                local event = json.parse(line)
-                local seq = type(event) == "table" and tonumber(event.seq) or nil
-                if seq and seq > last_seq then
-                    event.seq = seq
-                    events[#events + 1] = event
-                    highest_seq = math.max(highest_seq, seq)
-                end
-            end
+            local content, read_err = file:read("*a")
             file:close()
+            if not content then return nil, read_err or "journal read failed" end
+            segments[index] = content
+        elseif code == 2 then
+            segments[index] = false -- Missing and empty are distinct during rotation.
+        else
+            return nil, err or "journal open failed"
         end
     end
-
-    table.sort(events, function(left, right)
-        return left.seq < right.seq
-    end)
-
-    return events, highest_seq
+    return segments
 end
 
-local function highest_sequence()
-    local _, sequence = collect_events_since(0)
-    return sequence
+local function collect_events_since(last_seq, start_at_tail)
+    local stable
+    for attempt = 1, 3 do
+        local first, err = read_segments()
+        if not first then return nil, err end
+        local second, second_err = read_segments()
+        if not second then return nil, second_err end
+        if first[1] == second[1] and first[2] == second[2] then
+            stable = second
+            break
+        end
+    end
+    if not stable then return nil, "journal changed during read" end
+
+    local all, seen = {}, {}
+    for _, content in ipairs(stable) do
+        -- Only complete JSONL records; an unfinished tail is retried next cycle.
+        for line in (content or ""):gmatch("([^\n]*)\n") do
+            local ok, event = pcall(json.parse, line)
+            local seq = ok and type(event) == "table" and tonumber(event.seq) or nil
+            if seq and seq >= 1 and seq < math.huge and seq == math.floor(seq)
+                    and not seen[seq] then
+                seen[seq] = true
+                event.seq = seq
+                all[#all + 1] = event
+            end
+        end
+    end
+    table.sort(all, function(left, right) return left.seq < right.seq end)
+    local highest = #all > 0 and all[#all].seq or nil
+    if start_at_tail then return {}, highest or 0, 0, false end
+    local reset = highest ~= nil and highest < last_seq
+    local cursor = reset and 0 or last_seq
+    local events, gaps = {}, 0
+    for _, event in ipairs(all) do
+        if event.seq > cursor then
+            gaps = gaps + event.seq - cursor - 1
+            cursor = event.seq
+            events[#events + 1] = event
+        end
+    end
+    return events, cursor, gaps, reset
 end
 
 local function sleep()
@@ -81,9 +112,7 @@ end
 local state = read_json_file(STATE_FILE, {last_seq = 0})
 local last_seq = tonumber(state.last_seq) or 0
 
-if last_seq == 0 then
-    last_seq = highest_sequence()
-end
+local start_at_tail = last_seq == 0
 
 write_json_file(STATUS_FILE, {
     module = "modbus-demo",
@@ -95,7 +124,7 @@ write_json_file(STATUS_FILE, {
 })
 
 while true do
-    local events, new_last_seq = collect_events_since(last_seq)
+    local events, new_last_seq, gaps, reset = collect_events_since(last_seq, start_at_tail)
     local current = read_json_file(STATUS_FILE, {
         module = "modbus-demo",
         status = "running",
@@ -104,12 +133,18 @@ while true do
     })
 
     current.module = "modbus-demo"
-    current.status = "running"
-    current.last_seq = new_last_seq
+    current.status = events and "running" or "read_error"
+    current.last_seq = events and new_last_seq or last_seq
+    current.sequence_reset = events and reset or false
+    current.gap_events = events and gaps or 0
+    current.sequence_resets = (tonumber(current.sequence_resets) or 0) + (reset and 1 or 0)
+    current.missed_events = (tonumber(current.missed_events) or 0) + (gaps or 0)
+    current.read_errors = (tonumber(current.read_errors) or 0) + (events and 0 or 1)
+    current.read_error = not events and new_last_seq or nil
     current.poll_interval = SLEEP_SECONDS
     current.updated_at = os.time()
 
-    for _, event in ipairs(events) do
+    for _, event in ipairs(events or {}) do
         current.processed_events = (tonumber(current.processed_events) or 0) + 1
         current.last_kind = event.kind or event.type or "unknown"
         current.last_ts = event.ts
@@ -117,7 +152,10 @@ while true do
     end
 
     write_json_file(STATUS_FILE, current)
-    write_json_file(STATE_FILE, {last_seq = new_last_seq})
-    last_seq = new_last_seq
+    if events then
+        write_json_file(STATE_FILE, {last_seq = new_last_seq})
+        last_seq = new_last_seq
+        start_at_tail = false
+    end
     sleep()
 end

@@ -13,7 +13,9 @@ Completed stages are on main; research stays local and push/land belong to the o
 - [x] Reject oversized JSONL before rotation and verify byte bounds with unchanged limits and initially valid segments (spec question 9.2.2).
 - [x] Test legacy oversized segments and lowering the journal limit; accept deferred rotation and legacy history loss (specification 1.3).
 - [ ] Measure serialization RAM and test filesystem failures; file bounds do not bound memory.
-- [ ] Test demo sequence discontinuities and agree custom runtime directory support (spec question 9.2.3).
+- [x] Recover demo after detected sequence rollback; diagnose gaps, deduplicate and retry changing journal snapshots (local TC-37/38).
+- [ ] Validate updated demo on hardware and measure its resources after separate installation approval.
+- [ ] Agree custom runtime directory support for demo/CGI (spec question 9.2.3).
 - [x] Cover TTL expiry, map rejection, readback failure, snapshot isolation and handler API/limits with local regressions; specification revision 1.1.
 
 ## Diagnostics and control
