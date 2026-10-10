@@ -4,7 +4,7 @@
 
 School calendar, bells and melodies. The package registers schedules/subscriptions with core; the new port is not implemented yet.
 
-[ТЗ 1.3](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.4](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -32,3 +32,5 @@ play the short file once and remove temporary files. Building the IPK does not
 install a player, alter mixer/drivers, or produce sound.
 
 Specification 1.3 owns audio execution, FIFO/expiry/cancellation transferred from core, with offline dependencies and persistent storage. Manual playback is confirmed; the functional package is not implemented.
+
+Specification 1.4 defines functional parity with the original: two schedule modes, preliminary bells, browser clock synchronization, local UI and five melodies plus test. Added planned TC-14–33, media management and backup. Preview 0.0.1 and runtime are unchanged.

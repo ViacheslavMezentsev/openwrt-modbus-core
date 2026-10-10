@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Promoted the core/schoolbell development sequence to TODO; core specification 1.9 and schoolbell 1.4 define common API boundaries and bell feature parity. New scenarios remain planned; runtime unchanged.
+
 ### Added
 
 - Legacy journal and lowered-limit regressions; agreed deferred rotation and old-history loss documented in specification draft 1.3 without runtime changes.
