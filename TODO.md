@@ -13,13 +13,15 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.9 and schoolbell draft 1.4. A one-sample
+User-facing scope follows core draft 1.10 and schoolbell draft 1.4. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
 
-- [ ] P00 — Resolve the minimal API contract: transport/version, delivery and identifiers, quotas, clock validity/correction, registration reconciliation, calendar boundaries and pause/pending policy. Record unresolved numeric budgets as measurements, not guarantees.
-- [ ] P01 — Implement core public registration/publish/subscribe and a client adapter. Demonstrate fan-out to two independent clients, recovery, invalid replacement and slow-client isolation while polling continues (core TC-39/42/43/47/48/56/57). Keep current handlers/demo compatible.
+- [ ] P00 — Finish the minimal API contract: the Unix stream v1/live-no-replay/session profile is accepted (core 1.10); finalize codec/field types, quotas, clock validity/correction, calendar boundaries and pause/pending policy. Record unresolved numeric budgets as measurements, not guarantees.
+- [ ] P01 — Implement core public registration/publish/subscribe and a client adapter. Demonstrate fan-out to two independent clients, recovery, invalid replacement and slow-client isolation while polling continues (core TC-39/42/43/47/48/56/57/61–66). Keep current handlers/demo compatible.
+- [ ] P01a — Integrate configurable safe-read retry count, per-attempt/total deadlines and bounded IPC servicing while waiting (core 6.2.4–6.2.7, TC-67/68). Keep writes non-replayed; resolve late-response resynchronization before enabling retries.
+- [ ] P01b — Batch compatible due reads by transport/unit/function within safe map ranges and device/protocol limits (core 4.7, TC-69–71). Preserve deadlines, validity and write/readback barriers; the existing optimizer helper is not integrated.
 - [ ] P02 — Design and implement offline bundle admission on an isolated filesystem: dependency closure/ABI/trust, RAM/storage peaks and reserves, bounded upload, staged activation and offline recovery (core TC-49–55). Select a concrete format before implementation.
 - [ ] P03 — Implement the schoolbell-owned player worker, FIFO/expiry/cancellation and result events, scoped schedule controls and manual test (schoolbell TC-02/06–11/18). Resolve active stop separately; no audio API in core.
 - [ ] P04 — Implement the common scheduler and system-time interface (core TC-58–60), then schoolbell fixed/annual modes, quiet days, preliminary bells, registration horizon and shared preview calculation (schoolbell TC-14–17). Browser clock synchronization is required; RTC is a separate enhancement for unattended startup.
@@ -30,7 +32,8 @@ not silently approved by this sequence. API versions are independent of spec rev
 - [ ] P09 — Validate the full schoolbell appendix B matrix and offline functional package (TC-12/13/30–33): five schedules, year plan, five melodies and 15 main + 6 preliminary moments. Measure resource peaks and scheduler/notification/process/audible latency separately; agree numerical bounds and hardware duration before acceptance.
 
 Dependencies: P00 before P01/P02; P03 after P01; P04 uses P01 and P03 for end-to-end
-checks; P05 follows the P00 media/storage decisions. P06 requires P01–P05;
+checks; P05 follows the P00 media/storage decisions. P01a/P01b require their transport decisions before implementation; integrated P01
+requires P01a so RTU waits do not starve IPC. P06 requires P01–P05 including P01a/P01b;
 P07 follows P04/P06, P08 follows P02/P05–P07, P09 follows P06–P08.
 Local fault tests precede hardware. Installation, sound, reboot, power loss and
 long runs require separate authorization; this plan does not grant it.
