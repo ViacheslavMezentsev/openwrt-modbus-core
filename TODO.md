@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.16 and schoolbell draft 1.5. A one-sample
+User-facing scope follows core draft 1.17 and schoolbell draft 1.5. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -66,7 +66,8 @@ FreeRTOS/new MCU firmware is separate work; the current board is sufficient for 
 - [ ] G05 — Create a separate gateway specification before firmware: route/role management API, filters, shared line queues, persistent configuration and autonomous operation. Monitor/bridge are later stages.
 - [ ] G06 — After separate approval, validate BlackPill Modbus TCP over RNDIS, external RTU routes and offline installation/reboot. Existing HTTP observation does not close these cases.
 - [x] C00 — Accept core 1.16 settings requirements: persistence/import, package-owned schemas/migrations, fleet templates versus backups; schoolbell 1.5 owns application validation. No implementation.
-- [ ] C01 — Agree core 9.2.26: JSON fields/types/limits, API, concurrency/revisions, permissions/secrets, file manifest and durable activation/recovery before coding.
+- [x] C01 format — Core 1.17 separates package.json, plain settings.json and settings.schema.json; package-context API with opaque concurrency token. No implementation.
+- [ ] C01 details — Complete core 9.2.26: JSON fields/types/limits, API, concurrency/revisions, permissions/secrets, file manifest and durable activation/recovery before coding.
 - [ ] C02 — Implement the isolated shared mechanism and failure tests, then package-specific schema/migrations in separate branches; hardware power-loss tests need separate approval.
 
 ## Remaining work from the original plans

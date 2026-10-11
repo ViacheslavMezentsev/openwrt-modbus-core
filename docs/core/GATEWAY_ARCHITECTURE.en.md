@@ -38,7 +38,7 @@ Separate configuration, user data and transient state:
 
 | Content | Target location | Owner |
 | --- | --- | --- |
-| Settings/plans | `/etc/<package-id>/config.json` | Package |
+| Settings/plans | `/etc/<package-id>/settings.json` | Package |
 | User media/data | Explicit persistent location, e.g. `/srv/<package-id>/` | Package/storage profile |
 | Cache, PID, active queues | `/tmp/<package-id>/` | Package runtime |
 | Factory resources | `/usr/share/<package-id>/` | Package distribution |
@@ -48,11 +48,10 @@ persistent; /srv without external storage consumes overlay. Check actual storage
 and capacity. Do not write frequent telemetry/queue updates to flash. Uploaded
 JSON must not choose destination filesystem paths.
 
-Packages own schemas, semantic validation, migrations and activation. The
-shared mechanism must provide bounded JSON reads, an envelope (package_id,
-schema_version, config_revision, payload), size checks, same-filesystem staging,
-write verification and replacement. Lua 5.1 has no built-in JSON; the project
-uses luci.jsonc as an explicit dependency. Function names/schema remain open.
+Packages own schemas, migrations and activation. Core 1.17 separates plain
+settings.json from package.json/settings.schema.json and internal metadata.
+[Format and API](EXTENSION_FORMAT.en.md). Lua 5.1 has no built-in JSON; the
+parser dependency is explicit.
 
 Import: parse without executing code; check package/version/limits; invoke package
 validation/migration; preview changes; save/activate under the package contract.
