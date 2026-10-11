@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.14 and schoolbell draft 1.4. A one-sample
+User-facing scope follows core draft 1.15 and schoolbell draft 1.4. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -55,6 +55,17 @@ This sequence expands P01a/P01b; it does not mark them complete or authorize har
 
 One finished scope per branch; owner push, exact-HEAD CI and land precede the next branch.
 FreeRTOS/new MCU firmware is separate work; the current board is sufficient for legacy checks.
+
+## Transport and gateway architecture — separate branches
+
+- [x] G00 — Core 1.15 architecture: logical identity, endpoint/unit routing, port roles, TCP client and standard offline RNDIS distribution. No runtime implementation.
+- [ ] G01 — Agree concrete direct RTU/TCP configuration, legacy addressing migration, deadlines and late-response policies; rounds remain for direct ports, autonomous gateways schedule their own lines.
+- [ ] G02 — Implement/test the isolated Modbus TCP client, bounded framing, transaction/connection identity and disconnect semantics on the host.
+- [ ] G03 — Integrate RTU/TCP logical devices and diagnostics after G01/G02 and required M stages; decide mixed scheduling before implementation.
+- [ ] G04 — Implement the platform-specific offline RNDIS bundle with dependency closure, exact kernel ABI/trust/space validation and preserved network settings; coordinate with P02 admission work.
+- [ ] G05 — Create a separate gateway specification before firmware: route/role management API, filters, shared line queues, persistent configuration and autonomous operation. Monitor/bridge are later stages.
+- [ ] G06 — After separate approval, validate BlackPill Modbus TCP over RNDIS, external RTU routes and offline installation/reboot. Existing HTTP observation does not close these cases.
+- [ ] C00 — Agree the package settings proposal in docs/core/GATEWAY_ARCHITECTURE.md: persistence, optional helper, JSON envelope, fleet templates versus backups, migrations and activation. Update individual package specifications after agreement; do not implement helpers yet.
 
 ## Remaining work from the original plans
 
@@ -97,7 +108,7 @@ superseded by the current specification and validation notes.
 - [ ] Design access control and safe output behavior for link loss, reboot and conflicting requests.
 - [ ] Measure RAM/Flash and router CPU/RAM costs with multiple devices.
 
-Gateway protocol and discovery are intentionally undecided pending discussion.
+Gateway address/role architecture is accepted in core 1.15; exact management protocol, discovery and firmware remain undecided.
 The current USB RTU register map is a bench prototype, not a commitment to the gateway protocol.
 
 ## Firmware maintenance
