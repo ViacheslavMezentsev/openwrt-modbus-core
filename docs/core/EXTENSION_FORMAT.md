@@ -59,3 +59,7 @@ API в контексте пакета:
 Источники именования: [VS Code manifest](https://code.visualstudio.com/api/references/extension-manifest)
 и [settings](https://code.visualstudio.com/docs/configure/settings).
 Заимствуется разделение описания расширения и пользовательских значений.
+
+ТЗ 1.18: минимальный package.json, вычисляемый manifest комплекта и допуск по составу/совместимости/доверию/ресурсам. Декларативная установка без произвольных hooks расширения; доверенные IPK и runtime permissions требуют отдельной политики. TC-104–110 плановые; реализации нет.
+
+[Extension admission](EXTENSION_ADMISSION.md)

@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.17 and schoolbell draft 1.5. A one-sample
+User-facing scope follows core draft 1.18 and schoolbell draft 1.5. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -69,6 +69,13 @@ FreeRTOS/new MCU firmware is separate work; the current board is sufficient for 
 - [x] C01 format — Core 1.17 separates package.json, plain settings.json and settings.schema.json; package-context API with opaque concurrency token. No implementation.
 - [ ] C01 details — Complete core 9.2.26: JSON fields/types/limits, API, concurrency/revisions, permissions/secrets, file manifest and durable activation/recovery before coding.
 - [ ] C02 — Implement the isolated shared mechanism and failure tests, then package-specific schema/migrations in separate branches; hardware power-loss tests need separate approval.
+
+## Extension admission and later scenario research
+
+- [x] A00 — Core 1.18 minimal manifest and bundle admission requirements; generated inventory, trust, bounded unpacking, declarative extension installation. No implementation.
+- [ ] A01 — Resolve core 9.2.27 before coding: exact schema/version grammar, permissions enforcement, trust/signatures, archive/path limits, stock IPK hooks and recovery. Coordinate with P02/G04.
+- [ ] A02 — Implement admission on an isolated filesystem with negative/failure tests before any approved hardware installation.
+- [ ] V00 — Next separate local research: lightweight DI/DO/AI/AO visual scenarios, browser editor and bounded runtime. No implementation or inclusion in mandatory core distribution is authorized by this manifest stage.
 
 ## Remaining work from the original plans
 

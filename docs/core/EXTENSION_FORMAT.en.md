@@ -59,3 +59,7 @@ requirements remain in force.
 Naming references: [VS Code manifest](https://code.visualstudio.com/api/references/extension-manifest)
 and [settings](https://code.visualstudio.com/docs/configure/settings).
 We borrow the separation between extension metadata and user values.
+
+Specification 1.18 defines minimal package.json, generated bundle metadata and content/compatibility/trust/resource admission. Declarative installation excludes arbitrary extension hooks; trusted IPKs and runtime permissions need separate policies. TC-104–110 are planned; no implementation.
+
+[Extension admission](EXTENSION_ADMISSION.en.md)
