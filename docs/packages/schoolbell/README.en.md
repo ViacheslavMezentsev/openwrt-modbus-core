@@ -4,7 +4,7 @@
 
 School calendar, bells and melodies. The package registers schedules/subscriptions with core; the new port is not implemented yet.
 
-[ТЗ 1.4](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.5](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -36,3 +36,5 @@ Specification 1.3 owns audio execution, FIFO/expiry/cancellation transferred fro
 Specification 1.4 defines functional parity with the original: two schedule modes, preliminary bells, browser clock synchronization, local UI and five melodies plus test. Added planned TC-14–33, media management and backup. Preview 0.0.1 and runtime are unchanged.
 
 The separate schoolbell CI job runs for package or dependency changes; locally use `make ci-schoolbell`. See [CI](../../CI.en.md). Hardware acceptance remains separate.
+
+Schoolbell specification 1.5 clarifies schema/migration ownership, calendar/media validation and fleet templates versus backups under core 1.16. TC-34/35 are planned; runtime and preview are unchanged.

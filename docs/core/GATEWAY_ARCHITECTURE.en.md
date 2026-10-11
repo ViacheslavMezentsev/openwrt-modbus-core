@@ -32,24 +32,24 @@ package. Admission checks integrity, trust and space; validate reboot offline.
 Installation preserves LAN/IP/DNS/routes/firewall. Current make build does not
 produce this bundle yet.
 
-## Proposed user settings contract; not accepted yet
+## Accepted user settings requirements
 
 Separate configuration, user data and transient state:
 
-| Content | Proposed location | Owner |
+| Content | Target location | Owner |
 | --- | --- | --- |
 | Settings/plans | `/etc/<package-id>/config.json` | Package |
 | User media/data | Explicit persistent location, e.g. `/srv/<package-id>/` | Package/storage profile |
 | Cache, PID, active queues | `/tmp/<package-id>/` | Package runtime |
 | Factory resources | `/usr/share/<package-id>/` | Package distribution |
 
-These are proposed paths, not existing files. /var on OpenWrt is generally not
+The architecture is accepted in specification 1.16 section 6.6; implementation is absent. /var on OpenWrt is generally not
 persistent; /srv without external storage consumes overlay. Check actual storage
 and capacity. Do not write frequent telemetry/queue updates to flash. Uploaded
 JSON must not choose destination filesystem paths.
 
-Packages own schemas, semantic validation, migrations and activation. An optional
-shared helper could provide bounded JSON reads, an envelope (package_id,
+Packages own schemas, semantic validation, migrations and activation. The
+shared mechanism must provide bounded JSON reads, an envelope (package_id,
 schema_version, config_revision, payload), size checks, same-filesystem staging,
 write verification and replacement. Lua 5.1 has no built-in JSON; the project
 uses luci.jsonc as an explicit dependency. Function names/schema remain open.
@@ -68,7 +68,7 @@ Moving files needs a bounded archive and integrity/space checks. Fleet import
 must not silently play audio or change networking: stage/validate before explicit
 activation.
 
-Future acceptance cases: export/import round-trip, wrong package/version,
+Planned acceptance cases TC-93–100: export/import round-trip, wrong package/version,
 malformed/oversized JSON, missing media, incompatible migration, ENOSPC/power
 failure, and applying one template to two devices without cloning unique bindings.
 Schoolbell retains its own backup/restore requirements; a helper may support but
