@@ -11,6 +11,7 @@ if [ "${CI_REQUIRE_TOOLS:-0}" = 1 ]; then
 fi
 
 if [ "$scope" != demo ]; then
+    python3 "$PROJECT_ROOT/scripts/test_rounds_model.py"
     if command -v g++ >/dev/null 2>&1; then
         button_test=$(mktemp /tmp/modbus-button-test.XXXXXX)
         trap 'rm -f "$button_test"' EXIT

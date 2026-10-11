@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.13 and schoolbell draft 1.4. A one-sample
+User-facing scope follows core draft 1.14 and schoolbell draft 1.4. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -43,11 +43,12 @@ long runs require separate authorization; this plan does not grant it.
 
 ## Multiport rounds — separate branches
 
-Accepted core 1.13 requirements: section 4.8; TC-74–83 remain planned.
+Accepted core 1.13 requirements: section 4.8. Revision 1.14 records partial host-model coverage of TC-74–82; integration and TC-83 remain planned.
 This sequence expands P01a/P01b; it does not mark them complete or authorize hardware changes.
 
 - [x] M00 — Record round/barrier semantics, per-port identity, compatibility and acceptance criteria; documentation only.
-- [ ] M01 — Build a deterministic host model/test bench for 1/2/3 transports and sequential comparison. Resolve required details of core 9.2.17/19/20 before implementing them.
+- [x] M01 model — Deterministic host model for 1/2/3 transports, barrier/service timing, abstract errors and sequential comparison; 16 tests, partial TC-74–82. No serial bytes, grouping, retries or runtime integration.
+- [ ] M01 decisions — Resolve required details of core 9.2.17/19/20 before implementing production mechanisms; model assumptions are not accepted defaults.
 - [ ] M02 — Implement isolated transport states and bounded round scheduling, safe retries and compatible grouping; no live integration in this branch.
 - [ ] M03 — Integrate validated multiport configuration, diagnostics, legacy compatibility and event servicing into modbusd after M01/M02; finalize addressing before integration.
 - [ ] M04 — After separate installation approval, run the single-port regression with the existing BluePill. Later use the separate Serial Monster board as a gateway to agreed external RTU responders for multiport hardware checks.
