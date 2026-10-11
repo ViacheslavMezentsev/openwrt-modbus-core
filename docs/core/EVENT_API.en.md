@@ -1,6 +1,6 @@
 # Event API: accepted v1 profile
 
-[Русский](EVENT_API.md) · [Core specification 1.10](TECHNICAL_SPECIFICATION.md)
+[Русский](EVENT_API.md) · [Core specification 1.11](TECHNICAL_SPECIFICATION.md)
 
 This is the accepted profile design before implementation, not a released API
 in core 0.4.0. Normative requirements: core 4.5.17–4.5.24. Quotas, exact field
@@ -79,3 +79,5 @@ Existing synchronous RTU and long modbusd sleeps still constrain IPC. Requiremen
 Section 4.7 batches compatible same-unit/function reads without unknown addresses
 or deadline violations. These features are not implemented; the 500 ms timeout
 (range 100–2000) already exists, retry count does not.
+
+Added an isolated Lua event/subscription registry: sessions, atomic replacement, generations, namespace checks and independent snapshots, with 17 tests in make all. Specification 1.11 records partial coverage. The module is not wired into modbusd; public IPC is not operational yet.

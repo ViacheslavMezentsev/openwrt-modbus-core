@@ -13,12 +13,13 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.10 and schoolbell draft 1.4. A one-sample
+User-facing scope follows core draft 1.11 and schoolbell draft 1.4. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
 
 - [ ] P00 — Finish the minimal API contract: the Unix stream v1/live-no-replay/session profile is accepted (core 1.10); finalize codec/field types, quotas, clock validity/correction, calendar boundaries and pause/pending policy. Record unresolved numeric budgets as measurements, not guarantees.
+- [x] P01 registry foundation — isolated Lua sessions/types/subscriptions, atomic replacement, generations and copied recipient snapshots; 17 local tests. No transport/publish/ack integration yet.
 - [ ] P01 — Implement core public registration/publish/subscribe and a client adapter. Demonstrate fan-out to two independent clients, recovery, invalid replacement and slow-client isolation while polling continues (core TC-39/42/43/47/48/56/57/61–66). Keep current handlers/demo compatible.
 - [ ] P01a — Integrate configurable safe-read retry count, per-attempt/total deadlines and bounded IPC servicing while waiting (core 6.2.4–6.2.7, TC-67/68). Keep writes non-replayed; resolve late-response resynchronization before enabling retries.
 - [ ] P01b — Batch compatible due reads by transport/unit/function within safe map ranges and device/protocol limits (core 4.7, TC-69–71). Preserve deadlines, validity and write/readback barriers; the existing optimizer helper is not integrated.
