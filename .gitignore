@@ -20,3 +20,7 @@ Thumbs.db
 
 # Original untracked planning notes, retained locally with checksums.
 /docs/archive/legacy-notes/
+
+# Local Python validation caches.
+__pycache__/
+*.pyc

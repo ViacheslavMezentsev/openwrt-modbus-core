@@ -34,3 +34,5 @@ install a player, alter mixer/drivers, or produce sound.
 Specification 1.3 owns audio execution, FIFO/expiry/cancellation transferred from core, with offline dependencies and persistent storage. Manual playback is confirmed; the functional package is not implemented.
 
 Specification 1.4 defines functional parity with the original: two schedule modes, preliminary bells, browser clock synchronization, local UI and five melodies plus test. Added planned TC-14–33, media management and backup. Preview 0.0.1 and runtime are unchanged.
+
+The separate schoolbell CI job runs for package or dependency changes; locally use `make ci-schoolbell`. See [CI](../../CI.en.md). Hardware acceptance remains separate.

@@ -104,3 +104,5 @@ Push и land выполняет владелец; land только после �
 Пример schoolbell: `make build-schoolbell` (также входит в `make all`).
 [Состояние пакета](docs/packages/schoolbell/README.md): scheduler/player ещё нет.
 Для проверки сборки на хосте требуется Python 3.8+.
+
+[CI — проверки по компонентам](docs/CI.md)

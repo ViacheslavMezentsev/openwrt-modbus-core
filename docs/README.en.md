@@ -25,3 +25,5 @@ The former TECHNICAL_SPECIFICATION.md is a navigation stub. New requirement/test
 references include the component. When extracting a repository, move the entire
 documentation folder and replace core links with a pinned contract version.
 Shared history and hardware evidence are not rewritten.
+
+[CI — component checks](CI.en.md)

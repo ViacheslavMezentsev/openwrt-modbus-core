@@ -106,3 +106,5 @@ checks as tests repeated today.
 For component specifications and independent ownership, see the [documentation index](README.en.md).
 Shared documents describe the workflow; update requirements/changelog under the
 feature owner and state compatible contract versions for cross-component changes.
+
+[CI — component checks](CI.en.md)

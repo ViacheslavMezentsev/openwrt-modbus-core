@@ -103,3 +103,5 @@ Documentation and archive index: [docs](docs/README.en.md).
 Schoolbell sample preview: `make build-schoolbell` (also built by `make all`).
 See [package status](docs/packages/schoolbell/README.en.md); no scheduler/player yet.
 Build verification requires Python 3.8+ on the host.
+
+[CI — component checks](docs/CI.en.md)

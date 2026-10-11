@@ -1,28 +1,88 @@
-name: CI - modbus-rtu-core
+name: CI - components
 
 on:
   push:
     branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build-and-verify:
+  changes:
+    runs-on: ubuntu-22.04
+    outputs:
+      core: ${{ steps.select.outputs.core }}
+      demo: ${{ steps.select.outputs.demo }}
+      schoolbell: ${{ steps.select.outputs.schoolbell }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: select
+        run: python3 scripts/ci_paths.py
+
+  docs:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Documentation and CI policy tests
+        run: make check-docs check-ci
 
-      - name: Install minimal dependencies
+  core:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y lua5.1 binutils make python3
-
-      - name: Build, test and verify
-        run: make all
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+          sudo apt-get install -y lua5.1 g++ make python3
+      - run: make ci-core
+      - uses: actions/upload-artifact@v4
         with:
-          name: modbus-rtu-core-ipk
-          path: |
-            out/*.ipk
-            out/checksums.sha256
+          name: core-ipk
+          if-no-files-found: error
+          path: out/ci-core/*
+
+  demo:
+    needs: changes
+    if: needs.changes.outputs.demo == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 make python3
+      - run: make ci-demo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo-ipk
+          if-no-files-found: error
+          path: out/ci-demo/*
+
+  schoolbell:
+    needs: changes
+    if: needs.changes.outputs.schoolbell == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: make ci-schoolbell
+      - uses: actions/upload-artifact@v4
+        with:
+          name: schoolbell-ipk
+          if-no-files-found: error
+          path: out/ci-schoolbell/*
+
+  ci-gate:
+    if: ${{ always() }}
+    needs: [changes, docs, core, demo, schoolbell]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require all selected jobs to succeed
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+        run: python3 scripts/ci_gate.py

@@ -7,7 +7,7 @@ HELPER_SCRIPTS := scripts/build-ipk.sh scripts/ci_verify.sh scripts/deploy.sh sc
 
 .PHONY: all prepare build build-core build-demo build-schoolbell test verify checksums repo deploy-core deploy-demo install-ipk test-core-demo-router test-opkg router-clean clean
 
-all: build test verify checksums
+all: check-docs check-ci build test verify checksums
 
 prepare:
 	chmod +x pkg/usr/bin/modbus
@@ -66,3 +66,27 @@ router-clean:
 
 clean:
 	rm -rf $(OUT_DIR) repo
+
+.PHONY: check-docs check-ci ci-core ci-demo ci-schoolbell
+check-docs:
+	python3 scripts/check_docs.py
+
+check-ci:
+	python3 scripts/test_ci.py
+
+ci-core:
+	$(MAKE) build-core OUT_DIR=$(OUT_DIR)/ci-core
+	CI_REQUIRE_TOOLS=1 sh scripts/run-tests.sh core
+	python3 scripts/verify-component.py core $(OUT_DIR)/ci-core
+	cd "$(OUT_DIR)/ci-core" && sha256sum *.ipk > checksums.sha256
+
+ci-demo:
+	$(MAKE) build-demo OUT_DIR=$(OUT_DIR)/ci-demo
+	CI_REQUIRE_TOOLS=1 sh scripts/run-tests.sh demo
+	python3 scripts/verify-component.py demo $(OUT_DIR)/ci-demo
+	cd "$(OUT_DIR)/ci-demo" && sha256sum *.ipk > checksums.sha256
+
+ci-schoolbell:
+	$(MAKE) build-schoolbell OUT_DIR=$(OUT_DIR)/ci-schoolbell
+	python3 scripts/verify-component.py schoolbell $(OUT_DIR)/ci-schoolbell
+	cd "$(OUT_DIR)/ci-schoolbell" && sha256sum *.ipk > checksums.sha256

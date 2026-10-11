@@ -3,15 +3,24 @@ set -eu
 
 PROJECT_ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 
-if command -v g++ >/dev/null 2>&1; then
-    button_test=$(mktemp /tmp/modbus-button-test.XXXXXX)
-    trap 'rm -f "$button_test"' EXIT
-    g++ -std=c++11 -Wall -Wextra -Werror "$PROJECT_ROOT/scripts/test_button.cpp" -o "$button_test"
-    "$button_test"
-    rm -f "$button_test"
-    trap - EXIT
-else
-    echo '[test] skipped button test: install g++ locally'
+scope=${1:-all}
+case "$scope" in all|core|demo) ;; *) echo 'invalid test scope' >&2; exit 2 ;; esac
+if [ "${CI_REQUIRE_TOOLS:-0}" = 1 ]; then
+    command -v lua5.1 >/dev/null
+    if [ "$scope" != demo ]; then command -v g++ >/dev/null; fi
+fi
+
+if [ "$scope" != demo ]; then
+    if command -v g++ >/dev/null 2>&1; then
+        button_test=$(mktemp /tmp/modbus-button-test.XXXXXX)
+        trap 'rm -f "$button_test"' EXIT
+        g++ -std=c++11 -Wall -Wextra -Werror "$PROJECT_ROOT/scripts/test_button.cpp" -o "$button_test"
+        "$button_test"
+        rm -f "$button_test"
+        trap - EXIT
+    else
+        echo '[test] skipped button test: install g++ locally'
+    fi
 fi
 
 find_lua() {
@@ -30,14 +39,16 @@ if LUA_BIN="$(find_lua)"; then
     cd "$PROJECT_ROOT"
     test_dir="$(mktemp -d /tmp/modbus-topics-test.XXXXXX)"
     trap 'rm -rf "$test_dir"' EXIT
-    "$LUA_BIN" scripts/test_core.lua "$test_dir/core"
-    "$LUA_BIN" scripts/test_rtu.lua
-    "$LUA_BIN" scripts/test_topics.lua "$test_dir"
-    "$LUA_BIN" scripts/test_handlers.lua "$test_dir"
-    "$LUA_BIN" scripts/test_resilience.lua "$test_dir"
-    "$LUA_BIN" scripts/test_events.lua "$test_dir"
-    "$LUA_BIN" scripts/test_event_registry.lua
-    "$LUA_BIN" scripts/test_demo.lua
+    if [ "$scope" != demo ]; then
+        "$LUA_BIN" scripts/test_core.lua "$test_dir/core"
+        "$LUA_BIN" scripts/test_rtu.lua
+        "$LUA_BIN" scripts/test_topics.lua "$test_dir"
+        "$LUA_BIN" scripts/test_handlers.lua "$test_dir"
+        "$LUA_BIN" scripts/test_resilience.lua "$test_dir"
+        "$LUA_BIN" scripts/test_events.lua "$test_dir"
+        "$LUA_BIN" scripts/test_event_registry.lua
+    fi
+    if [ "$scope" != core ]; then "$LUA_BIN" scripts/test_demo.lua; fi
     exit 0
 fi
 

@@ -11,9 +11,11 @@ This file lists remaining work; research stays local and push/land belong to the
 - [ ] Validate updated demo on hardware and measure its resources after separate installation approval.
 - [ ] Agree custom runtime directory support for demo/CGI (demo question 8.2.1; core CGI question 9.2.3).
 
+- [x] Split CI by core/demo/schoolbell with conservative change selection, mandatory ci-gate and offline documentation/specification checks. Local component targets and filter/gate regressions are available.
+
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.11 and schoolbell draft 1.4. A one-sample
+User-facing scope follows core draft 1.12 and schoolbell draft 1.4. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.

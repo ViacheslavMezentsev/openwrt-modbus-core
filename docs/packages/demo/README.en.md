@@ -12,3 +12,5 @@ is not an API version. The root changelog retains pre-split history; future
 component changes belong here and in its specification. Research remains local.
 
 Specification 1.1 adds target offline delivery under core 1.8; the existing JSONL contract and runtime are unchanged.
+
+The separate demo CI job runs for package or dependency changes; locally use `make ci-demo`. See [CI](../../CI.en.md). Hardware acceptance remains separate.

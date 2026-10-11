@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/ViacheslavMezentsev/demo-stm32-skills",
+  "commit": "19673d207364a7b3333cda35b6f4e3a1353cf4f8",
+  "source": "embedded-tech-spec/scripts/check_spec.py",
+  "sha256": "875938178304ca03b362434e6d21ed14b7f120ecb040ad4a2f9213ab3bc20d7f",
+  "license_sha256": "57253f40f6ecf3693b799f09318cf879108dbfcf3b25415f11470e7f45d822b8"
+}
