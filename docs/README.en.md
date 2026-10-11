@@ -9,6 +9,7 @@
 | [Validation and operation](VALIDATION.en.md) | Evidence limits, upgrade/rollback and diagnostics |
 | [TODO](../TODO.md) | Remaining work and proposals needing agreement |
 | [Archive](archive/README.en.md) | Completed stages and status of early planning notes |
+| [MR3020 v3.30 boot and recovery](ROUTER_RECOVERY.en.md) | UART, Windows TFTP, image selection and revision evidence limits |
 
 Board and Lua-event documentation lives under [firmware](../firmware/bluepill-modbus/README.md).
 Research and hardware logs remain local under `docs/research/` and `tests/manual/`.

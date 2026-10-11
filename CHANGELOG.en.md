@@ -27,6 +27,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added source-based RU/EN MR3020 v3.30 boot/recovery guides and a Windows SHA-256 recovery staging helper. Networking/flashing are not automated; hardware validation and OEM conversion have not been performed.
+
 - Legacy journal and lowered-limit regressions; agreed deferred rotation and old-history loss documented in specification draft 1.3 without runtime changes.
 
 - Regressions for persisted sequence recovery and cursor rollback on a fresh runtime; bounded hardware validation results and upgrade/rollback guidance.

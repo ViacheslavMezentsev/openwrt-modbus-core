@@ -125,3 +125,10 @@ The current USB RTU register map is a bench prototype, not a commitment to the g
 
 - [ ] Investigate simple router-assisted firmware updates after laptop flashing is stable.
 - [ ] Select a bootloader/update transport, image verification and recovery procedure.
+
+## Router boot and recovery
+
+- [x] Document MR3020 v3 versus v3.30 evidence, UART diagnostics and Windows TFTP workflow in paired public guides; provide an offline SHA-256 staging helper.
+- [ ] After separate approval, capture the failing release's UART log and verify v3.30 recovery filename/server address and rollback; preserve raw evidence locally.
+- [ ] Resolve region-specific v3.30 OEM recovery format/downgrade restrictions before any conversion or flashing; do not infer TFTP suitability from a web-update file.
+- [ ] If needed, design a Windows adapter/firewall helper with persistent original-state recovery and host tests; current helper only stages an image, Tftpd64 waits for the router.
