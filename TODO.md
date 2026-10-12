@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.21 and schoolbell draft 1.5. A one-sample
+User-facing scope follows core draft 1.22 and schoolbell draft 1.5. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -52,7 +52,8 @@ This sequence expands P01a/P01b; it does not mark them complete or authorize har
 - [x] M01 decisions — Owner accepted transport contract 1.19: deadlines, recovery, configuration and software budgets. Hardware timing evidence, USB resolver and IPC wire limits remain integration prerequisites.
 - [x] M02 states — Host-only RTU/TCP state model and 37 clock/byte tests; partial TC-111–115/120/121. Not a runtime driver; no UCI loader or hardware access.
 - [x] M02 scheduler — Compose isolated states with FIFO, fixed RTU rounds, independent TCP, periodic coalescing and pass quotas; 15 host tests, partial TC-117–119. No real I/O/IPC or grouping.
-- [ ] M02 grouping — Define safe map ranges/limits (core 9.2.18), then batch compatible reads while preserving consumer quotas, earliest deadlines and write/readback barriers. Verify the remaining TC-119/69–71 cases.
+- [x] M02 grouping — Accepted safe ranges and implemented host FIFO grouping, limits/splitting and fan-out; 20 tests, partial TC-69–71/119. Writes unchanged.
+- [ ] M02 map integration — Agree a trusted map loader and production assembly memory/fragment budgets; add actual device profiles before Lua/backend integration. Host maps do not establish device safety or atomic snapshots.
 - [ ] M02 backend — Port the accepted state contract to the production Lua/backend boundary with fake I/O tests, generation guards and bounded TX completion before M03.
 - [ ] M03 — Integrate validated multiport configuration, diagnostics, legacy compatibility and event servicing into modbusd after M01/M02; finalize addressing before integration.
 - [ ] M04 — After separate installation approval, run the single-port regression with the existing BluePill. Later use the separate Serial Monster board as a gateway to agreed external RTU responders for multiport hardware checks.

@@ -52,7 +52,7 @@ class Request:
         return struct.pack('>BHH', self.function, self.address, self.count)
 
 
-def validate_request(request, kind):
+def validate_request(request, kind, logical=False):
     if not isinstance(request, Request) or not request.operation_id or not request.device_id:
         raise ValueError('request identity')
     integer(request.unit, 1 if kind == 'rtu' else 0,
@@ -61,7 +61,7 @@ def validate_request(request, kind):
     if request.function not in (1, 2, 3, 4, 6):
         raise ValueError('model supports reads and FC06 write probe')
     integer(request.address, 0, 65535, 'address')
-    limit = 2000 if request.function in (1, 2) else 125
+    limit = 65536 if logical else 2000 if request.function in (1, 2) else 125
     integer(request.count, 0 if request.function == 6 else 1,
             65535 if request.function == 6 else limit, 'count/value')
     if request.function != 6 and request.address + request.count > 65536:

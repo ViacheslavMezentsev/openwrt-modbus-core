@@ -100,3 +100,5 @@ rotating order, bounded work/IPC; TC-119: FIFO, quotas/coalescing, enqueue deadl
 non-head expiry. Full acceptance requires grouping, real backend/IPC and hardware.
 Next: agree safe map ranges and implement read grouping, then Lua/backend fake I/O,
 UCI and single-port integration. No router changes.
+
+Revision 1.22 adds optional [safe-map grouping](READ_GROUPING.en.md) to this model. Earlier statements about absent grouping describe stage 1.21. Next: profile loading and production budgets, then Lua/backend.
