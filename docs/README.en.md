@@ -29,3 +29,5 @@ documentation folder and replace core links with a pinned contract version.
 Shared history and hardware evidence are not rewritten.
 
 [CI — component checks](CI.en.md)
+
+[RTU/TCP transport contract — proposal](core/TRANSPORT_CONTRACT.en.md) — core 1.19, TC-111–122.

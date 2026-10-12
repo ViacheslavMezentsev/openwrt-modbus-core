@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.18 and schoolbell draft 1.5. A one-sample
+User-facing scope follows core draft 1.19 and schoolbell draft 1.5. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -48,7 +48,8 @@ This sequence expands P01a/P01b; it does not mark them complete or authorize har
 
 - [x] M00 — Record round/barrier semantics, per-port identity, compatibility and acceptance criteria; documentation only.
 - [x] M01 model — Deterministic host model for 1/2/3 transports, barrier/service timing, abstract errors and sequential comparison; 16 tests, partial TC-74–82. No serial bytes, grouping, retries or runtime integration.
-- [ ] M01 decisions — Resolve required details of core 9.2.17/19/20 before implementing production mechanisms; model assumptions are not accepted defaults.
+- [x] M01 contract draft — Prepare [RTU/TCP deadlines, recovery, configuration and round criteria](docs/core/TRANSPORT_CONTRACT.en.md), core 1.19 / TC-111–122. Documentation only.
+- [ ] M01 decisions — Review the 1.19 draft (core 9.2.28), especially manual/bounded RTU recovery, timing evidence, numeric budgets and legacy migration. Existing model assumptions are not accepted defaults.
 - [ ] M02 — Implement isolated transport states and bounded round scheduling, safe retries and compatible grouping; no live integration in this branch.
 - [ ] M03 — Integrate validated multiport configuration, diagnostics, legacy compatibility and event servicing into modbusd after M01/M02; finalize addressing before integration.
 - [ ] M04 — After separate installation approval, run the single-port regression with the existing BluePill. Later use the separate Serial Monster board as a gateway to agreed external RTU responders for multiport hardware checks.
@@ -59,7 +60,7 @@ FreeRTOS/new MCU firmware is separate work; the current board is sufficient for 
 ## Transport and gateway architecture — separate branches
 
 - [x] G00 — Core 1.15 architecture: logical identity, endpoint/unit routing, port roles, TCP client and standard offline RNDIS distribution. No runtime implementation.
-- [ ] G01 — Agree concrete direct RTU/TCP configuration, legacy addressing migration, deadlines and late-response policies; rounds remain for direct ports, autonomous gateways schedule their own lines.
+- [ ] G01 — Agree the concrete core 1.19 transport draft with M01 decisions: direct RTU/TCP configuration, legacy migration, deadlines and late responses. Direct RTU rounds and independent TCP servicing are proposed; autonomous gateways schedule their own lines.
 - [ ] G02 — Implement/test the isolated Modbus TCP client, bounded framing, transaction/connection identity and disconnect semantics on the host.
 - [ ] G03 — Integrate RTU/TCP logical devices and diagnostics after G01/G02 and required M stages; decide mixed scheduling before implementation.
 - [ ] G04 — Implement the platform-specific offline RNDIS bundle with dependency closure, exact kernel ABI/trust/space validation and preserved network settings; coordinate with P02 admission work.

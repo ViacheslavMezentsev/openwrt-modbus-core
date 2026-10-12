@@ -4,7 +4,7 @@
 
 The core owns public events, subscriptions, notifications, common scheduling and Modbus. Application handlers and audio execution belong to client packages. The general API and managed offline installation are not implemented yet.
 
-[ТЗ 1.18](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.19](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -40,3 +40,7 @@ Specification 1.17 simplifies settings: package.json describes the extension, se
 Specification 1.18 defines minimal package.json, generated bundle metadata and content/compatibility/trust/resource admission. Declarative installation excludes arbitrary extension hooks; trusted IPKs and runtime permissions need separate policies. TC-104–110 are planned; no implementation.
 
 [Extension admission](EXTENSION_ADMISSION.en.md)
+
+Specification 1.19 proposes the RTU/TCP contract: operation/attempt deadlines, late responses, safe retries, UCI, quotas and round criteria. New policies and numbers await agreement; TC-111–122 are planned, runtime and router unchanged.
+
+[Transport contract — proposal](TRANSPORT_CONTRACT.en.md)
