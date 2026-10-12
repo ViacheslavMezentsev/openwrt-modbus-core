@@ -1,6 +1,7 @@
 """Host-only trusted read maps, FIFO grouping and all-or-nothing fan-out."""
 from dataclasses import dataclass, replace
 from transport_states import integer
+from profile_limits import PROFILE_RANGES, CONSUMERS, check_read, payload_size
 
 
 @dataclass(frozen=True)
@@ -31,8 +32,8 @@ class ReadMap:
 
     def __init__(self, ranges):
         ranges = tuple(ranges)
-        if not ranges or len(ranges) > 128 or any(not isinstance(r, ReadRange) for r in ranges):
-            raise ValueError('1..128 typed ranges required')
+        if not ranges or len(ranges) > PROFILE_RANGES or any(not isinstance(r, ReadRange) for r in ranges):
+            raise ValueError('1..64 typed ranges required')
         ordered = tuple(sorted(ranges, key=lambda r: (r.function, r.start)))
         for a, b in zip(ordered, ordered[1:]):
             if a.function == b.function and a.start + a.count > b.start:
@@ -50,15 +51,34 @@ class ReadMap:
         if request.function == 6:
             return request  # not a write allowlist; existing model probe unchanged
         r = self.locate(request)
+        check_read(request, r.max_count)
         if request.count > r.max_count and not r.safe_read:
             raise ValueError('unsafe read cannot be split automatically')
         return replace(request, safe_read=r.safe_read)
 
 
 @dataclass(frozen=True)
+class WireSequence:
+    request: object
+    start: int
+    count: int
+    limit: int
+
+    def __len__(self):
+        return (self.count + self.limit - 1) // self.limit
+
+    def __getitem__(self, index):
+        if not 0 <= index < len(self):
+            raise IndexError(index)
+        offset = index * self.limit
+        return replace(self.request, address=self.start + offset,
+                       count=min(self.limit, self.count - offset))
+
+
+@dataclass(frozen=True)
 class ReadGroup:
     entries: tuple
-    wires: tuple
+    wires: object
     start: int
     expiry: int
     address: int
@@ -79,7 +99,7 @@ def plan(entries, read_map):
     selected = [first]
     low, high = req.address, req.address + req.count
     if not first.readback and region.mergeable and req.count <= region.max_count:
-        for entry in entries[1:]:
+        for entry in entries[1:CONSUMERS]:
             candidate = entry.request
             if (entry.readback or candidate.function != req.function
                     or candidate.device_id != req.device_id or candidate.unit != req.unit
@@ -94,8 +114,7 @@ def plan(entries, read_map):
                 break
             selected.append(entry)
             low, high = new_low, new_high
-    wires = tuple(replace(req, address=a, count=min(region.max_count, high - a))
-                  for a in range(low, high, region.max_count))
+    wires = WireSequence(req, low, high - low, region.max_count)
     return ReadGroup(tuple(selected), wires, min(e.admitted for e in selected),
                      min(e.expiry for e in selected), low, high - low)
 
@@ -105,7 +124,7 @@ class Assembly:
     def __init__(self, group):
         self.group = group
         self.index = 0
-        self.parts = []
+        self.buffer = bytearray(payload_size(group.wires[0].function, group.count))
         self.attempts = self.sent_attempts = 0
         self.done = False
 
@@ -118,22 +137,20 @@ class Assembly:
             raise ValueError('group already finished')
         self.attempts += result.attempts
         self.sent_attempts += result.sent_attempts
-        self.parts.append(result.data if result.outcome == 'ok' else b'')
+        if result.outcome == 'ok' and self.wire.function != 6:
+            wire = self.wire
+            offset = wire.address - self.group.address
+            if wire.function <= 2:
+                for i in range(wire.count):
+                    self.buffer[(offset + i) // 8] |= ((result.data[i // 8] >> (i % 8)) & 1) << ((offset + i) % 8)
+            else:
+                self.buffer[offset * 2:(offset + wire.count) * 2] = result.data
         if result.outcome == 'ok' and self.index + 1 < len(self.group.wires):
             self.index += 1
             return ()
         self.done = True
         if result.outcome == 'expired' and self.sent_attempts:
             result = replace(result, outcome='timeout')
-        data = b''
-        bits = None
-        if result.outcome == 'ok' and self.wire.function != 6:
-            if self.wire.function <= 2:
-                bits = []
-                for wire, part in zip(self.group.wires, self.parts):
-                    bits.extend((part[i // 8] >> (i % 8)) & 1 for i in range(wire.count))
-            else:
-                data = b''.join(self.parts)
         outputs = []
         for entry in self.group.entries:
             req = entry.request
@@ -142,16 +159,16 @@ class Assembly:
             if result.outcome == 'ok':
                 if req.function == 6:
                     payload = result.data
-                elif bits is not None:
+                elif req.function <= 2:
                     packed = bytearray((req.count + 7) // 8)
                     for i in range(req.count):
-                        packed[i // 8] |= bits[offset + i] << (i % 8)
+                        packed[i // 8] |= ((self.buffer[(offset + i) // 8] >> ((offset + i) % 8)) & 1) << (i % 8)
                     payload = bytes(packed)
                 else:
-                    payload = data[offset * 2:(offset + req.count) * 2]
+                    payload = bytes(self.buffer[offset * 2:(offset + req.count) * 2])
             outputs.append(replace(result, operation_id=req.operation_id,
                                    device_id=req.device_id, start=entry.admitted,
                                    attempts=self.attempts, sent_attempts=self.sent_attempts,
                                    data=payload))
-        self.parts.clear()
+        self.buffer.clear()
         return tuple(outputs)

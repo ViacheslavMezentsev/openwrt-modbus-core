@@ -50,12 +50,11 @@ and retains the previous complete last_success. Partial success is never publish
 Original consumers retain quota: active plus waiting <= queue_limit + 1. Grouping
 cannot create an unbounded subscriber list or extend deadlines.
 
-Host bounds: 128 ranges/map, 32 map bindings, at most 65536 elements per logical
-read inside one range. Assembly and fragments reside in host RAM: up to 131072
-word-data bytes plus objects/copies and up to 65536 wire requests at max_count=1.
-These are NOT MR3020 budgets. Production needs agreed assembly/fragment limits or
-streaming. The 512-byte I/O pass quota does not bound Python planning/assembly work.
+Revision 1.23 adds [profile loading and limits](DEVICE_PROFILES.en.md): 64 ranges
+per profile, 1024 result bytes, 16 fragments/consumers and an 8 KiB assembly pool.
+Lazy fragments and packed data replace the earlier broad prototype allocations.
+These bounds do not constrain total process RAM.
 
 Partial TC-69–71/119 coverage: map boundaries/holes/functions/gaps, FIFO/write/readback,
-deadlines/quotas, duplicates, bit offsets, splitting and fragment failure. Real map
+deadlines/quotas, duplicates, bit offsets, splitting and fragment failure. Production Lua map
 loading, device profiles, IPC and hardware safety evidence remain planned.

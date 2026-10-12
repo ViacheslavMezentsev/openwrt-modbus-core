@@ -7,6 +7,7 @@ from types import MappingProxyType
 from dataclasses import dataclass
 from transport_states import Result, integer, validate_request
 from read_groups import ReadMap, ReadGroup, Assembly, plan
+from profile_limits import AssemblyPool, payload_size, PROFILE_COUNT, TOTAL_RANGES
 
 
 @dataclass(frozen=True)
@@ -48,7 +49,7 @@ class Pass:
 
 
 class Scheduler:
-    def __init__(self, transports, *, queue_limit=32, quantum=10, ipc_limit=128, read_maps=None):
+    def __init__(self, transports, *, queue_limit=32, quantum=10, ipc_limit=128, read_maps=None, assembly_pool=None):
         integer(queue_limit, 1, 128, 'queue_limit')
         integer(quantum, 1, 100, 'quantum')
         integer(ipc_limit, 1, 128, 'ipc_limit')
@@ -69,6 +70,11 @@ class Scheduler:
         self.read_maps = MappingProxyType(dict(read_maps or {}))
         if len(self.read_maps) > 32 or any(not isinstance(m, ReadMap) for m in self.read_maps.values()):
             raise ValueError('read maps')
+        unique_maps = {id(m): m for m in self.read_maps.values()}
+        if len(unique_maps) > PROFILE_COUNT or sum(len(m.ranges) for m in unique_maps.values()) > TOTAL_RANGES:
+            raise ValueError('aggregate profile limits')
+        self.pool = assembly_pool if assembly_pool is not None else AssemblyPool()
+        self.memory_blocked = set()
         self.groups = {}
         self.devices = {}  # bounded static logical identity binding for this model
 
@@ -188,12 +194,14 @@ class Scheduler:
                     if outputs:
                         results.extend(outputs)
                         del self.groups[name]
+                        self.pool.release((id(self), name))
                         self.pending.discard(name)
                     else:
                         t.valid = False  # partial fragments are not a complete logical read
                         t.last_success = assembly.previous_success
             if name in self.groups and not t.op and now >= self.groups[name].group.expiry:
                 assembly = self.groups.pop(name)
+                self.pool.release((id(self), name))
                 req = assembly.wire
                 expired = Result(req.operation_id, req.device_id, name, 'expired', 0, 0,
                                  assembly.group.start, now, None)
@@ -205,12 +213,12 @@ class Scheduler:
                     and self.ports[n].op is None and now >= self.ports[n].ready_at
                     and self.ports[n].transitions - before[n] <= 4]
         started = ()
-        if not self.pending:
+        self.memory_blocked.clear()
+        new_round = not self.pending
+        if new_round:
             started = tuple(n for n in eligible if self.ports[n].kind == 'rtu')
             self.members = frozenset(started)
             self.pending = set(started)
-            if started:
-                self.round_number += 1
         for name in eligible:
             t = self.ports[name]
             if t.kind == 'rtu' and name not in started and name not in self.pending:
@@ -222,6 +230,10 @@ class Scheduler:
                 group = (plan(entries, read_map) if read_map else
                          ReadGroup((head,), (head.request,), head.admitted, head.expiry,
                                    head.request.address, head.request.count))
+                if not self.pool.acquire((id(self), name), payload_size(group.wires[0].function, group.count)):
+                    self.memory_blocked.add(name)
+                    self.pending.discard(name)
+                    continue
                 for _ in group.entries:
                     self.queues[name].popleft()
                 self.groups[name] = Assembly(group)
@@ -233,6 +245,11 @@ class Scheduler:
                 raise AssertionError('eligible endpoint refused admission')
             if not t.begin() and not t.results:
                 raise AssertionError('eligible endpoint failed to begin')
+        started = tuple(n for n in started if n not in self.memory_blocked)
+        if new_round:
+            self.members = frozenset(started)
+            if started:
+                self.round_number += 1
         serviced = min(8, self.ipc_pending)  # synthetic work units, not wire IPC
         self.ipc_pending -= serviced
         transitions = {n: self.ports[n].transitions - before[n] for n in names}
@@ -259,7 +276,7 @@ class Scheduler:
                 deadlines.append(self.groups[name].group.expiry)
                 if t.state == 'idle':
                     deadlines.append(t.ready_at)
-            if self.queues[name] and t.state == 'idle' and (t.kind == 'tcp' or not self.pending):
+            if self.queues[name] and name not in self.memory_blocked and t.state == 'idle' and (t.kind == 'tcp' or not self.pending):
                 deadlines.append(t.ready_at)
         if immediate:
             return 0
