@@ -27,6 +27,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Preserved custom MR3020 v3 MOTD and mode/debug handlers with RU/EN limitations and third-party slide-switch boundaries. Contents unchanged; no deployment or new package release.
+
 - Added source-based RU/EN MR3020 v3.30 boot/recovery guides and a Windows SHA-256 recovery staging helper. Networking/flashing are not automated; hardware validation and OEM conversion have not been performed.
 
 - Legacy journal and lowered-limit regressions; agreed deferred rotation and old-history loss documented in specification draft 1.3 without runtime changes.

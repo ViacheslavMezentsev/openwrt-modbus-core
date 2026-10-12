@@ -10,6 +10,7 @@
 | [TODO](../TODO.md) | Remaining work and proposals needing agreement |
 | [Archive](archive/README.en.md) | Completed stages and status of early planning notes |
 | [MR3020 v3.30 boot and recovery](ROUTER_RECOVERY.en.md) | UART, Windows TFTP, image selection and revision evidence limits |
+| [MR3020 v3 console](../platform/tplink-tl-mr3020-v3/README.en.md) | Preserved custom MOTD and switch handlers; not yet an IPK |
 
 Board and Lua-event documentation lives under [firmware](../firmware/bluepill-modbus/README.md).
 Research and hardware logs remain local under `docs/research/` and `tests/manual/`.

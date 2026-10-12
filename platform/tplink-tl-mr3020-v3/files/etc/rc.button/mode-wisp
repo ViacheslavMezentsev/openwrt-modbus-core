@@ -1,0 +1,2 @@
+#!/bin/sh
+[ "${ACTION}" = "pressed" ] && echo "wisp" > /tmp/switch_position

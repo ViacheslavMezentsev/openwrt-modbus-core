@@ -1,0 +1,2 @@
+#!/bin/sh
+[ "${ACTION}" = "pressed" ] && echo "3g" > /tmp/switch_position

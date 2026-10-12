@@ -132,3 +132,8 @@ The current USB RTU register map is a bench prototype, not a commitment to the g
 - [ ] After separate approval, capture the failing release's UART log and verify v3.30 recovery filename/server address and rollback; preserve raw evidence locally.
 - [ ] Resolve region-specific v3.30 OEM recovery format/downgrade restrictions before any conversion or flashing; do not infer TFTP suitability from a web-update file.
 - [ ] If needed, design a Windows adapter/firewall helper with persistent original-state recovery and host tests; current helper only stages an image, Tftpd64 waits for the router.
+
+## MR3020 platform console
+
+- [x] Preserve owner-provided MOTD and mode/debug handlers as platform source assets with read-only hash verification and RU/EN limitations.
+- [ ] Agree a separate mr3020-console package contract before implementation: board/version checks, interactive output, switch startup state, dependencies and coexistence with slide-switch, file ownership/conffiles and reversible install/remove. Current assets are not installed or built into IPKs.
