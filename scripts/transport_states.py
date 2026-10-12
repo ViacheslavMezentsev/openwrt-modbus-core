@@ -52,6 +52,24 @@ class Request:
         return struct.pack('>BHH', self.function, self.address, self.count)
 
 
+def validate_request(request, kind):
+    if not isinstance(request, Request) or not request.operation_id or not request.device_id:
+        raise ValueError('request identity')
+    integer(request.unit, 1 if kind == 'rtu' else 0,
+            247 if kind == 'rtu' else 255, 'unit')
+    integer(request.function, 1, 6, 'function')
+    if request.function not in (1, 2, 3, 4, 6):
+        raise ValueError('model supports reads and FC06 write probe')
+    integer(request.address, 0, 65535, 'address')
+    limit = 2000 if request.function in (1, 2) else 125
+    integer(request.count, 0 if request.function == 6 else 1,
+            65535 if request.function == 6 else limit, 'count/value')
+    if request.function != 6 and request.address + request.count > 65536:
+        raise ValueError('read range')
+    if type(request.safe_read) is not bool or (request.function == 6 and request.safe_read):
+        raise ValueError('safe_read')
+
+
 @dataclass(frozen=True)
 class Result:
     operation_id: str
@@ -117,6 +135,16 @@ class Transport:
         self.sync_evidence = None
 
     @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, value):
+        if getattr(self, '_state', None) != value:
+            self.transitions = getattr(self, 'transitions', 0) + 1
+        self._state = value
+
+    @property
     def valid(self):
         return self.samples.get(self.current_device, {}).get('valid', False)
 
@@ -145,35 +173,23 @@ class Transport:
         self.ready_at = self.now + self.gap
         # This records an external assertion; it does not reset real hardware.
 
-    def admit(self, request, expiry=None):
+    def admit(self, request, expiry=None, admitted_at=None):
         if self.op is not None or self.results or self.state == 'quarantine':
             return False  # bounded result slot must be consumed before admission
-        if not isinstance(request, Request) or not request.operation_id or not request.device_id:
-            raise ValueError('request identity')
-        integer(request.unit, 1 if self.kind == 'rtu' else 0,
-                247 if self.kind == 'rtu' else 255, 'unit')
-        integer(request.function, 1, 6, 'function')
-        if request.function not in (1, 2, 3, 4, 6):
-            raise ValueError('model supports reads and FC06 write probe')
-        integer(request.address, 0, 65535, 'address')
-        limit = 2000 if request.function in (1, 2) else 125
-        integer(request.count, 0 if request.function == 6 else 1,
-                65535 if request.function == 6 else limit, 'count/value')
-        if request.function != 6 and request.address + request.count > 65536:
-            raise ValueError('read range')
-        if type(request.safe_read) is not bool or (request.function == 6 and request.safe_read):
-            raise ValueError('safe_read')
+        validate_request(request, self.kind)
         if expiry is not None:
             integer(expiry, 0, 2**53 - 1, 'expiry')
+        start = self.now if admitted_at is None else admitted_at
+        integer(start, 0, self.now, 'admission time')
         if request.device_id not in self.samples:
             if len(self.samples) >= 32:
                 raise ValueError('logical device limit')
             self.samples[request.device_id] = {'valid': False, 'last_success': None}
         self.current_device = request.device_id
         self.op = request
-        self.start = self.now
-        self.dop = min(self.now + self.operation_timeout,
-                       expiry if expiry is not None else self.now + self.operation_timeout)
+        self.start = start
+        self.dop = min(start + self.operation_timeout,
+                       expiry if expiry is not None else start + self.operation_timeout)
         self.attempts = self.sent_attempts = self.sent = self.total_sent = 0
         self.da = None
         self.rx.clear()

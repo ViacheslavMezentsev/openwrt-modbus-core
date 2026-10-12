@@ -6,8 +6,8 @@ Run `python3 scripts/test_transport_states.py`: 37 deterministic tests, also in
 `make all` and `make ci-core`. [Model](../../scripts/transport_states.py) and
 [tests](../../scripts/test_transport_states.py) are host-only Python, like the
 previous rounds model. They add no router dependency and are excluded from IPKs.
-No socket/serial, sleep, OS clock, UCI, Lua backend, queue, grouping, round executor
-or modbusd integration is implemented. Passing the model is not hardware evidence.
+No socket/serial, sleep, OS clock, UCI, Lua backend, grouping or modbusd integration
+is implemented. Queue/round composition is described below. Passing the model is not hardware evidence.
 
 ## Driving the model
 
@@ -43,9 +43,7 @@ also need confirmation; automatic bounded startup is not modeled. Bytes exactly
 at B can still be discarded; release is strictly after B and interframe silence.
 Integer milliseconds round t3.5 upward to 4/2/2/2/2 ms for the supported baud rates.
 
-Tests advance time between events. Methods do finite work, but the global limit of
-8 transitions/512 bytes per pass, endpoint fairness and IPC servicing need the next
-scheduler composition stage.
+Tests advance time between events. Methods do finite work, but the shared service loop belongs to the composition described below.
 
 ## Scope and coverage
 
@@ -65,10 +63,40 @@ backend has already confirmed TX completion.
 | TC-120 | not_sent/confirmed/unknown, cancellation, one terminal result | Readback/runtime commands |
 | TC-121 | Gap rounding and bounded TX waiting | Wire timing/USB adapter |
 
-TC-116/117/118/119/122 remain planned for the new implementation: UCI, compatibility,
-hotplug binding, queues, grouping and composed rounds are absent. The previous 16
+TC-116/122 remain planned: UCI, compatibility and hotplug binding are absent.
+TC-117–119 have partial composition coverage below; grouping remains absent. The previous 16
 rounds tests retain their abstract-only scope.
 
-Next: compose these states with host scheduling, early results, the RTU barrier and
-independent TCP. Then implement the production Lua/backend boundary with fake I/O.
-modbusd integration and hardware experiments remain separate stages.
+## Queue and round composition (revision 1.21)
+
+[transport_scheduler.py](../../scripts/transport_scheduler.py) composes the same byte
+states. [15 tests](../../scripts/test_transport_scheduler.py) run with
+`python3 scripts/test_transport_scheduler.py`, and in make all/ci-core.
+
+enqueue retains admission time and caller expiry. Transport.admitted_at preserves
+Dop and result start across queue waiting. FIFO holds 32 waiting operations per
+endpoint (configurable 1..128), with active separate. Each periodic plan has at most
+one pending entry beyond active; coalescing does not extend its deadline. Changed
+pending plan parameters are rejected. This is polling coalescing, not read grouping.
+Every queued entry is checked for expiry before selection, including non-heads.
+
+step(now, events) accepts at most one event per endpoint. RTU membership is fixed
+until every participant terminates, including retries. Early results return immediately;
+quarantine after a terminal result no longer holds the barrier. Unready ports are
+excluded. TCP progresses independently, with FIFO write/readback ordering.
+
+The first endpoint rotates. Actual state-change counters enforce at most 8 transitions
+per endpoint/pass; calls reserve transition headroom. One event bounds RX+TX to 512
+bytes. The fake backend retains unconsumed input; Pass.consumed reports ownership
+transfer. Pass.results transfers observations without scheduler history accumulation.
+Up to 7×128 queued entries may expire per pass: finite, not a router RAM measurement.
+
+post_ipc models a queue of up to 128 synthetic work units, serviced up to 8 per pass.
+These are not real IPC wire quotas. next_wait uses nearest deadlines/quantum and
+returns None for an idle external wait. CPU/RSS and OS/Lua/IPC latency are unmeasured.
+
+Partial TC-117: 10/20/500 ms, late membership and retry; TC-118: independent TCP,
+rotating order, bounded work/IPC; TC-119: FIFO, quotas/coalescing, enqueue deadlines,
+non-head expiry. Full acceptance requires grouping, real backend/IPC and hardware.
+Next: agree safe map ranges and implement read grouping, then Lua/backend fake I/O,
+UCI and single-port integration. No router changes.
