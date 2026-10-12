@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.19 and schoolbell draft 1.5. A one-sample
+User-facing scope follows core draft 1.20 and schoolbell draft 1.5. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -49,8 +49,10 @@ This sequence expands P01a/P01b; it does not mark them complete or authorize har
 - [x] M00 — Record round/barrier semantics, per-port identity, compatibility and acceptance criteria; documentation only.
 - [x] M01 model — Deterministic host model for 1/2/3 transports, barrier/service timing, abstract errors and sequential comparison; 16 tests, partial TC-74–82. No serial bytes, grouping, retries or runtime integration.
 - [x] M01 contract draft — Prepare [RTU/TCP deadlines, recovery, configuration and round criteria](docs/core/TRANSPORT_CONTRACT.en.md), core 1.19 / TC-111–122. Documentation only.
-- [ ] M01 decisions — Review the 1.19 draft (core 9.2.28), especially manual/bounded RTU recovery, timing evidence, numeric budgets and legacy migration. Existing model assumptions are not accepted defaults.
-- [ ] M02 — Implement isolated transport states and bounded round scheduling, safe retries and compatible grouping; no live integration in this branch.
+- [x] M01 decisions — Owner accepted transport contract 1.19: deadlines, recovery, configuration and software budgets. Hardware timing evidence, USB resolver and IPC wire limits remain integration prerequisites.
+- [x] M02 states — Host-only RTU/TCP state model and 37 clock/byte tests; partial TC-111–115/120/121. Not a runtime driver; no UCI loader or hardware access.
+- [ ] M02 scheduler — Compose isolated states with bounded round scheduling, queues and compatible grouping; verify TC-117–119. No live integration in that branch.
+- [ ] M02 backend — Port the accepted state contract to the production Lua/backend boundary with fake I/O tests, generation guards and bounded TX completion before M03.
 - [ ] M03 — Integrate validated multiport configuration, diagnostics, legacy compatibility and event servicing into modbusd after M01/M02; finalize addressing before integration.
 - [ ] M04 — After separate installation approval, run the single-port regression with the existing BluePill. Later use the separate Serial Monster board as a gateway to agreed external RTU responders for multiport hardware checks.
 
@@ -60,8 +62,8 @@ FreeRTOS/new MCU firmware is separate work; the current board is sufficient for 
 ## Transport and gateway architecture — separate branches
 
 - [x] G00 — Core 1.15 architecture: logical identity, endpoint/unit routing, port roles, TCP client and standard offline RNDIS distribution. No runtime implementation.
-- [ ] G01 — Agree the concrete core 1.19 transport draft with M01 decisions: direct RTU/TCP configuration, legacy migration, deadlines and late responses. Direct RTU rounds and independent TCP servicing are proposed; autonomous gateways schedule their own lines.
-- [ ] G02 — Implement/test the isolated Modbus TCP client, bounded framing, transaction/connection identity and disconnect semantics on the host.
+- [x] G01 — Accepted transport contract 1.19: direct RTU/TCP configuration, legacy migration, deadlines and late responses; TCP independent of RTU rounds.
+- [ ] G02 — Host state model now covers bounded TCP framing, transaction/connection identity and disconnect semantics; implement the real socket backend with fake I/O tests before claiming a working client.
 - [ ] G03 — Integrate RTU/TCP logical devices and diagnostics after G01/G02 and required M stages; decide mixed scheduling before implementation.
 - [ ] G04 — Implement the platform-specific offline RNDIS bundle with dependency closure, exact kernel ABI/trust/space validation and preserved network settings; coordinate with P02 admission work.
 - [ ] G05 — Create a separate gateway specification before firmware: route/role management API, filters, shared line queues, persistent configuration and autonomous operation. Monitor/bridge are later stages.
@@ -142,3 +144,7 @@ The current USB RTU register map is a bench prototype, not a commitment to the g
 - [ ] Design a separate `mr3020-modes` package: configurable physical-position-to-profile mapping; developer Ethernet/DHCP profile preserving current access and standalone secured Wi-Fi AP with local DHCP/web access without Internet. Define boot selection, debounce, validation, active/requested status, rollback and coexistence with slide-switch. Application packages may propose templates; a single platform service owns network activation. Third switch position remains undecided. Keep MOTD independent; no network changes authorized by this TODO.
 
 - [x] Refresh MR3020 MOTD with the original logo and full status sections; preserve legacy, install with verified backup, check interactive and noninteractive SSH. No package or reboot validation yet.
+
+## Distributed router gateway candidate
+
+- [ ] Research an optional router-owned Modbus TCP server/gateway: central client/AP and remote Ethernet routers with RS-485 lines. Define endpoint/unit-to-line/unit routes, serialized shared line access, client quotas, permissions/write ownership, timeout propagation, cache freshness and loop prevention. Current contract is client-only; Wi-Fi/network configuration and server implementation require separate scope.

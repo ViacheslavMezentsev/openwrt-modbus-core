@@ -1,10 +1,12 @@
-# RTU/TCP transport contract — proposal for review
+# RTU/TCP transport contract — accepted profile
 
-[Русский](TRANSPORT_CONTRACT.md) · [Core specification 1.19](TECHNICAL_SPECIFICATION.md)
+[Русский](TRANSPORT_CONTRACT.md) · [Core specification 1.20](TECHNICAL_SPECIFICATION.md)
 
-12 October 2026. Proposed next implementation profile, not the released core 0.4.0
-API. New policies and numbers await review. No runtime, new transport tests or
-hardware changes. Requirements: core 6.8.1–6.8.18; TC-111–122 are planned.
+12 October 2026. The owner accepted revision 1.19 policies and software limits.
+This is a target contract, not the released core 0.4.0 API. Revision 1.20 adds
+[isolated states](TRANSPORT_STATES.en.md), with partial host coverage of
+TC-111–115/120/121. Runtime and hardware are unchanged; other tests remain planned.
+Requirements: core 6.8.1–6.8.18.
 
 ## Scope and deadlines
 
@@ -81,9 +83,9 @@ terminal, not retryable. An extra frame closes the connection and cannot finish
 another operation or undo a result already delivered. This is a deliberately
 strict client policy, not a universal Modbus requirement.
 
-## Proposed limits and scheduling
+## Accepted limits and scheduling
 
-These are software bounds for review, not measured MR3020 guarantees. Milliseconds
+These are accepted software bounds, not measured MR3020 guarantees. Milliseconds
 are integers; unknown fields, fractions and overflow are rejected.
 
 | Parameter | Default | Range |
@@ -162,11 +164,11 @@ TC-111–122 cover: deadline boundaries/UTC; retry budgets and forbidden replay;
 indistinguishable late RTU replies; bounded quarantine and violations; TCP splits,
 coalescing, bounds/ID wrap; configuration refusal; 10/20/500 ms rounds and in-round
 retry; independent TCP/IPC servicing; queue/coalescing fairness; unknown write
-outcomes; line timing/USB limits; legacy compatibility. All are planned, including
+outcomes; line timing/USB limits; legacy compatibility. Host coverage is partial; unimplemented cases remain planned, including
 hardware checks after separate approval. See the core specification for individual
 acceptance criteria and traceability.
 
 Protocol references: [Serial Line V1.02](https://www.modbus.org/file/secure/modbusoverserial.pdf)
 and [TCP Guide V1.0b](https://www.modbus.org/file/secure/messagingimplementationguide.pdf).
-Manual/bounded recovery, budgets, strict TCP policy and UCI are proposed project
+Manual/bounded recovery, budgets, strict TCP policy and UCI are accepted project
 choices, not instructions from Modbus Organization.

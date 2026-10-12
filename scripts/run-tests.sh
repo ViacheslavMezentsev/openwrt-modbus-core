@@ -12,6 +12,7 @@ fi
 
 if [ "$scope" != demo ]; then
     python3 "$PROJECT_ROOT/scripts/test_rounds_model.py"
+    python3 "$PROJECT_ROOT/scripts/test_transport_states.py"
     if command -v g++ >/dev/null 2>&1; then
         button_test=$(mktemp /tmp/modbus-button-test.XXXXXX)
         trap 'rm -f "$button_test"' EXIT
