@@ -71,7 +71,7 @@ one, but model Pass.results retains copies until handed off. Those copies, JSON,
 Python/Lua objects, RX/TX, cache and IPC are outside the reservation budget.
 8192 is a payload limit, NOT total RAM consumption or an MR3020 measurement.
 
-Next: choose/bundle a Lua strict decoder (current json.lua only optionally delegates
-to luci.jsonc), enforce installed catalogue ownership, add evidenced hardware profiles
+The [strict Lua decoder](STRICT_JSON.en.md) is bundled; legacy decode retains optional
+luci.jsonc. Next: Lua loader with depth=3 and schema validation, installed catalogue ownership, add evidenced hardware profiles
 and measure decode/fan-out/IPC memory peaks. The loader uses WSL/Linux POSIX directory
 fd APIs; it is not a ready Lua backend or native Windows Python implementation.

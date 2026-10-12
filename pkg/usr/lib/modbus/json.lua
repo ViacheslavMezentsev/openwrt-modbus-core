@@ -73,4 +73,9 @@ function M.decode(value)
     return nil, "decoder unavailable"
 end
 
+-- Explicit strict path for new profile consumers; legacy decode is unchanged.
+function M.decode_strict(value, limits)
+    return require("modbus.json_strict").decode(value, limits)
+end
+
 return M
