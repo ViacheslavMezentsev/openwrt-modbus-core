@@ -139,3 +139,5 @@ The current USB RTU register map is a bench prototype, not a commitment to the g
 - [ ] Agree a separate mr3020-console package contract before implementation: board/version checks, interactive output, switch startup state, dependencies and coexistence with slide-switch, file ownership/conffiles and reversible install/remove. Current assets are not installed or built into IPKs.
 
 - [ ] Design a separate `mr3020-modes` package: configurable physical-position-to-profile mapping; developer Ethernet/DHCP profile preserving current access and standalone secured Wi-Fi AP with local DHCP/web access without Internet. Define boot selection, debounce, validation, active/requested status, rollback and coexistence with slide-switch. Application packages may propose templates; a single platform service owns network activation. Third switch position remains undecided. Keep MOTD independent; no network changes authorized by this TODO.
+
+- [x] Refresh MR3020 MOTD with the original logo and full status sections; preserve legacy, install with verified backup, check interactive and noninteractive SSH. No package or reboot validation yet.

@@ -41,6 +41,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- MR3020 MOTD retains its original logo with system/network/peripheral/application sections, interactive/board guards, shell isolation and manual --show. Original retained under legacy. Approved bench installation and SSH checks passed; reboot was not tested.
+
 - Split specifications by owner: core 1.5, demo and schoolbell 1.0, with independent README/changelogs and test namespaces. Preserved requirement migration traceability; runtime unchanged.
 
 - Organized documentation with an index and completed-stage archive; remaining early-plan proposals moved to TODO. Original untracked notes are retained in a local archive without publication.

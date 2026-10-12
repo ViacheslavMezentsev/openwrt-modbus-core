@@ -4,8 +4,8 @@
 
 Owner-provided sources preserved from TL-MR3020 v3.30 running OpenWrt 19.07.9.
 These are platform development assets, not a router dump or installable package.
-Selected file contents are unchanged; hashes matched the router during read-only
-extraction.
+The original MOTD is retained under [legacy](legacy/00-custom-motd.sh). The current
+MOTD was updated and installed with owner approval; button/debug sources are unchanged.
 
 ## Contents
 
@@ -38,18 +38,36 @@ Third-party code is not included here; the custom handlers are not a complete
 replacement. No init/update/switch commands were run during preservation.
 Review overlapping event processing and file ownership before packaging.
 
-## Preserved limitations
+## Current MOTD
 
-- `OpenWrt 19.07.9` is hard-coded and becomes misleading after an upgrade.
-- No board check or explicit interactive-terminal guard; sourcing depends on
-  profile. Colored output needs testing with SSH automation and other entry paths.
-- Memory uses Total−Free rather than Available, including cache.
-- Disk reporting uses `/`, not a separate free-overlay measurement.
-- USB enumeration needs `lsusb`; a missing utility may appear as zero devices.
-- PCM/video/tty node counts are not counts of physical devices.
-- IP lookup assumes `br-lan`, then `eth0`.
-- Repository source mode is 0644, not installation mode: future packaging must
-  assign rc.button 0755 and profile/hotplug modes appropriate to their invocation.
+Original logo preserved. OS version/model come from the system (v3 is reported;
+hardware subrevision 3.30 is not detected automatically). Sections: System,
+Network, Peripherals, Applications. Memory uses MemAvailable; space uses overlay.
+Core/demo status is labelled reported and includes age: an old file does not
+prove a live process. This is a snapshot, not continuous monitoring.
+
+Profile output requires an interactive shell; a subshell isolates all variables
+and functions. A MR3020 v3 board_name guard is included. Colors require a TTY
+and TERM other than dumb. The shell prints BusyBox; MOTD does not repeat it.
+Manual display:
+
+```sh
+sh /etc/profile.d/00-custom-motd.sh --show
+```
+
+Limits: IP lookup covers br-lan/eth0/eth1; AP counts interfaces rather than proving
+Wi-Fi availability; mounts cover /dev/sd*; audio/video count nodes, not devices.
+Status directory is fixed at /tmp/modbus; absent fields become unknown. Profile
+is not managed until the network package exists. Age uses system time; negative
+age is labelled clock mismatch. Repository files are 0644; installed MOTD keeps
+its former 0755 mode.
+
+On the OpenWrt 19.07.9 MR3020 bench, syntax, manual display, a real SSH login
+(one BusyBox introduction and one MOTD), and silent noninteractive SSH passed.
+Verified previous copies are saved on the PC and under router /root outside
+profile.d. Cold boot was not tested; networking, services and switch handlers
+were unchanged. Roll back by restoring the verified copy through a temporary
+file and rename with original permissions; do not source legacy alongside new MOTD.
 
 ## Possible separate package
 
@@ -60,7 +78,6 @@ opkg ownership conflicts, install/remove and rollback. Switch behavior needs
 startup initialization and coexistence with slide-switch decisions. Installation
 must not silently change networking or GPIO modes.
 
-There is no build target, IPK, installer or automatic deployment. `sh -n` checks
-syntax without execution; matching copies does not validate boot, login or physical
-switch positions. The router was not changed. Prepare a separate verified backup
-and rollback before any future installation.
+There is no build target, IPK, installer or automatic deployment. MOTD was manually
+installed on the approved bench. Physical switch positions were not tested in
+this stage; package lifecycle and recovery after reboot remain future work.
