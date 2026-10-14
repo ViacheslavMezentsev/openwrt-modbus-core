@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Linux/nixio profile reader: trusted directory/permission/descriptor checks, no-follow, bounds and cleanup. 13 fault groups and native WSL file/race/FD tests; specification 1.26. No modbusd/router changes; package provenance and installer coordination remain.
+
 - Added isolated Lua profile loading: strict schema, limits, shared maps and atomic publication; 19 test groups, specification 1.25. Reader is injected; production filesystem checks and modbusd integration remain.
 
 - Bundled strict Lua 5.1 JSON decoding without LuCI: bounds, Unicode, duplicate keys, types/null and 20 test groups. Explicit decode_strict; legacy consumers preserved. Specification 1.24; Lua loader and hardware RAM measurements remain.
