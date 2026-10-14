@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Added isolated Lua profile loading: strict schema, limits, shared maps and atomic publication; 19 test groups, specification 1.25. Reader is injected; production filesystem checks and modbusd integration remain.
+
 - Bundled strict Lua 5.1 JSON decoding without LuCI: bounds, Unicode, duplicate keys, types/null and 20 test groups. Explicit decode_strict; legacy consumers preserved. Specification 1.24; Lua loader and hardware RAM measurements remain.
 
 - Accepted JSON device profiles and assembly limits. Added a strict host loader, atomic publication of validated configuration, lazy fragments and an 8 KiB payload reservation pool; 21 new tests. Specification 1.23. Lua/backend, total RAM budgeting and router profile installation remain separate work.

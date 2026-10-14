@@ -2,11 +2,11 @@
 
 [Русский](DEVICE_PROFILES.md) · [Read maps](READ_GROUPING.en.md)
 
-Accepted core 6.9 contract (revision 1.23), host-only implementation:
+Accepted core 6.9 contract (revision 1.23), original host model:
 [loader](../../scripts/device_profiles.py), [limits](../../scripts/profile_limits.py),
 [21 tests](../../scripts/test_device_profiles.py).
 Run `python3 scripts/test_device_profiles.py`, also in make all/ci-core.
-No modbusd, IPK, UCI, router or installation changes.
+The Lua module now ships in the IPK; no modbusd, UCI, router or installation changes.
 
 ## Files and trust
 
@@ -72,6 +72,45 @@ Python/Lua objects, RX/TX, cache and IPC are outside the reservation budget.
 8192 is a payload limit, NOT total RAM consumption or an MR3020 measurement.
 
 The [strict Lua decoder](STRICT_JSON.en.md) is bundled; legacy decode retains optional
-luci.jsonc. Next: Lua loader with depth=3 and schema validation, installed catalogue ownership, add evidenced hardware profiles
+luci.jsonc. Lua schema/activation is now isolated and tested. Next: system reader, installed catalogue ownership, add evidenced hardware profiles
 and measure decode/fan-out/IPC memory peaks. The loader uses WSL/Linux POSIX directory
 fd APIs; it is not a ready Lua backend or native Windows Python implementation.
+
+## Isolated Lua loader
+
+[device_profiles.lua](../../pkg/usr/lib/modbus/device_profiles.lua) ships in the IPK;
+modbusd does not call it yet. It uses the bundled strict decoder with depth=3 and
+the same schema/limits as the host model. 19 groups of [Lua tests](../../scripts/test_device_profiles.lua)
+run in make all/ci-core.
+
+- loader.decode(text, expected_id) returns a profile or nil, {code=...}.
+  JSON errors use the json_ prefix and byte offset.
+- loader.new(read_profile) creates a store; missing reader returns reader_required.
+  No implicit io.open, shell or path search.
+- store:activate(bindings, maintenance, active_operations) returns a new snapshot
+  or nil, {code=...}. Explicit true and 0 required; reentrant activation returns busy.
+- store:current() retains the previous snapshot until complete candidate publication.
+  Failure in the last file does not publish earlier candidates.
+- snapshot:profile(device), :binding(device), :devices(), :profile_count(),
+  :range_count() expose configuration. devices returns a copied list.
+- profile:id(), :count(), :range(index) expose profiles. range returns a copied
+  normalized record, sorted by function/start with model defaults.
+
+Shared profiles are read once per activation. Views hide data and reject ordinary
+assignment. Old snapshots remain valid after replacement. This guards accidental
+API mutation, not malicious rawset/debug from trusted Lua code. Retained snapshots
+retain memory.
+
+read_profile(id, maximum_bytes) is a synchronous trusted system adapter callback,
+not profile/client code. It receives a canonical ID and 16385 (limit+1), returning
+a string or nil, error; exceptions become read errors. The loader bounds returned
+input, not callback allocations or execution time. Bindings are copied/validated
+before I/O; unique IDs are sorted and unselected profiles are not read.
+
+The system adapter is NOT implemented yet. Before production it must enforce trusted
+catalogue ownership, canonical ID.json, no symlink/nonregular files, bounded
+nonblocking limit+1 reads, descriptor cleanup and protection against replacement
+between validation and reading. stat followed by ordinary io.open is insufficient.
+A fake reader does not establish these filesystem properties. Maintenance and
+active_operations are caller assertions, not live transport quiescence.
+Schema validity does not prove actual device safety.

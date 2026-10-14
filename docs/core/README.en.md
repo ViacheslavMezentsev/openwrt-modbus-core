@@ -4,7 +4,7 @@
 
 The core owns public events, subscriptions, notifications, common scheduling and Modbus. Application handlers and audio execution belong to client packages. The general API and managed offline installation are not implemented yet.
 
-[ТЗ 1.24](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.25](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -60,3 +60,5 @@ Accepted JSON device profiles and assembly limits. Added a strict host loader, a
 [Profile loader and limits](DEVICE_PROFILES.en.md)
 
 [Strict Lua JSON](STRICT_JSON.en.md): bundled decoder and limits.
+
+Lua profile schema/activation is implemented with an injected reader and 19 test groups. The production filesystem adapter and modbusd integration remain.
