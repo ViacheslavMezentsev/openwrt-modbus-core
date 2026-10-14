@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Isolated Lua 5.1 RTU/TCP states with injected clock/byte I/O; deadlines, resync, retries, generations and write outcomes covered by 30 test groups. Specification 1.28. Module ships in IPK; native backend, scheduler and modbusd remain disconnected.
+
 - Accepted isolated c68dec5 reader/loader target verification on OpenWrt 19.07.9/MIPS: 52 Lua groups, native replacements and FD stability. Specification 1.27 records coverage and remaining limits. Documentation only; runtime/installed core unchanged.
 
 - Linux/nixio profile reader: trusted directory/permission/descriptor checks, no-follow, bounds and cleanup. 13 fault groups and native WSL file/race/FD tests; specification 1.26. No modbusd/router changes; package provenance and installer coordination remain.

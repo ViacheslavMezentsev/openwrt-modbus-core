@@ -5,7 +5,7 @@
 | Реквизит | Значение |
 | :--- | :--- |
 | **Документ** | TECHNICAL_SPECIFICATION.md |
-| **Ревизия** | 1.27 (черновик для согласования) |
+| **Ревизия** | 1.28 (черновик для согласования) |
 | **Дата формирования** | 15.10.2026 |
 | **Метод формирования** | Исходная ревизия по `9d6cbea`; ревизия 1.1 по базе `461b69a` и согласованному отказу для слишком большой записи журнала; ревизия 1.2 по `ee4dabe` и принятым результатам стенда; ревизия 1.3 по согласованной политике legacy-сегментов; ревизия 1.4 — согласованное восстановление demo; ревизия 1.5 — разделение владельцев требований |
 | **Целевая платформа** | OpenWrt 19.07.9, MR3020 v3, kernel 4.14.267, Lua 5.1; WeAct BluePill Plus v1.1 STM32F103C8T6 |
@@ -45,6 +45,14 @@
 | 1.25 | 15.10.2026 | Lua schema/activation профилей через подменяемое чтение, TC-129. Production-файловый адаптер, modbusd и RAM стенда остаются впереди. |
 | 1.26 | 15.10.2026 | Linux/nixio reader, доверенная цепочка каталогов, ограниченное чтение, TC-130. Только host, без modbusd/роутера. |
 | 1.27 | 15.10.2026 | Принята изолированная проверка reader/loader c68dec5 на OpenWrt/MIPS; уточнены TC-127–130 и матрица. Без runtime-изменений. |
+| 1.28 | 15.10.2026 | Изолированные Lua RTU/TCP states, подменяемые часы и события I/O, TC-131. Без native backend/modbusd. |
+
+### Изменения ревизии 1.28
+
+| Пункты | Изменение |
+| :--- | :--- |
+| 6.8.1–6.8.12, 6.8.18, TC-131 | Частичная реализация состояний в Lua, 30 групп host-тестов |
+| Приложение W | Граница событийного I/O, clock, Lua arithmetic и оставшиеся слои |
 
 ### Изменения ревизии 1.27
 
@@ -1110,6 +1118,7 @@ core/demo/schoolbell, а также проверять локальные цел
 | TC-128 | Lua без LuCI; duplicate/Unicode/null/types, числовая форма, пределы и +1 | 20 групп host и изолированный target PASS; общий RAM не измерен (р.1.27) |
 | TC-129 | Lua schema/defaults/types, пределы/+1, shared maps, сбои чтения/кандидата и повторный вход | 19 групп host/изолированный target PASS; реальный reader -> loader сохраняет snapshot при отказе; quiesce/RAM не проверены (р.1.27) |
 | TC-130 | Права/типы/ссылки, отказы I/O, подмена до/после open, рост, пределы и cleanup | 13 fault-групп и native Linux/nixio: три подмены, FD стабилен после 200 чтений; изолированный OpenWrt/MIPS PASS принят 15.10.2026, см. приложение V (р.1.27) |
+| TC-131 | Lua RTU/TCP: часы, фрагменты/CRC/MBAP, deadlines/retry/resync, generation/TID, write outcome и изоляция | 30 групп Lua 5.1 host PASS; native I/O/rounds/modbusd/аппаратный timing не проверены (р.1.28) |
 
 
 ### 7.3. Порядок приёмки
@@ -1258,6 +1267,7 @@ core/demo/schoolbell, а также проверять локальные цел
 | 6.9.7 | Decoder, Lua schema и reader включены; package provenance/installer/runtime/RAM — план | I/T/D: TC-127 частично, TC-128, TC-129, TC-130 host и изолированный target, приложение V (р.1.27) |
 | 6.9.8 | pkg/usr/lib/modbus/json_strict.lua, pkg/usr/lib/modbus/json.lua | T: TC-128, S/test_json_strict.lua; Lua 5.1 host (р.1.24) |
 | 6.9.9 | pkg/usr/lib/modbus/profile_reader.lua | T/I: TC-130, S/test_profile_reader.lua, S/test_profile_reader_native.py/.lua; host и изолированный target (р.1.27) |
+| 6.8.1–6.8.12, 6.8.18 | pkg/usr/lib/modbus/transport_state.lua, modbus.rtu CRC; частично | T: TC-131, S/test_transport_state.lua; Lua states без native I/O/конфигурации/runtime (р.1.28) |
 
 ---
 
@@ -1736,3 +1746,16 @@ luci-lib-nixio git-22.045.73925-36e5c1c-1.
 Это D/T-свидетельство, не гарантия всех платформ, общего RAM/CPU/latency,
 координации установщика или runtime-интеграции. Подробные условия:
 [PROFILE_READER](PROFILE_READER.md). Исходные журналы остаются вне Git.
+
+## Приложение W. Изолированные Lua-состояния (р.1.28)
+
+Принятая семантика Python-модели перенесена в Lua 5.1, TC-131:
+30 групп тестов на хосте. Модуль поставляется в IPK, но modbusd его не вызывает.
+Управляемый clock и события setup/TX/RX/error заменяют реальные I/O.
+Дедлайны проверяются внутри событий; сложение насыщается на 2^53-1.
+Ошибочные внутренние параметры вызывают Lua error; это не публичный IPC API.
+FC06 остаётся тестовой пробой без расширения разрешений записи.
+RX: 256/520 байт, до 512 байт/событие, один слот результата, до 32 устройств.
+Квоты общего прохода/раунды, native serial/socket, UCI, карты/резервы,
+установщик и реальный TX completion/timing/RAM ещё не интегрированы.
+Подробности: [TRANSPORT_STATES](TRANSPORT_STATES.md).

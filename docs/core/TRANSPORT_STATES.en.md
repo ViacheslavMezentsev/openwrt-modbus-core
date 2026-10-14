@@ -6,8 +6,8 @@ Run `python3 scripts/test_transport_states.py`: 37 deterministic tests, also in
 `make all` and `make ci-core`. [Model](../../scripts/transport_states.py) and
 [tests](../../scripts/test_transport_states.py) are host-only Python, like the
 previous rounds model. They add no router dependency and are excluded from IPKs.
-No socket/serial, sleep, OS clock, UCI, Lua backend, grouping or modbusd integration
-is implemented. Queue/round composition is described below. Passing the model is not hardware evidence.
+The initial Python stage implements no socket/serial, sleep, OS clock, UCI,
+Lua backend, grouping or modbusd integration. Queue/round composition is described below. Passing the model is not hardware evidence.
 
 ## Driving the model
 
@@ -102,3 +102,50 @@ Next: agree safe map ranges and implement read grouping, then Lua/backend fake I
 UCI and single-port integration. No router changes.
 
 Revision 1.22 adds optional [safe-map grouping](READ_GROUPING.en.md) to this model. Earlier statements about absent grouping describe stage 1.21. Next: profile loading and production budgets, then Lua/backend.
+
+## Isolated Lua states (revision 1.28)
+
+[transport_state.lua](../../pkg/usr/lib/modbus/transport_state.lua) ports the
+accepted Python state model to Lua 5.1. It ships in the IPK but modbusd does not
+call it. CRC uses existing modbus.rtu; no new dependencies.
+30 groups of [Lua tests](../../scripts/test_transport_state.lua) run in make all/ci-core.
+
+API: transport_state.new(kind, options, clock); kind is rtu or tcp. Options use
+model names: transport_id, request_timeout, operation_timeout, setup_timeout,
+retries, retry_delay, reconnect_delay, policy, late_bound, timing_profile, baud.
+Defaults/bounds follow TRANSPORT_CONTRACT. This is an internal core interface,
+not UCI or a public client API. Unknown fields/types raise Lua errors before admission.
+
+Optional clock returns monotonic integer milliseconds; without it use tick(ms).
+Events consult the injected clock before processing. Backwards time is rejected;
+deadline sums saturate at 2^53-1 rather than wrap. Do not manually tick ahead of
+an external clock that has not advanced.
+
+admit(request, expiry, admitted_at) copies the request. operation_id/device_id are
+required; defaults are unit=1, function=3, address=0, count=1, safe_read=false.
+begin selects the admitted operation; no queue yet. FC01–04 are reads; FC06 is
+only the model's write probe, not new output permissions or runtime support.
+
+Replaceable I/O is the event boundary: setup_done, tx(n), tx_complete,
+receive(bytes), io_error. TCP requires the current generation; stale events are
+ignored even if servicing the clock just closed the connection. wire contains
+request bytes; sent counts acknowledged TX bytes. tx(0) represents EAGAIN.
+tx_complete requires external TX completion evidence. A future real backend must
+service deadlines BEFORE system calls; completion events do not authorize starting
+expired I/O. The state engine makes no system calls.
+
+Other methods: confirm_sync(evidence), cancel(), drain_results(). One result slot
+blocks admission until consumed. Per-device valid/last_success (up to 32 devices)
+is not runtime cache integration. RX caps are 256/520 bytes, with 512 bytes/event.
+Aggregate per-pass byte/8-transition quotas, rounds and IPC belong to composition.
+State fields are available to trusted drivers/tests, not a sandbox against extension
+code. Admitted request tables are copied.
+
+Tests cover every short-response split, largest frames, exact deadlines,
+EAGAIN/partial TX, TX completion wait, retry/setup budgets, CRC/MBAP/exceptions,
+manual/bounded quarantine including terminal outcomes, generations/TID,
+write unknown/confirmed/not_sent and device/port isolation.
+
+Next separate stage: Lua queue/round composition and quotas with fake I/O.
+Native serial/socket, UCI, maps/reservations, installer, modbusd and hardware
+timing/RAM remain incomplete and are not verified by this stage.
