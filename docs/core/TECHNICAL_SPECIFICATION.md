@@ -5,7 +5,7 @@
 | Реквизит | Значение |
 | :--- | :--- |
 | **Документ** | TECHNICAL_SPECIFICATION.md |
-| **Ревизия** | 1.26 (черновик для согласования) |
+| **Ревизия** | 1.27 (черновик для согласования) |
 | **Дата формирования** | 15.10.2026 |
 | **Метод формирования** | Исходная ревизия по `9d6cbea`; ревизия 1.1 по базе `461b69a` и согласованному отказу для слишком большой записи журнала; ревизия 1.2 по `ee4dabe` и принятым результатам стенда; ревизия 1.3 по согласованной политике legacy-сегментов; ревизия 1.4 — согласованное восстановление demo; ревизия 1.5 — разделение владельцев требований |
 | **Целевая платформа** | OpenWrt 19.07.9, MR3020 v3, kernel 4.14.267, Lua 5.1; WeAct BluePill Plus v1.1 STM32F103C8T6 |
@@ -44,6 +44,14 @@
 | 1.24 | 12.10.2026 | Штатный строгий Lua JSON decoder, API, лимиты и TC-128. Lua loader и RAM стенда ещё не проверены. |
 | 1.25 | 15.10.2026 | Lua schema/activation профилей через подменяемое чтение, TC-129. Production-файловый адаптер, modbusd и RAM стенда остаются впереди. |
 | 1.26 | 15.10.2026 | Linux/nixio reader, доверенная цепочка каталогов, ограниченное чтение, TC-130. Только host, без modbusd/роутера. |
+| 1.27 | 15.10.2026 | Принята изолированная проверка reader/loader c68dec5 на OpenWrt/MIPS; уточнены TC-127–130 и матрица. Без runtime-изменений. |
+
+### Изменения ревизии 1.27
+
+| Пункты | Изменение |
+| :--- | :--- |
+| TC-127–130, матрица 6.9 | Принят изолированный target-опыт reader/loader; интеграция и RAM не объявлены проверенными |
+| 9.2.18, приложение V | Условия опыта, положительный временный каталог и оставшиеся задачи |
 
 ### Изменения ревизии 1.26
 
@@ -1098,10 +1106,10 @@ core/demo/schoolbell, а также проверять локальные цел
 | TC-124 | Shared maps, aggregate caps, failed replacement, cold start | Один разбор общей карты; прежние объекты сохранены, холодный отказ пуст; частично host (р.1.23) |
 | TC-125 | 1024 bytes, 16 fragments/consumers, +1 boundaries | Отказ до enqueue либо остановка группы без потери FIFO; частично host (р.1.23) |
 | TC-126 | Pool saturation, release, interfragment lifetime | Резерв до запуска, ожидание не продлевает срок; все terminal исходы освобождают; частично host (р.1.23) |
-| TC-127 | Production decoder/dependency, ownership and RAM peak | Lua/runtime/аппаратные проверки ПЛАН; host не доказывает выполнение (р.1.23) |
-| TC-128 | Lua без LuCI; duplicate/Unicode/null/types, числовая форма, пределы и +1 | Типизированный результат либо строгий отказ; 20 групп host-тестов; RAM стенда не измерен (р.1.24) |
-| TC-129 | Lua schema/defaults/types, пределы/+1, shared maps, сбои чтения/последнего кандидата, повторный вход | 19 групп host Lua 5.1; отказ сохраняет прежний снимок, холодный отказ пуст. Файловый адаптер/quiesce/RAM стенда не проверены (р.1.25) |
-| TC-130 | Права/типы/ссылки, отказы I/O, подмена до/после open, рост, пределы и cleanup | 13 fault-групп и native Linux/nixio: три подмены, FD стабилен после 200 чтений; OpenWrt/MIPS не проверен (р.1.26) |
+| TC-127 | Production decoder/dependency, ownership and RAM peak | Изолированная Lua/reader проверка target принята; runtime, package provenance и RAM peak — план (р.1.27) |
+| TC-128 | Lua без LuCI; duplicate/Unicode/null/types, числовая форма, пределы и +1 | 20 групп host и изолированный target PASS; общий RAM не измерен (р.1.27) |
+| TC-129 | Lua schema/defaults/types, пределы/+1, shared maps, сбои чтения/кандидата и повторный вход | 19 групп host/изолированный target PASS; реальный reader -> loader сохраняет snapshot при отказе; quiesce/RAM не проверены (р.1.27) |
+| TC-130 | Права/типы/ссылки, отказы I/O, подмена до/после open, рост, пределы и cleanup | 13 fault-групп и native Linux/nixio: три подмены, FD стабилен после 200 чтений; изолированный OpenWrt/MIPS PASS принят 15.10.2026, см. приложение V (р.1.27) |
 
 
 ### 7.3. Порядок приёмки
@@ -1243,13 +1251,13 @@ core/demo/schoolbell, а также проверять локальные цел
 | 6.8.18 | `S/transport_states.py` — частичная модель, без runtime | I/T: TC-113, TC-114, TC-120 (частично: `S/test_transport_states.py`); runtime/D — план (р.1.20) |
 | 4.7.5, 4.7.6 | `S/read_groups.py`, `S/transport_scheduler.py` — модель | T: TC-69, TC-70, TC-119, `S/test_read_groups.py`; runtime/D — план (р.1.22) |
 | 4.7.7, 4.7.8 | `S/read_groups.py:Assembly`, FIFO-модель | T: TC-71, TC-119, `S/test_read_groups.py`; runtime/D — план (р.1.22) |
-| 6.9.1, 6.9.2 | S/device_profiles.py, S/profile_limits.py, pkg/usr/lib/modbus/device_profiles.lua | T: TC-123, TC-124, TC-129, S/test_device_profiles.py/.lua; Lua schema и reader host: TC-130; target — план (р.1.26) |
+| 6.9.1, 6.9.2 | S/device_profiles.py, S/profile_limits.py, pkg/usr/lib/modbus/device_profiles.lua | T: TC-123, TC-124, TC-129, S/test_device_profiles.py/.lua; Lua schema/reader host и изолированный target: TC-130; интеграция — план (р.1.27) |
 | 6.9.3 | S/device_profiles.py:ProfileStore, pkg/usr/lib/modbus/device_profiles.lua | T: TC-124, TC-129, host Lua activation; реальный quiesce — план (р.1.25) |
 | 6.9.4 | `S/read_groups.py`, `S/profile_limits.py` | T: TC-125, `S/test_device_profiles.py`; host (р.1.23) |
 | 6.9.5, 6.9.6 | `S/transport_scheduler.py`, `S/read_groups.py` | T: TC-126, `S/test_device_profiles.py`; host (р.1.23) |
-| 6.9.7 | Decoder, Lua schema и reader включены; package provenance/installer/target/RAM — план | I/T/D: TC-127 частично, TC-128, TC-129, TC-130 host (р.1.26) |
+| 6.9.7 | Decoder, Lua schema и reader включены; package provenance/installer/runtime/RAM — план | I/T/D: TC-127 частично, TC-128, TC-129, TC-130 host и изолированный target, приложение V (р.1.27) |
 | 6.9.8 | pkg/usr/lib/modbus/json_strict.lua, pkg/usr/lib/modbus/json.lua | T: TC-128, S/test_json_strict.lua; Lua 5.1 host (р.1.24) |
-| 6.9.9 | pkg/usr/lib/modbus/profile_reader.lua | T/I: TC-130, S/test_profile_reader.lua, S/test_profile_reader_native.py/.lua; host (р.1.26) |
+| 6.9.9 | pkg/usr/lib/modbus/profile_reader.lua | T/I: TC-130, S/test_profile_reader.lua, S/test_profile_reader_native.py/.lua; host и изолированный target (р.1.27) |
 
 ---
 
@@ -1284,7 +1292,7 @@ core/demo/schoolbell, а также проверять локальные цел
 | 9.2.15 | Scheduler: моменты, горизонт, пропуски, часы и восстановление | Открыт | Общая функция принята; выбрать формат, политику скачков и повторов перед реализацией. Календарь принадлежит пакету. (р.1.9) | 4.6.1–4.6.3 |
 | 9.2.16 | Системное время и привилегированный endpoint | Открыт | Источник качества, размещение службы, права, диапазон и NTP/RTC; обязательный браузерный сценарий задаёт schoolbell. (р.1.9) | 5.4.1, 5.4.2 |
 | 9.2.17 | Настройки повторов/ожидания и поздние RTU-ответы | Принят контракт | Приняты manual/bounded resync, Dop/Da, retry classes и численные пределы, описанные в 6.8/TRANSPORT_CONTRACT. Контракт принят; доказательство B для оборудования отсутствует. (р.1.20) | 6.8.1–6.8.18 |
-| 9.2.18 | Карта безопасных чтений | Принят контракт | ReadMap/ReadRange и FIFO-группировка приняты; проверены на хосте. Р.1.23 принимает JSON loader и пределы сборки; host проверен. Штатный decoder добавлен в р.1.24; Lua schema/activation добавлены в р.1.25; reader/Unix-права проверены на хосте в р.1.26; остаются target, интеграция/установщик, реальные профили и полный пик RAM. (р.1.23) | 4.7.1–4.7.8 |
+| 9.2.18 | Карта безопасных чтений | Принят контракт | ReadMap/ReadRange и FIFO-группировка приняты; проверены на хосте. Р.1.23 принимает JSON loader и пределы сборки; host проверен. Штатный decoder добавлен в р.1.24; Lua schema/activation добавлены в р.1.25; reader/Unix-права проверены на хосте в р.1.26; изолированный target принят в р.1.27; остаются интеграция/установщик, реальные профили и полный пик RAM. (р.1.27) | 4.7.1–4.7.8 |
 | 9.2.19 | Конфигурация и адресация нескольких портов | Принят контракт | Приняты transport/device UCI, логический ID, отказ mixed legacy/new и проверка char-device. Устойчивый USB resolver отложен; горячая перепривязка пока требует оператора. (р.1.20) | 6.8.1–6.8.18 |
 | 9.2.20 | Пределы и планирование раундов | Принят контракт | Приняты FIFO, лимиты, quantum, подготовка и timing-контракт. Значения не измеренные гарантии; точный IPC wire-бюджет и доказательство TX timing остаются перед интеграцией. (р.1.20) | 6.8.1–6.8.18 |
 | 9.2.21 | Аппаратный стенд и будущая прошивка | Отложен | Две отдельные платы: действующая BluePill и Serial Monster как простой шлюз. Конфигурация внешних Modbus RTU-устройств согласуется перед опытом. Автономный шлюз и Modbus TCP включены в архитектуру 4.9/5.5; FreeRTOS, выбор MCU и реализация прошивки требуют отдельного ТЗ и этапа. (р.1.15) | 4.8.10, 4.8.12 |
@@ -1712,3 +1720,19 @@ TC-130: 13 групп отказов и native x86_64 Linux/nixio из OpenWrt 1
 Защита от root, одновременной установки, гарантия поколения нескольких файлов
 и времени дискового I/O не заявлены. Package provenance, координация установщика,
 target/MIPS, modbusd и общий пик RAM ещё не проверены.
+
+## Приложение V. Принятая target-проверка reader/loader (р.1.27)
+
+15.10.2026 принят изолированный опыт с c68dec5 на MR3020 v3.30:
+OpenWrt 19.07.9, kernel 4.14.267, Lua 5.1, machine=mips,
+luci-lib-nixio git-22.045.73925-36e5c1c-1.
+20 JSON + 19 schema + 13 fault-групп PASS; реальная файловая система:
+права/UID, размеры, FIFO, ссылки, три подмены, 200 чтений без роста FD.
+Реальный reader -> loader активировал профиль; отказ сохранил прежний снимок.
+Фабрика system() создавалась, но штатный каталог не создавался и через неё
+не читался: положительные чтения использовали временный доверенный каталог.
+30 контрольных хешей и PID/starttime core/demo совпали до/после; online/valid
+и свежесть штатные, стенд удалён. Установленное ядро не обновлялось.
+Это D/T-свидетельство, не гарантия всех платформ, общего RAM/CPU/latency,
+координации установщика или runtime-интеграции. Подробные условия:
+[PROFILE_READER](PROFILE_READER.md). Исходные журналы остаются вне Git.

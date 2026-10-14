@@ -4,7 +4,7 @@
 
 The core owns public events, subscriptions, notifications, common scheduling and Modbus. Application handlers and audio execution belong to client packages. The general API and managed offline installation are not implemented yet.
 
-[ТЗ 1.26](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.27](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -64,3 +64,5 @@ Accepted JSON device profiles and assembly limits. Added a strict host loader, a
 Lua profile schema/activation is implemented with an injected reader and 19 test groups. The filesystem adapter is implemented in the following stage; modbusd integration remains.
 
 [System profile reader](PROFILE_READER.en.md): Linux/nixio, host tests, no modbusd integration.
+
+Accepted isolated MIPS reader/loader verification (2026-10-15): [conditions and limits](PROFILE_READER.en.md). Installed core unchanged.

@@ -72,7 +72,7 @@ Python/Lua objects, RX/TX, cache and IPC are outside the reservation budget.
 8192 is a payload limit, NOT total RAM consumption or an MR3020 measurement.
 
 The [strict Lua decoder](STRICT_JSON.en.md) is bundled; legacy decode retains optional
-luci.jsonc. Lua schema/activation is now isolated and tested. The [system reader](PROFILE_READER.en.md) is host-tested. Next: target validation, installer coordination, add evidenced hardware profiles
+luci.jsonc. Lua schema/activation is now isolated and tested. The [system reader](PROFILE_READER.en.md) passed host and isolated target tests. Next: installer coordination, add evidenced hardware profiles
 and measure decode/fan-out/IPC memory peaks. The loader uses WSL/Linux POSIX directory
 fd APIs; it is not a ready Lua backend or native Windows Python implementation.
 
@@ -109,6 +109,6 @@ before I/O; unique IDs are sorted and unselected profiles are not read.
 
 The [system adapter](PROFILE_READER.en.md) checks Unix ownership, directory
 walk/descriptors and bounded reads; mock/native Linux tests passed.
-Package provenance, installer coordination and target checks remain.
+Isolated target checks are accepted; package provenance, installer coordination and integration remain.
 Maintenance/active_operations are caller assertions, not transport quiescence.
 Schema validity does not prove device safety.

@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Accepted isolated c68dec5 reader/loader target verification on OpenWrt 19.07.9/MIPS: 52 Lua groups, native replacements and FD stability. Specification 1.27 records coverage and remaining limits. Documentation only; runtime/installed core unchanged.
+
 - Linux/nixio profile reader: trusted directory/permission/descriptor checks, no-follow, bounds and cleanup. 13 fault groups and native WSL file/race/FD tests; specification 1.26. No modbusd/router changes; package provenance and installer coordination remain.
 
 - Added isolated Lua profile loading: strict schema, limits, shared maps and atomic publication; 19 test groups, specification 1.25. Reader is injected; production filesystem checks and modbusd integration remain.

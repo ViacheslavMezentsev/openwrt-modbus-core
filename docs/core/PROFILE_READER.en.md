@@ -44,7 +44,7 @@ are used; NONBLOCK comes from nixio.
 Sources: [asm-generic](https://github.com/torvalds/linux/blob/v4.14/include/uapi/asm-generic/fcntl.h),
 [MIPS](https://github.com/torvalds/linux/blob/v4.14/arch/mips/include/uapi/asm/fcntl.h).
 Only Linux mips/mipsel and host x86_64 accepted. Missing nixio/procfs fails closed.
-Native OpenWrt/MIPS hardware remains untested.
+Isolated OpenWrt/MIPS verification is accepted; conditions are recorded below.
 
 Installation must not modify files/catalogue concurrently with activation.
 Metadata checks detect tested replacements, not hostile root, same-metadata
@@ -67,3 +67,25 @@ To repeat, build host Lua 5.1/nixio at the pinned revision; configure LUA_BIN,
 LUA_PATH, LUA_CPATH and optionally LD_LIBRARY_PATH. From the repository run
 python3 scripts/test_profile_reader_native.py as host root.
 Native tests are outside make all; mock success does not replace them.
+
+## Accepted target verification — 2026-10-15
+
+Code c68dec5 was tested on MR3020 v3.30, OpenWrt 19.07.9, kernel 4.14.267,
+Lua 5.1, machine=mips; luci-lib-nixio git-22.045.73925-36e5c1c-1.
+Isolated module/test copies matched SHA256; the installed core was not upgraded.
+
+PASS: 20 strict JSON groups, 19 schema/activation groups, 13 reader fault groups.
+Real filesystem checks covered permissions/UID, sizes, FIFO, symlinks and hardlinks;
+three open/read replacements were rejected. FD count did not grow after 200 reads.
+The real reader -> loader activated a profile and preserved its snapshot on a later
+read failure. The system() factory initialized successfully.
+
+Positive reads used a separate trusted temporary directory under /root.
+The production catalogue was neither created nor read through system().
+30 installed-file/configuration hashes and core/demo PID/starttime remained unchanged.
+Core stayed online/valid with fresh BluePill/demo data. Fixtures were removed;
+no serial access, modbusd integration or service restart.
+
+This accepted isolated observation is not a general platform guarantee.
+Transport integration, installer exclusion, package provenance, long-term operation
+and total RAM/CPU/latency remain unverified. Raw hardware logs/fixtures stay outside Git.
