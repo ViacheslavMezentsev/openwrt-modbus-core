@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.29 and schoolbell draft 1.5. A one-sample
+User-facing scope follows core draft 1.30 and schoolbell draft 1.5. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -61,7 +61,8 @@ This sequence expands P01a/P01b; it does not mark them complete or authorize har
 - [ ] M02 map integration — Coordinate installer exclusion/package provenance and connect the Lua loader; add evidenced device profiles and measure total Lua memory/serialization peaks. Host profiles do not establish device safety or atomic snapshots.
 - [x] M02 Lua states — Port isolated RTU/TCP states with injected monotonic clock and byte-completion I/O; 30 Lua test groups. No native backend, scheduler or modbusd.
 - [x] M02 Lua composition — FIFO, fixed RTU rounds, independent TCP, coalescing, expiry and pass quotas with fake byte I/O; 19 Lua test groups (TC-132). Synthetic IPC only; no runtime integration.
-- [ ] M02 Lua grouping — Integrate validated maps, compatible read grouping, lazy fragments and assembly reservations with the Lua scheduler. Preserve FIFO/write barriers and account for payload plus Lua allocation peaks.
+- [x] M02 Lua grouping — Validated profile snapshot, compatible FIFO reads, lazy fragments, packed assembly/fan-out and shared payload reservations; 26 Lua test groups (TC-133). No runtime/native I/O or hardware changes.
+- [ ] M02 Lua memory — Measure total Lua allocation/GC peaks for profiles, maximum concurrent assemblies, bit packing and fan-out; payload reservations exclude transient strings, byte tables, results and I/O. Agree target limits before runtime integration.
 - [ ] M02 native backend — Implement bounded serial/socket setup/TX completion and generation-aware event delivery, after defining the driver contract; no modbusd/hardware changes without the corresponding stage.
 - [ ] M03 — Integrate validated multiport configuration, diagnostics, legacy compatibility and event servicing into modbusd after M01/M02; finalize addressing before integration.
 - [ ] M04 — After separate installation approval, run the single-port regression with the existing BluePill. Later use the separate Serial Monster board as a gateway to agreed external RTU responders for multiport hardware checks.

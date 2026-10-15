@@ -1,5 +1,7 @@
 -- Core 6.8.2/13/14/15: isolated FIFO/round composition, no real I/O or IPC.
 local state = require("modbus.transport_state")
+local groups=require("modbus.read_groups")
+local profiles=require("modbus.device_profiles")
 local M,S={},{}
 S.__index=S
 local MAX=9007199254740991
@@ -13,7 +15,11 @@ function M.new(transports,options)
     plain(transports)
     if options==nil then options={} end;plain(options)
     local cfg={queue_limit=32,quantum=10,ipc_limit=128}
-    for k,v in pairs(options) do assert(cfg[k]~=nil,"option");cfg[k]=v end
+    for k,v in pairs(options) do
+        assert(cfg[k]~=nil or k=="profiles" or k=="assembly_pool","option");cfg[k]=v
+    end
+    assert(cfg.profiles==nil or profiles.is_snapshot(cfg.profiles),"validated profile snapshot")
+    assert(cfg.assembly_pool==nil or groups.is_pool(cfg.assembly_pool),"assembly pool")
     int(cfg.queue_limit,1,128);int(cfg.quantum,1,100);int(cfg.ipc_limit,1,128)
     local n=0
     for k in pairs(transports) do int(k,1,7);n=n+1 end
@@ -33,11 +39,16 @@ function M.new(transports,options)
     end
     self.now,self.cursor,self.ipc_pending,self.round_number=0,1,0,0
     self.members,self.pending={},{}
+    self.groups,self.memory_blocked={},{}
+    self.pool=self.assembly_pool or groups.pool()
     return self
 end
 function S:enqueue(name,request,options)
     local t=assert(self.ports[name],"endpoint")
-    local q=state.validate_request(request,t.kind)
+    local q=state.validate_request(request,t.kind,self.profiles~=nil)
+    if self.profiles and q["function"]~=6 then
+        q=groups.authorize(self.profiles:profile(q.device_id),q)
+    end
     if options==nil then options={} end;plain(options)
     for k in pairs(options) do assert(k=="expiry" or k=="periodic" or k=="readback","enqueue option") end
     local periodic,readback=options.periodic,options.readback
@@ -68,9 +79,15 @@ function S:enqueue(name,request,options)
             end
         end
     end
+    local active=self.groups[name]
+    if active then
+        for _,e in ipairs(active.group.entries) do
+            assert(e.request.operation_id~=q.operation_id,"duplicate active consumer")
+        end
+    end
     assert(not t.op or t.op.operation_id~=q.operation_id,"duplicate active")
     for _,entry in ipairs(queue) do assert(entry.request.operation_id~=q.operation_id,"duplicate pending") end
-    if #queue>=self.queue_limit then return "busy" end
+    if #queue+math.max(0,(active and #active.group.entries or 0)-1)>=self.queue_limit then return "busy" end
     queue[#queue+1]={request=q,admitted=self.now,
         expiry=math.min(add(self.now,t.operation_timeout),options.expiry or MAX),
         periodic=periodic,readback=readback}
@@ -98,6 +115,32 @@ function S:_expire(name,results)
         else kept[#kept+1]=e end
     end
     self.queues[name]=kept
+end
+-- Logical validity must not expose successful intermediate wire fragments.
+local function validity(t,a,ok,now)
+    local id=a.group.entries[1].request.device_id
+    local sample=t.samples[id]
+    if sample then sample.valid=ok;sample.last_success=ok and now or a.previous_success end
+    if t.current_device==id then
+        t.valid=ok;t.last_success=ok and now or a.previous_success
+    end
+end
+function S:_complete(name,result,outputs)
+    local t,a=self.ports[name],self.groups[name]
+    local completed=a:finish(result)
+    validity(t,a,#completed>0 and completed[1].outcome=="ok",self.now)
+    for _,v in ipairs(completed) do outputs[#outputs+1]=v end
+    if #completed>0 then
+        self.pool:release(a);self.groups[name]=nil;self.pending[name]=nil
+    end
+end
+-- Cancels the whole active logical group; results are returned by the next step.
+function S:cancel(name)
+    local t=assert(self.ports[name],"endpoint");local a=self.groups[name]
+    if not a then return false end
+    a.cancelled=true
+    if t.op then t:cancel() end
+    return true
 end
 local function validate_event(event)
     plain(event)
@@ -140,16 +183,27 @@ function S:step(now,events)
             out.io_bytes[name]=e.kind=="rx" and #e.data or e.kind=="tx" and e.data or 0
         end
         local completed=t:drain_results()
-        for _,value in ipairs(completed) do out.results[#out.results+1]=value end
-        if #completed>0 then self.pending[name]=nil end
+        for _,value in ipairs(completed) do
+            if self.groups[name] then self:_complete(name,value,out.results)
+            else out.results[#out.results+1]=value;self.pending[name]=nil end
+        end
+        local a=self.groups[name]
+        if a and not t.op and (a.cancelled or now>=a.group.expiry) then
+            local q=a:wire()
+            self:_complete(name,{operation_id=q.operation_id,device_id=q.device_id,
+                transport_id=name,outcome=a.cancelled and "cancelled" or "expired",
+                attempts=0,sent_attempts=0,start=a.group.start,["end"]=now,data=""},out.results)
+        end
     end
     local eligible={}
     for _,name in ipairs(out.order) do
         local t=self.ports[name]
-        if #self.queues[name]>0 and t.state=="idle" and not t.op and now>=t.ready_at
+        if (#self.queues[name]>0 or self.groups[name]) and t.state=="idle" and not t.op and now>=t.ready_at
             and t.transitions-before[name]<=4 then eligible[#eligible+1]=name end
     end
-    if empty(self.pending) then
+    self.memory_blocked={}
+    local new_round=empty(self.pending)
+    if new_round then
         self.members={}
         for _,name in ipairs(eligible) do
             if self.ports[name].kind=="rtu" then
@@ -157,15 +211,39 @@ function S:step(now,events)
                 out.round_started[#out.round_started+1]=name
             end
         end
-        if #out.round_started>0 then self.round_number=self.round_number+1 end
     end
     for _,name in ipairs(eligible) do
         local t=self.ports[name]
         if t.kind=="tcp" or self.pending[name] then
-            local e=table.remove(self.queues[name],1)
-            assert(t:admit(e.request,e.expiry,e.admitted),"eligible admission")
-            assert(t:begin() or #t.results>0,"eligible begin")
+            local a=self.groups[name]
+            if not a then
+                local queue=self.queues[name]
+                local head=queue[1].request
+                local profile=self.profiles and self.profiles:profile(head.device_id)
+                local g=groups.plan(queue,profile)
+                a=groups.assembly(g)
+                if self.pool:acquire(a,groups.size(head["function"],g.count)) then
+                    for _=1,#g.entries do table.remove(queue,1) end
+                    a.previous_success=t.samples[head.device_id] and t.samples[head.device_id].last_success
+                    self.groups[name]=a
+                else
+                    a=nil;self.memory_blocked[name]=true;self.pending[name]=nil
+                end
+            end
+            if a then
+                assert(t:admit(a:wire(),a.group.expiry,a.group.start),"eligible admission")
+                assert(t:begin() or #t.results>0,"eligible begin")
+            end
         end
+    end
+    if new_round then
+        local started={}
+        for _,name in ipairs(out.round_started) do
+            if not self.memory_blocked[name] then started[#started+1]=name
+            else self.members[name]=nil end
+        end
+        out.round_started=started
+        if #started>0 then self.round_number=self.round_number+1 end
     end
     out.ipc_serviced=math.min(8,self.ipc_pending) -- model work units, NOT wire IPC
     self.ipc_pending=self.ipc_pending-out.ipc_serviced
@@ -191,7 +269,14 @@ function S:next_wait()
         if t.state=="quarantine" and t.quarantine_end<MAX then
             deadline(math.max(add(t.quarantine_end,1),t.quiet_end))
         end
-        if #self.queues[name]>0 and t.state=="idle" and (t.kind=="tcp" or empty(self.pending)) then
+        local a=self.groups[name]
+        if a and a.cancelled then return 0 end
+        if a and not t.op then
+            deadline(a.group.expiry)
+            if t.state=="idle" then deadline(t.ready_at) end
+        end
+        if #self.queues[name]>0 and not self.memory_blocked[name] and t.state=="idle"
+            and (t.kind=="tcp" or empty(self.pending)) then
             deadline(t.ready_at)
         end
     end

@@ -112,3 +112,5 @@ walk/descriptors and bounded reads; mock/native Linux tests passed.
 Isolated target checks are accepted; package provenance, installer coordination and integration remain.
 Maintenance/active_operations are caller assertions, not transport quiescence.
 Schema validity does not prove device safety.
+
+Revision 1.30: validated snapshots now feed the isolated [Lua scheduler](READ_GROUPING.en.md). is_snapshot(value) identifies snapshots issued by this loader; ordinary tables fail validation. Fragments and payload reservations are implemented; total RAM measurement and production integration remain.

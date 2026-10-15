@@ -78,7 +78,7 @@ function T:confirm_sync(evidence)
     self.rx="";self.ready_at=add(self.now,self.gap)
 end
 -- Shared pure validation/copy for scheduler admission and individual states.
-function M.validate_request(request,kind)
+function M.validate_request(request,kind,logical)
     assert(kind=="rtu" or kind=="tcp","transport kind")
     plain(request)
     local q=copy(request)
@@ -95,7 +95,7 @@ function M.validate_request(request,kind)
     local fc=q["function"]
     assert(fc==1 or fc==2 or fc==3 or fc==4 or fc==6,"reads or FC06 probe only")
     int(q.address,0,65535)
-    int(q.count,fc==6 and 0 or 1,fc==6 and 65535 or fc<=2 and 2000 or 125)
+    int(q.count,fc==6 and 0 or 1,fc==6 and 65535 or logical and (fc<=2 and 8192 or 512) or fc<=2 and 2000 or 125)
     assert(fc==6 or q.address+q.count<=65536,"read range")
     assert(type(q.safe_read)=="boolean" and not (fc==6 and q.safe_read),"safe_read")
     return q

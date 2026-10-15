@@ -197,3 +197,5 @@ These object-count bounds are not measured RAM or CPU-time budgets.
 FC06 remains a write test probe; writes/readback retain FIFO order.
 Maps, read grouping, fragments and memory reservations are the next layer.
 Native I/O, UCI, real IPC, modbusd and hardware timing/RAM are not verified here.
+
+Revision 1.30: [Lua grouping](READ_GROUPING.en.md#isolated-lua-composition-revision-130) adds profiles/assembly_pool, fragments and active-group cancellation. The no-profile mode remains; backend/modbusd are disconnected.

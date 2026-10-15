@@ -1,6 +1,8 @@
 -- Core 6.9.1-3: isolated schema/activation; filesystem trust is adapter-owned.
 local json = require("modbus.json_strict")
 local M = {}
+local snapshots=setmetatable({}, {__mode="k"})
+function M.is_snapshot(value) return snapshots[value]==true end
 local BYTES, RANGES, PROFILES, TOTAL, DEVICES = 16384, 64, 16, 256, 32
 local function fail(code) error({code=code}, 0) end
 local function identifier(id)
@@ -81,7 +83,7 @@ function M.decode(text, expected_id)
     return value
 end
 local function view(bindings, profiles, profile_count, range_count)
-    return readonly({
+    local result=readonly({
         profile=function(_, device) return profiles[bindings[device]] end,
         binding=function(_, device) return bindings[device] end,
         devices=function()
@@ -92,6 +94,8 @@ local function view(bindings, profiles, profile_count, range_count)
         profile_count=function() return profile_count end,
         range_count=function() return range_count end
     })
+    snapshots[result]=true
+    return result
 end
 function M.new(read_profile)
     -- Trusted synchronous callback(id, maximum_bytes). No default io.open fallback.

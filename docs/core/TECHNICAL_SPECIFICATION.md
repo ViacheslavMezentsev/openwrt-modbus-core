@@ -5,7 +5,7 @@
 | Реквизит | Значение |
 | :--- | :--- |
 | **Документ** | TECHNICAL_SPECIFICATION.md |
-| **Ревизия** | 1.29 (черновик для согласования) |
+| **Ревизия** | 1.30 (черновик для согласования) |
 | **Дата формирования** | 15.10.2026 |
 | **Метод формирования** | Исходная ревизия по `9d6cbea`; ревизия 1.1 по базе `461b69a` и согласованному отказу для слишком большой записи журнала; ревизия 1.2 по `ee4dabe` и принятым результатам стенда; ревизия 1.3 по согласованной политике legacy-сегментов; ревизия 1.4 — согласованное восстановление demo; ревизия 1.5 — разделение владельцев требований |
 | **Целевая платформа** | OpenWrt 19.07.9, MR3020 v3, kernel 4.14.267, Lua 5.1; WeAct BluePill Plus v1.1 STM32F103C8T6 |
@@ -47,6 +47,16 @@
 | 1.27 | 15.10.2026 | Принята изолированная проверка reader/loader c68dec5 на OpenWrt/MIPS; уточнены TC-127–130 и матрица. Без runtime-изменений. |
 | 1.28 | 15.10.2026 | Изолированные Lua RTU/TCP states, подменяемые часы и события I/O, TC-131. Без native backend/modbusd. |
 | 1.29 | 15.10.2026 | Lua-композиция FIFO/RTU rounds/TCP, дедлайны очередей и квоты; 19 групп host-тестов, TC-132. Без grouping/native I/O/modbusd/роутера. |
+| 1.30 | 15.10.2026 | Lua FIFO grouping по снимку профилей, lazy fragments, packed assembly/fan-out и общий резерв; 26 групп тестов, TC-133. Без native I/O/modbusd/роутера. |
+
+### Изменения ревизии 1.30
+
+Изменённые и новые пункты ревизии 1.30 помечены (р.1.30).
+
+| Пункты | Тип | Суть |
+| :--- | :--- | :--- |
+| TC-125/126/133, матрица 4.7/6.9 | изм./нов. | Lua-группировка/сборки и резерв с подменяемым I/O; ограничения hardware/runtime сохранены |
+| Приложение Y | нов. | API снимка/пула, временные копии и граница реализации |
 
 ### Изменения ревизии 1.29
 
@@ -1122,14 +1132,15 @@ core/demo/schoolbell, а также проверять локальные цел
 | TC-122 | Legacy/new migration, два одинаковых unit, hotplug | Legacy контракт сохранён, новые ID не смешиваются, перепривязка проверяется; D отдельно после согласования. ПЛАН (р.1.19) |
 | TC-123 | JSON bounds, duplicate keys, types, nesting, ID/path | Отказ до активации; частично host loader, production — план (р.1.23) |
 | TC-124 | Shared maps, aggregate caps, failed replacement, cold start | Один разбор общей карты; прежние объекты сохранены, холодный отказ пуст; частично host (р.1.23) |
-| TC-125 | 1024 bytes, 16 fragments/consumers, +1 boundaries | Отказ до enqueue либо остановка группы без потери FIFO; частично host (р.1.23) |
-| TC-126 | Pool saturation, release, interfragment lifetime | Резерв до запуска, ожидание не продлевает срок; все terminal исходы освобождают; частично host (р.1.23) |
+| TC-125 | 1024 bytes, 16 fragments/consumers, +1 boundaries | Отказ до enqueue либо остановка группы без потери FIFO; Python и Lua host: TC-133, оборудование — план (р.1.30) |
+| TC-126 | Pool saturation, release, interfragment lifetime | Резерв до запуска, исходный срок, cleanup; Python и Lua host: TC-133, общий RAM не измерен (р.1.30) |
 | TC-127 | Production decoder/dependency, ownership and RAM peak | Изолированная Lua/reader проверка target принята; runtime, package provenance и RAM peak — план (р.1.27) |
 | TC-128 | Lua без LuCI; duplicate/Unicode/null/types, числовая форма, пределы и +1 | 20 групп host и изолированный target PASS; общий RAM не измерен (р.1.27) |
 | TC-129 | Lua schema/defaults/types, пределы/+1, shared maps, сбои чтения/кандидата и повторный вход | 19 групп host/изолированный target PASS; реальный reader -> loader сохраняет snapshot при отказе; quiesce/RAM не проверены (р.1.27) |
 | TC-130 | Права/типы/ссылки, отказы I/O, подмена до/после open, рост, пределы и cleanup | 13 fault-групп и native Linux/nixio: три подмены, FD стабилен после 200 чтений; изолированный OpenWrt/MIPS PASS принят 15.10.2026, см. приложение V (р.1.27) |
 | TC-131 | Lua RTU/TCP: часы, фрагменты/CRC/MBAP, deadlines/retry/resync, generation/TID, write outcome и изоляция | 30 групп Lua 5.1 host PASS; native I/O/rounds/modbusd/аппаратный timing не проверены (р.1.28) |
 | TC-132 | Lua FIFO/RTU barrier/TCP: очередь, coalescing, expiry, квоты и подменяемые события I/O | 19 групп Lua 5.1 host PASS; grouping, IPC wire, native I/O/modbusd и RAM/тайминги оборудования не проверены (р.1.29) |
+| TC-133 | Lua grouping по профилям, слова/биты, FIFO/барьеры, лимиты/фрагменты/резерв, ошибки/отмена/повторы | 26 групп host PASS; partial result не публикуется, пул освобождается; без native I/O/modbusd и аппаратной RAM (р.1.30) |
 
 
 ### 7.3. Порядок приёмки
@@ -1273,8 +1284,9 @@ core/demo/schoolbell, а также проверять локальные цел
 | 4.7.7, 4.7.8 | `S/read_groups.py:Assembly`, FIFO-модель | T: TC-71, TC-119, `S/test_read_groups.py`; runtime/D — план (р.1.22) |
 | 6.9.1, 6.9.2 | S/device_profiles.py, S/profile_limits.py, pkg/usr/lib/modbus/device_profiles.lua | T: TC-123, TC-124, TC-129, S/test_device_profiles.py/.lua; Lua schema/reader host и изолированный target: TC-130; интеграция — план (р.1.27) |
 | 6.9.3 | S/device_profiles.py:ProfileStore, pkg/usr/lib/modbus/device_profiles.lua | T: TC-124, TC-129, host Lua activation; реальный quiesce — план (р.1.25) |
-| 6.9.4 | `S/read_groups.py`, `S/profile_limits.py` | T: TC-125, `S/test_device_profiles.py`; host (р.1.23) |
-| 6.9.5, 6.9.6 | `S/transport_scheduler.py`, `S/read_groups.py` | T: TC-126, `S/test_device_profiles.py`; host (р.1.23) |
+| 6.9.4 | S/read_groups.py, S/profile_limits.py; pkg/usr/lib/modbus/read_groups.lua, transport_scheduler.lua | T: TC-125, TC-133, S/test_device_profiles.py, S/test_read_groups.lua; host (р.1.30) |
+| 6.9.5, 6.9.6 | S/transport_scheduler.py, S/read_groups.py; pkg/usr/lib/modbus/read_groups.lua, transport_scheduler.lua | T: TC-126, TC-133, S/test_device_profiles.py, S/test_read_groups.lua; payload pool host, не весь RAM (р.1.30) |
+| 4.7.1–4.7.8, 6.8.13–6.8.15 | pkg/usr/lib/modbus/read_groups.lua, transport_scheduler.lua | T: TC-133; Lua FIFO grouping/rounds с fake I/O; native backend/runtime не подключены (р.1.30) |
 | 6.9.7 | Decoder, Lua schema и reader включены; package provenance/installer/runtime/RAM — план | I/T/D: TC-127 частично, TC-128, TC-129, TC-130 host и изолированный target, приложение V (р.1.27) |
 | 6.9.8 | pkg/usr/lib/modbus/json_strict.lua, pkg/usr/lib/modbus/json.lua | T: TC-128, S/test_json_strict.lua; Lua 5.1 host (р.1.24) |
 | 6.9.9 | pkg/usr/lib/modbus/profile_reader.lua | T/I: TC-130, S/test_profile_reader.lua, S/test_profile_reader_native.py/.lua; host и изолированный target (р.1.27) |
@@ -1791,3 +1803,24 @@ TC-117–119 остаются покрыты частично: объедине�
 резервирование сборки, реальный IPC и native serial/socket ещё не соединены
 с Lua-композицией. Modbusd, UCI и установленное ядро не изменены.
 Нормативные сроки и квоты прежнего контракта не пересмотрены.
+
+## Приложение Y. Lua-группировка и резерв (информативно, р.1.30)
+
+Принятый контракт 4.7/6.9 перенесён в Lua-композицию, TC-133.
+Scheduler удерживает проверенный снимок device_profiles, не перечитывает файлы
+и не меняет его при последующей активации store. Профиль определяет безопасность.
+Совместимое начало FIFO объединяется в пределах одной карты; записи/readback
+сохраняют барьеры. Общий Dop минимален, все исходные ID/start/квоты сохраняются.
+
+Полный резерв полезных данных предшествует dequeue и включению в RTU-раунд.
+Фрагменты вычисляются по индексу, сохраняются упакованные строки; valid/last_success
+в endpoint и samples[device] не публикуют промежуточный успех.
+Terminal failure/отмена/таймаут освобождают резерв и возвращают пустой payload.
+API и границы доверия: [READ_GROUPING](READ_GROUPING.md).
+
+26 групп host-тестов покрывают лимиты, битовые смещения, max frames,
+RTU gap/barrier, TCP/retry, shared-pool wait и cleanup.
+Резерв 8192 байта не учитывает Lua-объекты, временные строки/таблицы байтов,
+fan-out, JSON, RX/TX, results и работу GC. Это не аппаратный бюджет RAM.
+Native I/O, modbusd, UCI, установщик и реальные профили не подключены;
+новых аппаратных проверок этим этапом не выполнено.
