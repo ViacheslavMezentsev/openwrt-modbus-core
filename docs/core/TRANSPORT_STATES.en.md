@@ -149,3 +149,51 @@ write unknown/confirmed/not_sent and device/port isolation.
 Next separate stage: Lua queue/round composition and quotas with fake I/O.
 Native serial/socket, UCI, maps/reservations, installer, modbusd and hardware
 timing/RAM remain incomplete and are not verified by this stage.
+
+## Lua queue and round scheduler (revision 1.29)
+
+[transport_scheduler.lua](../../pkg/usr/lib/modbus/transport_scheduler.lua)
+composes states; [19 test groups](../../scripts/test_transport_scheduler.lua)
+run in make all/ci-core (TC-132). The module ships in IPK but modbusd does not call it.
+This is an internal trusted-driver API, not a public package interface.
+
+- new(transports, options): dense list of fresh states with unique transport_id,
+  up to 3 RTU and 4 TCP. The scheduler owns time exclusively; states with an
+  external clock or existing work are rejected.
+- enqueue(id, request, options): validates/copies through the shared
+  transport_state.validate_request. Returns accepted, coalesced or busy;
+  invalid contracts raise Lua errors. Up to 32 logical devices with fixed
+  endpoint/unit bindings; aliases and duplicate pending/active operation_id
+  on one port are rejected.
+- Enqueue options: absolute expiry in monotonic milliseconds, periodic
+  (1–32 byte key for reads), readback (boolean). Total lifetime starts at enqueue;
+  waiting for a round does not extend it. Identical pending periodic work coalesces
+  without replacing the original deadline/operation_id; changing the plan under
+  the same key is rejected. Active operations and readback do not coalesce.
+- step(now, events): monotonic integer milliseconds and at most one event per
+  endpoint. kind: setup, tx, tx_complete, rx, error; data holds confirmed TX byte
+  count or RX string. TCP requires the state generation. Returns results,
+  consumed, order, transitions, io_bytes, round_started, ipc_serviced.
+  The driver retains unconsumed events with their generation for a later pass.
+  Complete batch shape is checked before time changes; semantic validity of
+  completions (such as TX not exceeding remaining wire) is a trusted-driver contract.
+- next_wait(): earliest deadline capped by quantum; nil means wait for an external
+  event. post_ipc(n) only counts bounded synthetic work, at most 8 units per pass;
+  it does not implement Unix IPC.
+
+A round captures only ready RTU endpoints with work. Results return immediately;
+retries remain in the same barrier. Terminal failure releases membership even
+while a line remains quarantined. TCP is independent. Traversal order rotates.
+Each pass services deadlines and expires the entire bounded queue, then handles
+at most one I/O event per endpoint, with at most 512 bytes and 8 state transitions
+per endpoint. Starting the next operation counts towards the same quota.
+
+Scheduler options: queue_limit=32 (1–128) waiting entries per endpoint plus one
+active operation, quantum=10 ms (1–100), ipc_limit=128 (1–128). These follow the host
+model. At the maximum queue sizes, up to 903 results may return together
+(7 × 128 plus 7 active); the scheduler does not retain returned results.
+These object-count bounds are not measured RAM or CPU-time budgets.
+
+FC06 remains a write test probe; writes/readback retain FIFO order.
+Maps, read grouping, fragments and memory reservations are the next layer.
+Native I/O, UCI, real IPC, modbusd and hardware timing/RAM are not verified here.

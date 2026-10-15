@@ -49,6 +49,7 @@ if LUA_BIN="$(find_lua)"; then
         "$LUA_BIN" scripts/test_device_profiles.lua
         "$LUA_BIN" scripts/test_profile_reader.lua
         "$LUA_BIN" scripts/test_transport_state.lua
+        "$LUA_BIN" scripts/test_transport_scheduler.lua
         "$LUA_BIN" scripts/test_core.lua "$test_dir/core"
         "$LUA_BIN" scripts/test_rtu.lua
         "$LUA_BIN" scripts/test_topics.lua "$test_dir"

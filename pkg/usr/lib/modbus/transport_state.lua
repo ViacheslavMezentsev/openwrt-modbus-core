@@ -77,9 +77,9 @@ function T:confirm_sync(evidence)
     self.sync_evidence=evidence;self:_state("idle")
     self.rx="";self.ready_at=add(self.now,self.gap)
 end
-function T:admit(request,expiry,admitted_at)
-    self:_service()
-    if self.op or #self.results>0 or self.state=="quarantine" then return false end
+-- Shared pure validation/copy for scheduler admission and individual states.
+function M.validate_request(request,kind)
+    assert(kind=="rtu" or kind=="tcp","transport kind")
     plain(request)
     local q=copy(request)
     local allowed={operation_id=true,device_id=true,unit=true,["function"]=true,
@@ -91,13 +91,19 @@ function T:admit(request,expiry,admitted_at)
     if q.address==nil then q.address=0 end
     if q.count==nil then q.count=1 end
     if q.safe_read==nil then q.safe_read=false end
-    int(q.unit,self.kind=="rtu" and 1 or 0,self.kind=="rtu" and 247 or 255)
+    int(q.unit,kind=="rtu" and 1 or 0,kind=="rtu" and 247 or 255)
     local fc=q["function"]
     assert(fc==1 or fc==2 or fc==3 or fc==4 or fc==6,"reads or FC06 probe only")
     int(q.address,0,65535)
     int(q.count,fc==6 and 0 or 1,fc==6 and 65535 or fc<=2 and 2000 or 125)
     assert(fc==6 or q.address+q.count<=65536,"read range")
     assert(type(q.safe_read)=="boolean" and not (fc==6 and q.safe_read),"safe_read")
+    return q
+end
+function T:admit(request,expiry,admitted_at)
+    self:_service()
+    if self.op or #self.results>0 or self.state=="quarantine" then return false end
+    local q=M.validate_request(request,self.kind)
     if expiry~=nil then int(expiry,0,MAX) end
     local start=admitted_at
     if start==nil then start=self.now end
