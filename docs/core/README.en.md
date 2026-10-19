@@ -4,7 +4,7 @@
 
 The core owns public events, subscriptions, notifications, common scheduling and Modbus. Application handlers and audio execution belong to client packages. The general API and managed offline installation are not implemented yet.
 
-[ТЗ 1.30](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.31](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -72,3 +72,5 @@ Added [isolated Lua RTU/TCP states](TRANSPORT_STATES.en.md): 30 test groups, inj
 Isolated Lua scheduler: FIFO, fixed RTU rounds, independent TCP, enqueue deadlines, coalescing and pass quotas; 19 host test groups. Specification 1.29 / TC-132. No read grouping, real IPC/backend, modbusd or router changes.
 
 Lua scheduler accepts a validated profile snapshot: safe FIFO-prefix grouping, lazy fragments, complete-result fan-out and a shared 8 KiB payload reservation pool. 26 host test groups, specification 1.30 / TC-133. No modbusd, native I/O or router changes; total Lua memory budget remains unmeasured.
+
+[System I/O](SYSTEM_IO_CONTRACT.en.md): accepted revision 1.31 requirements; setpoint/STOP command layer is separate, no implementation.

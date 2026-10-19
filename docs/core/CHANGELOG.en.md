@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Core specification 1.31: accepted system-I/O requirements, pre-write deadlines, operation identity, TX completion/cleanup. Setpoint stream and STOP are dependent contracts; TC-134–139 planned, no implementation.
+
 - Lua scheduler accepts a validated profile snapshot: safe FIFO-prefix grouping, lazy fragments, complete-result fan-out and a shared 8 KiB payload reservation pool. 26 host test groups, specification 1.30 / TC-133. No modbusd, native I/O or router changes; total Lua memory budget remains unmeasured.
 
 - Isolated Lua scheduler: FIFO, fixed RTU rounds, independent TCP, enqueue deadlines, coalescing and pass quotas; 19 host test groups. Specification 1.29 / TC-132. No read grouping, real IPC/backend, modbusd or router changes.

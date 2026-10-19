@@ -23,3 +23,5 @@ silently change networking.
 
 Separate requirements/history support later repository extraction.
 Core 1.30 is an architectural baseline, not a released public API version.
+
+Dependency: [core system-I/O contract](../../core/SYSTEM_IO_CONTRACT.en.md), core 1.31. Setpoints/STOP belong to the future command layer; permission/watchdog details remain open.
