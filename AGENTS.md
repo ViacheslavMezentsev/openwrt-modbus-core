@@ -93,3 +93,5 @@ English workflow: [DEVELOPMENT.en.md](docs/DEVELOPMENT.en.md).
 
 CI: [порядок и фильтры](docs/CI.md). Перед land проверять общий `ci-gate`
 и точный HEAD. После Windows Git проверять чистоту также WSL Git с учётом прав.
+
+Пакет rover ведёт отдельные требования и историю в docs/packages/rover/; пока только проект, без runtime/IPK.

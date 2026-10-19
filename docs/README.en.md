@@ -21,6 +21,7 @@ Historical examples do not replace the current specification or DEVELOPMENT comm
 - [Core](core/README.en.md): specification 1.8 and component history.
 - [Demo](packages/demo/README.en.md): specification 1.1 and consumer tests.
 - [Schoolbell](packages/schoolbell/README.en.md): specification 1.3, future package scope.
+- [Rover](packages/rover/README.en.md): specification 1.0, wheeled rover, video/Wi-Fi; requirements only.
 
 Each component owns RU/EN README and CHANGELOG files and a Russian specification.
 The former TECHNICAL_SPECIFICATION.md is a navigation stub. New requirement/test

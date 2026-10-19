@@ -70,12 +70,13 @@ def main():
             errors += link_errors(path, path.read_text(encoding='utf-8'))
     for spec in ('docs/core/TECHNICAL_SPECIFICATION.md',
                  'docs/packages/demo/TECHNICAL_SPECIFICATION.md',
-                 'docs/packages/schoolbell/TECHNICAL_SPECIFICATION.md'):
+                 'docs/packages/schoolbell/TECHNICAL_SPECIFICATION.md',
+                 'docs/packages/rover/TECHNICAL_SPECIFICATION.md'):
         result = subprocess.run([sys.executable, str(vendor/'check_spec.py'), str(ROOT/spec), '--strict'])
         if result.returncode: errors.append(spec + ': specification check failed')
     if errors:
         raise SystemExit('\n'.join(errors))
-    print('[docs] tracked Markdown links/anchors and three specifications OK; vendor hashes verified')
+    print('[docs] tracked Markdown links/anchors and four specifications OK; vendor hashes verified')
 
 
 if __name__ == '__main__':

@@ -21,6 +21,7 @@
 - [Ядро](core/README.md): ТЗ 1.8 и собственная история.
 - [Demo](packages/demo/README.md): ТЗ 1.1, требования и проверки потребителя.
 - [Schoolbell](packages/schoolbell/README.md): ТЗ 1.3, границы будущего пакета.
+- [Rover](packages/rover/README.md): ТЗ 1.0, колёсный ровер, видео/Wi-Fi; проект требований.
 
 Каждый компонент ведёт свои README RU/EN, CHANGELOG RU/EN и русское ТЗ.
 Старый TECHNICAL_SPECIFICATION.md оставлен как указатель. Новые ссылки на

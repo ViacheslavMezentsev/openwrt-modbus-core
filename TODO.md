@@ -159,3 +159,16 @@ The current USB RTU register map is a bench prototype, not a commitment to the g
 ## Distributed router gateway candidate
 
 - [ ] Research an optional router-owned Modbus TCP server/gateway: central client/AP and remote Ethernet routers with RS-485 lines. Define endpoint/unit-to-line/unit routes, serialized shared line access, client quotas, permissions/write ownership, timeout propagation, cache freshness and loop prevention. Current contract is client-only; Wi-Fi/network configuration and server implementation require separate scope.
+
+
+## Rover example package — separate branches
+
+- [x] R00 — Independent rover specification 1.0: two differential-drive bases, Wi-Fi browser video overlay and RTU/TCP. Safety proposals require agreement; no runtime/IPK.
+- [ ] R01 — Agree hardware, mixer, TTL/watchdog, arm/disarm, session ownership and video-loss policy (rover 8.2).
+- [ ] R02 — Implement mixer/session/stale-command/stop tests with fake I/O; no motors.
+- [ ] R03 — Prototype isolated local UI/video; measure CPU/RAM, freshness and latency before selecting streaming format/dependencies.
+- [ ] R04 — Agree generic safe writes and queues with core, board map, atomic setpoints/ack and independent watchdog before RTU/TCP motor integration.
+- [ ] R05 — Prepare offline bundle, settings/import and explicit Wi-Fi setup via mr3020-modes; installation must not arm motors or silently change networking.
+- [ ] R06 — After separate approval, test with lifted wheels, independent drive-power cutoff and measured watchdog/video-loss stops; ground driving follows separately.
+
+Rover does not replace pending core native-I/O and Lua memory work.
