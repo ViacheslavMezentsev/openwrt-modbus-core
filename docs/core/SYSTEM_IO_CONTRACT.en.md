@@ -100,3 +100,5 @@ this document neither selects them nor extends the write allowlist.
 Old model results do not establish backend PASS. Fake-I/O tests precede host
 capability/memory checks; hardware timing/watchdog tests need separate approval.
 No network, firmware or router changes are part of this stage.
+
+Revision 1.32 accepts four syscalls/endpoint and a native dependency. [Test API and host checks](IO_ADAPTER_API.en.md) refine previously open mechanisms; full native backend is absent.

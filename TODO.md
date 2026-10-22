@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.31 and schoolbell draft 1.5. A one-sample
+User-facing scope follows core draft 1.32 and schoolbell draft 1.5. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -64,7 +64,8 @@ This sequence expands P01a/P01b; it does not mark them complete or authorize har
 - [x] M02 Lua grouping — Validated profile snapshot, compatible FIFO reads, lazy fragments, packed assembly/fan-out and shared payload reservations; 26 Lua test groups (TC-133). No runtime/native I/O or hardware changes.
 - [ ] M02 Lua memory — Measure total Lua allocation/GC peaks for profiles, maximum concurrent assemblies, bit packing and fan-out; payload reservations exclude transient strings, byte tables, results and I/O. Agree target limits before runtime integration.
 - [x] M02 I/O contract — Accepted core 1.31 system-I/O requirements and planned TC-134–139; operation/attempt identity, pre-write validity, bounded execution and cleanup. Documentation only.
-- [ ] M02 I/O details — Resolve core 9.2.29: concrete syscall/helper capabilities, bounded TX completion/setup/close, call budget and wakeup/token API before implementation.
+- [x] M02 I/O host/API — Accepted four-call budget and native dependency; isolated injected Lua API with 20 test groups, host mechanism probes and pinned nixio audit (TC-140/141). No native implementation or scheduler integration.
+- [ ] M02 I/O details — Implement/verify target-ABI single-call primitives and bounded setup/close/TX completion, then connect token/wakeup API to states/scheduler with fake-I/O tests; measure total RAM. Host capabilities do not prove target timing.
 - [ ] M02 command contract — Resolve core 9.2.30 separately: expiring permissions to the board, setpoint replacement/results and STOP priority versus rounds/resources. Existing FIFO/resync is unchanged; rover watchdog is board-owned.
 - [ ] M02 native backend — Implement bounded serial/socket setup/TX completion and generation-aware event delivery, after defining the driver contract; no modbusd/hardware changes without the corresponding stage.
 - [ ] M03 — Integrate validated multiport configuration, diagnostics, legacy compatibility and event servicing into modbusd after M01/M02; finalize addressing before integration.

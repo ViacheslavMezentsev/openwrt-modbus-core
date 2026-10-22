@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Specification 1.32: four-call endpoint budget and native dependency; isolated Lua I/O API with 20 test groups. Host mechanism probes and nixio audit; native backend, composition and target remain unverified.
+
 - Core specification 1.31: accepted system-I/O requirements, pre-write deadlines, operation identity, TX completion/cleanup. Setpoint stream and STOP are dependent contracts; TC-134–139 planned, no implementation.
 
 - Added separate rover requirements: 2+1/4 bases, browser video overlay, RTU/TCP and watchdog/stop proposals. Specification 1.0 joins docs CI; runtime/router unchanged.
