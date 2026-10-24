@@ -67,3 +67,5 @@ Schoolbell 5.0.1: persistent per-schedule colors from 16 muted shades, automatic
 Downgrading to 5.0.0 after saving color is incompatible with its strict schema. Rollback commands require the original draft to remain unchanged; new user data is never discarded automatically.
 
 In5.0.2, the time zone is configured inside Settings with explicit confirmation. It affects the router globally but never sets the UTC clock epoch. Earlier-stage LuCI links are no longer used. The palette changed while saved numeric color IDs remain stable.
+
+Version 5.0.3 fixes UCI persistence: target UCI disables commit with `-P`, so commit uses `-p`. Success requires a changed system file SHA256. The isolated `packages/schoolbell/tests/test_timezone_target.lua` regression reads the file after closing staging and then opens fresh staging; it does not reload system or change the live configuration.

@@ -47,9 +47,12 @@ end
 function clock()
     local h=require('luci.http')
     if h.getenv('REQUEST_METHOD')~='GET' then h.status(405,'Method Not Allowed');return end
+    local zone
+    local f=io.popen('/sbin/uci -q get system.@system[0].zonename 2>/dev/null','r')
+    if f then local value=f:read(129) or '';f:close();value=value:gsub('[\r\n]+$','');if #value>0 and #value<=128 and not value:find('[%c]')then zone=value end end
     local now=os.time()
     local t=os.date('*t',now)
-    respond({ok=true,epoch=now,year=t.year,month=t.month,day=t.day,
+    respond({ok=true,zone=zone,epoch=now,year=t.year,month=t.month,day=t.day,
         hour=t.hour,min=t.min,sec=t.sec})
 end
 local function module_version()

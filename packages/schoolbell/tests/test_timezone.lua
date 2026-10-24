@@ -26,3 +26,10 @@ luci.controller.schoolbell_test.timezone();assert(status==413 and security==0)
 length='100';luci.controller.schoolbell_test.timezone();assert(security==1)
 method='PUT';luci.controller.schoolbell_test.timezone();assert(status==405 and security==1)
 print('PASS timezone HTTP: request bounds, CSRF, method guard')
+
+local original=io.popen;local payload
+io.popen=function(command)assert(command:find('zonename',1,true));return {read=function()return 'Asia/Yekaterinburg\n'end,close=function()return true end}end
+package.loaded['luci.http']={getenv=function()return 'GET'end,header=function()end,prepare_content=function()end,write=function(s)payload=s end}
+luci.controller.schoolbell_test.clock();io.popen=original
+local value=assert(require('schoolbell.media_codec').decode(payload));assert(value.zone=='Asia/Yekaterinburg' and type(value.epoch)=='number')
+print('PASS clock: configured timezone name in public clock response')

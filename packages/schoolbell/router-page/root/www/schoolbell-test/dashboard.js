@@ -82,7 +82,7 @@
     var status=document.getElementById('clock-status'),sync=document.getElementById('clock-sync');sync.hidden=true;document.getElementById('timezone-hint').hidden=true;
     if(!sample || elapsed>90000){document.getElementById('router-clock').textContent='Время недоступно';status.textContent='Нет свежего ответа роутера. Сравнение часов отключено.';return;}
     document.getElementById('router-clock').textContent=new Date(sample.wall+elapsed).toLocaleString('ru-RU',Object.assign({},format,{timeZone:'UTC'}));
-    document.getElementById('router-zone').textContent=zone(sample.offset)+' · получено '+Math.floor(elapsed/1000)+' с назад';
+    document.getElementById('router-zone').textContent=(sample.name?sample.name+' · ':'')+zone(sample.offset)+' · получено '+Math.floor(elapsed/1000)+' с назад';
     document.getElementById('timezone-hint').hidden=sample.offset===-browser.getTimezoneOffset();
     var delta=(browser.getTime()-(sample.epoch+elapsed))/1000;
     if(sample.rtt>2000){status.textContent='Медленный ответ роутера: сравнение неточно. Ожидаем следующий опрос.';return;}
@@ -99,7 +99,7 @@
       var v=await response.json(),received=performance.now(),rtt=received-started;
       if(!v.ok || !Number.isInteger(v.epoch) || !['year','month','day','hour','min','sec'].every(function(k){return Number.isInteger(v[k]);}))throw new Error('clock');
       var wall=Date.UTC(v.year,v.month-1,v.day,v.hour,v.min,v.sec);
-      sample={received:received,epoch:v.epoch*1000+rtt/2,wall:wall+rtt/2,offset:Math.round((wall-v.epoch*1000)/60000),rtt:rtt};
+      sample={name:typeof v.zone==='string'?v.zone:null,received:received,epoch:v.epoch*1000+rtt/2,wall:wall+rtt/2,offset:Math.round((wall-v.epoch*1000)/60000),rtt:rtt};
     }catch(_){sample=null;}
     finally{clearTimeout(timer);inflight=false;draw();}
   }

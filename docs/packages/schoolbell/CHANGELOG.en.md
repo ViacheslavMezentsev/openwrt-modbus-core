@@ -1,5 +1,7 @@
 # Changelog
 
+
+5.0.3: fix UCI commit (-p instead of -P for commit only); regression reads the file after closing staging, not just the staged view.
 [Русский](CHANGELOG.md)
 
 ## [Unreleased]

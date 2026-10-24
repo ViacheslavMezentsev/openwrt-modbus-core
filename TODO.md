@@ -3,7 +3,7 @@
 ## Current state and next steps
 
 - [ ] Publish the repository Pages site after merge/CI using the manual workflow; see site/README.md.
-- [ ] Validate schoolbell timezone application on the live device after an explicit user action; isolated UCI commit/readback is tested. Verify zoneinfo-file targets separately.
+- [ ] Verify schoolbell timezone handling on zoneinfo-file targets; the POSIX TZ target has passed live application through the UI.
 
 - [ ] Connect schoolbell duty countdown to an active executor; keep drafts inactive. Define system-event subscription for the package journal (current log covers observed package/storage events only).
 

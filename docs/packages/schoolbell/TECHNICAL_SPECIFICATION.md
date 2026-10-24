@@ -991,7 +991,7 @@ Host-проверки р.1.15: 10 групп в `test_queue_linux.lua` чере�
 | TC-100 | 400 записей с ротацией, порядок при откате часов, размер, повреждение, недостаток места, прерывание каждой стадии | T: test_journal.lua; D: изолированное хранилище на target, без отключения питания (р.1.23) |
 | TC-101 | Палитра16, сохранение цвета, неизменность legacy, неверные типы/границы, удаления, reload и crash checkpoints; отдельная ссылка зоны при равных эпохах | T: test_schedule_colors.lua, test_schedule_store.py; I/UI: локальный браузер; D: проверка владельцем (р.1.24) |
 | TC-102 | Вкладка feedback, ссылки правильного репозитория, валидные формы bug/feature с обязательными полями, отсутствие автоотправки | I: YAML и UI; формы становятся доступны после merge в main (р.1.24) |
-| TC-103 | GET/no-op, whitelist, CSRF/размер, конфликт, pending UCI, ошибки commit/apply; native UCI в изолированном target каталоге | T: test_timezone.lua; D: target-проба без изменения живого system (р.1.25) |
+| TC-103 | GET/no-op, whitelist, CSRF/размер, конфликт, pending UCI, ошибки commit/apply; native UCI в изолированном target каталоге | T: test_timezone.lua; D: test_timezone_target.lua проверяет файл после закрытия staging и чтение в новом staging без изменения живого system (р.1.25) |
 | TC-104 | 16 xterm-цветов и контраст; общие исходники UI; локальные сохранения/preview/зона/журнал; запрет удалённого API и аппаратного звука | T: test-site.py, test-site-demo.js; I/UI: браузер, обе темы; публикация отдельно (р.1.25) |
 
 ## 7. Матрица прослеживаемости

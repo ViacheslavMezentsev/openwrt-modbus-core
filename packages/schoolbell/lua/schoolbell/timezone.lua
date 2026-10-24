@@ -26,6 +26,7 @@ function M.system(options)
  local fs=require('nixio.fs');local n=require('nixio')
  local path='/tmp/schoolbell-timezone-'..n.getpid();assert(not fs.lstat(path),'staging exists');assert(fs.mkdir(path,700))
  local function quote(s)return "'"..s:gsub("'", "'\\''").."'" end
+ -- -P disables commit on target UCI; use -p only for the commit invocation.
  local base='/sbin/uci -q -c '..quote(config)..' -P '..quote(path)..' '
  local function readuci(command)
   local f=assert(io.popen(base..command..' 2>/dev/null','r'));local text=f:read(32769) or '';f:close()
@@ -58,7 +59,9 @@ function M.system(options)
   local state=backend.read();if state.revision~=revision or state.pending then return false end
   assert(writeuci('set '..quote('system.'..state.section..'.zonename='..zone)))
   assert(writeuci('set '..quote('system.'..state.section..'.timezone='..posix)))
-  assert(writeuci('commit system'));local after=backend.read();return after.zone==zone and after.posix==posix
+  assert(os.execute('/sbin/uci -q -c '..quote(config)..' -p '..quote(path)..' commit system >/dev/null 2>&1')==0)
+  local after=backend.read()
+  return after.revision~=revision and after.zone==zone and after.posix==posix
  end
  function backend.apply()if opts.apply then return opts.apply()end;return os.execute('/etc/init.d/system reload >/dev/null 2>&1')==0 end
  function backend.matches(posix)

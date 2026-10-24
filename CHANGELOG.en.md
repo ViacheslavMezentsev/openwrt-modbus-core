@@ -1,5 +1,7 @@
 # Changelog
 
+
+Fixed schoolbell 5.0.3 timezone persistence: commit no longer uses the no-commit -P option; the configuration file revision must change.
 All notable changes to this project are documented here ([Русский](CHANGELOG.md)).
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 

@@ -46,7 +46,7 @@ window.fetch=async function(url,options){
  else if(name==='journal')out={ok:true,entries:clone(s.log),limit_bytes:16384};
  else if(name==='clock'){
   var t={};new Intl.DateTimeFormat('en-GB',{timeZone:s.zone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).forEach(function(p){t[p.type]=Number(p.value);});
-  out={ok:true,epoch:Math.floor(Date.now()/1000),year:t.year,month:t.month,day:t.day,hour:t.hour,min:t.minute,sec:t.second};
+  out={ok:true,zone:s.zone,epoch:Math.floor(Date.now()/1000),year:t.year,month:t.month,day:t.day,hour:t.hour,min:t.minute,sec:t.second};
  }else if(name==='timezone'){
   if(options && options.method==='POST'){
    var zone=body.get('zone');if(body.get('revision')!==s.zone)out={ok:false,code:'conflict'};
