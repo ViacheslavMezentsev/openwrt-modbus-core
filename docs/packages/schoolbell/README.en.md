@@ -76,3 +76,5 @@ Isolated [admission-time revision retention](MEDIA_ADMISSION.en.md): TC-72, nine
 [Isolated media manager](MEDIA_MANAGER.en.md): prepared objects, no production integration.
 
 - [Schoolbell manual sound check page](../../../packages/schoolbell/router-page/README.en.md).
+
+- [Saved schedule editor](SCHEDULE_EDITOR.en.md).

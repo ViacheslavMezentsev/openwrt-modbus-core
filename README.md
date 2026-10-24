@@ -110,3 +110,5 @@ Push и land выполняет владелец; land только после �
 ТЗ schoolbell 1.7: изолированная Lua-очередь проигрывания, FIFO по ресурсу, монотонный TTL/UTC, отмена владельцем и подменяемый player. 24 группы host-тестов; неизвестный исход удерживает ресурс. Без ядра/процессов/звука/роутера; media-only IPK прежний. [API](docs/packages/schoolbell/PLAYBACK_QUEUE.md).
 
 - [Страница ручной проверки звука schoolbell](packages/schoolbell/router-page/README.md).
+
+- [Редактор сохранённых расписаний schoolbell](docs/packages/schoolbell/SCHEDULE_EDITOR.md).

@@ -1,12 +1,27 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Школьный звонок · проверка звука</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css">
+<title>Школьный звонок · расписания</title>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=schedules1">
 <script src="/schoolbell-test/theme.js"></script></head>
-<body><main><header><div><p class="eyebrow">SCHOOLBELL / НАСТРОЙКИ СИСТЕМЫ</p>
-<h1>Проверим, где звучит звонок</h1></div><button id="theme-toggle" type="button">Тема</button></header>
-<p class="intro">Одна короткая мелодия, два разных места воспроизведения. Выберите нужное.</p>
-<p class="notice">Ручная проверка стенда. Расписания и автоматические звонки ещё не подключены.</p>
+<body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
+<h1>Школьный звонок</h1></div><button id="theme-toggle" type="button">Тема</button></header>
+<p class="intro">Подготовьте расписания и сохраните их на роутере.</p>
+<p class="notice"><strong>Автоматические звонки отключены.</strong> Сохранение только записывает черновик. Назначение дат и запуск по расписанию ещё не подключены.</p>
+<section id="schedule-editor" class="details" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
+<div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
+<p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с роутера…</p>
+<fieldset id="schedule-fields" disabled>
+<div class="editor-toolbar"><label>Расписание<select id="schedule-select"></select></label>
+<button type="button" id="schedule-add">+ Создать</button><button type="button" id="schedule-copy">Копировать</button><button type="button" id="schedule-delete">Удалить</button></div>
+<div id="selected-schedule"><label>Название<input id="schedule-name" type="text" maxlength="96" autocomplete="off"></label>
+<div class="table-scroll"><table class="schedule-table"><thead><tr><th>Время</th><th>Мелодия</th><th>Включён</th><th>Предзвонок</th><th><span class="sr-only">Удаление</span></th></tr></thead><tbody id="schedule-rows"></tbody></table></div>
+<p id="empty-rows">Нет строк — звонков нет.</p><div class="editor-toolbar"><button id="row-add" type="button">+ Добавить звонок</button><button id="rows-clear" type="button">Очистить строки</button><span id="row-count"></span></div></div>
+<div class="pre-settings"><label>Предзвонок за<input id="pre-minutes" type="number" min="1" max="10" step="1"> минут</label><span>Мелодия предзвонка: test.mp3</span></div>
+<p>Сейчас доступна только test.mp3. Флажки описывают будущие звонки и не включают автоматическое воспроизведение.</p>
+</fieldset>
+<div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Загрузить сохранённое</button></div>
+</section>
+<h2 class="sound-heading">Ручная проверка звука</h2><p>Эти две кнопки воспроизводят короткую мелодию сразу, независимо от черновика.</p>
 <section class="routes"><article><span class="badge">1 · РЯДОМ С ВАМИ</span><h2>На этом устройстве</h2>
 <p>Звук из динамика телефона, планшета или компьютера, на котором открыта страница.</p>
 <div class="diagram"><div>▣<br><strong>Ваш браузер</strong></div><b>→</b><div>♫<br><strong>Динамик устройства</strong></div></div>
@@ -23,5 +38,5 @@
 <section class="details"><h2>Что будет воспроизведено</h2><p><strong>test.mp3</strong> · около 3,3 секунды · один раз</p>
 <p>Роутер: madplay · выход /dev/dsp · 48 кГц · усиление 0 дБ. Громкость колонок регулируется на самих колонках.</p>
 <p>Успешное завершение проигрывателя ещё не подтверждает, что звук был слышен.</p></section>
-<footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Только ручной тест, без записи расписаний</footer>
-</main><script src="/schoolbell-test/app.js"></script></body></html>
+<footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
+</main><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js"></script></body></html>

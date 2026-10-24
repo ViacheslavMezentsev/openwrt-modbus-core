@@ -1,4 +1,4 @@
-# Schoolbell manual sound check
+# Schoolbell router page
 
 [Русский](README.md)
 
@@ -49,3 +49,24 @@ madplay exit 0. Rejected authorized POST is covered by host tests and LuCI
 inspection, not by a separate authenticated invalid-token HTTP test.
 Observed additional overlay was about 20 KiB, not a universal storage budget.
 Core/demo and network/USB settings were preserved; no reboot or power-loss test.
+
+
+## Schedule editor payload
+
+The same page now edits persistent **inactive** schedule drafts.
+See [format, API, limits and recovery](../../../docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).
+Build the complete payload from the repository root:
+
+```sh
+python3 packages/schoolbell/router-page/build-payload.py /tmp/schoolbell-page.tar
+```
+
+This includes the sound page/sample and private Lua calendar/JSON/storage dependencies
+under /usr/share/schoolbell-editor; it does not replace installed core modules.
+Back up all tar target paths with metadata before extraction on the router.
+Create /etc/schoolbell-editor with mode 0700 only if absent; never clear existing
+drafts during install/update. Invalidate luci-indexcache and the compiled
+luci.controller.schoolbell_test module cache after updating the controller.
+The earlier root-only copy instructions cover the sound-only subset;
+use this complete payload for the editor. Rollback restores code and preserves
+/etc/schoolbell-editor drafts; restoring user data is a separate deliberate action.
