@@ -22,7 +22,7 @@ int main(int argc,char **argv) {
     }
     closedir(directory);
     if (extra!=1) return 96;
-    if (read(0,bytes,sizeof bytes)!=11 || memcmp(bytes,"schoolbell\n",11)) return 91;
+    if (read(0,bytes,sizeof bytes)!=11 || memcmp(bytes,"schoolbell\n",11)) { nanosleep(&wait,NULL); return 91; }
     if (!strcmp(argv[1],"hold")) wait.tv_sec=1;
     if (!strcmp(argv[1],"flood")) {
         char block[4096];memset(block,'x',sizeof block);

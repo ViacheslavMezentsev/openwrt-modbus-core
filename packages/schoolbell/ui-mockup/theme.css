@@ -24,3 +24,5 @@
 [data-theme="dark"] #toast{background:#e6edf3;color:#161b22}
 @media(max-width:1050px){.theme-toggle{margin-left:auto}}
 @media(max-width:700px){.theme-toggle{order:1}header nav{order:2}.brand{margin-right:auto}}
+
+[data-theme="dark"] .sound-route{background:#161b22}

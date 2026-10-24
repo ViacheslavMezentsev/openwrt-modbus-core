@@ -42,7 +42,7 @@ function M.new(native,resolve,resources)
         r.handle=candidate or false;r.unknown=false;orphan=false
         return true
     end
-    local function start(resource,ticket,request,permit)
+    local function start(resource,ticket,request,permit,media_lease)
         if closed or slots[resource]==nil then error("closed or unknown resource") end
         local old=slots[resource]
         if old and not old.final then return {ticket=ticket,state="uncertain"} end
@@ -50,15 +50,17 @@ function M.new(native,resolve,resources)
         -- second ambiguous attempt until it has been reconciled.
         if orphan then return {ticket=ticket,state="deferred"} end
         local r={ticket=ticket,handle=false,final=false,snapshot=false,
-            release_unknown=false,unknown=false}
+            release_unknown=false,unknown=false,media_lease=media_lease}
         slots[resource]=r -- reserve bookkeeping before any possible child
         r.unknown=true;orphan=r
-        local good,fd=pcall(resolve,request.media_id,request.media_revision)
+        local good,fd
+        if media_lease then good,fd=pcall(media_lease.fd,media_lease)
+        else good,fd=pcall(resolve,request.media_id,request.media_revision) end
         if not good or type(fd)~="number" or fd%1~=0 or fd<0 or fd>2147483647 then
             r.final=response(r,"rejected");r.unknown=false;orphan=false;return copy(r.final)
         end
         -- Native permit is invoked after its own preparation, immediately before fork.
-        local called,h=pcall(begin,native,{resource=resource},fd,permit)
+        local called,h=pcall(begin,native,{resource=resource},fd,permit,media_lease)
         if not called then
             r.unknown=true;orphan=r
             return response(r,"uncertain")

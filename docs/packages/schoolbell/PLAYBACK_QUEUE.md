@@ -122,3 +122,6 @@ start_result/start_unknown/poll_result/poll_unknown; отмена — owner_canc
 Контракт системного адаптера принят в ТЗ 1.8, но API и код этой модели не изменены. Асинхронный launching, сигнальное завершение и удержание файла предстоит реализовать: [Player adapter](PLAYER_ADAPTER.md).
 
 ТЗ schoolbell 1.15: соединены Lua-очередь и Linux player через изолированный bridge; launching/finishing, сигнальный исход и очистка до следующего старта. 10 host-групп с тестовым ребёнком; без ядра, аудиоустройства, звука, изменений роутера/IPK. [Queue/Linux bridge](QUEUE_LINUX.md).
+
+
+Следующий изолированный этап добавляет [удержание точной ревизии при submit](MEDIA_ADMISSION.md). Необязательный retained_userdata метода native begin удерживается вместе с handle. Старый API остаётся совместимым.

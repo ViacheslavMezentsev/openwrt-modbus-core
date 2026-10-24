@@ -104,3 +104,6 @@ The existing 24 queue groups remain. This is neither hardware acceptance nor sou
 
 Next: trusted storage with atomic revision retention at submit, then separately
 approved target ABI and actual madplay checks.
+
+
+The next isolated stage adds [exact revision retention at submit](MEDIA_ADMISSION.en.md). The optional retained_userdata argument of native begin is pinned with its handle. The old API remains compatible.

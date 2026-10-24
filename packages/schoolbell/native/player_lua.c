@@ -159,7 +159,8 @@ static int begin(lua_State *L) {
     owner *p=userdata(L,1,OWNER);const char *name;int fd;unsigned resource,slot;
     if(!p||!p->native)return fail(L,"invalid_handle","validate",0);
     if(p->busy)return fail(L,"busy","validate",0);
-    if(!plain(L,2)||!fields(L,2,keys)||!integer(L,3,0,INT_MAX,&fd)||lua_type(L,4)!=LUA_TFUNCTION)
+    if(!plain(L,2)||!fields(L,2,keys)||!integer(L,3,0,INT_MAX,&fd)||lua_type(L,4)!=LUA_TFUNCTION ||
+       (!lua_isnoneornil(L,5) && lua_type(L,5)!=LUA_TUSERDATA))
         return fail(L,"invalid_argument","validate",0);
     field(L,2,"resource");
     if(!text(L,-1,64,&name))return fail(L,"invalid_argument","validate",0);
@@ -168,9 +169,12 @@ static int begin(lua_State *L) {
     if(resource==p->count)return fail(L,"invalid_argument","validate",0);
     for(slot=0;slot<p->maximum;slot++)if(p->refs[slot]==LUA_NOREF)break;
     if(slot==p->maximum)return fail(L,"limit","validate",0);
+    lua_settop(L,5); /* keep optional retained media distinct from new userdata */
     handle *h=lua_newuserdata(L,sizeof *h);memset(h,0,sizeof *h);h->parent=p;
     luaL_getmetatable(L,HANDLE);lua_setmetatable(L,-2);
-    lua_newtable(L);lua_pushvalue(L,1);lua_rawseti(L,-2,1);lua_setfenv(L,-2);
+    lua_newtable(L);lua_pushvalue(L,1);lua_rawseti(L,-2,1);
+    if(!lua_isnoneornil(L,5)){lua_pushvalue(L,5);lua_rawseti(L,-2,2);}
+    lua_setfenv(L,-2);
     /* Pin both handle and owner BEFORE fork. Allocation failure later cannot
      * lose a child; pending() recovers every retained handle. */
     lua_pushvalue(L,-1);int ref=luaL_ref(L,LUA_REGISTRYINDEX);

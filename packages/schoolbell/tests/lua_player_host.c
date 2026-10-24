@@ -13,6 +13,15 @@
 #include <time.h>
 #include <unistd.h>
 static int deny_alloc;
+static int fixture_media=-1,fixture_directory=-1;
+static int drop_media_source(lua_State *L){
+    (void)L;assert(fixture_media>=0);close(fixture_media);fixture_media=-1;return 0;
+}
+static int replace_media_path(lua_State *L){
+    (void)L;assert(unlinkat(fixture_directory,"media",0)==0);
+    int fd=openat(fixture_directory,"media",O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC,0600);
+    assert(fd>=0 && write(fd,"replacement\n",12)==12);close(fd);return 0;
+}
 static void *allocator(void *ud,void *ptr,size_t old,size_t n) {
     (void)ud;
     if(!n){free(ptr);return NULL;}
@@ -37,18 +46,22 @@ int main(int argc,char **argv) {
     int media=openat(directory,"media",O_RDWR|O_CREAT|O_TRUNC|O_CLOEXEC,0600);
     int broken=openat(directory,"invalid-executable",O_RDWR|O_CREAT|O_TRUNC|O_CLOEXEC,0700);
     assert(executable>=0 && directory>=0 && media>=0 && broken>=0);
+    fixture_media=media;fixture_directory=directory;
+    int second=openat(directory,"media-second",O_RDWR|O_CREAT|O_TRUNC|O_CLOEXEC,0600);
+    assert(second>=0 && write(second,"schoolbell2\n",12)==12);
     assert(write(media,"schoolbell\n",11)==11); /* remains at EOF */
     assert(write(broken,"not executable\n",15)==15);close(broken);
     broken=openat(directory,"invalid-executable",O_RDONLY|O_CLOEXEC);assert(broken>=0);
     lua_State *L=lua_newstate(allocator,NULL);assert(L);luaL_openlibs(L);
     number(L,"executable_fd",executable);number(L,"directory_fd",directory);
-    number(L,"media_fd",media);number(L,"broken_fd",broken);
+    number(L,"second_media_fd",second);number(L,"media_fd",media);number(L,"broken_fd",broken);
+    lua_register(L,"drop_media_source",drop_media_source);lua_register(L,"replace_media_path",replace_media_path);
     lua_register(L,"pause",delay);lua_register(L,"fd_count",fds);
     lua_register(L,"fail_allocations",allocation_off);lua_register(L,"allow_allocations",allocation_on);
     int result=luaL_dofile(L,argv[3]);deny_alloc=0;
     if(result)fprintf(stderr,"Lua test failed: %s\n",lua_tostring(L,-1));
     lua_close(L);
-    close(executable);close(directory);close(media);close(broken);
+    close(executable);close(directory);if(fixture_media>=0)close(fixture_media);close(second);close(broken);
     assert(count_fds()==baseline);
     int status;assert(waitpid(-1,&status,WNOHANG)==-1 && errno==ECHILD);
     return result?1:0;

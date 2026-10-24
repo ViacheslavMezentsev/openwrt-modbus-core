@@ -45,7 +45,7 @@ tablet testing has not been performed.
 
 ## Manual check
 
-Visit all four sections; select 2027 and check that the plan is empty.
+Visit all five sections; select 2027 and check that the plan is empty.
 Assign a schedule to a date, then a quiet day: its events disappear.
 Edit a time, save in the mockup and inspect a date using that template.
 Switch player states and all three theme modes; reload: the plan resets,
@@ -54,3 +54,5 @@ These checks do not validate a real player or installed package.
 
 Sources: index.html, style.css, app.js, theme.css, theme.js. Screenshots,
 browser logs and a duplicate HTML with embedded assets are not stored here.
+
+Settings shows two explicit routes: browser audio on the current device and audio at the router USB soundcard speakers. Separate buttons update explanatory text only; there is no audio or network request.

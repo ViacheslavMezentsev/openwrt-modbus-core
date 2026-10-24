@@ -11,11 +11,20 @@ local function fields(t,allowed)
 end
 local terminal={finished=true,failed=true,expired=true,cancelled=true}
 local function err(code) return nil,{code=code} end
-function M.new(clock,player,options)
+function M.new(clock,player,options,media)
     if type(clock)~="function" or not plain(player) or type(player.start)~="function" or
        type(player.poll)~="function" then return err("backend") end
     if not fields(options,{resources=true,max_records=true,max_pending=true}) or not plain(options.resources) then
         return err("options")
+    end
+    if media~=nil and (type(media)~="userdata" or type(media.acquire)~="function" or
+        type(media.release)~="function") then return err("media_backend") end
+    local acquire,drop=media and media.acquire,media and media.release
+    local function release_media(job)
+        if not job.media_lease then return true end
+        local ok,result=pcall(drop,media,job.media_lease)
+        if not ok or result~=true then return false end
+        job.media_lease=false;return true
     end
     local maximum=options.max_records
     if maximum==nil then maximum=128 end
@@ -78,19 +87,34 @@ function M.new(clock,player,options)
         local resource=resources[request.resource]
         if records>=maximum or #resource.pending>=pending_max then return err("full") end
         if next_id==MAX then return err("id_exhausted") end
-        busy=true; local t,why=now(); busy=false
-        if not t then return err(why) end
-        if request.ttl_ms>MAX-t.mono_ms then return err("deadline_overflow") end
+        busy=true; local t,why=now()
+        if not t then busy=false;return err(why) end
+        if request.ttl_ms>MAX-t.mono_ms then busy=false;return err("deadline_overflow") end
         next_id=next_id+1
         local job={id=next_id,owner=owner,resource=request.resource,media_id=request.media_id,
             media_revision=request.media_revision,source_id=request.source_id,
             accepted_mono_ms=t.mono_ms,deadline_mono_ms=t.mono_ms+request.ttl_ms,
-            expires_utc_ms=request.expires_utc_ms,state="queued"}
-        jobs[job.id]=job; records=records+1; resource.pending[#resource.pending+1]=job
-        return view(job)
+            expires_utc_ms=request.expires_utc_ms,state="queued",media_lease=false,
+            cleanup_target=false,cleanup_reason=false}
+        -- Allocate the receipt and queue slots BEFORE acquiring a native lease.
+        -- Only the final non-allocating assignments commit admission after pin.
+        local receipt=view(job)
+        job.state="admitting";jobs[job.id]=job;resource.pending[#resource.pending+1]=job
+        busy=true
+        if acquire then
+            local ok,lease=pcall(acquire,media,job.media_id,job.media_revision)
+            if not ok or type(lease)~="userdata" then
+                jobs[job.id]=nil;resource.pending[#resource.pending]=nil;busy=false
+                return err("media_unavailable")
+            end
+            job.media_lease=lease
+        end
+        job.state="queued";records=records+1;busy=false
+        return receipt
     end
     function api.status(owner,ticket)
         local job,why=owned(owner,ticket); if not job then return err(why) end
+        if job.state=="admitting" then return err("busy") end
         return view(job)
     end
     function api.cancel(owner,ticket)
@@ -98,6 +122,11 @@ function M.new(clock,player,options)
         local job,why=owned(owner,ticket); if not job then return err(why) end
         if job.state=="cancelled" then local v=view(job); v.changed=false; return v end
         if job.state~="queued" then return err(terminal[job.state] and "terminal" or "active") end
+        busy=true;local released=release_media(job);busy=false
+        if not released then
+            job.state="finishing";job.cleanup_target="cancelled";job.cleanup_reason="owner_cancelled"
+            return err("media_cleanup")
+        end
         local q=resources[job.resource].pending
         for i,item in ipairs(q) do if item==job then table.remove(q,i); break end end
         job.state="cancelled"; job.reason="owner_cancelled"
@@ -118,9 +147,14 @@ function M.new(clock,player,options)
             local e=view(job); e.kind=kind; output.events[#output.events+1]=e
         end
         local function finish(resource,job,state,reason,exit_code,signal)
+            if not release_media(job) then
+                job.state="finishing";job.cleanup_target=state;job.cleanup_reason=reason
+                return false
+            end
+            job.cleanup_target=false;job.cleanup_reason=false
             job.state=state; job.reason=reason; job.exit_code=exit_code; job.signal=signal
             if resource.active==job then resource.active=nil end
-            event(job,state)
+            event(job,state);return true
         end
         local function uncertain(job,reason)
             job.state="uncertain"; job.reason=reason
@@ -154,11 +188,15 @@ function M.new(clock,player,options)
                 local waiting={}
                 for _,job in ipairs(resource.pending) do
                     local reason=expired(job,t)
-                    if reason then finish(resource,job,"expired",reason) else waiting[#waiting+1]=job end
+                    if job.cleanup_target then
+                        if not finish(resource,job,job.cleanup_target,job.cleanup_reason) then waiting[#waiting+1]=job end
+                    elseif reason then
+                        if not finish(resource,job,"expired",reason) then waiting[#waiting+1]=job end
+                    else waiting[#waiting+1]=job end
                 end
                 resource.pending=waiting
                 local job=waiting[1]
-                if not resource.active and job and (not job.expires_utc_ms or t.utc_valid) then
+                if not resource.active and job and job.state=="queued" and (not job.expires_utc_ms or t.utc_valid) then
                     local checking=true
                     local denial,backend_granted=nil,false
                     local function permit()
@@ -175,7 +213,7 @@ function M.new(clock,player,options)
                     backend_granted=false -- start must call permit again immediately before its side effect.
                     local ok,result
                     if permitted then
-                        ok,result=pcall(start,name,job.id,view(job),permit)
+                        ok,result=pcall(start,name,job.id,view(job),permit,job.media_lease or nil)
                     else ok=true; result={ticket=job.id,state="rejected"} end
                     checking=false
                     if ok and fields(result,{ticket=true,state=true}) and result.ticket==job.id then

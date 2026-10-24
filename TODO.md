@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.15. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.16. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -35,7 +35,7 @@ not silently approved by this sequence. API versions are independent of spec rev
 - [x] P03 standalone Linux adapter — C library and substitute child, 13 host process/fault groups; no audio device, Lua/core/IPK integration or router changes.
 - [x] P03 isolated Lua binding — Lua 5.1 userdata, copied results and recoverable retained handles; eight fixture-process groups including GC/OOM. No queue/core/audio/router integration.
 - [x] P03 queue/Linux composition — Dedicated bridge with launching/finishing, signal outcomes and recoverable begin/release results; 10 fixture-child groups. No core/audio/router/IPK integration; exact media FD is borrowed from trusted host storage.
-- [ ] P03 system integration — Resolve atomic media admission and reference recovery; getrandom/CLOCK_MONOTONIC are implemented on the host; verify actual madplay lock FD/stdin and target /proc before real-process integration.
+- [ ] P03 system integration — Implement durable media publication and reference recovery; getrandom/CLOCK_MONOTONIC are implemented on the host; verify actual madplay lock FD/stdin and target /proc before real-process integration.
 - [ ] P03 — Implement the schoolbell-owned player worker, FIFO/expiry/cancellation and result events, scoped schedule controls and manual test (schoolbell TC-02/06–11/18). Resolve active stop separately; no audio API in core.
 - [x] P04 calendar calculation — Isolated schoolbell Lua snapshot/calculator, fixed and explicit annual selection, quiet-day midnight suppression, no annual repeat and gap/fold rejection; 29 groups plus 14,404 independent date vectors, original 15+6 across a leap year. No core registration, UI, player, storage or hardware acceptance; full appendix B parity still required.
 - [ ] P04 — Implement the common scheduler and system-time interface (core TC-58–60), then schoolbell fixed/annual modes, quiet days, preliminary bells, registration horizon and shared preview calculation (schoolbell TC-14–17). Browser clock synchronization is required; RTC is a separate enhancement for unattended startup.
@@ -189,3 +189,6 @@ The current USB RTU register map is a bench prototype, not a commitment to the g
 - [ ] R06 — After separate approval, test with lifted wheels, independent drive-power cutoff and measured watchdog/video-loss stops; ground driving follows separately.
 
 Rover does not replace pending core native-I/O and Lua memory work.
+
+- [x] P03 media admission foundation — exact revision lease at submit, nine host groups (TC-72); bounded in-memory native catalog, no durable media recovery.
+- [x] Schoolbell settings mockup — separate browser and router speaker diagrams with explicitly simulated buttons; no audio/API.
