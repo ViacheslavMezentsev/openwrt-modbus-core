@@ -58,3 +58,7 @@ Schoolbell specification 1.11 fixes SBPE/v1 big-endian, generations, attempt cou
 Schoolbell specification 1.12: isolated Lua SBPE codec and player API model with injected operations. 32 host test groups cover frames, generations, deadlines/outcomes, quotas and cleanup. No native binding, processes, sound, core or router changes; IPK unchanged. [Player model](PLAYER_MODEL.en.md).
 
 Schoolbell specification 1.13: isolated Linux C player adapter and a test child without an audio device; 13 host process/fault groups, FD checks and inherited flock after owner death. No Lua binding, core, madplay/audio or router changes; IPK unchanged. [Linux player](LINUX_PLAYER.en.md).
+
+## Accepted interface mockup
+
+[Local UI mockup](../../../packages/schoolbell/ui-mockup/README.en.md): calendar, schedules, media library, states and three theme modes. Synthetic data only; functional UI and integration remain future work. Not included in the IPK.
