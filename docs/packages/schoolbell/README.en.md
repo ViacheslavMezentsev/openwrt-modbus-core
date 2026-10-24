@@ -4,7 +4,7 @@
 
 School calendar, bells and melodies. Isolated schedule calculation is implemented; core registration, player and operator UI remain pending.
 
-[ТЗ 1.6](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.7](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -42,3 +42,7 @@ Schoolbell specification 1.5 clarifies schema/migration ownership, calendar/medi
 Specification 1.6: isolated Lua calendar with fixed/annual modes, quiet dates, midnight preliminary bells and gap/fold rejection. 29 groups, 14,404 independent date vectors and original 15+6 across a full leap year. No core/audio/router integration; media-only IPK unchanged, full parity remains pending.
 
 [Calendar API](CALENDAR.en.md) · `make test-schoolbell`
+
+Schoolbell specification 1.7: isolated Lua playback queue, per-resource FIFO, monotonic TTL/UTC, owner cancellation and an injectable player. 24 host test groups; unknown outcomes retain the resource. No core/process/audio/router integration; media-only IPK unchanged.
+
+[Playback queue](PLAYBACK_QUEUE.en.md) · `make test-schoolbell`

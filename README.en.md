@@ -105,3 +105,5 @@ See [package status](docs/packages/schoolbell/README.en.md); no scheduler/player
 Build verification requires Python 3.8+ on the host.
 
 [CI — component checks](docs/CI.en.md)
+
+Schoolbell specification 1.7: isolated Lua playback queue, per-resource FIFO, monotonic TTL/UTC, owner cancellation and an injectable player. 24 host test groups; unknown outcomes retain the resource. No core/process/audio/router integration; media-only IPK unchanged. [API](docs/packages/schoolbell/PLAYBACK_QUEUE.en.md).
