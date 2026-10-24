@@ -1,6 +1,10 @@
 # Changelog
 
 
+5.0.5 fixes mute status reads during concurrent saves/journal writes and distinguishes network, authentication and storage errors.
+
+Schoolbell 5.0.4: quick mute/manual bell, selectable pre/manual melodies and fixed/annual draft modes; automatic execution remains disabled.
+
 Fixed schoolbell 5.0.3 timezone persistence: commit no longer uses the no-commit -P option; the configuration file revision must change.
 All notable changes to this project are documented here ([Русский](CHANGELOG.md)).
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).

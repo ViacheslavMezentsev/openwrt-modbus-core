@@ -10,7 +10,9 @@ repo = base.parents[2]
 files = {str(p.relative_to(base / "root")): p
          for p in (base / "root").rglob("*") if p.is_file()}
 files["usr/share/schoolbell-sound-test/test.mp3"] = base.parent / "media/test.mp3"
-for name in ("calendar", "media_codec", "media_fs", "schedule_store", "journal", "timezone"):
+for media in range(5):
+    files["usr/share/schoolbell-sound-test/"+str(media)+".mp3"] = base.parent / ("media/"+str(media)+".mp3")
+for name in ("calendar", "media_codec", "media_fs", "schedule_store", "journal", "timezone", "controls"):
     files["usr/share/schoolbell-editor/lua/schoolbell/" + name + ".lua"] = (
         base.parent / "lua/schoolbell" / (name + ".lua"))
 files["usr/share/schoolbell-editor/lua/modbus/json_strict.lua"] = (

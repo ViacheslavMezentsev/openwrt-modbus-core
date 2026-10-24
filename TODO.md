@@ -2,6 +2,8 @@
 
 ## Current state and next steps
 
+- [ ] Integrate automatic schoolbell execution for saved fixed/annual modes; preserve mute priority and do not replay missed bells. Measure real-audio cancellation latency separately from the sleep-child test.
+
 - [ ] Publish the repository Pages site after merge/CI using the manual workflow; see site/README.md.
 - [ ] Verify schoolbell timezone handling on zoneinfo-file targets; the POSIX TZ target has passed live application through the UI.
 
@@ -20,7 +22,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.25. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.26. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.

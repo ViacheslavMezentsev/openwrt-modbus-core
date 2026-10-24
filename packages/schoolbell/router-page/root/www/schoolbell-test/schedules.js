@@ -10,6 +10,7 @@
   var name=document.getElementById('schedule-name');
   var rows=document.getElementById('schedule-rows');
   var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false;
+  var mediaIds=["test","0","1","2","3","4"];
   var counter=0;
   var year=new Date().getFullYear(), brush='quiet', painting=false;
   var monthNames=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -137,6 +138,8 @@
     fields.disabled=busy || !draft;
     save.disabled=busy || !draft || !dirty || reconcile;
     reload.disabled=busy;
+    document.getElementById('settings-save').disabled=busy || !dirty || reconcile;
+    document.getElementById('settings-result').textContent=result.textContent;
     badge.textContent=busy?'Обмен с роутером…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Сохранено · не активно';
     badge.dataset.dirty=dirty?'true':'false';
   }
@@ -155,6 +158,15 @@
     document.getElementById('schedule-copy').disabled=!s || draft.schedules.length>=16 || total()+(s?s.rows.length:0)>128;
     document.getElementById('schedule-delete').disabled=!s;
     document.getElementById('pre-minutes').value=draft.pre_minutes;
+    ['manual-media','pre-media'].forEach(function(id){var box=document.getElementById(id);box.replaceChildren();mediaIds.forEach(function(m){box.appendChild(textOption(m,m+'.mp3'));});box.value=id==='manual-media'?(draft.manual_media || 'test'):draft.pre_media;box.disabled=false;});
+    if(!draft.mode)draft.mode=(draft.plans || []).length?'annual':'fixed';
+    if(draft.mode==='annual' && !(draft.plans || []).length){draft.mode='fixed';draft.fixed_schedule='quiet';}
+    var mode=document.getElementById('work-mode');mode.disabled=false;mode.value=draft.mode;mode.querySelector('[value="annual"]').disabled=!(draft.plans || []).length;
+    var fixed=document.getElementById('fixed-schedule');fixed.replaceChildren(textOption('quiet','Тихий день'));
+    draft.schedules.forEach(function(s){fixed.appendChild(textOption(s.id,s.name));});
+    if(!draft.schedules.some(function(s){return s.id===draft.fixed_schedule;}))draft.fixed_schedule='quiet';
+    fixed.value=draft.fixed_schedule;fixed.disabled=draft.mode!=='fixed';document.getElementById('pre-minutes').disabled=false;
+    document.getElementById('work-mode-hint').textContent=draft.mode==='annual'?'Используется назначение датам; даты без назначения и годы без плана тихие.':'Одно расписание на каждый день. По умолчанию — тихий день.';
     rows.replaceChildren();
     if(s) {
       name.value=s.name;
@@ -165,7 +177,7 @@
         time.setAttribute('aria-label','Время звонка '+(index+1));
         time.addEventListener('input',function () { row.time=time.value; changed(); }); cell(time);
         var media=document.createElement('select'); media.setAttribute('aria-label','Мелодия звонка '+(index+1));
-        media.appendChild(textOption('test','test.mp3')); media.value=row.media; cell(media);
+        mediaIds.forEach(function(m){media.appendChild(textOption(m,m+'.mp3'));}); media.value=row.media;media.addEventListener('change',function(){row.media=media.value;changed();}); cell(media);
         ['enabled','pre'].forEach(function (key) {
           var box=document.createElement('input'); box.type='checkbox'; box.checked=row[key];
           box.setAttribute('aria-label',(key==='enabled'?'Включить звонок ':'Предзвонок ')+(index+1));
@@ -216,6 +228,8 @@
     if(!current()) return; current().name=name.value;
     select.options[select.selectedIndex].textContent=name.value; changed(); renderAnnual();
   });
+  document.getElementById('settings-save').addEventListener('click',function(){save.click();});
+  [['manual-media','manual_media'],['pre-media','pre_media'],['work-mode','mode'],['fixed-schedule','fixed_schedule']].forEach(function(pair){document.getElementById(pair[0]).addEventListener('change',function(e){draft[pair[1]]=e.target.value;changed();render();});});
   document.getElementById('pre-minutes').addEventListener('input',function (e) { draft.pre_minutes=Number(e.target.value); changed(); });
   document.getElementById('schedule-add').addEventListener('click',function () {
     if(draft.schedules.length>=16) return;

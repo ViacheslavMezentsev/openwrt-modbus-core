@@ -2,6 +2,8 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","controls"},call("controls")).leaf=true
+    entry({"admin","schoolbell","manual"},call("manual")).leaf=true
     entry({"admin","schoolbell","journal"},call("journal")).leaf=true
     entry({"admin","schoolbell","timezone"},call("timezone")).leaf=true
     entry({"admin","schoolbell","clock"},call("clock")).leaf=true
@@ -43,6 +45,30 @@ function timezone()
     editor();local zone=h.formvalue('zone');if not zone then respond({ok=false,code='invalid_zone'});return end
     local value=require('schoolbell.timezone').run(zone,h.formvalue('revision'))
     audit(value.ok and 'timezone_ok' or 'timezone_failed',value);respond(value)
+end
+function controls()
+ local h=require('luci.http');local method=h.getenv('REQUEST_METHOD');local value
+ if method~='GET' then
+  if method~='POST' then h.status(405,'Method Not Allowed');return end
+  local size=tonumber(h.getenv('CONTENT_LENGTH'))
+  if not size or size<1 or size>1024 or not (h.getenv('CONTENT_TYPE') or ''):match('^application/x%-www%-form%-urlencoded')then h.status(413,'Unsupported request');return end
+  if not require('luci.dispatcher').test_post_security()then return end
+  local v=h.formvalue('muted');if v~='true' and v~='false' then respond({ok=false,code='invalid'});return end
+  value=v=='true'
+ end
+ editor();local m=require('schoolbell.controls');local result=value==nil and m.snapshot() or m.request(value)
+ result.playing=require('nixio.fs').lstat(require('schoolbell.sound_test').lock)~=nil
+ if value~=nil then audit(result.ok and (value and 'mute_on' or 'mute_off') or 'mute_failed',result)end
+ respond(result)
+end
+function manual()
+ if not require('luci.dispatcher').test_post_security()then return end
+ local store=editor();local saved=store.request('/etc/schoolbell-editor','load')
+ if not saved.ok then respond({ok=false,state='unavailable'});return end
+ local m=require('schoolbell.sound_test');audit('manual_requested')
+ local ok,result=pcall(function()return m.run(m.system(saved.data.manual_media or 'test'))end)
+ if not ok then result={ok=false,state='recovery_required'}end
+ audit(result.ok and 'play_ok' or 'play_failed',result);respond(result)
 end
 function clock()
     local h=require('luci.http')
@@ -107,6 +133,8 @@ function page()
     local d=require("luci.dispatcher")
     require("luci.http").header("Cache-Control","no-store")
     require("luci.template").render("schoolbell_test",{
+        controls_url=d.build_url('admin','schoolbell','controls'),
+        manual_url=d.build_url('admin','schoolbell','manual'),
         journal_url=d.build_url('admin','schoolbell','journal'),
         clock_url=d.build_url('admin','schoolbell','clock'),
         timezone_url=d.build_url('admin','schoolbell','timezone'),
@@ -132,7 +160,7 @@ end
 function play()
     local h=require("luci.http")
     if not require("luci.dispatcher").test_post_security() then return end
-    local m=require("schoolbell.sound_test")
+    editor();local m=require("schoolbell.sound_test")
     audit('play_requested')
     local ok,result=pcall(m.run,m.system())
     if not ok then result={ok=false,state="recovery_required"} end

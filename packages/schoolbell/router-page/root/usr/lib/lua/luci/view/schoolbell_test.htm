@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=dashboard503">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=dashboard505">
 <script src="/schoolbell-test/theme.js"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
-<h1>Школьный звонок</h1></div><button id="theme-toggle" type="button">Тема</button></header>
+<h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Mute · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button></div></header><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
 <summary><strong>Schoolbell <%=pcdata(module_version)%></strong> · <span id="duty-compact">Подготовка · автозвонки отключены</span> <span class="collapse-hint">Подробности ▾</span></summary>
 <div class="duty-panel" aria-label="Состояние для дежурного">
@@ -28,7 +28,7 @@
 </nav>
 <p class="intro">Подготовьте расписания и сохраните их на роутере.</p>
 <p class="notice"><strong>Автоматические звонки отключены.</strong> Сохранение только записывает черновик. План и предпросмотр не запускают звонки.</p>
-<section id="schedule-editor" class="details" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
+<section id="schedule-editor" class="details" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
 <div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
 <p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с роутера…</p>
 <fieldset id="schedule-fields" disabled>
@@ -39,8 +39,6 @@
 <p>Цвет расписания</p><div id="schedule-colors" class="schedule-colors" role="group" aria-label="Цвет расписания"></div>
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>Время</th><th>Мелодия</th><th>Включён</th><th>Предзвонок</th><th><span class="sr-only">Удаление</span></th></tr></thead><tbody id="schedule-rows"></tbody></table></div>
 <p id="empty-rows">Нет строк — звонков нет.</p><div class="editor-toolbar"><button id="row-add" type="button">+ Добавить звонок</button><button id="rows-clear" type="button">Очистить строки</button><span id="row-count"></span></div></div>
-<div class="pre-settings"><label>Предзвонок за<input id="pre-minutes" type="number" min="1" max="10" step="1"> минут</label><span>Мелодия предзвонка: test.mp3</span></div>
-<p>Сейчас доступна только test.mp3. Флажки описывают будущие звонки и не включают автоматическое воспроизведение.</p>
 </section>
 <section id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" data-panel="calendar" class="annual-editor">
 <h2>Годовой календарь</h2>
@@ -65,6 +63,16 @@
 <div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Загрузить сохранённое</button></div>
 </section>
 <section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" data-panel="sound" hidden>
+<section class="details"><h2>Звонки и режим работы</h2>
+<p>Мелодия оперативного звонка применяется после сохранения. Автоматический режим пока задаёт черновик и предпросмотр: исполнитель автозвонков ещё не подключён.</p>
+<label>Мелодия оперативного звонка<select id="manual-media" disabled></select></label>
+<label>Мелодия предзвонка<select id="pre-media" disabled></select></label>
+<label>Предзвонок за<input id="pre-minutes" type="number" min="1" max="10" step="1" disabled> минут</label>
+<label>Автоматическая работа<select id="work-mode" disabled><option value="fixed">По расписанию</option><option value="annual">По годовому плану</option></select></label>
+<label>Ежедневное расписание<select id="fixed-schedule" disabled></select></label>
+<p id="work-mode-hint">Без годового плана: по расписанию, тихий день по умолчанию.</p>
+<button id="settings-save" type="button" disabled>Сохранить настройки и черновик</button><p id="settings-result" role="status"></p>
+<p>Mute действует сразу на звук schoolbell через роутер, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Mute пропущенные звонки не повторяются.</p></section>
 <section class="details time-settings"><h2>Часовой пояс школы</h2>
 <p>Выберите место, где установлен школьный звонок. Настройка сохраняется на роутере и действует для всех его приложений. Сами часы и расписания не переводятся.</p>
 <p id="timezone-current" role="status">Настройки ещё не загружены.</p>
@@ -108,4 +116,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=dashboard503"></script><script src="/schoolbell-test/dashboard.js?v=503"></script></body></html>
+</main><script src="/schoolbell-test/controls.js"></script><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=dashboard505"></script><script src="/schoolbell-test/dashboard.js?v=503"></script></body></html>

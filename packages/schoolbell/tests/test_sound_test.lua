@@ -1,4 +1,4 @@
-package.path="packages/schoolbell/router-page/root/usr/lib/lua/?.lua;"..package.path
+package.path="packages/schoolbell/lua/?.lua;pkg/usr/lib/?.lua;packages/schoolbell/router-page/root/usr/lib/lua/?.lua;"..package.path
 local m=require("schoolbell.sound_test")
 local groups=0
 local function fixture()
@@ -71,6 +71,23 @@ check("target nixio modes, descriptors and fixed argv",function()
  package.loaded["nixio.fs"]={}
  local ok,err=pcall(m.system().spawn)
  assert(not ok and tostring(err):find("exec%-fixture%-success"))
+end)
+check("mute rejects before spawn",function()
+ local x=fixture();x.muted=function()return true end;assert(m.run(x).state=='muted' and x.spawned==0)
+end)
+check("mute rechecked after acquiring lock",function()
+ local x=fixture();local calls=0;x.muted=function()calls=calls+1;return calls>1 end
+ assert(m.run(x).state=='muted' and x.spawned==0 and x.released==1)
+end)
+check("mute stops owned child and reaps",function()
+ local x=fixture();local polls=0;x.muted=function()polls=polls+1;return polls>=3 end
+ x.wait=function()if x.killed>0 then return 42,'signaled',9 end;return false end
+ assert(m.run(x).state=='muted' and x.killed==1 and x.released==1)
+end)
+check("mute cannot confirm unobserved child exit",function()
+ local x=fixture();local polls=0;x.muted=function()polls=polls+1;return polls>=3 end
+ x.wait=function()return false end
+ assert(m.run(x).state=='recovery_required' and x.released==0)
 end)
 -- Controller test: neither a rejected method nor CSRF may enter the backend.
 local allowed=false; local runs=0; local response

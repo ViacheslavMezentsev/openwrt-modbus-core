@@ -28,3 +28,5 @@ lua5.1 packages/schoolbell/tests/test_journal.lua
 lua5.1 packages/schoolbell/tests/test_schedule_colors.lua
 
 lua5.1 packages/schoolbell/tests/test_timezone.lua
+
+lua5.1 packages/schoolbell/tests/test_controls.lua

@@ -1,6 +1,10 @@
 # Changelog
 
 
+5.0.5: lock-free atomic mute snapshots; distinct network/auth/storage errors.
+
+5.0.4: persistent mute, owned-child cancellation, manual/pre-bell media test/0–4, daily or annual preview mode. No automatic bell activation.
+
 5.0.3: fix UCI commit (-p instead of -P for commit only); regression reads the file after closing staging, not just the staged view.
 [Русский](CHANGELOG.md)
 

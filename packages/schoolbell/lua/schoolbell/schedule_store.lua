@@ -47,9 +47,11 @@ function M.validate(text)
     local d,e=J.decode(text)
     if not d then return nil,{code="json",path=e.code} end
     local ok,why=pcall(function()
-        object(d,{schedules=true,pre_minutes=true,pre_media=true,plans=false},"draft")
+        object(d,{schedules=true,pre_minutes=true,pre_media=true,plans=false,mode=false,fixed_schedule=false,manual_media=false},"draft")
         if J.kind(d.schedules)~="array" or #d.schedules>16 then fail("limit","schedules") end
-        if d.pre_media~="test" then fail("media_reference","pre_media") end
+        if not ({test=true,["0"]=true,["1"]=true,["2"]=true,["3"]=true,["4"]=true})[d.pre_media] then fail("media_reference","pre_media") end
+        if d.mode~=nil and d.mode~='fixed' and d.mode~='annual' then fail('mode','mode')end
+        if d.manual_media~=nil and not ({test=true,['0']=true,['1']=true,['2']=true,['3']=true,['4']=true})[d.manual_media]then fail('media_reference','manual_media')end
         local schedules,total={},0
         for i,s in ipairs(d.schedules) do
             local path="schedules."..i
@@ -65,8 +67,8 @@ function M.validate(text)
             end
             schedules[i]={id=s.id,rows=s.rows}
         end
-        local valid,err=Calendar.validate({revision="editor",mode="annual",timezone="UTC",
-            pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test"},
+        local valid,err=Calendar.validate({revision="editor",mode=d.mode or "annual",fixed_schedule=d.fixed_schedule or "quiet",timezone="UTC",
+            pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test","0","1","2","3","4"},
             schedules=schedules,plans=expand_plans(d)})
         if not valid then fail(err.code,err.path) end
     end)
@@ -80,8 +82,13 @@ function M.preview(text,date)
     if not d then return {ok=false,code="invalid",detail=body} end
     local schedules={}
     for i,s in ipairs(d.schedules) do schedules[i]={id=s.id,rows=s.rows} end
-    local model,err=Calendar.compile({revision="preview",mode="annual",timezone="civil",
-        pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test"},
+    local mode=d.mode or 'annual'
+    local year=tonumber(type(date)=='string' and date:sub(1,4));local present=false
+    for _,p in ipairs(d.plans or {})do if p.year==year then present=true end end
+    local fixed=d.fixed_schedule or 'quiet'
+    if mode=='annual' and not present then mode='fixed';fixed='quiet' end
+    local model,err=Calendar.compile({revision="preview",mode=mode,fixed_schedule=fixed,timezone="civil",
+        pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test","0","1","2","3","4"},
         schedules=schedules,plans=expand_plans(d)})
     if not model then return {ok=false,code="invalid",detail=err} end
     -- Offset zero is an arithmetic coordinate for wall times, not UTC or a router zone.
@@ -96,7 +103,7 @@ function M.preview(text,date)
         selected_schedule=preview.days[1].schedule_id,events=events}
 end
 function M.empty()
-    return {schedules=array(),pre_minutes=2,pre_media="test"}
+    return {schedules=array(),pre_minutes=2,pre_media="test",manual_media="test",mode="fixed",fixed_schedule="quiet"}
 end
 local function read(fs)
     local raw=fs.read("current.json",M.file_bytes)

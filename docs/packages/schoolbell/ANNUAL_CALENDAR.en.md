@@ -69,3 +69,7 @@ Downgrading to 5.0.0 after saving color is incompatible with its strict schema. 
 In5.0.2, the time zone is configured inside Settings with explicit confirmation. It affects the router globally but never sets the UTC clock epoch. Earlier-stage LuCI links are no longer used. The palette changed while saved numeric color IDs remain stable.
 
 Version 5.0.3 fixes UCI persistence: target UCI disables commit with `-P`, so commit uses `-p`. Success requires a changed system file SHA256. The isolated `packages/schoolbell/tests/test_timezone_target.lua` regression reads the file after closing staging and then opens fresh staging; it does not reload system or change the live configuration.
+
+## Quick controls in 5.0.4
+
+Mute persists separately from drafts and blocks manual/test router audio. The active owner checks cancellation every 100 ms; network and OS scheduling prevent a hard latency guarantee. The UI waits for lock release before confirming the player stopped. Unmuting never replays missed bells. Manual playback uses saved media, test by default, from test/0–4. Pre-bell media and fixed/annual mode save with the draft. Fixed means one daily schedule, quiet by default; annual uses date assignments and missing years stay quiet. The automatic executor remains disconnected. Public demo mute is local and never starts router playback.

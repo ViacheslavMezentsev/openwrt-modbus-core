@@ -14,7 +14,7 @@ function seed(){var year=new Date().getFullYear(),date=year+'-01-01',days='';
 function read(){try{var value=JSON.parse(localStorage.getItem(key));if(value && value.format===1 && value.data && Array.isArray(value.log)){memory=value;return value;}}catch(_){}if(!memory)memory=seed();return memory;}
 function write(v){memory=v;try{localStorage.setItem(key,JSON.stringify(v));}catch(_){document.getElementById('demo-storage').textContent='Хранилище браузера недоступно: изменения живут только в этой вкладке.';}}
 function log(s,action,source){s.log.push({seq:++s.seq,time:Math.floor(Date.now()/1000),source:source || 'user',level:'info',action:action});s.log=s.log.slice(-80);write(s);}
-function assigned(data,date){var plan=(data.plans || []).find(function(p){return p.year===Number(date.slice(0,4));});if(!plan)return false;
+function assigned(data,date){if(data.mode==='fixed')return data.fixed_schedule && data.fixed_schedule!=='quiet'?data.fixed_schedule:false;var plan=(data.plans || []).find(function(p){return p.year===Number(date.slice(0,4));});if(!plan)return false;
  var index=Math.round((Date.parse(date+'T00:00:00Z')-Date.parse(date.slice(0,4)+'-01-01T00:00:00Z'))/86400000),c=plan.days[index];
  return c && c!=='.'?plan.schedule_ids[c.charCodeAt(0)-65]:false;}
 function preview(data,date){
@@ -22,7 +22,7 @@ function preview(data,date){
  var selected=assigned(data,date),events=[];
  if(selected)[date,nextDate(date)].forEach(function(origin){var sid=assigned(data,origin),schedule=data.schedules.find(function(s){return s.id===sid;});if(!schedule)return;
   schedule.rows.forEach(function(row){if(!row.enabled)return;var a=row.time.split(':').map(Number),minutes=a[0]*60+a[1];
-   function event(m,kind){events.push({date:date,time:String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),origin_date:origin,schedule_id:sid,row_id:row.id,kind:kind,media:'test'});}
+   function event(m,kind){events.push({date:date,time:String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),origin_date:origin,schedule_id:sid,row_id:row.id,kind:kind,media:kind==='pre'?data.pre_media:row.media});}
    if(origin===date)event(minutes,'main');
    var pre=minutes-data.pre_minutes;if(row.pre && ((origin===date && pre>=0) || (origin!==date && pre<0)))event((pre+1440)%1440,'pre');
   });
@@ -43,6 +43,7 @@ window.fetch=async function(url,options){
   else if(!valid(d) || JSON.stringify(d).length>12288)out={ok:false,code:'invalid'};
   else{s.data=d;s.revision++;log(s,'save_ok');out={ok:true,active:false,data:clone(d),revision:String(s.revision)};}
  }else if(name==='preview'){try{var data=JSON.parse(body.get('draft'));out=valid(data)?preview(data,body.get('date')):{ok:false,code:'invalid'};}catch(_){out={ok:false,code:'invalid'};}}
+ else if(name==='controls'){if(options && options.method==='POST'){s.muted=body.get('muted')==='true';log(s,s.muted?'mute_on':'mute_off');}out={ok:true,muted:!!s.muted,playing:false,hardware:false};}
  else if(name==='journal')out={ok:true,entries:clone(s.log),limit_bytes:16384};
  else if(name==='clock'){
   var t={};new Intl.DateTimeFormat('en-GB',{timeZone:s.zone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).forEach(function(p){t[p.type]=Number(p.value);});
