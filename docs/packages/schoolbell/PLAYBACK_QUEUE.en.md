@@ -117,3 +117,5 @@ poll_unknown; cancellation reason: owner_cancelled. A future integration layer
 will map internal codes to the public API.
 
 The system adapter contract is accepted in specification 1.8; this model API and code are unchanged. Asynchronous launching, signal outcomes and file retention remain to be implemented: [Player adapter](PLAYER_ADAPTER.en.md).
+
+Schoolbell spec 1.15: isolated bridge connects the Lua queue and Linux player; launching/finishing, signal outcomes and cleanup before the next start. Ten fixture-child host groups; no core, audio device, sound or router/IPK changes. [Queue/Linux bridge](QUEUE_LINUX.en.md).

@@ -95,3 +95,5 @@ This does not validate target ABI, madplay, sound, MR3020 resources or media rec
 
 The next separate step is composing the Lua queue and binding with a fixture
 process and trusted file storage, without core integration or sound.
+
+Schoolbell spec 1.15: isolated bridge connects the Lua queue and Linux player; launching/finishing, signal outcomes and cleanup before the next start. Ten fixture-child host groups; no core, audio device, sound or router/IPK changes. [Queue/Linux bridge](QUEUE_LINUX.en.md).

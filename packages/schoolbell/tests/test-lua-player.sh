@@ -18,3 +18,6 @@ mkdir "$build/schoolbell"
 "$CC" -std=c99 -O2 -Wall -Wextra -Werror -pedantic $LUA_CFLAGS \
     "$ROOT/packages/schoolbell/tests/lua_player_host.c" $LUA_LIBS -lm -ldl -Wl,--export-dynamic -o "$build/host"
 LUA_CPATH="$build/?.so" timeout 30s "$build/host" "$build/child" "$build" "$ROOT/packages/schoolbell/tests/test_player_linux.lua"
+
+cd "$ROOT"
+LUA_CPATH="$build/?.so" timeout 30s "$build/host" "$build/child" "$build" "$ROOT/packages/schoolbell/tests/test_queue_linux.lua"

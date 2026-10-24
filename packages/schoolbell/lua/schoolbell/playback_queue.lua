@@ -53,7 +53,7 @@ function M.new(clock,player,options)
         local v={id=job.id,owner=job.owner,resource=job.resource,media_id=job.media_id,
             media_revision=job.media_revision,source_id=job.source_id,state=job.state,
             accepted_mono_ms=job.accepted_mono_ms,deadline_mono_ms=job.deadline_mono_ms,
-            expires_utc_ms=job.expires_utc_ms,reason=job.reason,exit_code=job.exit_code}
+            expires_utc_ms=job.expires_utc_ms,reason=job.reason,exit_code=job.exit_code,signal=job.signal}
         return v
     end
     local function owned(owner,ticket)
@@ -117,8 +117,8 @@ function M.new(clock,player,options)
         local function event(job,kind)
             local e=view(job); e.kind=kind; output.events[#output.events+1]=e
         end
-        local function finish(resource,job,state,reason,exit_code)
-            job.state=state; job.reason=reason; job.exit_code=exit_code
+        local function finish(resource,job,state,reason,exit_code,signal)
+            job.state=state; job.reason=reason; job.exit_code=exit_code; job.signal=signal
             if resource.active==job then resource.active=nil end
             event(job,state)
         end
@@ -131,12 +131,20 @@ function M.new(clock,player,options)
             local active=resource.active
             if active then
                 local ok,result=pcall(poll,name,active.id)
-                if ok and fields(result,{ticket=true,state=true,exit_code=true}) and result.ticket==active.id then
-                    if result.state=="exited" and int(result.exit_code,0,255) then
+                if ok and fields(result,{ticket=true,state=true,exit_code=true,signal=true,reason=true}) and result.ticket==active.id then
+                    if result.state=="exited" and int(result.exit_code,0,255) and result.signal==nil and result.reason==nil then
                         finish(resource,active,result.exit_code==0 and "finished" or "failed","player_exit",result.exit_code)
-                    elseif result.state=="running" and result.exit_code==nil then
+                    elseif result.state=="running" and result.exit_code==nil and result.signal==nil and result.reason==nil then
                         active.state="playing"; active.reason=nil
                         if not active.started_reported then active.started_reported=true; event(active,"started") end
+                    elseif (result.state=="launching" or result.state=="draining") and
+                        result.exit_code==nil and result.signal==nil and result.reason==nil then
+                        active.state=result.state=="launching" and "starting" or "finishing"; active.reason=nil
+                    elseif result.state=="failed" and result.exit_code==nil and
+                        ((result.reason=="player_signal" and int(result.signal,1,127)) or
+                         (result.signal==nil and (result.reason=="player_not_started" or
+                          result.reason=="player_exec_unknown" or result.reason=="player_begin_unknown"))) then
+                        finish(resource,active,"failed",result.reason,nil,result.signal)
                     else uncertain(active,"poll_result") end
                 else uncertain(active,"poll_unknown") end
             end
@@ -173,6 +181,10 @@ function M.new(clock,player,options)
                     if ok and fields(result,{ticket=true,state=true}) and result.ticket==job.id then
                         if result.state=="started" and backend_granted and not denial then
                             job.state="playing"; job.started_reported=true; event(job,"started")
+                        elseif result.state=="launching" and backend_granted and not denial then
+                            job.state="starting"
+                        elseif result.state=="deferred" and not backend_granted then
+                            resource.active=nil; job.state="queued"; table.insert(waiting,1,job)
                         elseif result.state=="rejected" then
                             -- Rejected is a trusted guarantee that no player exists for this ticket.
                             if denial=="ttl" or denial=="utc" then finish(resource,job,"expired",denial)

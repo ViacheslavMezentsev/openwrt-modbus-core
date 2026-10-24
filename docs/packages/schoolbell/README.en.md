@@ -4,7 +4,7 @@
 
 School calendar, bells and melodies. Isolated schedule calculation is implemented; core registration, player and operator UI remain pending.
 
-[ТЗ 1.14](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.15](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -64,3 +64,5 @@ Schoolbell specification 1.13: isolated Linux C player adapter and a test child 
 [Local UI mockup](../../../packages/schoolbell/ui-mockup/README.en.md): calendar, schedules, media library, states and three theme modes. Synthetic data only; functional UI and integration remain future work. Not included in the IPK.
 
 Schoolbell spec 1.14: isolated Lua 5.1 Linux player binding, userdata and eight host groups with a fixture process, GC/OOM and recoverable handles. No queue/core, audio device, sound or router/IPK changes. [Lua binding](LUA_PLAYER.en.md).
+
+Schoolbell spec 1.15: isolated bridge connects the Lua queue and Linux player; launching/finishing, signal outcomes and cleanup before the next start. Ten fixture-child host groups; no core, audio device, sound or router/IPK changes. [Queue/Linux bridge](QUEUE_LINUX.en.md).
