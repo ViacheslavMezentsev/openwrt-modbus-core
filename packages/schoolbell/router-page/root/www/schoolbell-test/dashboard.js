@@ -5,7 +5,7 @@
   function selectTab(name) {
     tabs.forEach(function(b){var active=b.dataset.tab===name;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
     document.querySelectorAll('[data-panel]').forEach(function(p){p.hidden=p.dataset.panel!==name;});
-    root.hidden=name==='sound' || name==='journal';
+    root.hidden=name==='sound' || name==='journal' || name==='feedback';
     if(name==='journal')loadJournal();
     document.querySelector('.savebar').hidden=name==='preview';
     try{sessionStorage.setItem('schoolbell-tab',name);}catch(_){}
@@ -49,10 +49,11 @@
     var browser=new Date(),elapsed=sample?performance.now()-sample.received:Infinity;
     document.getElementById('browser-clock').textContent=browser.toLocaleString('ru-RU',format);
     document.getElementById('browser-zone').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone+' · '+zone(-browser.getTimezoneOffset());
-    var status=document.getElementById('clock-status'),sync=document.getElementById('clock-sync');sync.hidden=true;
+    var status=document.getElementById('clock-status'),sync=document.getElementById('clock-sync');sync.hidden=true;document.getElementById('timezone-hint').hidden=true;
     if(!sample || elapsed>90000){document.getElementById('router-clock').textContent='Время недоступно';status.textContent='Нет свежего ответа роутера. Сравнение часов отключено.';return;}
     document.getElementById('router-clock').textContent=new Date(sample.wall+elapsed).toLocaleString('ru-RU',Object.assign({},format,{timeZone:'UTC'}));
     document.getElementById('router-zone').textContent=zone(sample.offset)+' · получено '+Math.floor(elapsed/1000)+' с назад';
+    document.getElementById('timezone-hint').hidden=sample.offset===-browser.getTimezoneOffset();
     var delta=(browser.getTime()-(sample.epoch+elapsed))/1000;
     if(sample.rtt>2000){status.textContent='Медленный ответ роутера: сравнение неточно. Ожидаем следующий опрос.';return;}
     if(Math.abs(delta)>5){status.textContent='Часы роутера '+(delta>0?'отстают':'спешат')+' примерно на '+Math.round(Math.abs(delta))+' с относительно браузера.';sync.hidden=false;}

@@ -53,7 +53,8 @@ function M.validate(text)
         local schedules,total={},0
         for i,s in ipairs(d.schedules) do
             local path="schedules."..i
-            object(s,{id=true,name=true,rows=true},path)
+            object(s,{id=true,name=true,rows=true,color=false},path)
+            if s.color~=nil and not C.integer(s.color,1,16) then fail("color",path..".color") end
             if type(s.name)~="string" or #s.name<1 or #s.name>96
                or s.name:find("[%z\1-\31\127]") or not s.name:find("%S") then fail("name",path..".name") end
             if J.kind(s.rows)~="array" or #s.rows>32 then fail("limit",path..".rows") end

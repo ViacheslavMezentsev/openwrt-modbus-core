@@ -13,8 +13,24 @@
   var counter=0;
   var year=new Date().getFullYear(), brush='quiet', painting=false;
   var monthNames=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  var colors=['#1f6feb','#8957e5','#238636','#9e6a03','#bc4c00','#a371f7','#0e7490','#bf3989',
-    '#355a94','#6657ad','#52791d','#936633','#825345','#775d91','#28746e','#804563'];
+  // Fixed palette IDs are persisted; never reorder this palette in later patches.
+  var colors=['#c8d6e2','#c5d9df','#c4dcd8','#cbdccf','#d5dec8','#dfe0c7','#e5dcc8','#e6d5c9',
+    '#e3cece','#ddcddd','#d4cfe3','#cccfe2','#ccd4d9','#d0d8d3','#dbd7cd','#d6d1d5'];
+  var colorNames=['Дымчато-синий','Серо-голубой','Мягкая бирюза','Шалфей','Светлая олива','Лён','Песочный','Персиковый',
+    'Пыльная роза','Вереск','Лаванда','Сиренево-серый','Стальной','Эвкалипт','Тёплый серый','Жемчужно-серый'];
+  function colorOf(id){var item=draft.schedules.find(function(s){return s.id===id;});return item?colors[item.color-1]:'';}
+  function nextColor(){for(var i=1;i<=16;i++)if(!draft.schedules.some(function(s){return s.color===i;}))return i;return draft.schedules.length%16+1;}
+  function renderColors(){
+    var currentSchedule=current(),palette=document.getElementById('schedule-colors');palette.replaceChildren();
+    if(!currentSchedule)return;
+    colors.forEach(function(color,i){var button=document.createElement('button');button.type='button';button.textContent=i+1;
+      button.style.background=color;button.style.color='#24313c';button.title=colorNames[i];button.setAttribute('aria-label','Цвет '+(i+1)+': '+colorNames[i]);
+      button.setAttribute('aria-pressed',String(currentSchedule.color===i+1));
+      button.addEventListener('click',function(){currentSchedule.color=i+1;changed();render();});palette.appendChild(button);
+    });
+    select.style.borderLeft='10px solid '+colorOf(currentSchedule.id);
+    name.style.borderLeft='10px solid '+colorOf(currentSchedule.id);
+  }
   function dates(y) {
     var out=[],leap=y%4===0 && (y%100!==0 || y%400===0);
     var lengths=[31,leap?29:28,31,30,31,30,31,31,30,31,30,31];
@@ -60,8 +76,8 @@
     document.querySelectorAll('.calendar-day').forEach(function(b){
       var sid=assigned(p,Number(b.dataset.index));
       b.title=b.dataset.date+' · '+scheduleName(sid);b.setAttribute('aria-label',b.title);
-      b.style.background=sid==='quiet'?'':colors[draft.schedules.findIndex(function(s){return s.id===sid;})%colors.length];
-      b.style.color=sid==='quiet'?'':'#fff';
+      b.style.background=sid==='quiet'?'':colorOf(sid);
+      b.style.color=sid==='quiet'?'':'#24313c';
     });
     document.getElementById('plan-status').textContent=year+': назначено '+(p?p.days.replace(/\./g,'').length:0)+' из '+dates(year).length+' дней. Остальные тихие.';
   }
@@ -74,7 +90,7 @@
     var legend=document.getElementById('plan-legend');legend.replaceChildren();
     [{id:'quiet',name:'Тихий день / ластик'}].concat(draft.schedules).forEach(function(item,i){
       var button=document.createElement('button');button.type='button';button.textContent=item.name;
-      button.setAttribute('aria-pressed',String(brush===item.id));button.style.borderLeftColor=i?colors[(i-1)%colors.length]:'var(--muted)';
+      button.setAttribute('aria-pressed',String(brush===item.id));button.style.borderLeftColor=i?colorOf(item.id):'var(--muted)';
       button.addEventListener('click',function(){chooseBrush(item.id);});legend.appendChild(button);
     });
     var list=dates(year),p=plan(year),grid=document.getElementById('year-grid');grid.replaceChildren();
@@ -92,7 +108,7 @@
         if(!date.startsWith(prefix))return;
         var sid=assigned(p,i),b=document.createElement('button');b.type='button';b.textContent=Number(date.slice(-2));
         b.title=date+' · '+scheduleName(sid);b.setAttribute('aria-label',b.title);b.className='calendar-day'+(weekday(date)>=5?' weekend':'');
-        if(sid!=='quiet'){b.style.background=colors[draft.schedules.findIndex(function(s){return s.id===sid;})%colors.length];b.style.color='#fff';}
+        if(sid!=='quiet'){b.style.background=colorOf(sid);b.style.color='#24313c';}
         b.dataset.index=i;b.dataset.date=date;
         b.addEventListener('pointerdown',function(e){
           if(e.pointerType!=='mouse' || e.button!==0 || busy)return;
@@ -125,8 +141,10 @@
   function changed() { document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Черновик изменён. Обновите предпросмотр.'; dirty=true; result.textContent='Изменения только в браузере. Нажмите «Сохранить черновик». Автозвонков нет.'; state(); }
   function textOption(value,text) { var o=document.createElement('option'); o.value=value; o.textContent=text; return o; }
   function render() {
+    // Legacy drafts are only materialized in browser memory; disk changes on explicit save.
+    draft.schedules.forEach(function(s,i){if(s.color===undefined)s.color=i%16+1;});
     select.replaceChildren();
-    draft.schedules.forEach(function (s) { select.appendChild(textOption(s.id,s.name)); });
+    draft.schedules.forEach(function (s) { var option=textOption(s.id,s.name);option.style.background=colorOf(s.id);option.style.color='#24313c';select.appendChild(option); });
     if(!current()) selected=draft.schedules.length?draft.schedules[0].id:null;
     select.value=selected || '';
     var s=current();
@@ -158,6 +176,7 @@
       document.getElementById('row-count').textContent=s.rows.length+' / 32 строк · всего '+total()+' / 128';
       document.getElementById('row-add').disabled=s.rows.length>=32 || total()>=128;
     }
+    renderColors();
     renderAnnual();
     state();
   }
@@ -198,11 +217,11 @@
   document.getElementById('pre-minutes').addEventListener('input',function (e) { draft.pre_minutes=Number(e.target.value); changed(); });
   document.getElementById('schedule-add').addEventListener('click',function () {
     if(draft.schedules.length>=16) return;
-    var s={id:id('schedule'),name:'Новое расписание',rows:[]}; draft.schedules.push(s); selected=s.id; changed(); render(); name.focus(); name.select();
+    var s={id:id('schedule'),name:'Новое расписание',color:nextColor(),rows:[]}; draft.schedules.push(s); selected=s.id; changed(); render(); name.focus(); name.select();
   });
   document.getElementById('schedule-copy').addEventListener('click',function () {
     if(!current() || draft.schedules.length>=16 || total()+current().rows.length>128) return;
-    var s=JSON.parse(JSON.stringify(current())); s.id=id('schedule'); s.name=Array.from(s.name).slice(0,20).join('')+' — копия';
+    var s=JSON.parse(JSON.stringify(current())); s.id=id('schedule'); s.color=nextColor(); s.name=Array.from(s.name).slice(0,20).join('')+' — копия';
     draft.schedules.push(s); selected=s.id; changed(); render();
   });
   document.getElementById('schedule-delete').addEventListener('click',function () {
@@ -261,7 +280,7 @@
       var value=await request(root.dataset.preview,{method:'POST',body:new URLSearchParams({token:root.dataset.token,draft:JSON.stringify(draft),date:document.getElementById('preview-date').value})});
       if(!value.ok){status.textContent='Предпросмотр отклонён: '+(value.detail?(value.detail.path || value.detail.code):value.code);return;}
       status.textContent=value.date+' · '+scheduleName(value.selected_schedule)+' · '+value.events.length+' событий. Местные часы; не UTC и не проверка переходов часов.';
-      value.events.forEach(function(e){var li=document.createElement('li');li.textContent=e.time+' — '+(e.kind==='pre'?'Предзвонок':'Основной звонок')+' · '+scheduleName(e.schedule_id)+' · '+e.media+(e.origin_date!==e.date?' (основной звонок '+e.origin_date+')':'');output.appendChild(li);});
+      value.events.forEach(function(e){var li=document.createElement('li');li.style.borderLeft='10px solid '+colorOf(e.schedule_id);li.style.paddingLeft='10px';li.textContent=e.time+' — '+(e.kind==='pre'?'Предзвонок':'Основной звонок')+' · '+scheduleName(e.schedule_id)+' · '+e.media+(e.origin_date!==e.date?' (основной звонок '+e.origin_date+')':'');output.appendChild(li);});
       if(!value.events.length){var li=document.createElement('li');li.textContent='В этот день звонков нет.';output.appendChild(li);}
     } catch(_){status.textContent='Предпросмотр недоступен. Проверьте соединение и вход LuCI.';}
     finally{busy=false;state();}

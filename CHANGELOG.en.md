@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Schoolbell Feedback tab and bilingual GitHub Issue Forms for bugs and feature requests; submission remains a user action.
+
+- Schoolbell 5.0.1: persistent per-schedule colors from 16 muted shades, automatic assignment and manual selection, consistent across the list, calendar and preview. Journal text is left-aligned; time-zone settings are offered independently of clock synchronization.
+
 - Schoolbell 5.0.0: collapsible status, tabs preserving edits, router/browser clocks and a LuCI synchronization link; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
 
 - Schoolbell annual calendar: date/range assignments, shared draft persistence and civil-time main/preliminary bell preview. Legacy drafts remain unchanged on read; automatic execution stays disabled. Specification 1.22.

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=dashboard500">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=dashboard501">
 <script src="/schoolbell-test/theme.js"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьный звонок</h1></div><button id="theme-toggle" type="button">Тема</button></header>
@@ -16,6 +16,7 @@
 <div><span>В браузере</span><strong id="browser-clock">—</strong><small id="browser-zone"></small></div>
 </div><p id="clock-status" role="status">Проверяем часы…</p>
 <p id="clock-sync" hidden>Проверьте, что часы браузера верны. <a href="<%=pcdata(time_settings_url)%>" target="_blank" rel="noopener">Открыть время LuCI и синхронизировать с браузером</a>. Это отдельное действие; здесь часы не меняются.</p>
+<p id="timezone-hint" hidden>Часовой пояс роутера отличается от браузера. Если роутер должен работать по местному времени школы, <a href="<%=pcdata(time_settings_url)%>" target="_blank" rel="noopener">выберите часовой пояс в LuCI → Система</a>. Сверьте место установки, не только настройки этого браузера.</p>
 </details>
 <nav class="page-tabs" role="tablist" aria-label="Разделы schoolbell">
 <button id="tab-calendar" type="button" role="tab" aria-controls="panel-calendar" aria-selected="true" data-tab="calendar">Календарь</button>
@@ -23,6 +24,7 @@
 <button id="tab-preview" type="button" role="tab" aria-controls="panel-preview" aria-selected="false" tabindex="-1" data-tab="preview">Предпросмотр</button>
 <button id="tab-sound" type="button" role="tab" aria-controls="panel-sound" aria-selected="false" tabindex="-1" data-tab="sound">Звук и настройки</button>
 <button id="tab-journal" type="button" role="tab" aria-controls="panel-journal" aria-selected="false" tabindex="-1" data-tab="journal">Журнал</button>
+<button id="tab-feedback" type="button" role="tab" aria-controls="panel-feedback" aria-selected="false" tabindex="-1" data-tab="feedback">Обратная связь</button>
 </nav>
 <p class="intro">Подготовьте расписания и сохраните их на роутере.</p>
 <p class="notice"><strong>Автоматические звонки отключены.</strong> Сохранение только записывает черновик. План и предпросмотр не запускают звонки.</p>
@@ -34,6 +36,7 @@
 <div class="editor-toolbar"><label>Расписание<select id="schedule-select"></select></label>
 <button type="button" id="schedule-add">+ Создать</button><button type="button" id="schedule-copy">Копировать</button><button type="button" id="schedule-delete">Удалить</button></div>
 <div id="selected-schedule"><label>Название<input id="schedule-name" type="text" maxlength="96" autocomplete="off"></label>
+<p>Цвет расписания</p><div id="schedule-colors" class="schedule-colors" role="group" aria-label="Цвет расписания"></div>
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>Время</th><th>Мелодия</th><th>Включён</th><th>Предзвонок</th><th><span class="sr-only">Удаление</span></th></tr></thead><tbody id="schedule-rows"></tbody></table></div>
 <p id="empty-rows">Нет строк — звонков нет.</p><div class="editor-toolbar"><button id="row-add" type="button">+ Добавить звонок</button><button id="rows-clear" type="button">Очистить строки</button><span id="row-count"></span></div></div>
 <div class="pre-settings"><label>Предзвонок за<input id="pre-minutes" type="number" min="1" max="10" step="1"> минут</label><span>Мелодия предзвонка: test.mp3</span></div>
@@ -62,6 +65,7 @@
 <div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Загрузить сохранённое</button></div>
 </section>
 <section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" data-panel="sound" hidden>
+<p><a href="<%=pcdata(time_settings_url)%>" target="_blank" rel="noopener">Настроить часовой пояс и время роутера в LuCI</a></p>
 <h2 class="sound-heading">Ручная проверка звука</h2><p>Эти две кнопки воспроизводят короткую мелодию сразу, независимо от черновика.</p>
 <section class="routes"><article><span class="badge">1 · РЯДОМ С ВАМИ</span><h2>На этом устройстве</h2>
 <p>Звук из динамика телефона, планшета или компьютера, на котором открыта страница.</p>
@@ -86,5 +90,15 @@
 <button type="button" id="journal-reload">Обновить журнал</button><p id="journal-status" role="status"></p>
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>№ / Время UTC</th><th>Источник</th><th>Событие</th></tr></thead><tbody id="journal-rows"></tbody></table></div>
 </section>
+<section id="panel-feedback" role="tabpanel" aria-labelledby="tab-feedback" data-panel="feedback" class="details" hidden>
+<h2>Обратная связь</h2><p>Нашли ошибку или хотите предложить улучшение? Обсуждение ведём в Issues репозитория openwrt-modbus-core. Нужны доступ в интернет и учётная запись GitHub.</p>
+<ol><li><a href="https://github.com/ViacheslavMezentsev/openwrt-modbus-core/issues" target="_blank" rel="noopener">Проверьте существующие Issues</a>, чтобы не создавать повтор.</li>
+<li>Выберите форму ошибки или предложения ниже и укажите компонент schoolbell.</li>
+<li>Для ошибки укажите версии, оборудование, шаги воспроизведения, ожидаемый и фактический результат. Версия этого модуля: <strong><%=pcdata(module_version)%></strong>; ядро: <strong><%=pcdata(core_version)%></strong>.</li>
+<li>При необходимости приложите снимок экрана и короткий фрагмент журнала. Удалите пароли, токены, адреса и другие личные данные: Issue будет публичным.</li>
+<li>Проверьте текст и отправьте Issue на GitHub. Эта страница ничего не отправляет автоматически.</li></ol>
+<p><a href="https://github.com/ViacheslavMezentsev/openwrt-modbus-core/issues/new?template=bug_report.yml" target="_blank" rel="noopener">Сообщить об ошибке</a> · <a href="https://github.com/ViacheslavMezentsev/openwrt-modbus-core/issues/new?template=feature_request.yml" target="_blank" rel="noopener">Предложить улучшение</a></p>
+<p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
+</section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=dashboard500"></script><script src="/schoolbell-test/dashboard.js?v=500"></script></body></html>
+</main><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=dashboard501"></script><script src="/schoolbell-test/dashboard.js?v=501"></script></body></html>

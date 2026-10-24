@@ -1,6 +1,6 @@
 # Schoolbell package
 
-Schoolbell 5.0.0: collapsible status, tabs preserving edits, router/browser clocks and a LuCI synchronization link; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
+Schoolbell 5.0.1: collapsible status, tabs preserving edits, router/browser clocks and a LuCI synchronization link; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
 
 
 [Русский](README.md)
@@ -83,3 +83,5 @@ Isolated [admission-time revision retention](MEDIA_ADMISSION.en.md): TC-72, nine
 - [Saved schedule editor](SCHEDULE_EDITOR.en.md).
 
 - [Annual calendar](ANNUAL_CALENDAR.en.md).
+
+The Feedback tab links to [Issues](https://github.com/ViacheslavMezentsev/openwrt-modbus-core/issues) and bug/feature forms, available after the templates reach main. Internet and a GitHub account are required; logs are submitted manually after removing secrets.

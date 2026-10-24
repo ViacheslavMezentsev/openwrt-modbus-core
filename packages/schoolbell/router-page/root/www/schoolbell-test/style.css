@@ -13,3 +13,5 @@ fieldset{border:0;padding:0;margin:0;min-width:0}label{display:flex;gap:8px;flex
 .journal-error td{border-left:3px solid #cf222e}.journal-warning td{border-left:3px solid #bf8700}
 
 .duty-box:not([open]) > :not(summary){display:none!important}
+
+#journal-rows td{text-align:left;vertical-align:top}.schedule-colors{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 20px}.schedule-colors button{width:42px;height:38px;padding:4px}.schedule-colors [aria-pressed=true]{outline:3px solid var(--accent);outline-offset:2px}
