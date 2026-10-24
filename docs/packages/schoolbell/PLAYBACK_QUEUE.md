@@ -118,3 +118,5 @@ active/terminal/not_terminal — недопустимая операция; busy
 Причины событий: ttl/utc, player_rejected/player_exit,
 start_result/start_unknown/poll_result/poll_unknown; отмена — owner_cancelled.
 Будущий слой интеграции определит отображение этих внутренних кодов в публичный API.
+
+Контракт системного адаптера принят в ТЗ 1.8, но API и код этой модели не изменены. Асинхронный launching, сигнальное завершение и удержание файла предстоит реализовать: [Player adapter](PLAYER_ADAPTER.md).

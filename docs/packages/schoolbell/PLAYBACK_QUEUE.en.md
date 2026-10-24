@@ -115,3 +115,5 @@ not_terminal for invalid operations; busy for reentrancy. Event reasons:
 ttl/utc, player_rejected/player_exit, start_result/start_unknown/poll_result/
 poll_unknown; cancellation reason: owner_cancelled. A future integration layer
 will map internal codes to the public API.
+
+The system adapter contract is accepted in specification 1.8; this model API and code are unchanged. Asynchronous launching, signal outcomes and file retention remain to be implemented: [Player adapter](PLAYER_ADAPTER.en.md).
