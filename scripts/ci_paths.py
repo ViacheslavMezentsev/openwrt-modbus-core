@@ -28,7 +28,7 @@ def select(paths):
             pass
         elif path.startswith('pkg-demo/') or path == 'scripts/test_demo.lua':
             selected.add('demo')
-        elif path.startswith(('pkg-schoolbell/', 'packages/schoolbell/')) or path == 'scripts/verify-schoolbell.py':
+        elif path.startswith(('pkg-schoolbell/', 'packages/schoolbell/')) or path in ('scripts/verify-schoolbell.py', 'scripts/test-schoolbell.sh'):
             selected.add('schoolbell')
         else:
             # Core, firmware, build/CI scripts and every unclassified path.

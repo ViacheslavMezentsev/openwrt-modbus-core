@@ -75,3 +75,5 @@ and [needs context](https://docs.github.com/en/actions/reference/workflows-and-a
 Selection/gate regressions live in scripts/test_ci.py.
 
 Core host tests also compile isolated Linux C I/O primitives: a C99 compiler, Linux headers and coreutils timeout are required; missing tools fail the test. The native library is not included in the script-only IPK.
+
+Schoolbell CI now installs Lua 5.1 and runs make test-schoolbell: calendar tests and an independent Python datetime oracle; media-only IPK verification remains separate. Changes under packages/schoolbell/ and scripts/test-schoolbell.sh select schoolbell.

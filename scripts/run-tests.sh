@@ -10,6 +10,8 @@ if [ "${CI_REQUIRE_TOOLS:-0}" = 1 ]; then
     if [ "$scope" != demo ]; then command -v g++ >/dev/null; fi
 fi
 
+if [ "$scope" = all ]; then sh "$PROJECT_ROOT/scripts/test-schoolbell.sh"; fi
+
 if [ "$scope" != demo ]; then
     sh "$PROJECT_ROOT/scripts/test-native-io.sh"
     python3 "$PROJECT_ROOT/scripts/test_rounds_model.py"

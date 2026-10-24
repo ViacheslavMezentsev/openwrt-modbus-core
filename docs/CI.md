@@ -78,3 +78,5 @@ core.filemode=false в Windows может скрыть изменение execut
 описана в GitHub Actions. Воспроизводимые регрессии выбора/итога — scripts/test_ci.py.
 
 Core host-тесты также собирают изолированные Linux C I/O-примитивы: требуются C99 compiler, Linux headers и coreutils timeout; отсутствие инструмента — ошибка. Нативная библиотека не включается в скриптовый IPK.
+
+Schoolbell CI теперь устанавливает Lua 5.1 и запускает make test-schoolbell: календарные тесты и независимый Python datetime oracle; media-only IPK проверяется отдельно. Изменения packages/schoolbell/ и scripts/test-schoolbell.sh выбирают schoolbell.

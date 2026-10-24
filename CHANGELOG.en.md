@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Schoolbell specification 1.6: isolated Lua calendar with fixed/annual modes, quiet dates, midnight preliminary bells and gap/fold rejection. 29 groups, 14,404 independent date vectors and original 15+6 across a full leap year. No core/audio/router integration; media-only IPK unchanged, full parity remains pending.
+
 - Isolated Linux C I/O primitives: single calls, raw 8N1, TCP, poll/eventfd and cleanup; separate build and host/fault tests TC-142/143. Specification 1.33. No Lua binding, target ABI/IPK, modbusd or router changes.
 
 - Specification 1.32: four-call endpoint budget and native dependency; isolated Lua I/O API with 20 test groups. Host mechanism probes and nixio audit; native backend, composition and target remain unverified.

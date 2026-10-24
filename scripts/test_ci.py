@@ -25,7 +25,10 @@ class SelectionTests(unittest.TestCase):
                      'docs/packages/demo/TECHNICAL_SPECIFICATION.md', 'docs/packages/demo/EVENT_API.md'):
             self.assertEqual(self.chosen([path]), {'demo'})
         for path in ('pkg-schoolbell/CONTROL/control', 'packages/schoolbell/media/0.mp3',
-                     'scripts/verify-schoolbell.py', 'docs/packages/schoolbell/TECHNICAL_SPECIFICATION.md'):
+                     'scripts/verify-schoolbell.py', 'scripts/test-schoolbell.sh',
+                     'packages/schoolbell/lua/schoolbell/calendar.lua',
+                     'packages/schoolbell/tests/test_calendar.lua',
+                     'docs/packages/schoolbell/TECHNICAL_SPECIFICATION.md'):
             self.assertEqual(self.chosen([path]), {'schoolbell'})
 
     def test_shared_and_contracts(self):

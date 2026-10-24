@@ -69,6 +69,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: Install calendar test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 python3
       - run: make ci-schoolbell
       - uses: actions/upload-artifact@v4
         with:

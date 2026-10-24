@@ -72,7 +72,9 @@ if LUAC_BIN="$(find_tool luac5.1 luac)"; then
         "$PROJECT_ROOT/pkg/usr/bin/modbusd" \
         "$PROJECT_ROOT/pkg/usr/bin/modbus" \
         "$PROJECT_ROOT/pkg-demo/usr/bin/modbus-demo" \
-        "$PROJECT_ROOT"/scripts/test_*.lua
+        "$PROJECT_ROOT"/scripts/test_*.lua \
+        "$PROJECT_ROOT"/packages/schoolbell/lua/schoolbell/*.lua \
+        "$PROJECT_ROOT"/packages/schoolbell/tests/*.lua
     do
         "$LUAC_BIN" -p "$file"
     done

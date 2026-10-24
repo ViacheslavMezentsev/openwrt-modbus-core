@@ -2,9 +2,9 @@
 
 [Русский](README.md)
 
-School calendar, bells and melodies. The package registers schedules/subscriptions with core; the new port is not implemented yet.
+School calendar, bells and melodies. Isolated schedule calculation is implemented; core registration, player and operator UI remain pending.
 
-[ТЗ 1.5](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.6](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -38,3 +38,7 @@ Specification 1.4 defines functional parity with the original: two schedule mode
 The separate schoolbell CI job runs for package or dependency changes; locally use `make ci-schoolbell`. See [CI](../../CI.en.md). Hardware acceptance remains separate.
 
 Schoolbell specification 1.5 clarifies schema/migration ownership, calendar/media validation and fleet templates versus backups under core 1.16. TC-34/35 are planned; runtime and preview are unchanged.
+
+Specification 1.6: isolated Lua calendar with fixed/annual modes, quiet dates, midnight preliminary bells and gap/fold rejection. 29 groups, 14,404 independent date vectors and original 15+6 across a full leap year. No core/audio/router integration; media-only IPK unchanged, full parity remains pending.
+
+[Calendar API](CALENDAR.en.md) · `make test-schoolbell`

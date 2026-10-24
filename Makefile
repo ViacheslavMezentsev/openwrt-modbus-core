@@ -87,6 +87,7 @@ ci-demo:
 	cd "$(OUT_DIR)/ci-demo" && sha256sum *.ipk > checksums.sha256
 
 ci-schoolbell:
+	sh scripts/test-schoolbell.sh
 	$(MAKE) build-schoolbell OUT_DIR=$(OUT_DIR)/ci-schoolbell
 	python3 scripts/verify-component.py schoolbell $(OUT_DIR)/ci-schoolbell
 	cd "$(OUT_DIR)/ci-schoolbell" && sha256sum *.ipk > checksums.sha256
@@ -97,3 +98,7 @@ build-native-io:
 
 test-native-io:
 	sh scripts/test-native-io.sh
+
+.PHONY: test-schoolbell
+test-schoolbell:
+	sh scripts/test-schoolbell.sh
