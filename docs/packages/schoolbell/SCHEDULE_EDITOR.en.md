@@ -8,7 +8,7 @@ router storage, not localStorage. Switching schedules retains unsaved changes;
 leaving the page warns about them. Create/copy/delete schedules and clear rows
 affect only the browser draft until saved.
 
-**Saving or enabling a row never starts automatic bells.** Dates are not assigned.
+**Saving or enabling a row never starts automatic bells.** Date assignment and preview are available in the [annual calendar](ANNUAL_CALENDAR.en.md).
 The existing manual audio buttons remain separate actions and are not invoked
 by the editor.
 
@@ -66,7 +66,9 @@ points passed in both /tmp and a separate persistent MR3020 directory; probes
 were removed.
 
 This is not power-loss/reboot testing, a complete RAM budget or an autonomous
-IPK. Annual plans, production snapshot migration, media references and automatic
+IPK. Production snapshot migration, media references and automatic
 scheduling remain future work; full original schoolbell parity stays in TODO.
 
 The user confirmed on the installed LuCI page that schedule names, times and flags persist after saving and reloading. Automatic bells remained disabled.
+
+Annual assignments and preview are available in the next stage: [annual calendar](ANNUAL_CALENDAR.en.md). Storage rules remain unchanged; user data may additionally include plans.

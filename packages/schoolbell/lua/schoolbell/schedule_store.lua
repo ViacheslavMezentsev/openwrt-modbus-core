@@ -7,15 +7,47 @@ local function array(n) return assert(J.decode(n or "[]")) end
 local function fail(code,path) error({code=code,path=path},0) end
 local function object(t,fields,path)
     if J.kind(t)~="object" then fail("object",path) end
-    for k in pairs(t) do if not fields[k] then fail("unknown_field",path.."."..tostring(k)) end end
-    for k in pairs(fields) do if t[k]==nil then fail("missing_field",path.."."..k) end end
+    for k in pairs(t) do if fields[k]==nil then fail("unknown_field",path.."."..tostring(k)) end end
+    for k,required in pairs(fields) do if required and t[k]==nil then fail("missing_field",path.."."..k) end end
+end
+local function expand_plans(d)
+    if d.plans==nil then return {} end -- legacy drafts are read without rewriting
+    if J.kind(d.plans)~="array" or #d.plans>8 then fail("limit","plans") end
+    local ids,years,out={},{},{}
+    for _,schedule in ipairs(d.schedules) do ids[schedule.id]=true end
+    for i,p in ipairs(d.plans) do
+        local path="plans."..i
+        object(p,{year=true,schedule_ids=true,days=true},path)
+        if not C.integer(p.year,1,9999) or years[p.year] then fail("year",path) end
+        years[p.year]=true
+        if J.kind(p.schedule_ids)~="array" or #p.schedule_ids>16 then fail("limit",path..".schedule_ids") end
+        local seen={}
+        for _,id in ipairs(p.schedule_ids) do
+            if type(id)~="string" or not ids[id] or seen[id] then fail("schedule_reference",path) end
+            seen[id]=true
+        end
+        local leap=p.year%4==0 and (p.year%100~=0 or p.year%400==0)
+        if type(p.days)~="string" or #p.days~=(leap and 366 or 365) then fail("days",path) end
+        local days,date={},string.format("%04d-01-01",p.year)
+        for day=1,#p.days do
+            local char=p.days:sub(day,day)
+            if char~="." then
+                local slot=char:byte()-64
+                if slot<1 or slot>#p.schedule_ids then fail("day_code",path) end
+                days[date]=p.schedule_ids[slot]
+            end
+            if day<#p.days then date=assert(Calendar.add_days(date,1)) end
+        end
+        out[i]={year=p.year,days=days}
+    end
+    return out
 end
 function M.validate(text)
     if type(text)~="string" or #text>M.max_bytes then return nil,{code="size"} end
     local d,e=J.decode(text)
     if not d then return nil,{code="json",path=e.code} end
     local ok,why=pcall(function()
-        object(d,{schedules=true,pre_minutes=true,pre_media=true},"draft")
+        object(d,{schedules=true,pre_minutes=true,pre_media=true,plans=false},"draft")
         if J.kind(d.schedules)~="array" or #d.schedules>16 then fail("limit","schedules") end
         if d.pre_media~="test" then fail("media_reference","pre_media") end
         local schedules,total={},0
@@ -34,13 +66,33 @@ function M.validate(text)
         end
         local valid,err=Calendar.validate({revision="editor",mode="annual",timezone="UTC",
             pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test"},
-            schedules=schedules,plans={}})
+            schedules=schedules,plans=expand_plans(d)})
         if not valid then fail(err.code,err.path) end
     end)
     if not ok then return nil,type(why)=="table" and why or {code="invalid"} end
     local encoded=C.encode(d)
     if #encoded>M.max_bytes then return nil,{code="size"} end
     return d,encoded
+end
+function M.preview(text,date)
+    local d,body=M.validate(text)
+    if not d then return {ok=false,code="invalid",detail=body} end
+    local schedules={}
+    for i,s in ipairs(d.schedules) do schedules[i]={id=s.id,rows=s.rows} end
+    local model,err=Calendar.compile({revision="preview",mode="annual",timezone="civil",
+        pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test"},
+        schedules=schedules,plans=expand_plans(d)})
+    if not model then return {ok=false,code="invalid",detail=err} end
+    -- Offset zero is an arithmetic coordinate for wall times, not UTC or a router zone.
+    local preview,why=model.calculate(date,date,assert(Calendar.fixed_offset("civil",0)))
+    if not preview then return {ok=false,code="preview",detail=why} end
+    local events=array()
+    for _,event in ipairs(preview.events) do
+        events[#events+1]={date=event.date,time=event.time,origin_date=event.origin_date,
+            schedule_id=event.schedule_id,row_id=event.row_id,kind=event.kind,media=event.media}
+    end
+    return {ok=true,active=false,clock_basis="civil",date=date,
+        selected_schedule=preview.days[1].schedule_id,events=events}
 end
 function M.empty()
     return {schedules=array(),pre_minutes=2,pre_media="test"}

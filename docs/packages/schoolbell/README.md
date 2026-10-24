@@ -77,3 +77,5 @@ madplay подтверждено пользователем; это не про�
 - [Страница ручной проверки звука schoolbell](../../../packages/schoolbell/router-page/README.md).
 
 - [Редактор сохранённых расписаний](SCHEDULE_EDITOR.md).
+
+- [Годовой календарь](ANNUAL_CALENDAR.md).

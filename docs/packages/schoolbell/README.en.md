@@ -78,3 +78,5 @@ Isolated [admission-time revision retention](MEDIA_ADMISSION.en.md): TC-72, nine
 - [Schoolbell manual sound check page](../../../packages/schoolbell/router-page/README.en.md).
 
 - [Saved schedule editor](SCHEDULE_EDITOR.en.md).
+
+- [Annual calendar](ANNUAL_CALENDAR.en.md).

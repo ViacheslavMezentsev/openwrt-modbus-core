@@ -112,3 +112,5 @@ Push и land выполняет владелец; land только после �
 - [Страница ручной проверки звука schoolbell](packages/schoolbell/router-page/README.md).
 
 - [Редактор сохранённых расписаний schoolbell](docs/packages/schoolbell/SCHEDULE_EDITOR.md).
+
+- [Годовой календарь schoolbell](docs/packages/schoolbell/ANNUAL_CALENDAR.md).

@@ -3,7 +3,7 @@ repo=pathlib.Path(sys.argv[1])
 driver=repo/"packages/schoolbell/tests/schedule_store_driver.lua"
 with tempfile.TemporaryDirectory(prefix="schoolbell-editor-test-") as tmp:
     top=pathlib.Path(tmp); a=top/"a.json";b=top/"b.json"
-    data={"schedules":[{"id":"main","name":"Учебный день","rows":[{"id":"r1","time":"08:00","media":"test","enabled":True,"pre":True}]}],"pre_minutes":2,"pre_media":"test"}
+    data={"schedules":[{"id":"main","name":"Учебный день","rows":[{"id":"r1","time":"08:00","media":"test","enabled":True,"pre":True}]}],"pre_minutes":2,"pre_media":"test","plans":[{"year":2028,"schedule_ids":["main"],"days":"A"*366}]}
     a.write_text(json.dumps(data,ensure_ascii=False));data["schedules"][0]["rows"][0]["time"]="09:00";b.write_text(json.dumps(data,ensure_ascii=False))
     def call(root,op="load",file="",revision="",stop=0,crash=False):
         p=subprocess.run(["lua5.1",str(driver),str(root),op,str(file),revision,str(stop)],text=True,capture_output=True)

@@ -111,3 +111,5 @@ Schoolbell specification 1.7: isolated Lua playback queue, per-resource FIFO, mo
 - [Schoolbell manual sound check page](packages/schoolbell/router-page/README.en.md).
 
 - [Schoolbell saved schedule editor](docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).
+
+- [Schoolbell annual calendar](docs/packages/schoolbell/ANNUAL_CALENDAR.en.md).

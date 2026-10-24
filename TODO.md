@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.21. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.22. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -42,7 +42,8 @@ not silently approved by this sequence. API versions are independent of spec rev
 - [ ] P05 — Implement schoolbell media IDs/revisions and bounded validated replacement with recovery (schoolbell TC-22/23). Preserve active/referenced files; the complete offline profile includes five original melodies plus test.
 - [ ] P06 — Assemble the autonomous engineering MVP after P01–P05. Following separate hardware approval, validate install/update/rollback and event-to-playback/results while core/demo remain healthy. Validate reboot without Internet or previous /tmp; no claim of a full original replacement yet.
 - [x] P07 saved schedule editor — Create/copy/delete/edit rows and persistent inactive drafts, content-revision conflicts and strict calendar validation; host/target filesystem checks. Only test.mp3, no annual assignment or activation. [Details](docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).
-- [ ] P07 editor integration — Add annual date assignment and preview, then migrate inactive drafts into the validated production snapshot/media contract before activation. Do not silently treat editor checkpoints as active plans or backup/import format.
+- [x] P07 annual draft — Twelve-month grid, date/range assignment, up to eight explicit years, shared persistence and civil preview through Lua calendar. Legacy read is unchanged; no UTC/DST or activation. [Details](docs/packages/schoolbell/ANNUAL_CALENDAR.en.md).
+- [ ] P07 editor integration — Validate timezone/DST and clock quality, then migrate inactive drafts into the validated production snapshot/media contract before activation. Do not silently treat editor checkpoints as active plans or backup/import format.
 - [x] P07 manual sound page — LuCI login/CSRF, explicit browser/router routes, fixed sample and guarded diagnostic player; both routes confirmed on MR3020. Not scheduling, production worker or autonomous IPK. See [router-page](packages/schoolbell/router-page/README.en.md).
 - [x] P07 visual mockup — Accepted standalone calendar/schedules/media/player views and system/dark/light themes in [ui-mockup](packages/schoolbell/ui-mockup/README.en.md). Synthetic data only; no API/audio/router/IPK integration. This does not complete functional UI acceptance.
 - [ ] P07 — Implement the local plan manager and desktop/mobile UI: year palette, schedule/row edits, explicit activation, controls, browser previews, router time, bounded system/package logs and dependency status (schoolbell TC-19–21/25–29). Browser closure must not stop scheduling.

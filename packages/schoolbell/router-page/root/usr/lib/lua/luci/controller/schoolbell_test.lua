@@ -2,6 +2,7 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","preview"},call("preview")).leaf=true
     entry({"admin","schoolbell","schedules"},call("schedules")).leaf=true
     entry({"admin","schoolbell","save-schedules"},call("save_schedules")).leaf=true
     entry({"admin","schoolbell","sample"},call("sample")).leaf=true
@@ -40,14 +41,36 @@ function save_schedules()
     local store=editor()
     respond(store.request("/etc/schoolbell-editor","save",h.formvalue("draft"),h.formvalue("revision")))
 end
+function preview()
+    local h=require("luci.http")
+    -- Bound form decoding before requesting token/form values.
+    local length=tonumber(h.getenv("CONTENT_LENGTH"))
+    local content=h.getenv("CONTENT_TYPE") or ""
+    if not length or length<1 or length>49152
+       or not content:match("^application/x%-www%-form%-urlencoded") then
+        h.status(413,"Unsupported or oversized request"); return
+    end
+    if not require("luci.dispatcher").test_post_security() then return end
+    local store=editor()
+    respond(store.preview(h.formvalue("draft"),h.formvalue("date")))
+end
+local function installed_version(package_name)
+    local f=io.open('/usr/lib/opkg/info/'..package_name..'.control','rb')
+    if not f then return 'не установлен / нет метаданных' end
+    local text=f:read(4096) or '';f:close()
+    return ('\n'..text):match('\nVersion: ([^\r\n]+)') or 'неизвестна'
+end
 function page()
     local d=require("luci.dispatcher")
     require("luci.http").header("Cache-Control","no-store")
     require("luci.template").render("schoolbell_test",{
         play_url=d.build_url("admin","schoolbell","play"),
         sample_url=d.build_url("admin","schoolbell","sample"),
+        preview_url=d.build_url("admin","schoolbell","preview"),
         schedules_url=d.build_url("admin","schoolbell","schedules"),
         save_url=d.build_url("admin","schoolbell","save-schedules"),
+        core_version=installed_version('modbus-rtu-core'),
+        module_version=installed_version('modbus-schoolbell'),
         token=d.context.authtoken
     })
 end
