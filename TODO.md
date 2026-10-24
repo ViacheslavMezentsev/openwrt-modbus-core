@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.9. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.10. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -29,7 +29,8 @@ not silently approved by this sequence. API versions are independent of spec rev
 - [x] P03 queue foundation — Isolated Lua FIFO, TTL/UTC checks, owner cancellation, bounded receipts and injectable player; 24 host test groups. Unknown process outcomes retain the resource. No core, process, media retention or sound integration.
 - [x] P03 player contract — schoolbell 1.8 accepts process launch/completion, pinned media revisions and crash blocking; TC-43–49 planned, no runtime changes.
 - [x] P03 system mechanisms contract — schoolbell 1.9 accepts native fork/exec, inherited flock, protected file via stdin, begin/poll/release, 2000 ms timeout and /dev/null; no implementation.
-- [ ] P03 adapter API details and host checks — Resolve remaining schoolbell 8.2.11 field/error layouts, exec evidence, generations, clock/budgets and media retention recovery; implement isolated tests TC-50–55 without audio. Verify the actual madplay build preserves lock FD and supports stdin before target integration.
+- [x] P03 results and budgets contract — schoolbell 1.10: exact snapshots/errors, executable-identity exec evidence, 16-byte control frame, 64/64/8/8 operation limits; TC-56–60 planned.
+- [ ] P03 adapter host implementation — Fix remaining frame constants/encoding, generation/ranges, clocks and media-reference recovery; then isolated API/fault tests TC-50–60 without audio. Verify actual madplay lock FD/stdin and target /proc before integration.
 - [ ] P03 — Implement the schoolbell-owned player worker, FIFO/expiry/cancellation and result events, scoped schedule controls and manual test (schoolbell TC-02/06–11/18). Resolve active stop separately; no audio API in core.
 - [x] P04 calendar calculation — Isolated schoolbell Lua snapshot/calculator, fixed and explicit annual selection, quiet-day midnight suppression, no annual repeat and gap/fold rejection; 29 groups plus 14,404 independent date vectors, original 15+6 across a leap year. No core registration, UI, player, storage or hardware acceptance; full appendix B parity still required.
 - [ ] P04 — Implement the common scheduler and system-time interface (core TC-58–60), then schoolbell fixed/annual modes, quiet days, preliminary bells, registration horizon and shared preview calculation (schoolbell TC-14–17). Browser clock synchronization is required; RTC is a separate enhancement for unattended startup.

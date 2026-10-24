@@ -19,7 +19,7 @@ EOF may accompany early death; it alone does not prove exec. Launch evidence
 is separate from termination outcome. waitpid(child, ..., WNOHANG) obtains an
 ordinary exit code or signal; a signal is not converted to an ordinary
 128+signal exit. Fast exit does not require a previously observed running state.
-The exact exec proof protocol remains question 8.2.11.
+Revision 1.10 selects executable-identity observation: [results](PLAYER_RESULTS.en.md).
 
 Use flock(LOCK_EX | LOCK_NB) on one resource lock file for the current boot.
 Do not delete/replace that file during operation. The player inherits the FD
@@ -48,7 +48,7 @@ ok, err = player.release(handle)
 ```
 
 This is the accepted internal interface shape, not an implemented Lua binding
-or a public core API. Exact field/error types must be fixed before implementation.
+or a public core API. Exact fields and errors are accepted in revision 1.10: [results](PLAYER_RESULTS.en.md).
 
 Begin prepares the resource/file and checks permit immediately before authorizing
 child creation. It never extends TTL. It returns launching without waiting for
@@ -85,11 +85,10 @@ Owner loss does not introduce durable queues or exactly-once guarantees.
 | poll | One nonblocking pass per call |
 
 Structured errors remain available without text output. The exec control channel
-is distinct from stdout/stderr. Numeric syscall budgets for preparation and poll
-remain separate decisions; the transport limit of 4 syscall/endpoint does not
+is distinct from stdout/stderr. Revision 1.10 accepts budgets of 64/64 for parent/child preparation, 8 for poll
+and 8 for a separate cleanup pass; the transport limit of 4 syscall/endpoint does not
 apply. 2000 ms is an initial test setting, not a measured bound.
 
-Open items: message/error layouts, exec evidence under early death, generation
-creation, system clocks, limits/budgets, atomic admission with media retention,
-and reference recovery. Host acceptance uses a substitute process without an
+Open items: control-frame constants/encoding, generation creation/ranges,
+system clocks, atomic admission with media retention, and reference recovery. Host acceptance uses a substitute process without an
 audio device. Target build checks and real sound require a separate agreed stage.

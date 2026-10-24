@@ -63,7 +63,7 @@ prove that playback never happened; unknown requests are not automatically
 replayed. This contract adds no durable queue, exactly-once, stop or paused
 policy after reboot. Uncertainty preserves the block and diagnostics.
 
-Mechanisms and API shape are accepted in specification 1.9: [System API](PLAYER_SYSTEM_API.en.md). Implementation is absent; exact fields, exec evidence, budgets and checks of the actual madplay build remain open.
+Mechanisms and API shape are accepted in specification 1.9: [System API](PLAYER_SYSTEM_API.en.md). Implementation is absent; fields, executable observation and budgets are defined in [revision 1.10](PLAYER_RESULTS.en.md); actual madplay checks remain pending.
 
 Planned host tests: argv/exec/fast exit (TC-43), deadlines (TC-44), exit/signal/
 PID (TC-45), lost confirmation (TC-46), media replacement/deletion (TC-47),
