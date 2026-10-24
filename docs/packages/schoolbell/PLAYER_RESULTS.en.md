@@ -2,7 +2,8 @@
 
 [Русский](PLAYER_RESULTS.md) · [Specification 1.10](TECHNICAL_SPECIFICATION.md)
 
-Contract 3.6.21–3.6.28 is accepted, not implemented. TC-56–60 are planned.
+Contract 3.6.21–3.6.28 is accepted; revision 1.12 adds an isolated model.
+The system implementation and native acceptance of TC-56–60 remain pending.
 The [system API](PLAYER_SYSTEM_API.en.md) differs from the current isolated queue.
 
 ## Results
@@ -92,3 +93,5 @@ clocks/random source, atomic media admission and
 reference recovery remain open. Actual madplay properties and target /proc
 access require separate checks. Code, IPK and router are unchanged; future
 host scenarios use no audio device.
+
+Schoolbell specification 1.12: isolated Lua SBPE codec and player API model with injected operations. 32 host test groups cover frames, generations, deadlines/outcomes, quotas and cleanup. No native binding, processes, sound, core or router changes; IPK unchanged. [Player model](PLAYER_MODEL.en.md).

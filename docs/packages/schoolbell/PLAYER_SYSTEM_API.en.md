@@ -92,3 +92,5 @@ apply. 2000 ms is an initial test setting, not a measured bound.
 Frame constants and generation/ranges are accepted in [revision 1.11](PLAYER_WIRE.en.md).
 Open items: system clocks/random source, atomic admission with media retention, and reference recovery. Host acceptance uses a substitute process without an
 audio device. Target build checks and real sound require a separate agreed stage.
+
+Schoolbell specification 1.12: isolated Lua SBPE codec and player API model with injected operations. 32 host test groups cover frames, generations, deadlines/outcomes, quotas and cleanup. No native binding, processes, sound, core or router changes; IPK unchanged. [Player model](PLAYER_MODEL.en.md).

@@ -2,8 +2,8 @@
 
 [Русский](PLAYER_WIRE.md) · [Specification 1.11](TECHNICAL_SPECIFICATION.md)
 
-Requirements 3.6.29–3.6.34 are accepted; the codec and system adapter are not
-implemented. TC-61–65 are planned. [Result fields](PLAYER_RESULTS.en.md) stay intact.
+Requirements 3.6.29–3.6.34 are accepted; revision 1.12 adds a codec and isolated
+model, while the system adapter remains absent. TC-61–65 are planned. [Result fields](PLAYER_RESULTS.en.md) stay intact.
 
 ## Child frame
 
@@ -80,4 +80,7 @@ Isolated codec and API model with injected system operations: reference/invalid
 frames, every split point, randomness failure, foreign handles, counter exhaustion
 and range boundaries. Real processes still require system clocks/random source,
 atomic admission with media retention and reference recovery.
-Documentation only; no new executable tests, sound or router changes.
+The original contract was documentation only; revision 1.12 model coverage is
+listed below. No sound or router changes.
+
+Schoolbell specification 1.12: isolated Lua SBPE codec and player API model with injected operations. 32 host test groups cover frames, generations, deadlines/outcomes, quotas and cleanup. No native binding, processes, sound, core or router changes; IPK unchanged. [Player model](PLAYER_MODEL.en.md).

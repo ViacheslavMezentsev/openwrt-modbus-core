@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.11. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.12. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -31,7 +31,7 @@ not silently approved by this sequence. API versions are independent of spec rev
 - [x] P03 system mechanisms contract — schoolbell 1.9 accepts native fork/exec, inherited flock, protected file via stdin, begin/poll/release, 2000 ms timeout and /dev/null; no implementation.
 - [x] P03 results and budgets contract — schoolbell 1.10: exact snapshots/errors, executable-identity exec evidence, 16-byte control frame, 64/64/8/8 operation limits; TC-56–60 planned.
 - [x] P03 wire and parameter contract — schoolbell 1.11: SBPE/v1 big-endian, generation/attempt rules and strict ranges; TC-61–65 planned, no implementation.
-- [ ] P03 isolated codec/API — Implement codec and model with injected system calls, including frame splits, random-source failures, foreign handles, counter exhaustion and quota boundaries; no audio.
+- [x] P03 isolated codec/API — Lua SBPE codec and injected player model; 32 host groups cover frame splits, randomness failure, foreign handles, counter exhaustion, outcomes and bounded cleanup. No native/process/audio/core integration.
 - [ ] P03 system integration — Resolve system clocks/random source, atomic media admission and reference recovery; verify actual madplay lock FD/stdin and target /proc before real-process integration.
 - [ ] P03 — Implement the schoolbell-owned player worker, FIFO/expiry/cancellation and result events, scoped schedule controls and manual test (schoolbell TC-02/06–11/18). Resolve active stop separately; no audio API in core.
 - [x] P04 calendar calculation — Isolated schoolbell Lua snapshot/calculator, fixed and explicit annual selection, quiet-day midnight suppression, no annual repeat and gap/fold rejection; 29 groups plus 14,404 independent date vectors, original 15+6 across a leap year. No core registration, UI, player, storage or hardware acceptance; full appendix B parity still required.
