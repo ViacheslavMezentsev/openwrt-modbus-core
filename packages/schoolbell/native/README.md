@@ -7,3 +7,7 @@
 [API и ограничения](../../../docs/packages/schoolbell/LINUX_PLAYER.md).
 
 `make -C packages/schoolbell/native` · `make test-schoolbell`
+
+ТЗ schoolbell 1.14: изолированная Lua 5.1-привязка Linux player, userdata и восемь host-групп с тестовым процессом, GC/OOM и восстановлением handles. Без очереди/ядра, аудиоустройства, звука и изменений роутера/IPK.
+
+[Lua binding](../../../docs/packages/schoolbell/LUA_PLAYER.md) · `make -C packages/schoolbell/native lua`

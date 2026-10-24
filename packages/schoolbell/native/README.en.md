@@ -7,3 +7,7 @@ Schoolbell specification 1.13: isolated Linux C player adapter and a test child 
 [API and limits](../../../docs/packages/schoolbell/LINUX_PLAYER.en.md).
 
 `make -C packages/schoolbell/native` · `make test-schoolbell`
+
+Schoolbell spec 1.14: isolated Lua 5.1 Linux player binding, userdata and eight host groups with a fixture process, GC/OOM and recoverable handles. No queue/core, audio device, sound or router/IPK changes.
+
+[Lua binding](../../../docs/packages/schoolbell/LUA_PLAYER.en.md) · `make -C packages/schoolbell/native lua`

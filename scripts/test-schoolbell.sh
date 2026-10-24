@@ -8,3 +8,4 @@ python3 packages/schoolbell/tests/test_calendar_dates.py "$(command -v lua5.1)"
 lua5.1 packages/schoolbell/tests/test_playback_queue.lua
 lua5.1 packages/schoolbell/tests/test_player_model.lua
 sh packages/schoolbell/tests/test-linux-player.sh
+sh packages/schoolbell/tests/test-lua-player.sh
