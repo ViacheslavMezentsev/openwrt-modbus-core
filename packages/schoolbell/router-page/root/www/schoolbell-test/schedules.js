@@ -13,18 +13,20 @@
   var counter=0;
   var year=new Date().getFullYear(), brush='quiet', painting=false;
   var monthNames=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  // Fixed palette IDs are persisted; never reorder this palette in later patches.
-  var colors=['#c8d6e2','#c5d9df','#c4dcd8','#cbdccf','#d5dec8','#dfe0c7','#e5dcc8','#e6d5c9',
-    '#e3cece','#ddcddd','#d4cfe3','#cccfe2','#ccd4d9','#d0d8d3','#dbd7cd','#d6d1d5'];
-  var colorNames=['Дымчато-синий','Серо-голубой','Мягкая бирюза','Шалфей','Светлая олива','Лён','Песочный','Персиковый',
-    'Пыльная роза','Вереск','Лаванда','Сиренево-серый','Стальной','Эвкалипт','Тёплый серый','Жемчужно-серый'];
+  // Stable IDs; 5.0.2 replaces low-contrast shades with xterm-256 cube colors.
+  var colors=['#005faf','#00875f','#af0000','#af8700','#875faf','#008787','#af005f','#5f8700',
+    '#d75f5f','#00afff','#00af5f','#af5f00','#af5fff','#5f5f87','#875f00','#d75faf'];
+  var colorNames=['Синий','Зелёный','Красный','Охра','Фиолетовый','Бирюзовый','Малиновый','Оливковый',
+    'Коралловый','Голубой','Изумрудный','Оранжевый','Сиреневый','Сланцевый','Коричневый','Розовый'];
+  function ink(color){var rgb=color.slice(1).match(/../g).map(function(v){var n=parseInt(v,16)/255;return n<=0.04045?n/12.92:Math.pow((n+0.055)/1.055,2.4);});
+    var l=rgb[0]*0.2126+rgb[1]*0.7152+rgb[2]*0.0722;return l>0.179?'#000000':'#ffffff';}
   function colorOf(id){var item=draft.schedules.find(function(s){return s.id===id;});return item?colors[item.color-1]:'';}
   function nextColor(){for(var i=1;i<=16;i++)if(!draft.schedules.some(function(s){return s.color===i;}))return i;return draft.schedules.length%16+1;}
   function renderColors(){
     var currentSchedule=current(),palette=document.getElementById('schedule-colors');palette.replaceChildren();
     if(!currentSchedule)return;
     colors.forEach(function(color,i){var button=document.createElement('button');button.type='button';button.textContent=i+1;
-      button.style.background=color;button.style.color='#24313c';button.title=colorNames[i];button.setAttribute('aria-label','Цвет '+(i+1)+': '+colorNames[i]);
+      button.style.background=color;button.style.color=ink(color);button.title=colorNames[i];button.setAttribute('aria-label','Цвет '+(i+1)+': '+colorNames[i]);
       button.setAttribute('aria-pressed',String(currentSchedule.color===i+1));
       button.addEventListener('click',function(){currentSchedule.color=i+1;changed();render();});palette.appendChild(button);
     });
@@ -77,7 +79,7 @@
       var sid=assigned(p,Number(b.dataset.index));
       b.title=b.dataset.date+' · '+scheduleName(sid);b.setAttribute('aria-label',b.title);
       b.style.background=sid==='quiet'?'':colorOf(sid);
-      b.style.color=sid==='quiet'?'':'#24313c';
+      b.style.color=sid==='quiet'?'':ink(colorOf(sid));
     });
     document.getElementById('plan-status').textContent=year+': назначено '+(p?p.days.replace(/\./g,'').length:0)+' из '+dates(year).length+' дней. Остальные тихие.';
   }
@@ -108,7 +110,7 @@
         if(!date.startsWith(prefix))return;
         var sid=assigned(p,i),b=document.createElement('button');b.type='button';b.textContent=Number(date.slice(-2));
         b.title=date+' · '+scheduleName(sid);b.setAttribute('aria-label',b.title);b.className='calendar-day'+(weekday(date)>=5?' weekend':'');
-        if(sid!=='quiet'){b.style.background=colorOf(sid);b.style.color='#24313c';}
+        if(sid!=='quiet'){b.style.background=colorOf(sid);b.style.color=ink(colorOf(sid));}
         b.dataset.index=i;b.dataset.date=date;
         b.addEventListener('pointerdown',function(e){
           if(e.pointerType!=='mouse' || e.button!==0 || busy)return;
@@ -144,7 +146,7 @@
     // Legacy drafts are only materialized in browser memory; disk changes on explicit save.
     draft.schedules.forEach(function(s,i){if(s.color===undefined)s.color=i%16+1;});
     select.replaceChildren();
-    draft.schedules.forEach(function (s) { var option=textOption(s.id,s.name);option.style.background=colorOf(s.id);option.style.color='#24313c';select.appendChild(option); });
+    draft.schedules.forEach(function (s) { var option=textOption(s.id,s.name);option.style.background=colorOf(s.id);option.style.color=ink(colorOf(s.id));select.appendChild(option); });
     if(!current()) selected=draft.schedules.length?draft.schedules[0].id:null;
     select.value=selected || '';
     var s=current();

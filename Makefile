@@ -102,3 +102,11 @@ test-native-io:
 .PHONY: test-schoolbell
 test-schoolbell:
 	sh scripts/test-schoolbell.sh
+
+.PHONY: site check-site
+site:
+	python3 scripts/build-site.py
+
+check-site: site
+	python3 scripts/test-site.py
+	node scripts/test-site-demo.js

@@ -65,3 +65,5 @@ Module versions start at 5.0.0, using major.minor.patch; subsequent small fixes 
 Schoolbell 5.0.1: persistent per-schedule colors from 16 muted shades, automatic assignment and manual selection, consistent across the list, calendar and preview. Journal text is left-aligned; time-zone settings are offered independently of clock synchronization. Reading a legacy draft does not rewrite it; colors are persisted only on explicit save. Equal offsets do not prove equal geographical zones or DST rules.
 
 Downgrading to 5.0.0 after saving color is incompatible with its strict schema. Rollback commands require the original draft to remain unchanged; new user data is never discarded automatically.
+
+In5.0.2, the time zone is configured inside Settings with explicit confirmation. It affects the router globally but never sets the UTC clock epoch. Earlier-stage LuCI links are no longer used. The palette changed while saved numeric color IDs remain stable.

@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Schoolbell 5.0.2: distinct xterm256 colors with black/white text, an in-module time-zone selector with confirmation and conflict checks; a GitHub Pages landing page and browser-local demo sharing the router UI.
+
 - Feedback tab: instructions and bug/feature form links, version context and a public-data warning.
 
 - Schoolbell 5.0.1: persistent per-schedule colors from 16 muted shades, automatic assignment and manual selection, consistent across the list, calendar and preview. Journal text is left-aligned; time-zone settings are offered independently of clock synchronization.

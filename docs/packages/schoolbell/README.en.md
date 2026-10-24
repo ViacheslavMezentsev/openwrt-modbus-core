@@ -1,6 +1,6 @@
 # Schoolbell package
 
-Schoolbell 5.0.1: collapsible status, tabs preserving edits, router/browser clocks and a LuCI synchronization link; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
+Schoolbell 5.0.2: collapsible status, tabs preserving edits, router/browser clocks and an in-module time-zone selector; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
 
 
 [Русский](README.md)

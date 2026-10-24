@@ -80,3 +80,5 @@ core.filemode=false в Windows может скрыть изменение execut
 Core host-тесты также собирают изолированные Linux C I/O-примитивы: требуются C99 compiler, Linux headers и coreutils timeout; отсутствие инструмента — ошибка. Нативная библиотека не включается в скриптовый IPK.
 
 Schoolbell CI теперь устанавливает Lua 5.1 и запускает make test-schoolbell: календарные тесты и независимый Python datetime oracle; media-only IPK проверяется отдельно. Изменения packages/schoolbell/ и scripts/test-schoolbell.sh выбирают schoolbell.
+
+Сайт проверяется в задании документации через `make check-site`: сборка, локальные ссылки, контраст подписей и модель демо (Python 3 и Node.js). Публикация GitHub Pages — отдельный ручной workflow только из main; см. [инструкцию сайта](../site/README.md).

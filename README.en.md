@@ -1,6 +1,6 @@
 # openwrt-modbus-core
 
-Schoolbell 5.0.1: collapsible status, tabs preserving edits, router/browser clocks and a LuCI synchronization link; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
+Schoolbell 5.0.2: collapsible status, tabs preserving edits, router/browser clocks and an in-module time-zone selector; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
 
 
 [Русский](README.md)
@@ -116,3 +116,5 @@ Schoolbell specification 1.7: isolated Lua playback queue, per-resource FIFO, mo
 - [Schoolbell saved schedule editor](docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).
 
 - [Schoolbell annual calendar](docs/packages/schoolbell/ANNUAL_CALENDAR.en.md).
+
+Website and interactive demo: [build and publication](site/README.en.md).

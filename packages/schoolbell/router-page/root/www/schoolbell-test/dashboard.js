@@ -7,11 +7,41 @@
     document.querySelectorAll('[data-panel]').forEach(function(p){p.hidden=p.dataset.panel!==name;});
     root.hidden=name==='sound' || name==='journal' || name==='feedback';
     if(name==='journal')loadJournal();
+    if(name==='sound' && !zoneState)loadZones();
     document.querySelector('.savebar').hidden=name==='preview';
     try{sessionStorage.setItem('schoolbell-tab',name);}catch(_){}
   }
+  var zoneState=null,zoneBusy=false;
+  var zoneSelect=document.getElementById('timezone-select'),zoneSave=document.getElementById('timezone-save'),zoneBrowser=document.getElementById('timezone-browser');
+  var zoneMessage=document.getElementById('timezone-result');
+  function zoneControls(){zoneSelect.disabled=zoneBusy || !zoneState;zoneSave.disabled=zoneBusy || !zoneState || zoneState.pending;zoneBrowser.disabled=zoneBusy || !zoneState;document.getElementById('timezone-reload').disabled=zoneBusy;}
+  async function zoneRequest(options){var abort=new AbortController(),timer=setTimeout(function(){abort.abort();},15000);
+    try{var response=await fetch(root.dataset.timezone,Object.assign({credentials:'same-origin',cache:'no-store',redirect:'error',signal:abort.signal},options));if(!response.ok)throw new Error('http');return await response.json();}finally{clearTimeout(timer);}}
+  async function loadZones(){
+    if(zoneBusy)return;zoneBusy=true;zoneControls();
+    try{var value=await zoneRequest();if(!value.ok)throw new Error('zone');zoneState=value;zoneSelect.replaceChildren();
+      value.zones.forEach(function(name){var o=document.createElement('option');o.value=name;o.textContent=name.replace(/_/g,' ');zoneSelect.appendChild(o);});
+      if(!value.zones.includes(value.zone)){var o=document.createElement('option');o.value=value.zone;o.textContent=value.zone+' (нестандартная настройка)';o.disabled=true;zoneSelect.appendChild(o);}
+      zoneSelect.value=value.zone;document.getElementById('timezone-current').textContent='Сохранённый пояс: '+value.zone+(value.runtime_ok?' · применяется':' · применение не подтверждено');
+      if(value.pending)zoneMessage.textContent='Есть несохранённые системные настройки. Сначала завершите их изменение; здесь запись заблокирована.';
+    }catch(_){zoneState=null;zoneMessage.textContent='Не удалось загрузить часовые пояса. Нажмите «Обновить».';}
+    finally{zoneBusy=false;zoneControls();}
+  }
+  document.querySelectorAll('[data-open-settings]').forEach(function(b){b.addEventListener('click',function(){selectTab('sound');document.getElementById('panel-sound').scrollIntoView({block:'start'});});});
+  document.getElementById('timezone-reload').addEventListener('click',loadZones);
+  zoneBrowser.addEventListener('click',function(){var name=Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if(zoneState.zones.includes(name)){zoneSelect.value=name;zoneMessage.textContent='Выбран '+name+'. Проверьте место установки и нажмите «Применить».';}else zoneMessage.textContent='Зона браузера '+name+' отсутствует в базе роутера. Выберите город вручную.';});
+  zoneSave.addEventListener('click',async function(){
+    if(!zoneState || zoneBusy || !window.confirm('Применить '+zoneSelect.value+' на роутере? Это изменит местное время всех его приложений, но не сами часы.'))return;
+    zoneBusy=true;zoneControls();zoneMessage.textContent='Сохраняем часовой пояс…';
+    try{var value=await zoneRequest({method:'POST',body:new URLSearchParams({token:root.dataset.token,zone:zoneSelect.value,revision:zoneState.revision})});
+      var errors={conflict:'Настройки изменены в другом окне. Обновите данные перед повтором.',pending_changes:'Есть несохранённые системные настройки. Запись не выполнена.',invalid_zone:'Выберите пояс из списка.',apply_failed:'Пояс сохранён, но применение не подтверждено. Обновите данные и повторите применение.',save_uncertain:'Результат сохранения неизвестен. Обновите данные перед повтором.',unavailable:'Настройка недоступна. Проверьте связь и повторите чтение.'};
+      zoneMessage.textContent=value.ok?'Часовой пояс применён: '+value.zone+(value.journal_warning?' (журнал недоступен)':''):(errors[value.code] || 'Настройка не выполнена.');
+    }catch(_){zoneMessage.textContent='Ответ потерян. Пояс мог сохраниться; проверьте состояние перед повтором.';}
+    finally{zoneBusy=false;zoneControls();await loadZones();sample=null;poll();}
+  });
   var journalBusy=false;
-  var actions={save_ok:'Черновик сохранён',save_failed:'Сохранение отклонено',preview_ok:'Запрошен предпросмотр',preview_failed:'Предпросмотр отклонён',play_requested:'Запрошен звук на роутере',play_ok:'Проигрыватель завершился успешно',play_failed:'Ошибка проигрывателя',sample_requested:'Передан файл для браузера (не подтверждение звука)',storage_error:'Ошибка хранилища',installed:'Установлен интерфейс schoolbell'};
+  var actions={timezone_ok:'Часовой пояс применён',timezone_failed:'Не удалось применить часовой пояс',save_ok:'Черновик сохранён',save_failed:'Сохранение отклонено',preview_ok:'Запрошен предпросмотр',preview_failed:'Предпросмотр отклонён',play_requested:'Запрошен звук на роутере',play_ok:'Проигрыватель завершился успешно',play_failed:'Ошибка проигрывателя',sample_requested:'Передан файл для браузера (не подтверждение звука)',storage_error:'Ошибка хранилища',installed:'Установлен интерфейс schoolbell'};
   async function loadJournal(){
     if(journalBusy)return;journalBusy=true;
     var button=document.getElementById('journal-reload'),status=document.getElementById('journal-status');button.disabled=true;

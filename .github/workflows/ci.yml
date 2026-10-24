@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Documentation and CI policy tests
-        run: make check-docs check-ci
+        run: make check-docs check-ci check-site
 
   core:
     needs: changes

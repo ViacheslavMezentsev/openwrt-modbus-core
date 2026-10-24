@@ -3,6 +3,7 @@ function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
     entry({"admin","schoolbell","journal"},call("journal")).leaf=true
+    entry({"admin","schoolbell","timezone"},call("timezone")).leaf=true
     entry({"admin","schoolbell","clock"},call("clock")).leaf=true
     entry({"admin","schoolbell","preview"},call("preview")).leaf=true
     entry({"admin","schoolbell","schedules"},call("schedules")).leaf=true
@@ -31,6 +32,17 @@ function journal()
     local h=require('luci.http')
     if h.getenv('REQUEST_METHOD')~='GET' then h.status(405,'Method Not Allowed');return end
     editor();respond(require('schoolbell.journal').request('/etc/schoolbell-editor'))
+end
+function timezone()
+    local h=require('luci.http');local method=h.getenv('REQUEST_METHOD')
+    if method=='GET' then editor();respond(require('schoolbell.timezone').run());return end
+    if method~='POST' then h.status(405,'Method Not Allowed');return end
+    local size=tonumber(h.getenv('CONTENT_LENGTH'))
+    if not size or size<1 or size>2048 or not (h.getenv('CONTENT_TYPE') or ''):match('^application/x%-www%-form%-urlencoded')then h.status(413,'Unsupported request');return end
+    if not require('luci.dispatcher').test_post_security()then return end
+    editor();local zone=h.formvalue('zone');if not zone then respond({ok=false,code='invalid_zone'});return end
+    local value=require('schoolbell.timezone').run(zone,h.formvalue('revision'))
+    audit(value.ok and 'timezone_ok' or 'timezone_failed',value);respond(value)
 end
 function clock()
     local h=require('luci.http')
@@ -94,7 +106,7 @@ function page()
     require("luci.template").render("schoolbell_test",{
         journal_url=d.build_url('admin','schoolbell','journal'),
         clock_url=d.build_url('admin','schoolbell','clock'),
-        time_settings_url=d.build_url('admin','system','system'),
+        timezone_url=d.build_url('admin','schoolbell','timezone'),
         play_url=d.build_url("admin","schoolbell","play"),
         sample_url=d.build_url("admin","schoolbell","sample"),
         preview_url=d.build_url("admin","schoolbell","preview"),

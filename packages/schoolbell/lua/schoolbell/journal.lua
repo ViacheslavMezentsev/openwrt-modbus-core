@@ -3,7 +3,7 @@ local C=require('schoolbell.media_codec')
 local J=require('modbus.json_strict')
 local M={segment_bytes=8192,record_bytes=320}
 local names={'journal-previous.jsonl','journal-current.jsonl'}
-local actions={save_ok={'user','info'},save_failed={'user','error'},preview_ok={'user','info'},
+local actions={timezone_ok={'user','info'},timezone_failed={'system','error'},save_ok={'user','info'},save_failed={'user','error'},preview_ok={'user','info'},
  preview_failed={'user','warning'},play_requested={'user','info'},play_ok={'module','info'},
  play_failed={'module','error'},sample_requested={'user','info'},storage_error={'system','error'},
  installed={'module','info'}}

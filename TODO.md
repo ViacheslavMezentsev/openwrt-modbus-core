@@ -2,6 +2,9 @@
 
 ## Current state and next steps
 
+- [ ] Publish the repository Pages site after merge/CI using the manual workflow; see site/README.md.
+- [ ] Validate schoolbell timezone application on the live device after an explicit user action; isolated UCI commit/readback is tested. Verify zoneinfo-file targets separately.
+
 - [ ] Connect schoolbell duty countdown to an active executor; keep drafts inactive. Define system-event subscription for the package journal (current log covers observed package/storage events only).
 
 Core 0.4.0 and firmware map v2 implement router-driven button/LED control.
@@ -17,7 +20,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.22. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.25. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.

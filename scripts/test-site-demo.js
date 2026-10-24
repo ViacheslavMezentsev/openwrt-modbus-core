@@ -1,0 +1,23 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const elements=new Map(),storage=new Map();
+const document={getElementById(id){if(!elements.has(id))elements.set(id,{addEventListener(){},textContent:''});return elements.get(id);}};
+const context={window:{},document,Intl,Date,Math,Number,JSON,Array,String,URL,URLSearchParams,Response:class{constructor(body){this.body=body;this.ok=true;}json(){return Promise.resolve(JSON.parse(this.body));}},location:{href:'https://example.test/openwrt-modbus-core/schoolbell/',origin:'https://example.test'},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}};
+vm.runInNewContext(fs.readFileSync(require('path').join(__dirname,'../site/demo.js'),'utf8'),context);
+async function api(name,data){return (await context.window.fetch('./demo-api/'+name,data?{method:'POST',body:new URLSearchParams(data)}:undefined)).json();}
+(async()=>{
+ let first=await api('load');assert(first.ok && first.data.schedules.length===3);
+ first.data.schedules[0].name='Changed';first.data.schedules[0].color=16;
+ let saved=await api('save',{revision:first.revision,draft:JSON.stringify(first.data)});assert(saved.ok);
+ assert((await api('load')).data.schedules[0].color===16);
+ assert((await api('save',{revision:first.revision,draft:JSON.stringify(first.data)})).code==='conflict');
+ const draft={pre_minutes:5,pre_media:'test',schedules:[{id:'s',name:'Test',color:1,rows:[{id:'r',time:'00:03',media:'test',enabled:true,pre:true}]}],plans:[{year:2026,schedule_ids:['s'],days:'.AA'+'.'.repeat(362)}]};
+ assert((await api('preview',{date:'2026-01-01',draft:JSON.stringify(draft)})).events.length===0);
+ let events=(await api('preview',{date:'2026-01-02',draft:JSON.stringify(draft)})).events;
+ assert(events.length===2 && events[1].time==='23:58' && events[1].origin_date==='2026-01-03');
+ let tz=await api('timezone');assert((await api('timezone',{zone:'UTC',revision:tz.revision})).ok);assert((await api('clock')).ok);
+ for(let i=0;i<90;i++){let value=await api('load');assert((await api('save',{revision:value.revision,draft:JSON.stringify(value.data)})).ok);}
+ assert((await api('journal')).entries.length===80);
+ await assert.rejects(()=>context.window.fetch('http://192.0.2.1/api'));await assert.rejects(()=>context.window.fetch('/cgi-bin/luci'));
+ assert((await api('no-router',{})).state==='unavailable');
+ console.log('PASS demo: local persistence, CAS, midnight/quiet-day preview, mock zone, bounded journal, blocked remote API');
+})().catch(e=>{console.error(e);process.exitCode=1;});

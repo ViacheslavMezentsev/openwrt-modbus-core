@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=dashboard501">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=dashboard502">
 <script src="/schoolbell-test/theme.js"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьный звонок</h1></div><button id="theme-toggle" type="button">Тема</button></header>
@@ -15,20 +15,20 @@
 <div><span>На роутере · оценка между опросами</span><strong id="router-clock">Получаем время…</strong><small id="router-zone"></small></div>
 <div><span>В браузере</span><strong id="browser-clock">—</strong><small id="browser-zone"></small></div>
 </div><p id="clock-status" role="status">Проверяем часы…</p>
-<p id="clock-sync" hidden>Проверьте, что часы браузера верны. <a href="<%=pcdata(time_settings_url)%>" target="_blank" rel="noopener">Открыть время LuCI и синхронизировать с браузером</a>. Это отдельное действие; здесь часы не меняются.</p>
-<p id="timezone-hint" hidden>Часовой пояс роутера отличается от браузера. Если роутер должен работать по местному времени школы, <a href="<%=pcdata(time_settings_url)%>" target="_blank" rel="noopener">выберите часовой пояс в LuCI → Система</a>. Сверьте место установки, не только настройки этого браузера.</p>
+<p id="clock-sync" hidden>Проверьте, что время на вашем устройстве верно. <button type="button" class="inline-button" data-open-settings>Настройки времени</button>. Изменение часового пояса не синхронизирует часы.</p>
+<p id="timezone-hint" hidden>Местное время роутера отличается от браузера. <button type="button" class="inline-button" data-open-settings>Выбрать часовой пояс школы</button></p>
 </details>
 <nav class="page-tabs" role="tablist" aria-label="Разделы schoolbell">
 <button id="tab-calendar" type="button" role="tab" aria-controls="panel-calendar" aria-selected="true" data-tab="calendar">Календарь</button>
 <button id="tab-schedules" type="button" role="tab" aria-controls="panel-schedules" aria-selected="false" tabindex="-1" data-tab="schedules">Расписания</button>
 <button id="tab-preview" type="button" role="tab" aria-controls="panel-preview" aria-selected="false" tabindex="-1" data-tab="preview">Предпросмотр</button>
-<button id="tab-sound" type="button" role="tab" aria-controls="panel-sound" aria-selected="false" tabindex="-1" data-tab="sound">Звук и настройки</button>
+<button id="tab-sound" type="button" role="tab" aria-controls="panel-sound" aria-selected="false" tabindex="-1" data-tab="sound">Настройки</button>
 <button id="tab-journal" type="button" role="tab" aria-controls="panel-journal" aria-selected="false" tabindex="-1" data-tab="journal">Журнал</button>
 <button id="tab-feedback" type="button" role="tab" aria-controls="panel-feedback" aria-selected="false" tabindex="-1" data-tab="feedback">Обратная связь</button>
 </nav>
 <p class="intro">Подготовьте расписания и сохраните их на роутере.</p>
 <p class="notice"><strong>Автоматические звонки отключены.</strong> Сохранение только записывает черновик. План и предпросмотр не запускают звонки.</p>
-<section id="schedule-editor" class="details" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
+<section id="schedule-editor" class="details" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
 <div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
 <p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с роутера…</p>
 <fieldset id="schedule-fields" disabled>
@@ -65,7 +65,14 @@
 <div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Загрузить сохранённое</button></div>
 </section>
 <section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" data-panel="sound" hidden>
-<p><a href="<%=pcdata(time_settings_url)%>" target="_blank" rel="noopener">Настроить часовой пояс и время роутера в LuCI</a></p>
+<section class="details time-settings"><h2>Часовой пояс школы</h2>
+<p>Выберите место, где установлен школьный звонок. Настройка сохраняется на роутере и действует для всех его приложений. Сами часы и расписания не переводятся.</p>
+<p id="timezone-current" role="status">Настройки ещё не загружены.</p>
+<label>Город / часовой пояс<select id="timezone-select" disabled></select></label>
+<div class="editor-toolbar"><button id="timezone-browser" type="button" disabled>Выбрать как на этом устройстве</button><button id="timezone-save" type="button" disabled>Применить часовой пояс</button><button id="timezone-reload" type="button">Обновить</button></div>
+<p id="timezone-result" role="status"></p>
+<p>Если дата или минуты неверны, смена пояса этого не исправит. Автоматическая синхронизация часов здесь не выполняется.</p>
+</section>
 <h2 class="sound-heading">Ручная проверка звука</h2><p>Эти две кнопки воспроизводят короткую мелодию сразу, независимо от черновика.</p>
 <section class="routes"><article><span class="badge">1 · РЯДОМ С ВАМИ</span><h2>На этом устройстве</h2>
 <p>Звук из динамика телефона, планшета или компьютера, на котором открыта страница.</p>
@@ -101,4 +108,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=dashboard501"></script><script src="/schoolbell-test/dashboard.js?v=501"></script></body></html>
+</main><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=dashboard502"></script><script src="/schoolbell-test/dashboard.js?v=502"></script></body></html>
