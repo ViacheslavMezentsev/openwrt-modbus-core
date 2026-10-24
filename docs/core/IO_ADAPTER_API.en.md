@@ -96,3 +96,5 @@ The script package still builds without SDK; dependency build is separate.
 Then integrate with Lua states/scheduler using fake I/O and measure total RAM.
 TC-134–138 have partial coverage; command-layer TC-139 remains planned.
 No rover motor writes, networking or installed-core changes.
+
+Stage 1.33 adds [isolated C primitives](NATIVE_IO.en.md) and host tests. Lua binding, target ABI and composition with this API remain pending.

@@ -90,3 +90,10 @@ ci-schoolbell:
 	$(MAKE) build-schoolbell OUT_DIR=$(OUT_DIR)/ci-schoolbell
 	python3 scripts/verify-component.py schoolbell $(OUT_DIR)/ci-schoolbell
 	cd "$(OUT_DIR)/ci-schoolbell" && sha256sum *.ipk > checksums.sha256
+
+.PHONY: build-native-io test-native-io
+build-native-io:
+	$(MAKE) -C native/io
+
+test-native-io:
+	sh scripts/test-native-io.sh

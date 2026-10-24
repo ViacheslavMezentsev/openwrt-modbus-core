@@ -73,3 +73,5 @@ core.filemode=false can hide changed executable bits. Keep WSL mode checks enabl
 See GitHub Actions [job conditions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idif)
 and [needs context](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#needs-context).
 Selection/gate regressions live in scripts/test_ci.py.
+
+Core host tests also compile isolated Linux C I/O primitives: a C99 compiler, Linux headers and coreutils timeout are required; missing tools fail the test. The native library is not included in the script-only IPK.

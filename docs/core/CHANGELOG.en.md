@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Isolated Linux C I/O primitives: single calls, raw 8N1, TCP, poll/eventfd and cleanup; separate build and host/fault tests TC-142/143. Specification 1.33. No Lua binding, target ABI/IPK, modbusd or router changes.
+
 - Specification 1.32: four-call endpoint budget and native dependency; isolated Lua I/O API with 20 test groups. Host mechanism probes and nixio audit; native backend, composition and target remain unverified.
 
 - Core specification 1.31: accepted system-I/O requirements, pre-write deadlines, operation identity, TX completion/cleanup. Setpoint stream and STOP are dependent contracts; TC-134–139 planned, no implementation.

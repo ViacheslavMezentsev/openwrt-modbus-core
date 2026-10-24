@@ -5,6 +5,8 @@
 
 ## [Unreleased]
 
+- Изолированные Linux C I/O-примитивы: одиночные вызовы, raw 8N1, TCP, poll/eventfd и cleanup; отдельная сборка и host/fault-тесты TC-142/143. ТЗ 1.33. Без Lua binding, target ABI/IPK, modbusd и изменений роутера.
+
 - ТЗ 1.32: бюджет 4 syscall/endpoint и нативная зависимость; изолированный Lua I/O API с 20 группами тестов. Host-пробы механизмов и аудит nixio; native backend, композиция и target ещё не проверены.
 
 - ТЗ ядра 1.31: приняты требования системного I/O, сроки перед write, поколения операций, TX completion/cleanup. Поток уставок и STOP — зависимый контракт; TC-134–139 плановые, без реализации.

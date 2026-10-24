@@ -4,7 +4,7 @@
 
 The core owns public events, subscriptions, notifications, common scheduling and Modbus. Application handlers and audio execution belong to client packages. The general API and managed offline installation are not implemented yet.
 
-[ТЗ 1.32](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.33](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -76,3 +76,7 @@ Lua scheduler accepts a validated profile snapshot: safe FIFO-prefix grouping, l
 [System I/O](SYSTEM_IO_CONTRACT.en.md): accepted revision 1.31 requirements; setpoint/STOP command layer is separate, no implementation.
 
 [Test I/O API](IO_ADAPTER_API.en.md): 20 fake-I/O groups and host probes; native implementation and modbusd remain disconnected.
+
+Isolated Linux C I/O primitives: single calls, raw 8N1, TCP, poll/eventfd and cleanup; separate build and host/fault tests TC-142/143. Specification 1.33. No Lua binding, target ABI/IPK, modbusd or router changes.
+
+[Native I/O](NATIVE_IO.en.md)
