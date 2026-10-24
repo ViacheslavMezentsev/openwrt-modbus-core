@@ -916,7 +916,7 @@ Host-проверки р.1.15: 10 групп в `test_queue_linux.lua` чере�
 | TC-93 | Отказы ready/lock/fork, ожидание, exit/signal, timeout, uncertain cleanup и защита POST | T: test_sound_test.lua, host; не аппаратный PASS (р.1.20) |
 | TC-94 | LuCI auth/CSRF, страница, sample hash, реальный short playback, неизменность core/demo/config | D: MR3020 install, anonymous 403, fixture/madplay exit 0; пользователь подтвердил страницу и оба маршрута; invalid-token HTTP только host/I (р.1.20) |
 | TC-95 | Валидация, конфликт/no-op, ошибки записи и checksum, 8 аварийных точек, lock/symlink, граница HTTP и CSRF | T: test_schedule_store.lua и test_schedule_store.py; без звука, не испытание питания (р.1.21) |
-| TC-96 | Редактирование/сохранение/повторное чтение на MR3020, изолированный FS и сохранность core/demo | D: target FS PASS; установлены страница/хранилище, anonymous 403; пользовательский authenticated save/reload ожидает подтверждения. Без reboot/активации (р.1.21) |
+| TC-96 | Редактирование/сохранение/повторное чтение на MR3020, изолированный FS и сохранность core/demo | D: target FS PASS; установлены страница/хранилище, anonymous 403; пользователь подтвердил сохранность названия, времени и флажков после save/reload через штатный вход LuCI. Без reboot/активации (р.1.21) |
 
 ## 7. Матрица прослеживаемости
 

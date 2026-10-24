@@ -68,3 +68,5 @@ were removed.
 This is not power-loss/reboot testing, a complete RAM budget or an autonomous
 IPK. Annual plans, production snapshot migration, media references and automatic
 scheduling remain future work; full original schoolbell parity stays in TODO.
+
+The user confirmed on the installed LuCI page that schedule names, times and flags persist after saving and reloading. Automatic bells remained disabled.
