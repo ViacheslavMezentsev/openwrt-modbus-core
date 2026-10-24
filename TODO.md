@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.18. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.19. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -195,5 +195,10 @@ Rover does not replace pending core native-I/O and Lua memory work.
 
 - [x] P03 persistent media policy — schoolbell 1.17: immutable files, consistent bundles, streamed bounded upload, durable acknowledgement, paused fallback, no queue replay, reference-safe cleanup. TC-73–82 planned; requirements only.
 - [x] P03 media format/quota/commit contract — schoolbell 1.18 accepts strict JSON, SHA-256 revision identity, persistent layout, protective quotas and current/recovery publication order. TC-83–90 planned; no implementation.
-- [ ] P03 persistent media mechanisms — finish schoolbell 8.2.12: exact pointer/descriptor fields and integrity, operation ID/generation ranges, initialization, crash transitions, recovery-pointer cleanup, reconciliation retention, catalog envelope, settings/plan schemas, MP3 validator, permissions, filesystem suitability and resource measurements. Adapt native lifetime/FD limits before integration.
-- [ ] P03 persistent media verification — isolated host fault matrix TC-73–82 first; actual power-loss tests only after separate hardware approval. No target durability claim from host tests.
+- [x] P03 prepared storage mechanisms — exact pointers/checksums, descriptor, initialization, commit/recovery and recovery-pointer cleanup implemented in isolated manager (schoolbell 1.19). Production settings/plan schemas, validation, ownership and resource integration remain below.
+- [ ] P03 full persistent media acceptance — TC-91/92 cover prepared storage and 25 process-crash points on host/router; complete TC-73–90 for production integration and all quota boundaries. Actual power-loss tests require separate hardware approval.
+
+- [x] P03 isolated media manager — prepared user objects, strict pointer/descriptor validation, durable publication/recovery/cleanup and 25 host process-crash checkpoints. No MP3 validator, core/queue integration or power-loss guarantee.
+- [ ] P03 media production integration — real settings/calendar schemas, validated uploads/bundled resolver, operation ID generator/retention, explicit fallback confirmation, process/backup ownership, queue FD leases, decoder capacity and total RAM/FD measurements. Current prepared dependency manifests are not user plans.
+
+- [x] P03 isolated router storage check — TC-92 passed on MR3020 in tmpfs and an isolated persistent directory, 25 process-crash checkpoints each plus negative tests; cleanup verified, core/demo preserved. This does not validate power-loss durability or install schoolbell.
