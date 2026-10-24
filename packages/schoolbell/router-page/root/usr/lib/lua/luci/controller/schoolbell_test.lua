@@ -2,6 +2,8 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","journal"},call("journal")).leaf=true
+    entry({"admin","schoolbell","clock"},call("clock")).leaf=true
     entry({"admin","schoolbell","preview"},call("preview")).leaf=true
     entry({"admin","schoolbell","schedules"},call("schedules")).leaf=true
     entry({"admin","schoolbell","save-schedules"},call("save_schedules")).leaf=true
@@ -21,6 +23,29 @@ local function respond(result)
     local _,codec=editor()
     h.write(codec.encode(result))
 end
+local function audit(action,result)
+    local ok,value=pcall(function()editor();return require('schoolbell.journal').request('/etc/schoolbell-editor',action)end)
+    if result and (not ok or not value.ok) then result.journal_warning=true end
+end
+function journal()
+    local h=require('luci.http')
+    if h.getenv('REQUEST_METHOD')~='GET' then h.status(405,'Method Not Allowed');return end
+    editor();respond(require('schoolbell.journal').request('/etc/schoolbell-editor'))
+end
+function clock()
+    local h=require('luci.http')
+    if h.getenv('REQUEST_METHOD')~='GET' then h.status(405,'Method Not Allowed');return end
+    local now=os.time()
+    local t=os.date('*t',now)
+    respond({ok=true,epoch=now,year=t.year,month=t.month,day=t.day,
+        hour=t.hour,min=t.min,sec=t.sec})
+end
+local function module_version()
+    local f=io.open('/usr/share/schoolbell-editor/VERSION','rb')
+    if not f then return 'неизвестна' end
+    local value=f:read(64) or '';f:close()
+    return value:match('^(%d+%.%d+%.%d+)\n$') or 'неизвестна'
+end
 function schedules()
     if require("luci.http").getenv("REQUEST_METHOD")~="GET" then
         require("luci.http").status(405,"Method Not Allowed"); return
@@ -39,7 +64,10 @@ function save_schedules()
     end
     if not require("luci.dispatcher").test_post_security() then return end
     local store=editor()
-    respond(store.request("/etc/schoolbell-editor","save",h.formvalue("draft"),h.formvalue("revision")))
+    local value=store.request('/etc/schoolbell-editor','save',h.formvalue('draft'),h.formvalue('revision'))
+    audit(value.ok and 'save_ok' or 'save_failed',value)
+    if not value.ok and value.code~='invalid' and value.code~='conflict' then audit('storage_error',value)end
+    respond(value)
 end
 function preview()
     local h=require("luci.http")
@@ -52,7 +80,7 @@ function preview()
     end
     if not require("luci.dispatcher").test_post_security() then return end
     local store=editor()
-    respond(store.preview(h.formvalue("draft"),h.formvalue("date")))
+    local value=store.preview(h.formvalue('draft'),h.formvalue('date'));audit(value.ok and 'preview_ok' or 'preview_failed',value);respond(value)
 end
 local function installed_version(package_name)
     local f=io.open('/usr/lib/opkg/info/'..package_name..'.control','rb')
@@ -64,13 +92,16 @@ function page()
     local d=require("luci.dispatcher")
     require("luci.http").header("Cache-Control","no-store")
     require("luci.template").render("schoolbell_test",{
+        journal_url=d.build_url('admin','schoolbell','journal'),
+        clock_url=d.build_url('admin','schoolbell','clock'),
+        time_settings_url=d.build_url('admin','system','system'),
         play_url=d.build_url("admin","schoolbell","play"),
         sample_url=d.build_url("admin","schoolbell","sample"),
         preview_url=d.build_url("admin","schoolbell","preview"),
         schedules_url=d.build_url("admin","schoolbell","schedules"),
         save_url=d.build_url("admin","schoolbell","save-schedules"),
         core_version=installed_version('modbus-rtu-core'),
-        module_version=installed_version('modbus-schoolbell'),
+        module_version=module_version(),
         token=d.context.authtoken
     })
 end
@@ -79,6 +110,7 @@ function sample()
     h.header("Cache-Control","no-store")
     local f=io.open(require("schoolbell.sound_test").sample,"rb")
     if not f then h.status(503,"Sample unavailable"); return end
+    audit('sample_requested')
     h.prepare_content("audio/mpeg")
     h.write(f:read("*a")); f:close()
 end
@@ -86,9 +118,11 @@ function play()
     local h=require("luci.http")
     if not require("luci.dispatcher").test_post_security() then return end
     local m=require("schoolbell.sound_test")
+    audit('play_requested')
     local ok,result=pcall(m.run,m.system())
     if not ok then result={ok=false,state="recovery_required"} end
     h.header("Cache-Control","no-store")
     h.prepare_content("application/json")
+    audit(result.ok and 'play_ok' or 'play_failed',result)
     h.write_json(result)
 end

@@ -2,6 +2,8 @@
 
 ## Current state and next steps
 
+- [ ] Connect schoolbell duty countdown to an active executor; keep drafts inactive. Define system-event subscription for the package journal (current log covers observed package/storage events only).
+
 Core 0.4.0 and firmware map v2 implement router-driven button/LED control.
 Completed work is summarized in [the stage archive](docs/archive/completed-stages.en.md).
 This file lists remaining work; research stays local and push/land belong to the owner.

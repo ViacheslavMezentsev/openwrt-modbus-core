@@ -1,22 +1,36 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=annual3">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=dashboard500">
 <script src="/schoolbell-test/theme.js"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьный звонок</h1></div><button id="theme-toggle" type="button">Тема</button></header>
-<section class="duty-panel" aria-label="Состояние для дежурного">
+<details id="duty-panel" class="duty-box" open>
+<summary><strong>Schoolbell <%=pcdata(module_version)%></strong> · <span id="duty-compact">Подготовка · автозвонки отключены</span> <span class="collapse-hint">Подробности ▾</span></summary>
+<div class="duty-panel" aria-label="Состояние для дежурного">
 <div><span>Состояние</span><strong id="duty-state">Читаем черновик…</strong></div>
 <div><span>Режим</span><strong>Подготовка · автозвонки отключены</strong></div>
 <div><span>До следующего звонка</span><strong>— Не запланирован</strong><small>Нет активного плана. Ручная проверка звука доступна ниже.</small></div>
-<div><span>Версии</span><strong>Интерфейс: calendar-3 (тестовый)</strong><small>Пакет: <%=pcdata(module_version)%><br>Ядро (пакет): <%=pcdata(core_version)%></small></div>
-</section>
+<div><span>Версии</span><strong>Модуль: <%=pcdata(module_version)%></strong><small>Инженерная установка · ядро (пакет): <%=pcdata(core_version)%></small></div>
+<div><span>На роутере · оценка между опросами</span><strong id="router-clock">Получаем время…</strong><small id="router-zone"></small></div>
+<div><span>В браузере</span><strong id="browser-clock">—</strong><small id="browser-zone"></small></div>
+</div><p id="clock-status" role="status">Проверяем часы…</p>
+<p id="clock-sync" hidden>Проверьте, что часы браузера верны. <a href="<%=pcdata(time_settings_url)%>" target="_blank" rel="noopener">Открыть время LuCI и синхронизировать с браузером</a>. Это отдельное действие; здесь часы не меняются.</p>
+</details>
+<nav class="page-tabs" role="tablist" aria-label="Разделы schoolbell">
+<button id="tab-calendar" type="button" role="tab" aria-controls="panel-calendar" aria-selected="true" data-tab="calendar">Календарь</button>
+<button id="tab-schedules" type="button" role="tab" aria-controls="panel-schedules" aria-selected="false" tabindex="-1" data-tab="schedules">Расписания</button>
+<button id="tab-preview" type="button" role="tab" aria-controls="panel-preview" aria-selected="false" tabindex="-1" data-tab="preview">Предпросмотр</button>
+<button id="tab-sound" type="button" role="tab" aria-controls="panel-sound" aria-selected="false" tabindex="-1" data-tab="sound">Звук и настройки</button>
+<button id="tab-journal" type="button" role="tab" aria-controls="panel-journal" aria-selected="false" tabindex="-1" data-tab="journal">Журнал</button>
+</nav>
 <p class="intro">Подготовьте расписания и сохраните их на роутере.</p>
 <p class="notice"><strong>Автоматические звонки отключены.</strong> Сохранение только записывает черновик. План и предпросмотр не запускают звонки.</p>
-<section id="schedule-editor" class="details" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
-<div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
+<section id="schedule-editor" class="details" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
+<div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
 <p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с роутера…</p>
 <fieldset id="schedule-fields" disabled>
+<section id="panel-schedules" role="tabpanel" aria-labelledby="tab-schedules" data-panel="schedules" hidden>
 <div class="editor-toolbar"><label>Расписание<select id="schedule-select"></select></label>
 <button type="button" id="schedule-add">+ Создать</button><button type="button" id="schedule-copy">Копировать</button><button type="button" id="schedule-delete">Удалить</button></div>
 <div id="selected-schedule"><label>Название<input id="schedule-name" type="text" maxlength="96" autocomplete="off"></label>
@@ -24,7 +38,8 @@
 <p id="empty-rows">Нет строк — звонков нет.</p><div class="editor-toolbar"><button id="row-add" type="button">+ Добавить звонок</button><button id="rows-clear" type="button">Очистить строки</button><span id="row-count"></span></div></div>
 <div class="pre-settings"><label>Предзвонок за<input id="pre-minutes" type="number" min="1" max="10" step="1"> минут</label><span>Мелодия предзвонка: test.mp3</span></div>
 <p>Сейчас доступна только test.mp3. Флажки описывают будущие звонки и не включают автоматическое воспроизведение.</p>
-<section class="annual-editor" aria-label="Годовой календарь">
+</section>
+<section id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" data-panel="calendar" class="annual-editor">
 <h2>Годовой календарь</h2>
 <div class="editor-toolbar"><label>Год<input id="plan-year" type="number" min="1" max="9999" step="1"></label>
 <button id="year-show" type="button">Показать год</button>
@@ -35,6 +50,8 @@
 <label>Какие дни<select id="range-filter"><option value="all">Все дни</option><option value="weekdays">Пн–Пт</option><option value="weekends">Сб–Вс</option></select></label>
 <button id="range-apply" type="button">Назначить диапазон</button><button id="year-clear" type="button">Очистить этот год</button></div></details>
 <p id="plan-status" role="status"></p><div id="year-grid" class="year-grid"></div>
+</section>
+<section id="panel-preview" role="tabpanel" aria-labelledby="tab-preview" data-panel="preview" hidden>
 <h2>Предпросмотр дня — без звука</h2>
 <p>Местные часы расписания. Часовой пояс, переходы часов и готовность к запуску здесь не проверяются.</p>
 <div class="editor-toolbar"><label>Дата просмотра<input id="preview-date" type="date"></label><button id="preview-day" type="button">Показать звонки</button></div>
@@ -44,6 +61,7 @@
 </fieldset>
 <div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Загрузить сохранённое</button></div>
 </section>
+<section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" data-panel="sound" hidden>
 <h2 class="sound-heading">Ручная проверка звука</h2><p>Эти две кнопки воспроизводят короткую мелодию сразу, независимо от черновика.</p>
 <section class="routes"><article><span class="badge">1 · РЯДОМ С ВАМИ</span><h2>На этом устройстве</h2>
 <p>Звук из динамика телефона, планшета или компьютера, на котором открыта страница.</p>
@@ -61,5 +79,12 @@
 <section class="details"><h2>Что будет воспроизведено</h2><p><strong>test.mp3</strong> · около 3,3 секунды · один раз</p>
 <p>Роутер: madplay · выход /dev/dsp · 48 кГц · усиление 0 дБ. Громкость колонок регулируется на самих колонках.</p>
 <p>Успешное завершение проигрывателя ещё не подтверждает, что звук был слышен.</p></section>
+</section>
+<section id="panel-journal" role="tabpanel" aria-labelledby="tab-journal" data-panel="journal" class="details" hidden>
+<h2>Журнал schoolbell</h2><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC роутера; порядок — по номеру, даже после коррекции часов.</p>
+<p>Хранятся последние события — до 16 КиБ. При заполнении самые старые записи удаляются автоматически.</p>
+<button type="button" id="journal-reload">Обновить журнал</button><p id="journal-status" role="status"></p>
+<div class="table-scroll"><table class="schedule-table"><thead><tr><th>№ / Время UTC</th><th>Источник</th><th>Событие</th></tr></thead><tbody id="journal-rows"></tbody></table></div>
+</section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=annual3"></script></body></html>
+</main><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=dashboard500"></script><script src="/schoolbell-test/dashboard.js?v=500"></script></body></html>

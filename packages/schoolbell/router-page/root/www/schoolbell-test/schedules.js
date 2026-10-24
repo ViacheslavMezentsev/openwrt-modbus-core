@@ -113,6 +113,7 @@
   function total() { return draft.schedules.reduce(function (n,s) { return n+s.rows.length; },0); }
   function state() {
     document.getElementById('duty-state').textContent=busy?'Обмен с роутером…':reconcile?'Требуется сверка данных':!draft?'Данные недоступны':dirty?'Черновик изменён · не сохранён':revision==='empty'?'План ещё не сохранён':'Черновик сохранён';
+    document.getElementById('duty-compact').textContent='Автозвонки отключены · '+document.getElementById('duty-state').textContent;
     root.setAttribute('aria-busy',String(busy));
     save.textContent=busy?'Обмен с роутером…':reconcile?'Сначала сверьте сохранённое':dirty?'Сохранить черновик на роутере':'Нет изменений для сохранения';
     fields.disabled=busy || !draft;
@@ -192,7 +193,7 @@
   select.addEventListener('change',function () { selected=select.value; render(); });
   name.addEventListener('input',function () {
     if(!current()) return; current().name=name.value;
-    select.options[select.selectedIndex].textContent=name.value; changed();
+    select.options[select.selectedIndex].textContent=name.value; changed(); renderAnnual();
   });
   document.getElementById('pre-minutes').addEventListener('input',function (e) { draft.pre_minutes=Number(e.target.value); changed(); });
   document.getElementById('schedule-add').addEventListener('click',function () {
@@ -230,7 +231,7 @@
         return;
       }
       document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; render();
-      result.textContent='Сохранено на роутере. Автоматические звонки не включены.';
+      result.textContent='Сохранено на роутере. Автоматические звонки не включены.'+(value.journal_warning?' Внимание: событие не удалось записать в журнал.':'');
     } catch (_) { reconcile=true; result.textContent='Ответ потерян: запись могла завершиться. Правки остались в браузере. Загрузите данные роутера и сравните.'; }
     finally { busy=false; state(); }
   });

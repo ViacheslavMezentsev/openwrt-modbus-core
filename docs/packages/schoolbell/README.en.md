@@ -1,5 +1,8 @@
 # Schoolbell package
 
+Schoolbell 5.0.0: collapsible status, tabs preserving edits, router/browser clocks and a LuCI synchronization link; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
+
+
 [Русский](README.md)
 
 School calendar, bells and melodies. Isolated schedule calculation is implemented; core registration, player and operator UI remain pending.

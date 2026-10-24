@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Schoolbell 5.0.0: collapsible status, tabs preserving edits, router/browser clocks and a LuCI synchronization link; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
+
 - Schoolbell annual calendar: date/range assignments, shared draft persistence and civil-time main/preliminary bell preview. Legacy drafts remain unchanged on read; automatic execution stays disabled. Specification 1.22.
 
 - Schoolbell schedule editor: names, rows, copying, persistent inactive drafts, reload/save, conflict and storage-failure checks. Automatic bells and annual calendar remain disconnected; specification 1.21.

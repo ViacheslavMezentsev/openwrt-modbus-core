@@ -20,3 +20,7 @@ python3 packages/schoolbell/tests/test_schedule_store.py "$ROOT"
 lua5.1 packages/schoolbell/tests/test_annual_editor.lua
 
 lua5.1 packages/schoolbell/tests/test_annual_http.lua
+
+lua5.1 packages/schoolbell/tests/test_dashboard_http.lua
+
+lua5.1 packages/schoolbell/tests/test_journal.lua
