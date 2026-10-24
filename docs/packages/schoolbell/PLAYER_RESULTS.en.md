@@ -52,8 +52,8 @@ A possible child requires a retained handle, not just nil/err.
 
 The child sends one 16-byte frame:
 `magic[4], version[1], kind[1], stage[2], errno[4], reserved[4]`.
-Do not send a raw C struct; constants and the concrete fixed byte order still
-need definition. Partial frames accumulate across poll calls.
+SBPE/v1 constants and big-endian are fixed in the [wire contract](PLAYER_WIRE.en.md).
+Do not send a raw C struct. Partial frames accumulate across poll calls.
 Invalid, extra or truncated frames produce protocol_error. Send failure does
 not become successful launch confirmation.
 
@@ -87,7 +87,8 @@ preparation budget rejects before fork. Cleanup continues in separate passes
 without losing records or FDs. Operation counts do not guarantee execution
 time or memory consumption. These are defensive limits to verify.
 
-Frame constants, generation/ranges, system clocks, atomic media admission and
+Frame constants and generation/ranges are accepted in revision 1.11. System
+clocks/random source, atomic media admission and
 reference recovery remain open. Actual madplay properties and target /proc
 access require separate checks. Code, IPK and router are unchanged; future
 host scenarios use no audio device.

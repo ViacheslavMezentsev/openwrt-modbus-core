@@ -4,7 +4,7 @@
 
 School calendar, bells and melodies. Isolated schedule calculation is implemented; core registration, player and operator UI remain pending.
 
-[ТЗ 1.10](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.11](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -52,3 +52,5 @@ Schoolbell specification 1.8 accepts the system player contract: launching/exit,
 Schoolbell specification 1.9 accepts native player mechanisms and begin/poll/release, inherited flock FD, stdin media, a 2000 ms timeout and /dev/null. TC-50–55 are planned; madplay properties require verification. Code and router unchanged. [System API](PLAYER_SYSTEM_API.en.md).
 
 Schoolbell specification 1.10 defines result/error fields, executable-identity exec evidence, a 16-byte frame and 64/64/8/8 budgets. TC-56–60 are planned; requirements only, code and router unchanged. [Results API](PLAYER_RESULTS.en.md).
+
+Schoolbell specification 1.11 fixes SBPE/v1 big-endian, generations, attempt counters and parameter ranges. TC-61–65 are planned; requirements only, no code/audio/router changes. [Wire contract](PLAYER_WIRE.en.md).
