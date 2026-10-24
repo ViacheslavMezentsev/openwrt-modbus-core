@@ -15,7 +15,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.17. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.18. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -194,5 +194,6 @@ Rover does not replace pending core native-I/O and Lua memory work.
 - [x] Schoolbell settings mockup — separate browser and router speaker diagrams with explicitly simulated buttons; no audio/API.
 
 - [x] P03 persistent media policy — schoolbell 1.17: immutable files, consistent bundles, streamed bounded upload, durable acknowledgement, paused fallback, no queue replay, reference-safe cleanup. TC-73–82 planned; requirements only.
-- [ ] P03 persistent media mechanisms — resolve schoolbell 8.2.12: paths/formats, audio validator, quotas/reserves, operation identity, commit/sync/reconciliation, plan publication, filesystem support and cleanup; replace prototype lifetime limits before implementation.
+- [x] P03 media format/quota/commit contract — schoolbell 1.18 accepts strict JSON, SHA-256 revision identity, persistent layout, protective quotas and current/recovery publication order. TC-83–90 planned; no implementation.
+- [ ] P03 persistent media mechanisms — finish schoolbell 8.2.12: exact pointer/descriptor fields and integrity, operation ID/generation ranges, initialization, crash transitions, recovery-pointer cleanup, reconciliation retention, catalog envelope, settings/plan schemas, MP3 validator, permissions, filesystem suitability and resource measurements. Adapt native lifetime/FD limits before integration.
 - [ ] P03 persistent media verification — isolated host fault matrix TC-73–82 first; actual power-loss tests only after separate hardware approval. No target durability claim from host tests.

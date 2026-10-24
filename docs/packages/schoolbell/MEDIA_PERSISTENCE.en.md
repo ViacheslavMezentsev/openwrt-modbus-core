@@ -60,3 +60,5 @@ Question 8.2.12 tracks paths/formats, API/permissions, audio validation/properti
 quotas/reserves, operation identity, commit/reconciliation, joint plan publication,
 filesystems and cleanup. The prototype's 16 lifetime publications are not the
 production library limit. This branch does not implement core 6.6 settings storage.
+
+Stage 1.18 accepts [format, quotas and commit order](MEDIA_FORMAT.en.md). The open list above describes stage 1.17; current remaining decisions are in specification 1.18 question 8.2.12.

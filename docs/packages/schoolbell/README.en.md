@@ -4,7 +4,7 @@
 
 School calendar, bells and melodies. Isolated schedule calculation is implemented; core registration, player and operator UI remain pending.
 
-[ТЗ 1.17](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.18](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision
@@ -70,3 +70,5 @@ Schoolbell spec 1.15: isolated bridge connects the Lua queue and Linux player; l
 Isolated [admission-time revision retention](MEDIA_ADMISSION.en.md): TC-72, nine host groups. Specification 1.16.
 
 [Persistent media library: accepted requirements](MEDIA_PERSISTENCE.en.md). TC-73–82: planned, not implemented.
+
+[Format, quotas and commit](MEDIA_FORMAT.en.md): accepted 1.18 contract, not implemented.
