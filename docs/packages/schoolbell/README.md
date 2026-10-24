@@ -4,7 +4,7 @@
 
 Учебный календарь, звонки и мелодии. Реализован изолированный расчёт расписаний; регистрация в ядре, проигрыватель и операторский интерфейс ещё впереди.
 
-[ТЗ 1.8](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.md)
+[ТЗ 1.9](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.md)
 
 ТЗ остаётся черновиком. Номера требований и тестов локальны этому компоненту;
 при ссылке указывать `core`, `demo` или `schoolbell`. Ревизия ТЗ не является
@@ -47,3 +47,5 @@ madplay подтверждено пользователем; это не про�
 [Очередь проигрывания](PLAYBACK_QUEUE.md) · `make test-schoolbell`
 
 ТЗ schoolbell 1.8: принят контракт системного проигрывателя — launching/exit, удержание ревизии мелодии и блокировка после сбоев. TC-43–49 плановые; реализация, звук, IPK и роутер не изменены. [Player adapter](PLAYER_ADAPTER.md).
+
+ТЗ schoolbell 1.9: приняты нативные механизмы player и begin/poll/release, flock с наследованием FD, файл через stdin, timeout 2000 мс и /dev/null. TC-50–55 плановые; свойства madplay требуют проверки. Код и роутер не изменены. [System API](PLAYER_SYSTEM_API.md).

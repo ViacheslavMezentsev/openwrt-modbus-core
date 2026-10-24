@@ -51,7 +51,8 @@ memory without retaining media. Unknown outcomes retain the file. Plans, other
 requests, backups and rollback hold independent references: releasing one does
 not authorize deleting the revision.
 
-Storage format, file handoff and atomic media publication remain undecided.
+Open-file handoff through stdin is accepted in revision 1.9 subject to madplay
+verification. Storage format and atomic media publication remain undecided.
 The current Lua model's media_revision string does not provide these guarantees.
 
 ## Failure and next stage
@@ -62,11 +63,7 @@ prove that playback never happened; unknown requests are not automatically
 replayed. This contract adds no durable queue, exactly-once, stop or paused
 policy after reboot. Uncertainty preserves the block and diagnostics.
 
-Before implementation, resolve question 8.2.11: Linux/Lua binding, exec/exit
-confirmation, attempt generation, cross-process ownership/recovery, file and
-retention protection, clock/permit, launch timeout and diagnostic quotas.
-The existing API needs asynchronous launching and a distinct signal outcome;
-fork must not masquerade as started, or uncertainty as rejected.
+Mechanisms and API shape are accepted in specification 1.9: [System API](PLAYER_SYSTEM_API.en.md). Implementation is absent; exact fields, exec evidence, budgets and checks of the actual madplay build remain open.
 
 Planned host tests: argv/exec/fast exit (TC-43), deadlines (TC-44), exit/signal/
 PID (TC-45), lost confirmation (TC-46), media replacement/deletion (TC-47),
