@@ -74,3 +74,5 @@ Isolated [admission-time revision retention](MEDIA_ADMISSION.en.md): TC-72, nine
 [Format, quotas and commit](MEDIA_FORMAT.en.md): accepted 1.18 contract, not implemented.
 
 [Isolated media manager](MEDIA_MANAGER.en.md): prepared objects, no production integration.
+
+- [Schoolbell manual sound check page](../../../packages/schoolbell/router-page/README.en.md).

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Школьный звонок · проверка звука</title>
+<link rel="stylesheet" href="/schoolbell-test/style.css">
+<script src="/schoolbell-test/theme.js"></script></head>
+<body><main><header><div><p class="eyebrow">SCHOOLBELL / НАСТРОЙКИ СИСТЕМЫ</p>
+<h1>Проверим, где звучит звонок</h1></div><button id="theme-toggle" type="button">Тема</button></header>
+<p class="intro">Одна короткая мелодия, два разных места воспроизведения. Выберите нужное.</p>
+<p class="notice">Ручная проверка стенда. Расписания и автоматические звонки ещё не подключены.</p>
+<section class="routes"><article><span class="badge">1 · РЯДОМ С ВАМИ</span><h2>На этом устройстве</h2>
+<p>Звук из динамика телефона, планшета или компьютера, на котором открыта страница.</p>
+<div class="diagram"><div>▣<br><strong>Ваш браузер</strong></div><b>→</b><div>♫<br><strong>Динамик устройства</strong></div></div>
+<audio id="browser-audio" preload="none" src="<%=pcdata(sample_url)%>"></audio>
+<button id="browser-play" type="button" class="primary">▶ Послушать здесь</button>
+<p id="browser-result" role="status">Роутер передаст файл. Его колонки будут молчать.</p></article>
+<article><span class="badge">2 · ТАМ, ГДЕ РОУТЕР</span><h2>Через колонки роутера</h2>
+<p>Браузер отправит команду. Звук пойдёт через USB-аудиокарту к подключённым колонкам.</p>
+<div class="diagram"><div>▣<br><strong>Браузер</strong></div><b>→</b><div>⌘<br><strong>Роутер</strong></div><b>→</b><div>♫<br><strong>USB → колонки</strong></div></div>
+<form id="router-form" action="<%=pcdata(play_url)%>" method="post">
+<input type="hidden" name="token" value="<%=pcdata(token)%>">
+<button id="router-play" type="submit" class="primary">▶ Позвонить на роутере</button></form>
+<p id="router-result" role="status">Колонки должны быть включены и подключены к аудиовыходу.</p></article></section>
+<section class="details"><h2>Что будет воспроизведено</h2><p><strong>test.mp3</strong> · около 3,3 секунды · один раз</p>
+<p>Роутер: madplay · выход /dev/dsp · 48 кГц · усиление 0 дБ. Громкость колонок регулируется на самих колонках.</p>
+<p>Успешное завершение проигрывателя ещё не подтверждает, что звук был слышен.</p></section>
+<footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Только ручной тест, без записи расписаний</footer>
+</main><script src="/schoolbell-test/app.js"></script></body></html>
