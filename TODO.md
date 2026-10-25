@@ -2,6 +2,12 @@
 
 ## Current state and next steps
 
+- [x] Draft [schoolbell 5.x acceptance programme](docs/packages/schoolbell/ACCEPTANCE.en.md): AC-01–12, appendix B parity, release blockers and evidence rules; documentation only, not product PASS.
+- [ ] Agree acceptance Q1–Q5: numerical timing/resource/accuracy budgets, endurance duration, collision policy and attended-startup release scope. Existing production dependencies below remain until explicit scope agreement.
+- [ ] Next schoolbell branch: startup/boot/TZ audit and AC-06 host scenarios, plus an independent calendar oracle. Cold boot/power and sound acceptance require separate authorization after the ongoing clock measurement; do not change NTP.
+- [ ] Execute the agreed AC programme and reconcile the operator/install/recovery guides with shipped behavior before release; historical stage descriptions are not current acceptance results.
+
+
 - [x] Schoolbell safe date viewing and explicit draft/active-plan separation: clean saved revision gating, race/error tests and browser demo. Version 5.0.16 installed; target date-viewing and status separation confirmed by the user.
 - [x] Backup download deadline and recovery controls, controlled-network regressions; Pages build date/commit. Version 5.0.17 installed; user confirmed download; installed JS tested with a local HTTP body disconnect.
 - [x] Media auto-refresh after confirmed upload, per-row browser listening and empty-slot labels; six bundled demo melodies, host-tested in 5.0.18. LuCI streaming fix 5.0.19 adds yielding source/sink regressions.
@@ -56,7 +62,8 @@ OpenWrt 19.07.9 bundle. Core event API and production player integration remain 
 - [ ] P05 — Implement schoolbell media IDs/revisions and bounded validated replacement with recovery (schoolbell TC-22/23). Preserve active/referenced files; the complete offline profile includes five original melodies plus test.
 - [x] P06 engineering packaging — full 5.0.28 IPK, native dependency, pinned offline closure and joint core manifest; host installation/upgrade/rollback and fail-closed tests.
 - [x] P06 target packaging — real opkg migration, local recovery downgrade and upgrade to 5.0.31; full payload hashes and byte-identical backup confirm retained settings/plans/user MP3 with auto-off. Fixed missing stat, omitted directory entries and stale LuCI bytecode; dependencies/core/NTP unchanged.
-- [ ] P06 remaining acceptance — browser confirmation after package migration; separately approve reboot/offline-first-boot/power-loss and full dependency installation on a clean target. Production event/player integration remains dependent on P01–P05.
+- [x] P06 browser migration check — owner confirmed 5.0.31, retained schedules/year plan/user melody and auto-off after reload.
+- [ ] P06 remaining acceptance — separately approve reboot/offline-first-boot/power-loss and full dependency installation on a clean target. Production event/player integration remains dependent on P01–P05.
 - [x] P07 saved schedule editor — Create/copy/delete/edit rows and persistent inactive drafts, content-revision conflicts and strict calendar validation; host/target filesystem checks. Initial editor stage used test.mp3 only; annual/media/activation work followed in the entries above. [Details](docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).
 - [x] P07 annual draft — Twelve-month grid, date/range assignment, up to eight explicit years, shared persistence and civil preview through Lua calendar. Legacy read is unchanged; no UTC/DST or activation. [Details](docs/packages/schoolbell/ANNUAL_CALENDAR.en.md).
 - [ ] P07 editor integration — Validate timezone/DST and clock quality, then migrate inactive drafts into the validated production snapshot/media contract before activation. Do not silently treat editor checkpoints as active plans or backup/import format.

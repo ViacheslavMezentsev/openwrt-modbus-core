@@ -1,5 +1,7 @@
 # Schoolbell package
 
+[Schoolbell 5.x acceptance programme](ACCEPTANCE.en.md): draft release gates, AC-01–12 journeys, parity and open budgets. Not hardware acceptance or a specification change.
+
 Schoolbell 5.0.31: target opkg compatibility fixes (no stat dependency, explicit archive directories, owned LuCI cache invalidation). Installation, recovery downgrade and upgrade preserve data and leave automatic bells off; no clock/NTP changes.
 
 Schoolbell 5.0.28: complete engineering IPK and pinned offline bundle; host lifecycle tests, no target installation. [Packaging](PACKAGING.en.md).
