@@ -52,3 +52,5 @@ mkdir -m 700 "$build/backup"
 lua5.1 packages/schoolbell/tests/test_backup.lua "$build/backup"
 
 lua5.1 packages/schoolbell/tests/test_backup_http.lua
+
+lua5.1 packages/schoolbell/tests/test_clock_trust.lua

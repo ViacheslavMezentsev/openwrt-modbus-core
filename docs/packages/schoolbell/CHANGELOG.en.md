@@ -10,6 +10,8 @@
 
 ## [Unreleased]
 
+- Specification 1.33: isolated UTC-ms reference codec, atomic CAS store and clock trust model; host boundary/fault tests. Version 5.0.14 and payload unchanged.
+
 - Specification 1.32 accepts schoolbell-clock/1, hourly checkpointing and observation/confirmation budgets; TC-120–124 planned. Requirements only; no implementation or package version change.
 
 - Accepted clock-trust and rollback contract (specification 1.31): automatic admission gate, separate time confirmation and enable; TC-113–119 planned. Documentation only, no version/runtime/router changes.

@@ -96,3 +96,5 @@ The Feedback tab links to [Issues](https://github.com/ViacheslavMezentsev/openwr
 [Clock trust and rollback](CLOCK_TRUST.en.md): accepted requirements, implementation pending.
 
 Specification 1.32 defines the reference format and observation budgets; isolated implementation is pending.
+
+[Isolated clock trust model](CLOCK_TRUST_MODEL.en.md): codec, fake clock/storage and host tests; no executor integration.

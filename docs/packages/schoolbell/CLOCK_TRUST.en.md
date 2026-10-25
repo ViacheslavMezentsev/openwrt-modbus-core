@@ -2,7 +2,7 @@
 
 [Русский](CLOCK_TRUST.md)
 
-Accepted requirements in schoolbell specification 1.32, section 4.7. **Documentation only:** schoolbell 5.0.14 gains no implementation; firmware, services, clocks and NTP remain unchanged. TC-113–124 are planned acceptance cases, not passing tests.
+Accepted requirements in specification 1.32, section 4.7. Revision 1.33 adds an isolated host model. Installed schoolbell 5.0.14, firmware, services, clocks and NTP remain unchanged. TC-125 partially covers TC-113–124; system/UI integration remains planned.
 
 | State | Meaning | Automatic ringing |
 | --- | --- | --- |
@@ -33,4 +33,6 @@ Commit: temp → fsync → atomic replacement → directory fsync. Only successf
 | Before audio admission | Additional fresh check after preparation |
 | Confirmation request | Expires at 15000 ms; bound to current context |
 
-Ambiguous threshold crossing requires review, not optimistic admission. Observation continues while awaiting the player; lost trust does not interrupt existing audio. Ordinary observation does not write flash, access networks or launch processes. Threshold changes never clear a block. Next: isolated codec/model and fake clock/storage tests, without hardware guarantees or NTP changes.
+Ambiguous threshold crossing requires review, not optimistic admission. Observation continues while awaiting the player; lost trust does not interrupt existing audio. Ordinary observation does not write flash, access networks or launch processes. Threshold changes never clear a block. Next: system adapter and observation integration, without claiming hardware accuracy.
+
+Revision 1.33 adds the [host model API and limitations](CLOCK_TRUST_MODEL.en.md). Planned checks above have partial isolated coverage; system integration, UI and router changes remain outside this stage.
