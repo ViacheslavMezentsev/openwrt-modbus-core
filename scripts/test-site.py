@@ -60,3 +60,11 @@ assert '<button' not in help_panel and '<input' not in help_panel and '<form' no
 assert 'aria-labelledby="tab-help"' in help_panel
 assert 'Сверить с локальной моделью' in help_panel
 print('PASS first shared quick reference tab; no action controls')
+
+assert 'id="guide-important"' in html
+assert '<div class="guide-route">' in html
+assert 'guide-route:nth-child(even)' in (out/'schoolbell/assets/style.css').read_text()
+assert 'id="session-countdown"' in html and 'id="session-duration"' in html
+assert 'data-session="./demo-api/session"' in html
+assert html.index('assets/session.js') < html.index('assets/backup.js')
+print('PASS shared striped guide, separate behavior notes and demo-safe session panel')

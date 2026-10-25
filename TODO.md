@@ -2,6 +2,11 @@
 
 ## Current state and next steps
 
+- [ ] Next schoolbell feature accepted by owner: portable annual/academic-plan bundle with selected years, date assignments, referenced schedules/colors, pre-bell parameters and all referenced media. September–May spans two calendar years. Reuse backup/media mechanisms; preview dependency closure and conflicts before import, validate plan timezone without applying system timezone, import only as draft with automatic bells disabled. Exclude credentials, network, NTP/clock and hardware-specific settings; specify bundled-media compatibility and atomic rollback before implementation.
+
+- [x] S1 host implementation 5.0.34: same-session logout, explicit re-login/check with retained draft and no replay; configurable browser idle countdown; striped guide + behavior notes + Pages.
+- [ ] S1 target acceptance: real LuCI expiry/logout/CSRF/unauthenticated endpoints, multiple tabs and suspended browser; browser timer is not server policy. No target installation in this step.
+
 - [x] 5.0.33: shared first-tab quick guide for router UI and Pages; operator acceptance pending.
 
 - [x] Static [UI completeness/security plan](docs/packages/schoolbell/UI_COMPLETENESS.en.md): UX-01–12, proposed C1–C6/S1–S2, endpoint acceptance SEC-01–06; no live security certification.
@@ -47,7 +52,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.47.
+User-facing scope follows core draft 1.33 and schoolbell draft 1.48.
 The engineering application is packaged as a complete 5.0.32 IPK (host; installed target 5.0.31) with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 

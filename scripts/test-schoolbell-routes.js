@@ -65,6 +65,8 @@ function fixture(){
  for(const flag of ['confirm','failLoad','reject']){x=fixture();await x.tick();x[flag]=flag==='confirm'?false:true;await x.get('automatic-enable').click();await x.tick();assert(!x.get('schedule-fields').disabled);if(flag!=='reject')assert(!x.posts.length);}
  x=fixture();await x.tick();x.get('schedule-name').value='Edited';await x.get('schedule-name').fire('input');await x.get('automatic-disable').click();await x.tick();assert(x.posts[0].enabled==='false');
  console.log('PASS cancel/read/POST failures unlock; disable allowed with unsaved changes');
+ x=fixture();await x.tick();x.get('schedule-name').value='Keep local';await x.get('schedule-name').fire('input');x.window.dispatchEvent({type:'schoolbell-session-lost'});assert(x.get('schedule-name').value==='Keep local' && x.window.schoolbellEditor.snapshot().dirty && x.window.schoolbellEditor.snapshot().reconcile);assert(!x.saves.length && !x.posts.length);
+ console.log('PASS session loss retains edits and requires reconciliation without POST');
  // C1: rendering never changes mode or fixed selection behind the user's back.
  x=fixture();await x.tick();x.data.mode='fixed';x.data.fixed_schedule='s';x.data.plans=[];await x.get('schedule-reload').click();
  await x.get('schedule-delete').click();assert(x.get('schedule-select').options.length===1);assert(!x.window.schoolbellEditor.snapshot().dirty);assert(x.get('schedule-result').textContent.includes('ежедневное'));assert(x.confirms===0);

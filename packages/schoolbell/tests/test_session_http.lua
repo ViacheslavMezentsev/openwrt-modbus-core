@@ -1,0 +1,17 @@
+local env={REQUEST_METHOD='GET'};local code,output,headers;local calls=0;local allow=true;local result={};local action='logout'
+package.loaded['luci.http']={getenv=function(k)return env[k]end,status=function(v)code=v end,header=function(k,v)headers[k]=v end,prepare_content=function()end,write=function()end,formvalue=function(k)if k=='action'then return action end end}
+local ctx={authsession='server-session',authuser='root',authtoken=string.rep('a',32)}
+package.loaded['luci.dispatcher']={context=ctx,build_url=function()return '/cgi-bin/luci'end,test_post_security=function()return allow end}
+package.loaded['luci.util']={ubus=function(o,m,a)assert(o=='session' and m=='destroy' and a.ubus_rpc_session=='server-session');calls=calls+1;return result end}
+package.loaded['schoolbell.schedule_store']={}
+package.loaded['schoolbell.media_codec']={encode=function(v)output=v;return '{}'end}
+dofile('packages/schoolbell/router-page/root/usr/lib/lua/luci/controller/schoolbell_test.lua')
+local m=luci.controller.schoolbell_test
+local function invoke(method)env.REQUEST_METHOD=method;code=nil;output=nil;headers={};m.session()end
+invoke('GET');assert(output.ok and output.user=='root' and output.token==ctx.authtoken and not output.authsession and calls==0 and headers['Cache-Control']=='no-store')
+ctx.authsession=nil;invoke('GET');assert(code==401 and calls==0);ctx.authsession='server-session'
+invoke('PUT');assert(code==405 and calls==0)
+allow=false;invoke('POST');assert(calls==0);allow=true;action='anything';invoke('POST');assert(code==400 and calls==0)
+action='logout';invoke('POST');assert(calls==1 and output.logged_out and headers['Set-Cookie']:match('sysauth=;'))
+result=nil;invoke('POST');assert(calls==2 and code==503 and not output.ok and not headers['Set-Cookie'])
+print('PASS session GET/no session/method/CSRF/action; destroy server-owned SID only; failure not success')

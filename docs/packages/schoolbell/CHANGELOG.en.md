@@ -1,5 +1,7 @@
 # Changelog
 
+Schoolbell 5.0.34: session recovery without replay or replacing editor changes, CSRF-protected logout, configurable browser idle countdown, striped cheat-sheet routes and separate behavior notes. Host only; Pages synchronized.
+
 5.0.33: first Cheat sheet tab covers setup, calendar, sound, media, reconciliation and backup. No automatic actions; Pages shares the same guide.
 
 Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser confirmation verified. Control enabled, time confirmed, automatic bells disabled; clocks/NTP unchanged.

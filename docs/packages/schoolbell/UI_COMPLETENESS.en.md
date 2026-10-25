@@ -1,5 +1,7 @@
 # Schoolbell UI completeness and improvement plan
 
+26.10.2026: 5.0.34 implements host-tested session/logout recovery, same-user recheck without command replay and a configurable browser idle timer. The server LuCI session policy remains unchanged; roles, TLS and live dispatcher/expiry acceptance are still pending. The shared guide now separates operator routes from non-obvious behavior notes. Next accepted feature: portable academic-plan bundle including all dependencies (years, schedules, dates and referenced media); import preview/conflict handling and draft-only, automatic-off result.
+
 [Русский](UI_COMPLETENESS.md) · [User guide](USER_GUIDE.en.md) · [Acceptance](ACCEPTANCE.en.md)
 
 Draft 1.0, 2026-10-25, for agreement. Based on 5.0.31 UI/controller source, the guide

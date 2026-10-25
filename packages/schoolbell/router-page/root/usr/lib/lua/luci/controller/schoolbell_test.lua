@@ -2,6 +2,7 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","session"},call("session")).leaf=true
     entry({"admin","schoolbell","backup"},call("backup")).leaf=true
     entry({"admin","schoolbell","media"},call("media")).leaf=true
     entry({"admin","schoolbell","automatic"},call("automatic")).leaf=true
@@ -29,6 +30,24 @@ local function respond(result)
     h.prepare_content("application/json")
     local _,codec=editor()
     h.write(codec.encode(result))
+end
+-- Uses the inherited LuCI admin session; never accepts a client-supplied SID.
+function session()
+    local h=require('luci.http');local d=require('luci.dispatcher')
+    local method=h.getenv('REQUEST_METHOD')
+    if method~='GET' and method~='POST' then h.status(405,'Method Not Allowed');return end
+    if not d.context.authsession or not d.context.authuser or not d.context.authtoken then
+        h.status(401,'Unauthorized');respond({ok=false,code='auth'});return
+    end
+    if method=='POST' then
+        if not d.test_post_security() then return end
+        if h.formvalue('action')~='logout' then h.status(400,'Bad Request');return end
+        local result=require('luci.util').ubus('session','destroy',{ubus_rpc_session=d.context.authsession})
+        if result==nil then h.status(503,'Unavailable');respond({ok=false,code='logout_uncertain'});return end
+        h.header('Set-Cookie','sysauth=; expires=Thu, 01 Jan 1970 01:00:00 GMT; path='..d.build_url())
+        respond({ok=true,logged_out=true});return
+    end
+    respond({ok=true,user=d.context.authuser,token=d.context.authtoken})
 end
 local function audit(action,result)
     local ok,value=pcall(function()editor();return require('schoolbell.journal').request('/etc/schoolbell-editor',action)end)
@@ -196,6 +215,9 @@ function page()
     local d=require("luci.dispatcher")
     require("luci.http").header("Cache-Control","no-store")
     require("luci.template").render("schoolbell_test",{
+        session_url=d.build_url('admin','schoolbell','session'),
+        login_url=d.build_url('admin','schoolbell'),
+        auth_user=d.context.authuser or '',
         backup_url=d.build_url('admin','schoolbell','backup'),
         media_url=d.build_url('admin','schoolbell','media'),
         trust_url=d.build_url('admin','schoolbell','clock-trust'),

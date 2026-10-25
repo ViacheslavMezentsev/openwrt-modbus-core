@@ -1,5 +1,7 @@
 # Changelog
 
+Schoolbell 5.0.34: session recovery without replay or replacing editor changes, CSRF-protected logout, configurable browser idle countdown, striped cheat-sheet routes and separate behavior notes. Host only; Pages synchronized.
+
 Schoolbell 5.0.33: first Cheat sheet tab with short operator journeys, shared by router UI and Pages demo.
 
 5.0.27: clock-result lock contention is pending, not failure; bounded GET waiting, no POST replay. Storage errors are distinct from busy.

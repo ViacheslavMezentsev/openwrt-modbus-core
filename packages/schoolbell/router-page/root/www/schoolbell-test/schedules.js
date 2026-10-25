@@ -382,5 +382,9 @@
   document.getElementById('workflow-save').addEventListener('click',function(){save.click();});
   reload.addEventListener('click',load);
   window.addEventListener('beforeunload',function (e) { if(dirty) { e.preventDefault(); e.returnValue=''; } });
+  window.addEventListener('schoolbell-session-lost',function(){
+    reconcile=true;compared=null;document.getElementById('draft-comparison').hidden=true;
+    result.textContent='Сеанс недоступен. Правки остаются в этой вкладке; после входа нажмите «Сверить с роутером».';state();
+  });
   load();
 }());

@@ -1,5 +1,8 @@
 # Schoolbell user guide
 
+The header shows the LuCI user, logout and a configurable browser idle timer (1–120 minutes, default 15). Polling does not extend it. This works while the page runs; it does not change LuCI server session policy. Logout ends the current session across its LuCI tabs, but does not stop the running bell plan.
+After expiry/logout, keep the editor tab open: use the separate-tab login link, sign in normally, return and explicitly check the session, then reconcile the draft. No commands are replayed. Unsaved edits remain only in page memory; reload/closing can lose them. A failed logout response does not confirm server logout.
+
 The first **Cheat sheet** tab offers short operator journeys. It opens by default; the last tab is remembered within the same session.
 
 [Русский](USER_GUIDE.md)
