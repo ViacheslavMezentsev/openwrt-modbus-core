@@ -1,5 +1,7 @@
 # System clock reference adapter
 
+Current 5.0.25 stage: [executor integration and optional control](CLOCK_EXECUTOR.en.md). Earlier stage boundaries below are historical; isolated target adapter validation passed, deployment and confirmation UI remain pending.
+
 [Русский](CLOCK_SYSTEM.md)
 
 Isolated Linux-host implementation: clock_system.lua and clock_linux.so, excluded from schoolbell 5.0.14 IPK and executor integration. No clock or NTP changes.

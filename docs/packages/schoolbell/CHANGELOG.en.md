@@ -10,6 +10,9 @@
 
 ## [Unreleased]
 
+- 5.0.25: executor clock admission with explicit optional bypass and injected-clock tests. Not deployed. Native dependency and confirmation UI remain deployment prerequisites: [integration scope](CLOCK_EXECUTOR.en.md).
+
+
 - 5.0.24: backup status and download retry transient busy GETs up to four attempts with 200/500/1000 ms delays. Download retains one overall 180 s deadline. Restore POST is never automatically retried; exhaustion leaves the status check available.
 
 

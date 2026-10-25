@@ -1,5 +1,7 @@
 # Isolated clock trust model
 
+Current 5.0.25 stage: [executor integration and optional control](CLOCK_EXECUTOR.en.md). Earlier stage boundaries below are historical; isolated target adapter validation passed, deployment and confirmation UI remain pending.
+
 [Русский](CLOCK_TRUST_MODEL.md)
 
 The host-only clock_reference, clock_reference_store and clock_trust modules implement specification section 4.7. They are excluded from the schoolbell 5.0.14 payload. No executor, router or NTP changes. System clock sampling, safe directory opening and confirmation UI remain separate work.

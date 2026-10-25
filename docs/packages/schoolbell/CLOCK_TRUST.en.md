@@ -1,5 +1,7 @@
 # Schoolbell clock trust
 
+Current 5.0.25 stage: [executor integration and optional control](CLOCK_EXECUTOR.en.md). Earlier stage boundaries below are historical; isolated target adapter validation passed, deployment and confirmation UI remain pending.
+
 [Русский](CLOCK_TRUST.md)
 
 Accepted requirements in specification 1.32, section 4.7. Revision 1.33 adds an isolated host model. Installed schoolbell 5.0.14, firmware, services, clocks and NTP remain unchanged. TC-125 partially covers TC-113–124; system/UI integration remains planned.

@@ -1,5 +1,8 @@
 # Schoolbell package
 
+
+5.0.25: executor clock admission with explicit optional bypass and injected-clock tests. Not deployed. Native dependency and confirmation UI remain deployment prerequisites: [integration scope](CLOCK_EXECUTOR.en.md).
+
 Router check: a fresh archive with one user melody was restored through the page; re-export matched byte-for-byte and automatic bells remained disabled. This does not test power loss or every quota boundary.
 
 

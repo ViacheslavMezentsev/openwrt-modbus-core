@@ -5,7 +5,7 @@
 - [x] Schoolbell safe date viewing and explicit draft/active-plan separation: clean saved revision gating, race/error tests and browser demo. Version 5.0.16 installed; target date-viewing and status separation confirmed by the user.
 - [x] Backup download deadline and recovery controls, controlled-network regressions; Pages build date/commit. Version 5.0.17 installed; user confirmed download; installed JS tested with a local HTTP body disconnect.
 - [x] Media auto-refresh after confirmed upload, per-row browser listening and empty-slot labels; six bundled demo melodies, host-tested in 5.0.18. LuCI streaming fix 5.0.19 adds yielding source/sink regressions.
-- [ ] Validate media upload/listening routes on the router after deployment approval. Physical network disconnection was not used for the backup test.
+- [x] Validate media upload/listening routes on the router: browser upload and listening confirmed; CGI compatibility fixed in 5.0.22/23. Physical network disconnection was not used for the backup test.
 
 - [x] Engineering automatic schoolbell service: explicit saved fixed/annual snapshot activation, Mute and no catch-up. Host tests and target commissioning are documented separately.
 - [ ] Measure audible auto-bell/Mute latency and long-run resources; integrate the production player, core scheduler and trusted startup clock before unattended operation across power loss.
@@ -29,7 +29,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.39. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.41. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -53,7 +53,7 @@ not silently approved by this sequence. API versions are independent of spec rev
 - [ ] P03 — Implement the schoolbell-owned player worker, FIFO/expiry/cancellation and result events, scoped schedule controls and manual test (schoolbell TC-02/06–11/18). Resolve active stop separately; no audio API in core.
 - [x] P04 calendar calculation — Isolated schoolbell Lua snapshot/calculator, fixed and explicit annual selection, quiet-day midnight suppression, no annual repeat and gap/fold rejection; 29 groups plus 14,404 independent date vectors, original 15+6 across a leap year. No core registration, UI, player, storage or hardware acceptance; full appendix B parity still required.
 - [ ] P04 — Implement the common scheduler and system-time interface (core TC-58–60), then schoolbell fixed/annual modes, quiet days, preliminary bells, registration horizon and shared preview calculation (schoolbell TC-14–17). Browser clock synchronization is required; RTC is a separate enhancement for unattended startup.
-- [x] P05 engineering upload — six protected bundled slots and five user slots through the media manager, bounded MP3/decoder validation, inactive-auto/shared-gate admission and CAS; production revision-pinned plans and backup remain pending.
+- [x] P05 engineering upload — six protected bundled slots and eight user slots through the media manager, bounded MP3/decoder validation, inactive-auto/shared-gate admission and CAS; engineering backup/restore with user MP3 passed in 5.0.24; production revision-pinned plans and migrations remain pending.
 - [ ] P05 — Implement schoolbell media IDs/revisions and bounded validated replacement with recovery (schoolbell TC-22/23). Preserve active/referenced files; the complete offline profile includes five original melodies plus test.
 - [ ] P06 — Assemble the autonomous engineering MVP after P01–P05. Following separate hardware approval, validate install/update/rollback and event-to-playback/results while core/demo remain healthy. Validate reboot without Internet or previous /tmp; no claim of a full original replacement yet.
 - [x] P07 saved schedule editor — Create/copy/delete/edit rows and persistent inactive drafts, content-revision conflicts and strict calendar validation; host/target filesystem checks. Only test.mp3, no annual assignment or activation. [Details](docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).
@@ -62,7 +62,7 @@ not silently approved by this sequence. API versions are independent of spec rev
 - [x] P07 manual sound page — LuCI login/CSRF, explicit browser/router routes, fixed sample and guarded diagnostic player; both routes confirmed on MR3020. Not scheduling, production worker or autonomous IPK. See [router-page](packages/schoolbell/router-page/README.en.md).
 - [x] P07 visual mockup — Accepted standalone calendar/schedules/media/player views and system/dark/light themes in [ui-mockup](packages/schoolbell/ui-mockup/README.en.md). Synthetic data only; no API/audio/router/IPK integration. This does not complete functional UI acceptance.
 - [ ] P07 — Implement the local plan manager and desktop/mobile UI: year palette, schedule/row edits, explicit activation, controls, browser previews, router time, bounded system/package logs and dependency status (schoolbell TC-19–21/25–29). Browser closure must not stop scheduling.
-- [ ] P08 — Implement versioned backup/restore and configuration/media migration (schoolbell TC-24); reject partial/incompatible data before activation. Legacy JSON/Base64 import is optional and requires its own reviewed conversion report.
+- [ ] P08 — Complete production configuration/media migration and admission beyond the engineering backup/restore validated in 5.0.24 (schoolbell TC-24); reject partial/incompatible data before activation. Legacy JSON/Base64 import is optional and requires its own reviewed conversion report.
 - [ ] P09 — Validate the full schoolbell appendix B matrix and offline functional package (TC-12/13/30–33): five schedules, year plan, five melodies and 15 main + 6 preliminary moments. Measure resource peaks and scheduler/notification/process/audible latency separately; agree numerical bounds and hardware duration before acceptance.
 
 Dependencies: P00 before P01/P02; P03 after P01; P04 uses P01 and P03 for end-to-end
@@ -228,11 +228,13 @@ Rover does not replace pending core native-I/O and Lua memory work.
 - [x] Schoolbell: принят clock/1, предел 1024 байта, запись 3600 с, наблюдение 1000/3000/100 мс, пороги 1–60 с и подтверждение 15000 мс (ТЗ 1.32); TC-120–124 плановые.
 - [x] Schoolbell: изолированные кодек UTC-ms, CAS-хранилище и модель clock trust с fake clock/storage, границами и отказами фиксации (ТЗ 1.33).
 - [x] Schoolbell: изолированный системный адаптер BOOTTIME/REALTIME и приватного FD-хранилища; host-тесты и syscall faults (ТЗ 1.34).
-- [ ] Schoolbell: изолированная target-проверка адаптера после согласования; затем интеграция контекста и контроля в ожидание player/допуск, UI подтверждения отдельно от включения.
+- [x] Schoolbell: изолированная target-проверка clock/FS адаптера в tmpfs и постоянном каталоге выполнена; рабочий пакет не менялся.
+- [x] Schoolbell 5.0.25: clock gate подключён к коду исполнителя/ожиданию player; отключаемый режим и host-регрессии. На роутер не установлен.
+- [ ] Schoolbell: включить clock_linux целевой ABI в автономный комплект и добавить авторизованные API/UI подтверждения/переключателя; затем отдельно проверить установленную интеграцию. До этого новый payload с включённым контролем блокирует автозвонки.
 - [ ] Schoolbell: NTP/RTC-критерии подтверждения, предел неопределённости и срок автономного доверия после измерений; без обещания годовой точности по суточному опыту.
 
 - [x] Schoolbell 5.0.15: жёлтая полоса места >75%, красная >90%, текстовое предупреждение; без установки.
-- [ ] Schoolbell: согласовать улучшения UI-маршрутов — просмотр дня без правки, явные черновик/активный план, переходы после замены мелодии и таймаут скачивания backup.
+- [x] Schoolbell: просмотр дня без правки, разделение черновика/активного плана, обновление после загрузки мелодии и ограниченное скачивание backup реализованы и проверены на роутере (5.0.16–24).
 
 - [x] Schoolbell 5.0.22: проверена загрузка через браузер/LuCI после исправления передачи CSRF через CGI; исходная ошибка сохранена, список перечитывается без повтора POST. Прямой вызов обработчика не заменяет проверку полного HTTP-маршрута.
 
