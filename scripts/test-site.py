@@ -51,3 +51,12 @@ expected=source.read_text().replace('на роутере','в демо').replace
 assert (out/'schoolbell/assets/schedules.js').read_text()==expected
 subprocess.run(['node',str(root/'scripts/test-schoolbell-routes.js')],cwd=root,env=dict(os.environ,SCHOOLBELL_UI_DIR=str(out/'schoolbell/assets')),check=True)
 print('PASS Pages shares editor/reconciliation and runs the same no-hardware journey regressions')
+
+# Quick reference is shared with the target template, with no action controls.
+assert html.index('id="tab-help"') < html.index('id="tab-calendar"')
+assert 'Шпаргалка' in html
+help_panel=html.split('id="panel-help"',1)[1].split('</section>',1)[0]
+assert '<button' not in help_panel and '<input' not in help_panel and '<form' not in help_panel
+assert 'aria-labelledby="tab-help"' in help_panel
+assert 'Сверить с локальной моделью' in help_panel
+print('PASS first shared quick reference tab; no action controls')

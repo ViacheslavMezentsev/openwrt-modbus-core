@@ -1,8 +1,10 @@
 # Schoolbell user guide
 
+The first **Cheat sheet** tab offers short operator journeys. It opens by default; the last tab is remembered within the same session.
+
 [Русский](USER_GUIDE.md)
 
-For **schoolbell 5.0.32** (host-checked; installed 5.0.31 is not updated yet), dated 2026-10-25. This describes the installed interface,
+For **schoolbell 5.0.33** (host-checked; installed 5.0.32 is not updated yet), dated 2026-10-25. This describes the installed interface,
 not the public mockup. Supported fixture: OpenWrt 19.07.9, TL-MR3020 v3.30 and USB
 audio. An administrator installs the equipment and [package](PACKAGING.en.md).
 Individual functions have been tested; full endurance, cold-start and power-loss

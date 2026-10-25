@@ -19,7 +19,8 @@
 <p id="timezone-hint" hidden>Местное время роутера отличается от браузера. <button type="button" class="inline-button" data-open-settings>Выбрать часовой пояс школы</button></p>
 </details>
 <nav class="page-tabs" role="tablist" aria-label="Разделы schoolbell">
-<button id="tab-calendar" type="button" role="tab" aria-controls="panel-calendar" aria-selected="true" data-tab="calendar">Календарь</button>
+<button id="tab-help" type="button" role="tab" aria-controls="panel-help" aria-selected="true" data-tab="help">Шпаргалка</button>
+<button id="tab-calendar" type="button" role="tab" aria-controls="panel-calendar" aria-selected="false" tabindex="-1" data-tab="calendar">Календарь</button>
 <button id="tab-schedules" type="button" role="tab" aria-controls="panel-schedules" aria-selected="false" tabindex="-1" data-tab="schedules">Расписания</button>
 <button id="tab-preview" type="button" role="tab" aria-controls="panel-preview" aria-selected="false" tabindex="-1" data-tab="preview">Предпросмотр</button>
 <button id="tab-media" type="button" role="tab" aria-controls="panel-media" aria-selected="false" tabindex="-1" data-tab="media">Мелодии</button>
@@ -27,13 +28,32 @@
 <button id="tab-journal" type="button" role="tab" aria-controls="panel-journal" aria-selected="false" tabindex="-1" data-tab="journal">Журнал</button>
 <button id="tab-feedback" type="button" role="tab" aria-controls="panel-feedback" aria-selected="false" tabindex="-1" data-tab="feedback">Обратная связь</button>
 </nav>
+
+<section id="panel-help" role="tabpanel" aria-labelledby="tab-help" data-panel="help" class="details">
+<h2>Шпаргалка</h2>
+<p><strong>Правки → сохранить черновик → применить план.</strong> Сохранение само по себе не включает звонки. Верхняя плашка показывает состояние работающего плана.</p>
+<dl class="quick-guide">
+<dt>Подготовить звонки</dt><dd>«Настройки»: проверьте часовой пояс и дату → «Расписания»: создайте расписание, задайте время и мелодии → сохраните черновик. Подтверждение времени не переводит часы.</dd>
+<dt>Звонить каждый день</dt><dd>«Настройки» → «Автоматическая работа: По расписанию» → выберите ежедневное расписание → сохраните. «Тихий день» означает отсутствие звонков.</dd>
+<dt>Звонить по учебному календарю</dt><dd>«Календарь» → выберите год и расписание → включите раскраску и отметьте даты → сохраните. В «Настройках» выберите «По годовому плану» и сохраните. Даты без назначения тихие; следующий год заполняется отдельно.</dd>
+<dt>Проверить и включить</dt><dd>«Календарь» → «Просмотр дня» → нажмите дату: откроется предпросмотр черновика. Когда всё проверено: «Настройки» → «Применить сохранённый план и включить». Это отдельное действие, которое разрешает автоматические звонки.</dd>
+<dt>Остановить звук или автоматику</dt><dd>Вверху «Без звука» — остановить и запретить звук роутера; дождитесь подтверждения. Повторное нажатие разрешает звук. «Настройки» → «Отключить автозвонки» — остановить работу по плану, сохранив расписания.</dd>
+<dt>Подать ручной звонок</dt><dd>Вверху «Подать звонок» — один звонок через колонки роутера. Его мелодия выбирается в «Настройках». При включённом «Без звука» звонок недоступен.</dd>
+<dt>Добавить и послушать мелодию</dt><dd>«Мелодии» → выберите user1–user8 → название и MP3 → «Загрузить и заменить». «В браузере» воспроизводит звук на вашем устройстве; проверка через роутер — на его колонках. Штатные мелодии защищены.</dd>
+<dt>Убрать расписание или назначения</dt><dd>Сначала снимите назначения в календаре и смените ежедневное расписание в «Настройках», если оно используется → «Расписания» → «Удалить». При очистке последнего года прочтите предупреждение о переходе в «Тихий день». Изменения относятся к черновику.</dd>
+<dt>Отменить правки или разобраться после ошибки</dt><dd>В редакторе «Отменить правки / загрузить сохранённое» убирает несохранённые изменения. «Сверить с роутером» показывает две копии, сохраняя ваши правки: выберите локальную или сохранённую. Сверка ничего не записывает и не включает звонки.</dd>
+<dt>Сохранить резервную копию</dt><dd>«Настройки» → «Резервная копия» → «Скачать резервную копию». Для возврата выберите файл .sbb и «Восстановить». После восстановления автозвонки выключены: проверьте план перед отдельным включением.</dd>
+</dl>
+<p>Если действие не подтвердилось, не повторяйте его вслепую: обновите состояние. Подробности — во вкладке «Журнал»; порядок обращения — в «Обратной связи».</p>
+</section>
+
 <p class="intro">Подготовьте расписания и сохраните их на роутере.</p>
 <p class="notice">Сохранение записывает черновик. Для автозвонков сохраните изменения и отдельно примените их во вкладке «Настройки».</p>
 <section class="plan-workflow" aria-label="Черновик и активный план">
 <p id="workflow-draft" role="status">Черновик: загружается…</p><p id="workflow-active" role="status">Активный план: состояние неизвестно</p><p id="workflow-difference">Сохранение и применение — отдельные действия.</p>
 <button id="workflow-save" type="button" disabled>Сохранить черновик</button> <button id="workflow-apply" type="button">К применению плана</button>
 </section>
-<section id="schedule-editor" class="details" data-media="<%=pcdata(media_url)%>" data-sample="<%=pcdata(sample_url)%>" data-trust="<%=pcdata(trust_url)%>" data-automatic="<%=pcdata(automatic_url)%>" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
+<section id="schedule-editor" class="details" hidden data-media="<%=pcdata(media_url)%>" data-sample="<%=pcdata(sample_url)%>" data-trust="<%=pcdata(trust_url)%>" data-automatic="<%=pcdata(automatic_url)%>" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
 <div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
 <p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с роутера…</p>
 <fieldset id="schedule-fields" disabled>
@@ -45,7 +65,7 @@
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>Время</th><th>Мелодия</th><th>Включён</th><th>Предзвонок</th><th><span class="sr-only">Удаление</span></th></tr></thead><tbody id="schedule-rows"></tbody></table></div>
 <p id="empty-rows">Нет строк — звонков нет.</p><div class="editor-toolbar"><button id="row-add" type="button">+ Добавить звонок</button><button id="rows-clear" type="button">Очистить строки</button><span id="row-count"></span></div></div>
 </section>
-<section id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" data-panel="calendar" class="annual-editor">
+<section id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" data-panel="calendar" class="annual-editor" hidden>
 <h2>Годовой календарь</h2>
 <div class="editor-toolbar"><label>Год<input id="plan-year" type="number" min="1" max="9999" step="1"></label>
 <button id="year-show" type="button">Показать год</button>

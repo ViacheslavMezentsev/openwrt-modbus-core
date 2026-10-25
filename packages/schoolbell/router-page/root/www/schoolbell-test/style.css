@@ -34,3 +34,5 @@ html{--row-alt:#f6f8fa}html[data-theme=dark]{--row-alt:#1c222b}
 .storage-status progress[data-level="warning"]{--storage-fill:#d4a72c}.storage-status progress[data-level="critical"]{--storage-fill:#f85149}.storage-status progress::-webkit-progress-bar{background:var(--border)}.storage-status progress::-webkit-progress-value{background:var(--storage-fill)}.storage-status progress::-moz-progress-bar{background:var(--storage-fill)}
 
 .plan-workflow{padding:16px;margin:16px 0;border:1px solid var(--border);border-radius:10px;background:var(--panel)}.plan-workflow p{margin:6px 0}.plan-workflow button{margin-top:8px}#workflow-difference{color:var(--muted)}
+
+.quick-guide{display:grid;grid-template-columns:minmax(10rem,1fr) minmax(0,3fr);gap:.8rem 1.2rem}.quick-guide dt{font-weight:600}.quick-guide dd{margin:0;line-height:1.6}@media(max-width:640px){.quick-guide{grid-template-columns:1fr;gap:.4rem}.quick-guide dd{margin-bottom:.8rem}}

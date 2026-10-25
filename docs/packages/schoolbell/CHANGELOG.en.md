@@ -1,5 +1,7 @@
 # Changelog
 
+5.0.33: first Cheat sheet tab covers setup, calendar, sound, media, reconciliation and backup. No automatic actions; Pages shares the same guide.
+
 Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser confirmation verified. Control enabled, time confirmed, automatic bells disabled; clocks/NTP unchanged.
 
 5.0.27: clock-result lock contention is pending, not failure; bounded GET waiting, no POST replay. Storage errors are distinct from busy.

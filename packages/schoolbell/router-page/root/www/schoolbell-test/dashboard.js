@@ -5,7 +5,7 @@
   function selectTab(name) {
     tabs.forEach(function(b){var active=b.dataset.tab===name;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
     document.querySelectorAll('[data-panel]').forEach(function(p){p.hidden=p.dataset.panel!==name;});
-    root.hidden=name==='sound' || name==='media' || name==='journal' || name==='feedback';
+    root.hidden=name==='help' || name==='sound' || name==='media' || name==='journal' || name==='feedback';
     if(name==='journal')loadJournal();
     if(name==='sound' && !zoneState)loadZones();
     document.querySelector('.savebar').hidden=false;
@@ -71,7 +71,9 @@
       e.preventDefault();selectTab(tabs[i].dataset.tab);tabs[i].focus();
     });
   });
-  try{var saved=sessionStorage.getItem('schoolbell-tab');if(tabs.some(function(b){return b.dataset.tab===saved;}))selectTab(saved);
+  var saved=null;try{saved=sessionStorage.getItem('schoolbell-tab');}catch(_){}
+  selectTab(tabs.some(function(b){return b.dataset.tab===saved;})?saved:'help');
+  try{
     panel.open=localStorage.getItem('schoolbell-status-collapsed')!=='true';}catch(_){}
   panel.addEventListener('toggle',function(){try{localStorage.setItem('schoolbell-status-collapsed',String(!panel.open));}catch(_){} });
   var sample=null,inflight=false;
