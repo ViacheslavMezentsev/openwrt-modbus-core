@@ -4,8 +4,10 @@ const get=id=>document.getElementById('backup-'+id),out=get('status'),file=get('
 const url=panel.dataset.url,token=panel.dataset.token;
 const errors={busy:'Сейчас выполняется другая операция. Повторите проверку позже.',automatic_enabled:'Сначала отключите автозвонки.',space:'Недостаточно места с учётом временных файлов и запаса.',rejected:'Копия отклонена: проверьте файл, его полноту, часовой пояс и свободное место.',restore_pending:'Восстановление не завершено. Звонки заблокированы; нажмите «Проверить состояние», затем продолжите восстановление.',restore_uncertain:'Результат не подтверждён. Проверьте состояние перед повторением.',storage:'Не удалось проверить хранилище. Проверьте состояние; не включайте звонки.'};
 function buttons(){get('download').disabled=busy||needsCheck||!!pending;get('restore').disabled=busy||needsCheck||!!pending||!file.files.length;get('resume').hidden=!pending;get('resume').disabled=busy||needsCheck;get('refresh').disabled=busy;file.disabled=busy||!!pending;}
-async function request(action,options={}){const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),180000);try{const response=await fetch(url+'?action='+action, Object.assign({credentials:'same-origin',cache:'no-store',redirect:'error',signal:abort.signal},options));if(!response.ok)throw new Error('HTTP '+response.status);const v=await response.json();if(!v.ok)throw new Error(errors[v.code]||'Операция не подтверждена.');return v;}finally{clearTimeout(timer);}}
-async function check(){const v=await request('status');pending=v.pending?v.operation_id:null;needsCheck=false;out.textContent=pending?errors.restore_pending:'Незавершённого восстановления нет.';buttons();return v;}
+const BUSY_DELAYS=[200,500,1000];
+async function busyPause(attempt,signal){out.textContent='Хранилище занято другим запросом. Повторяем чтение…';await new Promise(resolve=>setTimeout(resolve,BUSY_DELAYS[attempt]));if(signal.aborted)throw new Error('Время ожидания истекло. Проверьте состояние.');}
+async function request(action,options={}){const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),180000);try{for(let attempt=0;;attempt++){const response=await fetch(url+'?action='+action, Object.assign({credentials:'same-origin',cache:'no-store',redirect:'error',signal:abort.signal},options));if(!response.ok)throw new Error('HTTP '+response.status);const v=await response.json();if(!v.ok && v.code==='busy' && action==='status' && !options.method && attempt<BUSY_DELAYS.length){await busyPause(attempt,abort.signal);continue;}if(!v.ok)throw new Error(errors[v.code]||'Операция не подтверждена.');return v;}}finally{clearTimeout(timer);}}
+async function check(){needsCheck=true;const v=await request('status');pending=v.pending?v.operation_id:null;needsCheck=false;out.textContent=pending?errors.restore_pending:'Незавершённого восстановления нет.';buttons();return v;}
 async function run(fn){if(busy)return;busy=true;buttons();try{await fn();}catch(e){out.textContent=e.message+' Обновите состояние, если запрос прервался.';}finally{busy=false;buttons();}}
 function op(){const a=new Uint8Array(16);crypto.getRandomValues(a);return Array.from(a,x=>x.toString(16).padStart(2,'0')).join('');}
 get('refresh').addEventListener('click',()=>run(check));file.addEventListener('change',buttons);
@@ -15,10 +17,11 @@ async function downloadBlob(){
  const abort=new AbortController();let timer;
  const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{reject(new Error('Время скачивания истекло (180 с). Проверьте состояние перед повтором.'));abort.abort();},DOWNLOAD_TIMEOUT_MS);});
  const transfer=(async()=>{
+  for(let attempt=0;;attempt++){
   const response=await fetch(url+'?action=download',{credentials:'same-origin',cache:'no-store',redirect:'error',signal:abort.signal});
-  if(!response.ok){let v;try{v=await response.json();}catch(_){}throw new Error(errors[v&&v.code]||'Копия не создана.');}
+  if(!response.ok){let v;try{v=await response.json();}catch(_){}if(v && v.code==='busy' && attempt<BUSY_DELAYS.length){await busyPause(attempt,abort.signal);continue;}throw new Error(errors[v&&v.code]||'Копия не создана.');}
   const blob=await response.blob();if(blob.size>2162816||!(await blob.slice(0,10).text()).startsWith('SBBACKUP1\n'))throw new Error('Ответ не является резервной копией.');
-  return blob;
+  return blob;}
  })();
  try{return await Promise.race([transfer,deadline]);}finally{clearTimeout(timer);}
 }

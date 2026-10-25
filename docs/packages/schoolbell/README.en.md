@@ -1,5 +1,10 @@
 # Schoolbell package
 
+Router check: a fresh archive with one user melody was restored through the page; re-export matched byte-for-byte and automatic bells remained disabled. This does not test power loss or every quota boundary.
+
+
+5.0.24: backup status and download retry transient busy GETs up to four attempts with 200/500/1000 ms delays. Download retains one overall 180 s deadline. Restore POST is never automatically retried; exhaustion leaves the status check available.
+
 
 5.0.23: title and filename spaces use %20 for LuCI 19.07 CGI; literal plus signs remain plus signs.
 
