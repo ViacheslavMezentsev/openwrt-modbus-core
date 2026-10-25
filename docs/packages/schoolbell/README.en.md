@@ -94,3 +94,5 @@ The Feedback tab links to [Issues](https://github.com/ViacheslavMezentsev/openwr
 [Backup and transfer](BACKUP.en.md): restore leaves automatic ringing disabled.
 
 [Clock trust and rollback](CLOCK_TRUST.en.md): accepted requirements, implementation pending.
+
+Specification 1.32 defines the reference format and observation budgets; isolated implementation is pending.

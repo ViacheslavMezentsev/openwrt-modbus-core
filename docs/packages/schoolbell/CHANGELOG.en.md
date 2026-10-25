@@ -10,6 +10,8 @@
 
 ## [Unreleased]
 
+- Specification 1.32 accepts schoolbell-clock/1, hourly checkpointing and observation/confirmation budgets; TC-120–124 planned. Requirements only; no implementation or package version change.
+
 - Accepted clock-trust and rollback contract (specification 1.31): automatic admission gate, separate time confirmation and enable; TC-113–119 planned. Documentation only, no version/runtime/router changes.
 
 - Schoolbell 5.0.14: fix yielding LuCI backup download/upload; timezone is the first settings section.
