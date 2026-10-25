@@ -9,13 +9,13 @@
   var badge=document.getElementById('draft-state');
   var name=document.getElementById('schedule-name');
   var rows=document.getElementById('schedule-rows');
-  var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false;
+  var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false, activationLock=false;
   var mediaNames={test:'Тестовый звонок','0':'[Короткая] Время','1':'Шутка Баха','2':'Гостья из XXI','3':'Князь Игорь','4':'Усатый нянь'};
   function mediaLabel(id){return (mediaNames[id] || ('Пользовательская '+id.slice(4)))+' · '+id;}
   window.addEventListener('schoolbell-media',function(e){e.detail.forEach(function(v){mediaNames[v.id]=v.title || v.name;});document.querySelectorAll('#manual-media option,#pre-media option,#schedule-rows select option').forEach(function(o){o.textContent=mediaLabel(o.value);});});
   var mediaIds=["test","0","1","2","3","4","user1","user2","user3","user4","user5","user6","user7","user8"];
   var counter=0;
-  var year=new Date().getFullYear(), brush='quiet', painting=false;
+  var year=new Date().getFullYear(), brush='view', painting=false;
   var monthNames=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   // Stable IDs; 5.0.2 replaces low-contrast shades with xterm-256 cube colors.
   var colors=['#005faf','#00875f','#af0000','#af8700','#875faf','#008787','#af005f','#5f8700',
@@ -62,6 +62,7 @@
   }
   function scheduleName(id) {var item=draft.schedules.find(function(s){return s.id===id;});return item?item.name:'Тихий день';}
   function paint(indices, incremental) {
+    if(brush==='view' || busy || activationLock)return;
     var p=plan(year),list=dates(year),value=brush;
     if(!p && value==='quiet') return;
     if(!p) {
@@ -90,15 +91,17 @@
   function chooseBrush(value) {brush=value;renderAnnual();}
   function renderAnnual() {
     document.getElementById('plan-year').value=year;
-    var picker=document.getElementById('plan-brush');picker.replaceChildren(textOption('quiet','Тихий день'));
-    if(!draft.schedules.some(function(s){return s.id===brush;}))brush='quiet';
+    var picker=document.getElementById('plan-brush');picker.replaceChildren(textOption('view','Просмотр — без изменений'),textOption('quiet','Тихий день / ластик'));
+    if(brush!=='quiet' && !draft.schedules.some(function(s){return s.id===brush;}))brush='view';
     draft.schedules.forEach(function(s){picker.appendChild(textOption(s.id,s.name));});picker.value=brush;
     var legend=document.getElementById('plan-legend');legend.replaceChildren();
-    [{id:'quiet',name:'Тихий день / ластик'}].concat(draft.schedules).forEach(function(item,i){
+    [{id:'view',name:'Просмотр дня'},{id:'quiet',name:'Тихий день / ластик'}].concat(draft.schedules).forEach(function(item,i){
       var button=document.createElement('button');button.type='button';button.textContent=item.name;
-      button.setAttribute('aria-pressed',String(brush===item.id));button.style.borderLeftColor=i?colorOf(item.id):'var(--muted)';
+      button.setAttribute('aria-pressed',String(brush===item.id));button.style.borderLeftColor=i>1?colorOf(item.id):'var(--muted)';
       button.addEventListener('click',function(){chooseBrush(item.id);});legend.appendChild(button);
     });
+    document.getElementById('calendar-tool').textContent=brush==='view'?'Просмотр: нажатие даты не меняет план.':'Раскраска: '+scheduleName(brush)+'. Нажатия и протягивание меняют черновик.';
+    document.getElementById('range-apply').disabled=brush==='view';
     var list=dates(year),p=plan(year),grid=document.getElementById('year-grid');grid.replaceChildren();
     var count=p?p.days.replace(/\./g,'').length:0;
     document.getElementById('plan-status').textContent=year+': назначено '+count+' из '+list.length+' дней. Остальные тихие.';
@@ -117,14 +120,14 @@
         if(sid!=='quiet'){b.style.background=colorOf(sid);b.style.color=ink(colorOf(sid));}
         b.dataset.index=i;b.dataset.date=date;
         b.addEventListener('pointerdown',function(e){
-          if(e.pointerType!=='mouse' || e.button!==0 || busy)return;
+          if(e.pointerType!=='mouse' || e.button!==0 || busy || activationLock || brush==='view')return;
           e.preventDefault();painting=true;document.getElementById('preview-date').value=date;paint([i],true);
         });
         b.addEventListener('pointerenter',function(e){
-          if(painting && e.pointerType==='mouse' && (e.buttons&1) && !busy)paint([i],true);
+          if(painting && e.pointerType==='mouse' && (e.buttons&1) && !busy && !activationLock && brush!=='view')paint([i],true);
           if(!(e.buttons&1))painting=false;
         });
-        b.addEventListener('click',function(){if(!busy){document.getElementById('preview-date').value=date;paint([i],true);}});
+        b.addEventListener('click',function(){if(!busy && !activationLock){document.getElementById('preview-date').value=date;if(brush==='view'){window.dispatchEvent(new CustomEvent('schoolbell-open-tab',{detail:'preview'}));document.getElementById('preview-day').click();}else paint([i],true);}});
         days.appendChild(b);
       });
       box.appendChild(days);grid.appendChild(box);
@@ -134,17 +137,23 @@
   function current() { return draft && draft.schedules.find(function (s) { return s.id===selected; }); }
   function total() { return draft.schedules.reduce(function (n,s) { return n+s.rows.length; },0); }
   function state() {
+    var locked=busy || activationLock;
+    document.getElementById('workflow-draft').textContent='Черновик: '+(reconcile?'нужно сверить сохранение':!draft?'ещё не загружен':dirty?'есть несохранённые изменения':revision==='empty'?'ещё не сохранён':'сохранён · '+revision.slice(0,10));
+    document.getElementById('workflow-save').disabled=locked || !draft || !dirty || reconcile;
+    ['manual-media','pre-media','pre-minutes','work-mode','fixed-schedule'].forEach(function(id){document.getElementById(id).disabled=locked || !draft || (id==='fixed-schedule' && draft.mode!=='fixed');});
+
     document.getElementById('duty-state').textContent=busy?'Обмен с роутером…':reconcile?'Требуется сверка данных':!draft?'Данные недоступны':dirty?'Черновик изменён · не сохранён':revision==='empty'?'План ещё не сохранён':'Черновик сохранён';
 
-    root.setAttribute('aria-busy',String(busy));
+    root.setAttribute('aria-busy',String(locked));
     save.textContent=busy?'Обмен с роутером…':reconcile?'Сначала сверьте сохранённое':dirty?'Сохранить черновик на роутере':'Нет изменений для сохранения';
-    fields.disabled=busy || !draft;
-    save.disabled=busy || !draft || !dirty || reconcile;
-    reload.disabled=busy;
-    document.getElementById('settings-save').disabled=busy || !dirty || reconcile;
+    fields.disabled=locked || !draft;
+    save.disabled=locked || !draft || !dirty || reconcile;
+    reload.disabled=locked;
+    document.getElementById('settings-save').disabled=locked || !dirty || reconcile;
     document.getElementById('settings-result').textContent=result.textContent;
     badge.textContent=busy?'Обмен с роутером…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Черновик сохранён';
     badge.dataset.dirty=dirty?'true':'false';
+    window.dispatchEvent(new CustomEvent('schoolbell-editor-state'));
   }
   function changed() { document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Черновик изменён. Обновите предпросмотр.'; dirty=true; result.textContent='Изменения только в браузере. Нажмите «Сохранить черновик». Активный план не меняется.'; state(); }
   function textOption(value,text) { var o=document.createElement('option'); o.value=value; o.textContent=text; return o; }
@@ -216,12 +225,13 @@
 
   }
   async function load() {
+    if(busy || activationLock)return;
     if(dirty && !window.confirm('Заменить несохранённые изменения данными с роутера?')) return;
     busy=true; state();
     try {
       var value=await request(root.dataset.load);
       if(!value.ok) { result.textContent=errors[value.code] || 'Ошибка чтения.'; reconcile=true; return; }
-      document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; render();
+      document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; brush='view'; render();
       result.textContent=revision==='empty'?'Сохранённых расписаний ещё нет. Создайте первое.':'Черновик прочитан с роутера. Состояние автозвонков указано в верхней плашке.';
     } catch (_) { result.textContent='Не удалось загрузить данные. Проверьте соединение и вход LuCI.'; }
     finally { busy=false; state(); }
@@ -259,6 +269,7 @@
     current().rows=[]; changed(); render();
   });
   save.addEventListener('click',async function () {
+    if(busy || activationLock || !draft || !dirty || reconcile)return;
     busy=true; state(); result.textContent='Сохраняем без активации…';
     try {
       var body=new URLSearchParams({token:root.dataset.token,revision:revision,draft:JSON.stringify(draft)});
@@ -280,6 +291,7 @@
   });
   document.getElementById('plan-brush').addEventListener('change',function(e){chooseBrush(e.target.value);});
   document.getElementById('range-apply').addEventListener('click',function(){
+    if(brush==='view' || busy || activationLock)return;
     var list=dates(year),first=list.indexOf(document.getElementById('range-first').value),last=list.indexOf(document.getElementById('range-last').value);
     if(first<0 || last<first){document.getElementById('plan-status').textContent='Укажите корректный диапазон внутри выбранного года.';return;}
     var filter=document.getElementById('range-filter').value,indices=[];
@@ -293,12 +305,13 @@
     }
   });
   document.getElementById('preview-day').addEventListener('click',async function(){
+    if(busy || activationLock || !draft)return;
     busy=true;state();var status=document.getElementById('preview-status'),output=document.getElementById('preview-events');output.replaceChildren();
     status.textContent='Вычисляем текущий черновик без сохранения и звука…';
     try {
       var value=await request(root.dataset.preview,{method:'POST',body:new URLSearchParams({token:root.dataset.token,draft:JSON.stringify(draft),date:document.getElementById('preview-date').value})});
       if(!value.ok){status.textContent='Предпросмотр отклонён: '+(value.detail?(value.detail.path || value.detail.code):value.code);return;}
-      status.textContent=value.date+' · '+scheduleName(value.selected_schedule)+' · '+value.events.length+' событий. Местные часы; не UTC и не проверка переходов часов.';
+      status.textContent='Черновик'+(dirty || revision==='empty'?' · НЕ СОХРАНЁН':' · сохранён')+' · '+value.date+' · '+scheduleName(value.selected_schedule)+' · '+value.events.length+' событий. Местные часы; не UTC и не проверка переходов часов.';
       value.events.forEach(function(e){var li=document.createElement('li');li.style.borderLeft='10px solid '+colorOf(e.schedule_id);li.style.paddingLeft='10px';li.textContent=e.time+' — '+(e.kind==='pre'?'Предзвонок':'Основной звонок')+' · '+scheduleName(e.schedule_id)+' · '+e.media+(e.origin_date!==e.date?' (основной звонок '+e.origin_date+')':'');output.appendChild(li);});
       if(!value.events.length){var li=document.createElement('li');li.textContent='В этот день звонков нет.';output.appendChild(li);}
     } catch(_){status.textContent='Предпросмотр недоступен. Проверьте соединение и вход LuCI.';}
@@ -310,6 +323,8 @@
   var initialDates=dates(year);
   document.getElementById('range-first').value=initialDates[0];document.getElementById('range-last').value=initialDates[initialDates.length-1];
   document.getElementById('preview-date').value=initialDates[0];
+  window.schoolbellEditor={snapshot:function(){return {loaded:!!draft,dirty:dirty,busy:busy || activationLock,reconcile:reconcile,revision:revision};},lock:function(){if(busy || activationLock || !draft || dirty || reconcile || revision==='empty')return false;activationLock=true;state();return true;},unlock:function(){activationLock=false;state();}};
+  document.getElementById('workflow-save').addEventListener('click',function(){save.click();});
   reload.addEventListener('click',load);
   window.addEventListener('beforeunload',function (e) { if(dirty) { e.preventDefault(); e.returnValue=''; } });
   load();

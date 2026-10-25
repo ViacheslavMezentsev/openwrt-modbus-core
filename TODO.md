@@ -2,6 +2,9 @@
 
 ## Current state and next steps
 
+- [x] Schoolbell safe date viewing and explicit draft/active-plan separation: clean saved revision gating, race/error tests and browser demo. Version 5.0.16 awaits router deployment.
+- [ ] Validate the revised calendar/apply routes on the router after separate deployment approval; finish media-refresh and backup-download failure routes.
+
 - [x] Engineering automatic schoolbell service: explicit saved fixed/annual snapshot activation, Mute and no catch-up. Host tests and target commissioning are documented separately.
 - [ ] Measure audible auto-bell/Mute latency and long-run resources; integrate the production player, core scheduler and trusted startup clock before unattended operation across power loss.
 
@@ -24,7 +27,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.35. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.36. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.

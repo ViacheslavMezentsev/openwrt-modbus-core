@@ -10,6 +10,8 @@
 
 ## [Unreleased]
 
+- Schoolbell 5.0.16: the calendar starts in view mode; clicking a date previews draft bells without erasing its assignment. Explicitly select a schedule or eraser to paint. A shared panel distinguishes the draft from the active snapshot. Save edits first, then separately apply the checked revision; changes from another window require reloading. Preview is not execution evidence. Validated on the host and in the browser demo; not deployed to the router.
+
 - Schoolbell 5.0.15: storage usage >75% turns yellow, >90% red, with a text warning; shared router/demo styles. Not deployed to the router.
 
 - Specification 1.34: BOOTTIME/REALTIME system ports and bounded FD reference storage, real host operations/fault tests; overlapping rounded observation brackets. No payload/executor/router changes.

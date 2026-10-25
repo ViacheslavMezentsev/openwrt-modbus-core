@@ -8,9 +8,11 @@
     root.hidden=name==='sound' || name==='media' || name==='journal' || name==='feedback';
     if(name==='journal')loadJournal();
     if(name==='sound' && !zoneState)loadZones();
-    document.querySelector('.savebar').hidden=name==='preview';
+    document.querySelector('.savebar').hidden=false;
     try{sessionStorage.setItem('schoolbell-tab',name);}catch(_){}
   }
+  window.addEventListener('schoolbell-open-tab',function(e){if(tabs.some(function(b){return b.dataset.tab===e.detail;}))selectTab(e.detail);});
+  document.getElementById('workflow-apply').addEventListener('click',function(){selectTab('sound');document.getElementById('automatic-enable').scrollIntoView({block:'center'});});
   var zoneState=null,zoneBusy=false;
   var zoneSelect=document.getElementById('timezone-select'),zoneSave=document.getElementById('timezone-save'),zoneBrowser=document.getElementById('timezone-browser');
   var zoneMessage=document.getElementById('timezone-result');

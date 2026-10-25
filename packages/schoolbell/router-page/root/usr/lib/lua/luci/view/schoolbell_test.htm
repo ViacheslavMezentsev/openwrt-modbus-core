@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5014">
-<script src="/schoolbell-test/theme.js?v=5014"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5016">
+<script src="/schoolbell-test/theme.js?v=5016"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Mute · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button></div></header><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
@@ -29,6 +29,10 @@
 </nav>
 <p class="intro">Подготовьте расписания и сохраните их на роутере.</p>
 <p class="notice">Сохранение записывает черновик. Для автозвонков сохраните изменения и отдельно примените их во вкладке «Настройки».</p>
+<section class="plan-workflow" aria-label="Черновик и активный план">
+<p id="workflow-draft" role="status">Черновик: загружается…</p><p id="workflow-active" role="status">Активный план: состояние неизвестно</p><p id="workflow-difference">Сохранение и применение — отдельные действия.</p>
+<button id="workflow-save" type="button" disabled>Сохранить черновик</button> <button id="workflow-apply" type="button">К применению плана</button>
+</section>
 <section id="schedule-editor" class="details" data-media="<%=pcdata(media_url)%>" data-sample="<%=pcdata(sample_url)%>" data-automatic="<%=pcdata(automatic_url)%>" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
 <div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
 <p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с роутера…</p>
@@ -46,15 +50,15 @@
 <div class="editor-toolbar"><label>Год<input id="plan-year" type="number" min="1" max="9999" step="1"></label>
 <button id="year-show" type="button">Показать год</button>
 </div>
-<p>Выберите цвет расписания ниже и раскрасьте даты: нажимайте или ведите мышью с зажатой левой кнопкой. На планшете нажимайте даты. «Тихий день / ластик» снимает назначение. Другие годы автоматически не повторяются.</p>
-<div id="plan-legend" class="plan-legend"></div>
+<p>По умолчанию нажатие даты открывает предпросмотр черновика без изменения плана. Для редактирования выберите цвет расписания или ластик и раскрасьте даты: нажимайте или ведите мышью с зажатой левой кнопкой. На планшете нажимайте даты. «Тихий день / ластик» снимает назначение. Другие годы автоматически не повторяются.</p>
+<p id="calendar-tool" role="status"></p><div id="plan-legend" class="plan-legend"></div>
 <details class="calendar-tools"><summary>Дополнительно: заполнить диапазон или очистить год</summary><label>Назначать дням<select id="plan-brush"></select></label><div class="editor-toolbar"><label>С даты<input id="range-first" type="date"></label><label>По дату<input id="range-last" type="date"></label>
 <label>Какие дни<select id="range-filter"><option value="all">Все дни</option><option value="weekdays">Пн–Пт</option><option value="weekends">Сб–Вс</option></select></label>
 <button id="range-apply" type="button">Назначить диапазон</button><button id="year-clear" type="button">Очистить этот год</button></div></details>
 <p id="plan-status" role="status"></p><div id="year-grid" class="year-grid"></div>
 </section>
 <section id="panel-preview" role="tabpanel" aria-labelledby="tab-preview" data-panel="preview" hidden>
-<h2>Предпросмотр дня — без звука</h2>
+<h2>Предпросмотр черновика — не активного плана</h2>
 <p>Местные часы расписания. Часовой пояс, переходы часов и готовность к запуску здесь не проверяются.</p>
 <div class="editor-toolbar"><label>Дата просмотра<input id="preview-date" type="date"></label><button id="preview-day" type="button">Показать звонки</button></div>
 <p id="preview-status" role="status">Предпросмотр использует текущий черновик, включая несохранённые изменения.</p>
@@ -115,7 +119,7 @@
 <label>Ежедневное расписание<select id="fixed-schedule" disabled></select></label>
 <p id="work-mode-hint">Без годового плана: по расписанию, тихий день по умолчанию.</p>
 <button id="settings-save" type="button" disabled>Сохранить настройки и черновик</button><p id="settings-result" role="status"></p>
-<div class="automatic-controls"><button id="automatic-enable" type="button">Применить сохранённый план и включить</button> <button id="automatic-disable" type="button">Отключить автозвонки</button><p id="automatic-status" role="status"></p>
+<div class="automatic-controls"><button id="automatic-enable" type="button" disabled>Применить сохранённый черновик и включить</button> <button id="automatic-disable" type="button">Отключить автозвонки</button><p id="automatic-status" role="status"></p>
 <p>Проверьте дату и время роутера перед включением. После перезагрузки или изменения часового пояса включите снова. Пропущенные звонки не повторяются; при занятом проигрывателе новый звонок пропускается. Совпадающие времена звонков недопустимы.</p></div>
 <p>Mute действует сразу на звук schoolbell через роутер, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Mute пропущенные звонки не повторяются.</p></section>
 <section class="details" id="backup-panel" data-url="<%=pcdata(backup_url)%>" data-token="<%=pcdata(token)%>"><h2>Резервная копия</h2>
@@ -146,4 +150,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/backup.js?v=5014"></script><script src="/schoolbell-test/media.js?v=5014"></script><script src="/schoolbell-test/automatic.js?v=5014"></script><script src="/schoolbell-test/controls.js?v=5014"></script><script src="/schoolbell-test/app.js?v=5014"></script><script src="/schoolbell-test/schedules.js?v=5014"></script><script src="/schoolbell-test/dashboard.js?v=5014"></script></body></html>
+</main><script src="/schoolbell-test/backup.js?v=5016"></script><script src="/schoolbell-test/media.js?v=5016"></script><script src="/schoolbell-test/automatic.js?v=5016"></script><script src="/schoolbell-test/controls.js?v=5016"></script><script src="/schoolbell-test/app.js?v=5016"></script><script src="/schoolbell-test/schedules.js?v=5016"></script><script src="/schoolbell-test/dashboard.js?v=5016"></script></body></html>
