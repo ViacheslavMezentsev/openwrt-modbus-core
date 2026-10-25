@@ -1,5 +1,7 @@
 # Changelog
 
+5.0.37: logout verifies that the current session is absent after destroy; an empty reply alone proves neither success nor failure. ubus errors remain uncertain. Session loss disables sound/automatic controls and shows a login prompt; late replies cannot restore access. Pages synchronized. Host-tested, not installed.
+
 5.0.36: login/logout status moved out of header controls into a normal-sized status line; Login styled as a button. Added a Login and Logout cheat-sheet route; Pages shares the interface.
 
 5.0.35 (host): compact same-tab login with temporary draft handoff and no visible timer. A separate [named-range prototype](RANGE_PLANS.en.md) is included in Pages; live storage remains year-based. No router installation in this step.

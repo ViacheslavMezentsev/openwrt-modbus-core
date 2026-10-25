@@ -2,6 +2,10 @@
 
 ## Current state and next steps
 
+- [ ] Next separate branch: replace the live “Годовой календарь” tab with “Календарные планы”, named non-overlapping date ranges and painting; integrate Lua storage, backup migration and executor before target installation. No fixed day-count quota.
+- [ ] Verify 5.0.37 logout on a normal authenticated LuCI session: destroy/get confirmation, disabled controls and login-only status. Host tests do not prove target logout.
+
+
 - [ ] Next schoolbell feature accepted by owner: portable annual/academic-plan bundle with selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and all referenced media. September–May spans two calendar years. Reuse backup/media mechanisms; preview dependency closure and conflicts before import, validate plan timezone without applying system timezone, import only as draft with automatic bells disabled. Exclude credentials, network, NTP/clock and hardware-specific settings; specify bundled-media compatibility and atomic rollback before implementation.
 
 - [x] S1 revised in 5.0.35: same-tab login with bounded sessionStorage draft handoff; compact controls, idle preference in Settings, no visible countdown; Pages shares the change.

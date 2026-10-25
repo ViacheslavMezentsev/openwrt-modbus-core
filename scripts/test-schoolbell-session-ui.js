@@ -33,3 +33,19 @@ function setup(demo=false){
  x=setup(true);await x.advance(9999999);assert(!x.calls.length && x.ids['session-logout'].disabled && x.ids['session-duration'].disabled);
  console.log('PASS late responses discarded after loss; demo never authenticates or logs out');
 })().catch(e=>{console.error(e);process.exit(1)});
+
+// Sound controls must remain disabled even when an old read completes after logout.
+(async()=>{
+ const ids={},events={},timers=[];let pending,reads=0;
+ const get=id=>ids[id]??=( {dataset:{controls:'controls'},options:[],value:'0',textContent:'',disabled:false,addEventListener(){},setAttribute(){},appendChild(o){this.options.push(o);}} );
+ const w={addEventListener:(n,f)=>events[n]=f};
+ const context={window:w,document:{hidden:false,getElementById:get,addEventListener(){},createElement:()=>({})},fetch:()=>{reads++;return new Promise(resolve=>pending=resolve);},setTimeout:()=>1,clearTimeout(){},setInterval:f=>timers.push(f),AbortController,URLSearchParams,Date,Array,Number,String};
+ vm.runInNewContext(fs.readFileSync('packages/schoolbell/router-page/root/www/schoolbell-test/controls.js','utf8'),context);
+ w.schoolbellSessionBlocked=true;events['schoolbell-session-lost']();
+ pending({ok:true,json:async()=>({ok:true,muted:false,playing:false})});
+ for(let i=0;i<10;i++)await Promise.resolve();
+ for(const f of timers)f();
+ for(const id of ['quick-mute','quick-bell','router-volume','volume-save'])assert(get(id).disabled,id);
+ assert(get('quick-status').textContent.includes('Войдите'));assert.equal(reads,1);
+ console.log('PASS logout sound controls stay disabled after late response; polling stops');
+})().catch(e=>{console.error(e);process.exitCode=1;});

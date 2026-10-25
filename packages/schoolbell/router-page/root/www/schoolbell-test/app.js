@@ -13,6 +13,7 @@
   audio.addEventListener('ended',function () { localButton.disabled=false; localResult.textContent='Воспроизведение на этом устройстве завершено.'; });
   audio.addEventListener('error',function () { localButton.disabled=false; localResult.textContent='Файл недоступен. Обновите страницу и проверьте вход в LuCI.'; });
   var form=document.getElementById('router-form'), button=document.getElementById('router-play'), result=document.getElementById('router-result');
+  window.addEventListener('schoolbell-session-lost',function(){button.disabled=true;result.textContent='Войдите для управления звуком.';});
   var messages={
     muted:'Звук отключён кнопкой Без звука.',
     completed:'Проигрыватель завершился успешно. Было слышно через колонки роутера?',
@@ -25,7 +26,7 @@
     cleanup_required:'Процесс завершён, но блокировка не снята. Нужна проверка по SSH.'
   };
   form.addEventListener('submit',async function (event) {
-    event.preventDefault(); button.disabled=true; result.textContent='Звонок на роутере… ожидаем завершения.';
+    event.preventDefault(); if(window.schoolbellSessionBlocked)return;button.disabled=true; result.textContent='Звонок на роутере… ожидаем завершения.';
     try {
       var response=await fetch(form.action,{method:'POST',credentials:'same-origin',body:new URLSearchParams(new FormData(form)),redirect:'error'});
       if(!response.ok) throw new Error('HTTP '+response.status);
@@ -33,6 +34,6 @@
       result.textContent=messages[data.state] || 'Неизвестный ответ. Проверьте состояние через SSH.';
     } catch (_) {
       result.textContent='Ответ не получен. Звук мог начаться: не повторяйте сразу. Проверьте сеть и обновите страницу.';
-    } finally { button.disabled=false; }
+    } finally { button.disabled=!!window.schoolbellSessionBlocked; }
   });
 }());

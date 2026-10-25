@@ -1,5 +1,8 @@
 # Schoolbell user guide
 
+
+After session loss, sound and automation controls are disabled and the status panel requests login. This does not mean the service stopped. An unconfirmed logout does not prove the server session ended: sign in normally and retry logout after connectivity returns.
+
 The header contains compact Login/Logout controls, with no visible countdown. Idle duration is under Settings → Login and automatic logout (1–120 minutes, default 15); it is a running-page timer, not LuCI server policy. Polling does not renew it. Logout does not stop automatic bells.
 Login uses the same tab. Before navigation, the unsaved draft is temporarily stored in this tab’s sessionStorage (32768 characters, up to 8 hours, no password/token); storage failure cancels navigation. The same user gets the edits back automatically, without writing them to the router. A changed server revision requires reconciliation. This is not a backup: closing the tab, clearing browser storage, expiry or another user can lose edits; selected upload files are not transferred.
 

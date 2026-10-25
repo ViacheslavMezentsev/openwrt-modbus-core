@@ -42,8 +42,17 @@ function session()
     if method=='POST' then
         if not d.test_post_security() then return end
         if h.formvalue('action')~='logout' then h.status(400,'Bad Request');return end
-        local result=require('luci.util').ubus('session','destroy',{ubus_rpc_session=d.context.authsession})
-        if result==nil then h.status(503,'Unavailable');respond({ok=false,code='logout_uncertain'});return end
+        local ubus=require('luci.util').ubus
+        -- Empty successful ubus replies need not contain a Lua table.
+        -- Confirm that this server-owned SID no longer exists; never infer this from nil alone.
+        local called,result,err=pcall(ubus,'session','destroy',{ubus_rpc_session=d.context.authsession})
+        local checked,remaining,lookup_error=false,nil,nil
+        if called and (err==nil or err==0) then
+            checked,remaining,lookup_error=pcall(ubus,'session','get',{ubus_rpc_session=d.context.authsession})
+        end
+        if not checked or remaining~=nil or lookup_error~=4 then
+            h.status(503,'Unavailable');respond({ok=false,code='logout_uncertain'});return
+        end
         h.header('Set-Cookie','sysauth=; expires=Thu, 01 Jan 1970 01:00:00 GMT; path='..d.build_url())
         respond({ok=true,logged_out=true});return
     end
