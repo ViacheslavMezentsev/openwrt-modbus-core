@@ -1,5 +1,13 @@
 # Schoolbell package
 
+
+5.0.23: title and filename spaces use %20 for LuCI 19.07 CGI; literal plus signs remain plus signs.
+
+
+5.0.22: MP3 upload and restore carry the CSRF token in Authorization: Bearer, forwarded by uhttpd 19.07 CGI. A LuCI session and an exact CSRF token match remain required; tokens never enter URLs. CGI previously dropped X-CSRF-Token, causing HTTP403 before file writes.
+
+5.0.21: unconfirmed uploads retain the original error and operation ID; the list is fetched again without resending the file. Failed reads preserve disabled stale rows until refresh. This is a diagnostic fix; the browser upload failure cause remains under investigation.
+
 5.0.20: transient media-list busy receives up to four GET attempts with 200/500/1000 ms pauses. Exhaustion preserves the previous list as unconfirmed, disables actions and leaves refresh available. Busy is not called corruption. Upload POST is never retried.
 
 Schoolbell 5.0.19: fix empty LuCI audio responses on Lua 5.1. Streaming sources/sinks use coroutine-safe protection throughout; regressions cover yielding upload/download and cleanup after disconnect.

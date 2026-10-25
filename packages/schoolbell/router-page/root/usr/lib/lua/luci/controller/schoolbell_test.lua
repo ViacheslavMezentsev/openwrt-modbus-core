@@ -202,8 +202,9 @@ function media()
  local h=require('luci.http');editor();local m=require('schoolbell.media_web')
  if h.getenv('REQUEST_METHOD')=='GET'then local op=h.formvalue('operation',true);respond(op and m.lookup(op) or m.list());return end
  if h.getenv('REQUEST_METHOD')~='POST'then h.status(405,'Method Not Allowed');return end
- -- Raw stream: token is a same-origin custom header, never a URL or parsed body.
- local token=h.getenv('HTTP_X_CSRF_TOKEN');local expected=require('luci.dispatcher').context.authtoken
+ -- uhttpd 19.07 CGI forwards Authorization, but drops arbitrary X-* headers.
+ -- Cookie session is still required; Bearer carries its CSRF token, not a login.
+ local token=(h.getenv('HTTP_AUTHORIZATION') or ''):match('^Bearer ([^%s]+)$');local expected=require('luci.dispatcher').context.authtoken
  if type(token)~='string' or token=='' or token~=expected then h.status(403,'Forbidden');return end
  local size=tonumber(h.getenv('CONTENT_LENGTH'))
  if not size or size<1 or size>524288 or h.getenv('CONTENT_TYPE')~='application/octet-stream'then h.status(413,'Unsupported request');return end
@@ -235,7 +236,7 @@ function backup()
  local h=require('luci.http');local method=h.getenv('REQUEST_METHOD')
  if method~='GET' and method~='POST'then h.status(405,'Method Not Allowed');return end
  if method=='POST'then
-  local token=h.getenv('HTTP_X_CSRF_TOKEN');local expected=require('luci.dispatcher').context.authtoken
+  local token=(h.getenv('HTTP_AUTHORIZATION') or ''):match('^Bearer ([^%s]+)$');local expected=require('luci.dispatcher').context.authtoken
   if type(token)~='string' or token=='' or token~=expected then h.status(403,'Forbidden');return end
   local size=tonumber(h.getenv('CONTENT_LENGTH'))
   if not size or size<0 or size%1~=0 or size>2162816 or h.getenv('CONTENT_TYPE')~='application/octet-stream'then h.status(413,'Unsupported request');return end
