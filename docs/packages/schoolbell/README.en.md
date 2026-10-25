@@ -1,5 +1,7 @@
 # Schoolbell package
 
+[Schoolbell user guide](USER_GUIDE.en.md) — schoolbell 5.0.31.
+
 [Startup audit and host checks](STARTUP_AUDIT.en.md): boot/TZ, clock reference and an independent 15+6 oracle; no hardware acceptance.
 
 [Schoolbell 5.x acceptance programme](ACCEPTANCE.en.md): draft release gates, AC-01–12 journeys, parity and open budgets. Not hardware acceptance or a specification change.

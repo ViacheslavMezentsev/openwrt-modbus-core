@@ -1,5 +1,7 @@
 # openwrt-modbus-core
 
+[Schoolbell user guide](docs/packages/schoolbell/USER_GUIDE.en.md) — schoolbell 5.0.31.
+
 Schoolbell 5.0.31: target opkg compatibility fixes (no stat dependency, explicit archive directories, owned LuCI cache invalidation). Installation, recovery downgrade and upgrade preserve data and leave automatic bells off; no clock/NTP changes.
 
 Schoolbell 5.0.28: complete engineering IPK and pinned offline bundle; host lifecycle tests, no target installation. [Packaging](docs/packages/schoolbell/PACKAGING.en.md).

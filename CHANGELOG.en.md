@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Added the schoolbell 5.0.31 Markdown user guide: startup, schedules/year plan, sound, media, time, backups and troubleshooting, including current UI limitations. No runtime or router changes.
+
 - Schoolbell host startup audit: 11 additional real-worker scenarios with injected boot/TZ/clocks/reference and an independent 15+6 oracle. Documented reboot versus same-boot restart with bypass; no runtime/IPK or router changes.
 
 - Added the draft schoolbell 5.x acceptance programme: 12 end-to-end scenarios, legacy parity, attended versus future unattended startup, release gates and open numerical budgets. No runtime, IPK or router changes.

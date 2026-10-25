@@ -2,6 +2,9 @@
 
 ## Current state and next steps
 
+- [x] Current 5.0.31 user guide in Markdown (RU/EN), based on the installed UI; startup/time and browser-preview limitations are explicit.
+- [ ] Validate the guide with an independent operator on desktop/touch during AC-10/12; documentation alone does not close usability acceptance.
+
 - [x] Draft [schoolbell 5.x acceptance programme](docs/packages/schoolbell/ACCEPTANCE.en.md): AC-01–12, appendix B parity, release blockers and evidence rules; documentation only, not product PASS.
 - [ ] Agree acceptance Q1–Q5: numerical timing/resource/accuracy budgets, endurance duration, collision policy and attended-startup release scope. Existing production dependencies below remain until explicit scope agreement.
 - [x] Schoolbell startup/boot/TZ audit: 11 additional host worker scenarios and independent 15+6 calendar oracle; see [audit](docs/packages/schoolbell/STARTUP_AUDIT.en.md).

@@ -1,0 +1,203 @@
+# Schoolbell user guide
+
+[Русский](USER_GUIDE.md)
+
+For **schoolbell 5.0.31**, dated 2026-10-25. This describes the installed interface,
+not the public mockup. Supported fixture: OpenWrt 19.07.9, TL-MR3020 v3.30 and USB
+audio. An administrator installs the equipment and [package](PACKAGING.en.md).
+Individual functions have been tested; full endurance, cold-start and power-loss
+acceptance remains pending. See the [acceptance programme](ACCEPTANCE.en.md).
+Russian button labels below match the current UI.
+
+## 1. Open the module
+
+Join a network that can reach the router. Obtain its address and login from the
+administrator. Open `http://<router-address>/cgi-bin/luci/admin/schoolbell` and use
+normal LuCI login. Use HTTPS only when configured. Never enter router credentials
+into the public Pages demo; it does not control your device.
+
+Top controls are «Без звука» (Mute), «Подать звонок» (manual bell) and theme.
+Click the status header to collapse details. It shows mode, versions, router/browser
+time and executor countdown, not unsaved changes. The countdown currently covers
+only today; a dash says nothing about tomorrow's assignments.
+
+Tabs: «Календарь» assigns dates; «Расписания» edits rows; «Предпросмотр» previews
+the draft; «Мелодии» manages audio; «Настройки» controls time/mode/backup;
+«Журнал» shows recorded events; «Обратная связь» explains reporting issues.
+
+## 2. First test
+
+1. In Settings, check school timezone and router date/time. Ask the administrator
+   to correct wrong time before continuing.
+2. Under time verification, click «Проверить и подтвердить время», review and click
+   «Время верно — подтвердить».
+3. Create a schedule with an enabled test-melody row a few minutes after current
+   router time. Disable preliminary ringing for this test.
+4. In Settings select «По расписанию» and that schedule, then «Сохранить настройки и черновик».
+5. Preview today and check there are no unsaved changes.
+6. Click «Применить сохранённый план и включить», review/confirm, ensure Mute is off
+   and the executor permits ringing. Use a short melody and low speaker volume.
+7. After the test click «Отключить автозвонки». The schedule remains saved.
+
+Fixed mode repeats daily, including weekends. Use the annual plan for differing days.
+
+## 3. Edit schedules
+
+Select a schedule or «+ Создать», set a name and palette color. «+ Добавить звонок»
+adds a row: local school time HH:MM, main melody, enabled flag and preliminary flag.
+The preliminary melody and common offset of 1–10 minutes are in Settings.
+An empty schedule is silent. «Копировать» makes a variant. Remove calendar/fixed
+references before deleting a used schedule. «Очистить строки» clears draft rows.
+
+Avoid two events at the same minute, including preliminary bells: the current
+executor rejects such a day, rather than queuing melodies. Save edits, then separately
+apply them if they should change working bells.
+
+## 4. Paint the calendar
+
+Choose a year and «Показать год». «Просмотр дня» opens preview without editing.
+Choose a schedule color to paint dates by click or left-button drag; on touch, tap
+dates individually. «Тихий день / ластик» removes assignments. Return to viewing
+when finished. Save, choose «По годовому плану» in Settings, save that choice and apply.
+
+Advanced controls fill a date range (all days, weekdays or weekends) or clear a year.
+Clearing a draft does not stop the active copy until applied. Unassigned dates and
+years without a plan are quiet; years never repeat automatically. Weekends are only
+quiet if you assign them that way. A quiet day also suppresses a preliminary bell
+that would fall on it from the neighboring date.
+
+Preview includes unsaved draft edits. It is not the active plan or proof of valid
+time/audio; it does not check timezone transitions or execution readiness.
+
+## 5. Save versus enable
+
+| Action | Meaning |
+| --- | --- |
+| Editing | Changes remain in the browser |
+| «Сохранить черновик» / «Сохранить черновик на роутере» | Persist the draft without replacing the active copy |
+| «Загрузить сохранённое» | Reload saved data; unsaved work may be lost |
+| «Применить сохранённый план и включить» | Explicitly activate the saved copy after confirmation |
+| «Отключить автозвонки» | Disable automatic bells without deleting the plan |
+
+Read the separate draft and active-plan lines. Reconcile another editor's changes
+or an unknown save outcome before applying. Once enabled, bells work with the browser
+closed. Missed bells are not replayed. Use Mute for urgently stopping current sound;
+disabling automatic bells alone does not prohibit manual ringing.
+
+## 6. Manual sound and volume
+
+«Подать звонок» plays one manual bell through router speakers, using the melody
+selected and saved in Settings. It is unavailable while Mute is enabled.
+Mute blocks router output and requests stopping the current player. Wait for
+confirmation; a lost response does not establish that sound stopped. Unmute never
+catches up. Stop browser audio through its own player controls.
+
+The two test routes in «Мелодии → Ручная проверка звука» both use the bundled test
+file immediately, independently of draft rows. The browser route sounds on your
+computer/phone/tablet; the router route sounds through USB audio and school speakers.
+For another melody use «В браузере» in its table row.
+
+Select router volume and «Применить громкость». For example −12 dB is quiet and
+0 dB applies no software attenuation. It affects the next manual/test/automatic bell,
+not the one already playing. Browser volume belongs to your device. Successful
+player completion does not prove that speakers/amplifier have power.
+
+## 7. Upload melodies and check space
+
+Six bundled melodies are protected; user1–user8 are replaceable. MP3 only, not MIDI
+or WAV: maximum 512 KiB and 60 seconds per file, subject to total space.
+
+1. Disable automatic bells, wait for sound to end and stop browser listening.
+2. Open Melodies and wait for the table/storage status.
+3. Choose a user slot, descriptive title and MP3 file.
+4. Click «Загрузить и заменить» and confirm.
+5. Wait for «Мелодия сохранена, список обновлён», verify the title and listen in-browser.
+
+Schedules keep slot references: replacing user1 changes what its rows will play.
+Review them before resuming. Empty slots cannot play; a missing required melody blocks
+activation. There is currently no separate user-file delete operation; replace instead.
+
+The bar shows persistent partition usage, not RAM: above 75% yellow, above 90% red.
+Temporary/previous copies and system reserve may prevent upload despite apparent
+free space. User objects and retained copies share a 2 MiB quota; internal storage
+may impose a tighter limit. Eight slots do not promise eight maximum-size files.
+
+## 8. Timezone and verification
+
+School timezone is first in Settings. For Yekaterinburg select Asia/Yekaterinburg and
+«Применить часовой пояс», wait for confirmation and check the status panel. Copy the
+browser zone only when it matches the school's location. The setting affects all
+router applications, does not fix wrong date/minutes, and does not rewrite schedule
+HH:MM entries. Recheck/confirm time and apply the plan separately after changing zone.
+
+Confirming time does not set the clock. This page currently has no browser-to-router
+clock-setting command. If time is wrong, leave automatic bells off and ask the
+administrator. Any clock changes during a drift measurement need separate agreement.
+
+Request verification, check the displayed date and confirm within 15 seconds; request
+again if expired. Acknowledging intentional time earlier than the saved reference
+requires careful review with the administrator; it does not repair the clock.
+
+The gate may be disabled with confirmation, removing part of the wrong-date protection
+without establishing accuracy. Toggling the gate or confirming time disables automatic
+bells; enable separately. The approximate browser comparison within five seconds is
+neither an accuracy certificate nor executor confirmation.
+
+## 9. Backup, restore and transfer
+
+Before major edits, upgrades or replacement: disable automatic bells, save the draft,
+then Settings → Backup → «Скачать резервную копию». Verify the .sbb download and keep
+dated copies on your computer.
+
+The archive contains saved settings/schedules/year assignments, named user MP3,
+Mute and volume. It excludes unsaved changes, automatic authorization, journal,
+network/passwords, clocks/NTP and time trust. Bundled melodies belong to the package.
+Timezone is checked on restore, not automatically installed from the archive.
+
+Choose a trusted .sbb, click «Восстановить» and confirm. This replaces the whole saved
+plan and user library; it is not a merge. After reload automatic bells remain off.
+Review dates/schedules/files/volume/time before enabling.
+
+A new device needs a compatible module, dependencies/bundled melodies and the same
+school timezone. Independently verify its time and audio after import. Network and
+credentials are not cloned. If the response is lost, «Проверить состояние» first;
+use «Продолжить прерванное восстановление» when offered. Do not blindly repeat the
+import or delete service files yourself.
+
+## 10. After power loss
+
+Do not assume correct time survives without RTC/external synchronization; the saved
+calendar cannot tell the current date. After power-on inspect time/TZ, plan and media.
+Confirm correct time, then explicitly enable the saved plan. Downtime bells are skipped.
+
+With the gate enabled, even a same-boot service restart needs renewed confirmation.
+With explicit bypass, a service restart in the same boot/TZ may resume future bells
+of an enabled plan. A new boot or TZ mismatch still blocks it. Install/update/downgrade/
+restore leave bells off. Unattended recovery after power loss is not yet promised.
+
+## 11. Troubleshooting
+
+| Symptom | Action |
+| --- | --- |
+| Save disabled | Wait for data and check there are edits; read the adjacent message |
+| Enable disabled | Save/reconcile the draft; the public demo cannot enable a real router |
+| Unknown Mute / disconnected | Wait for refresh, check router reachability and LuCI login; do not assume the last action succeeded |
+| Busy | Wait, stop browser listening and reread state. Persistent busy needs administrator help, not lock deletion |
+| Unknown outcome | Inspect state/list/title/revision before retrying upload, restore or ringing |
+| No sound | Distinguish browser/router, check Mute, volume, speaker power/cable; for automatic bells also time, active plan/date and enabled row |
+| No next bell | Check mode/today/active copy; countdown currently covers today only |
+| Time verification needed | Review and confirm correct time, then enable separately |
+| MP3 will not fit | Use a shorter/more compact MP3; allow for reserve and temporary copies |
+| Bad backup/storage error | Keep bells off; check archive, compatibility and timezone; contact administrator for storage failures |
+| Old UI after upgrade | Save needed edits, then Ctrl+F5; reload normally on mobile |
+
+## 12. Journal and feedback
+
+Use «Обновить журнал». Table times are UTC; rotation discards older entries, so this
+is not permanent history. Full core system-event subscription is still pending.
+Player success does not confirm audible sound.
+
+In Feedback, search existing Issues or report a bug with module/core versions,
+equipment, steps, expected/actual result and exact error/operation ID. Attach a
+screenshot or short log only after removing credentials/tokens/personal data.
+GitHub submission requires Internet/account and is performed by you, not automatically.
