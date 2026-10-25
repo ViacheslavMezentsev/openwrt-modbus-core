@@ -10,7 +10,7 @@
   var name=document.getElementById('schedule-name');
   var rows=document.getElementById('schedule-rows');
   var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false;
-  var mediaIds=["test","0","1","2","3","4"];
+  var mediaIds=["test","0","1","2","3","4","user1","user2","user3","user4","user5"];
   var counter=0;
   var year=new Date().getFullYear(), brush='quiet', painting=false;
   var monthNames=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];

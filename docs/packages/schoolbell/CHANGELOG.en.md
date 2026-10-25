@@ -10,6 +10,12 @@
 
 ## [Unreleased]
 
+- Schoolbell 5.0.12: six protected bundled melodies plus five user slots; missing user media blocks plan activation.
+
+- Schoolbell 5.0.11: persistent-storage usage bar, free space, protected reserve and retained media usage.
+
+- Schoolbell 5.0.10: bounded melody uploads/replacement via the existing media manager, shared player gate, CAS and browser preview; no automatic activation.
+
 - Schoolbell 5.0.9: aligned settings fields and subtle alternating table rows in both themes.
 
 - Fixed in schoolbell 5.0.8: a normal polling delay no longer recursively writes the time watermark; reuse the verified serialized snapshot without repeating SHA before playback.

@@ -24,7 +24,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.28. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.29. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -48,6 +48,7 @@ not silently approved by this sequence. API versions are independent of spec rev
 - [ ] P03 — Implement the schoolbell-owned player worker, FIFO/expiry/cancellation and result events, scoped schedule controls and manual test (schoolbell TC-02/06–11/18). Resolve active stop separately; no audio API in core.
 - [x] P04 calendar calculation — Isolated schoolbell Lua snapshot/calculator, fixed and explicit annual selection, quiet-day midnight suppression, no annual repeat and gap/fold rejection; 29 groups plus 14,404 independent date vectors, original 15+6 across a leap year. No core registration, UI, player, storage or hardware acceptance; full appendix B parity still required.
 - [ ] P04 — Implement the common scheduler and system-time interface (core TC-58–60), then schoolbell fixed/annual modes, quiet days, preliminary bells, registration horizon and shared preview calculation (schoolbell TC-14–17). Browser clock synchronization is required; RTC is a separate enhancement for unattended startup.
+- [x] P05 engineering upload — six protected bundled slots and five user slots through the media manager, bounded MP3/decoder validation, inactive-auto/shared-gate admission and CAS; production revision-pinned plans and backup remain pending.
 - [ ] P05 — Implement schoolbell media IDs/revisions and bounded validated replacement with recovery (schoolbell TC-22/23). Preserve active/referenced files; the complete offline profile includes five original melodies plus test.
 - [ ] P06 — Assemble the autonomous engineering MVP after P01–P05. Following separate hardware approval, validate install/update/rollback and event-to-playback/results while core/demo remain healthy. Validate reboot without Internet or previous /tmp; no claim of a full original replacement yet.
 - [x] P07 saved schedule editor — Create/copy/delete/edit rows and persistent inactive drafts, content-revision conflicts and strict calendar validation; host/target filesystem checks. Only test.mp3, no annual assignment or activation. [Details](docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).

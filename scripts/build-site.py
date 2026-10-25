@@ -23,7 +23,7 @@ shutil.copyfile(root/'site/demo.js',assets/'demo.js')
 shutil.copyfile(root/'packages/schoolbell/media/test.mp3',assets/'test.mp3')
 shutil.copyfile(root/'pkg-schoolbell/usr/share/modbus-schoolbell/NOTICE',assets/'NOTICE.txt')
 text=(source/'usr/lib/lua/luci/view/schoolbell_test.htm').read_text()
-values={'automatic_url':'./demo-api/automatic','controls_url':'./demo-api/controls','manual_url':'./demo-api/no-router','preview_url':'./demo-api/preview','schedules_url':'./demo-api/load','save_url':'./demo-api/save','clock_url':'./demo-api/clock','journal_url':'./demo-api/journal','timezone_url':'./demo-api/timezone','sample_url':'./assets/test.mp3','play_url':'./demo-api/no-router','module_version':version+' · DEMO','core_version':'не подключено','token':'demo'}
+values={'media_url':'./demo-api/media','automatic_url':'./demo-api/automatic','controls_url':'./demo-api/controls','manual_url':'./demo-api/no-router','preview_url':'./demo-api/preview','schedules_url':'./demo-api/load','save_url':'./demo-api/save','clock_url':'./demo-api/clock','journal_url':'./demo-api/journal','timezone_url':'./demo-api/timezone','sample_url':'./assets/test.mp3','play_url':'./demo-api/no-router','module_version':version+' · DEMO','core_version':'не подключено','token':'demo'}
 for key,value in values.items():text=text.replace('<%=pcdata('+key+')%>',html.escape(value,quote=True))
 text=text.replace("<%=url('admin')%>",'../').replace('← Управление роутером LuCI','← О проекте')
 text=text.replace('/schoolbell-test/','./assets/')

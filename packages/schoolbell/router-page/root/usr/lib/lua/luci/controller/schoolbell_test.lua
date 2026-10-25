@@ -2,6 +2,7 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","media"},call("media")).leaf=true
     entry({"admin","schoolbell","automatic"},call("automatic")).leaf=true
     entry({"admin","schoolbell","controls"},call("controls")).leaf=true
     entry({"admin","schoolbell","manual"},call("manual")).leaf=true
@@ -56,7 +57,17 @@ function automatic()
   if not require('luci.dispatcher').test_post_security()then return end
   local enabled=h.formvalue('enabled');if enabled~='true' and enabled~='false' then respond({ok=false,code='invalid'});return end
   editor();local m=require('schoolbell.automatic_store')
-  local result=m.transaction(m.change,enabled=='true',h.formvalue('revision'),m.environment())
+  local gate=require('schoolbell.sound_test').lock;local fs=require('nixio.fs');local acquired=false
+  if enabled=='true' then acquired=fs.mkdir(gate,700);if not acquired then respond({ok=false,code='busy'});return end end
+  local safe,result=pcall(function()
+   if acquired then
+    local saved=require('schoolbell.schedule_store').request('/etc/schoolbell-editor','load')
+    if not saved.ok or not require('schoolbell.media_web').plan_ready(saved.data)then return {ok=false,code='missing_media'}end
+   end
+   return m.transaction(m.change,enabled=='true',h.formvalue('revision'),m.environment())
+  end)
+  if acquired and not fs.rmdir(gate)then safe=false end
+  if not safe then result={ok=false,code='automatic_storage'}end
   audit(result.ok and (enabled=='true' and 'auto_enabled' or 'auto_disabled') or 'auto_blocked',result)
   -- Never echo the private snapshot or internal storage error to the browser.
   respond({ok=result.ok,code=result.code,generation=result.ok and result.state.generation or nil});return
@@ -168,6 +179,7 @@ function page()
     local d=require("luci.dispatcher")
     require("luci.http").header("Cache-Control","no-store")
     require("luci.template").render("schoolbell_test",{
+        media_url=d.build_url('admin','schoolbell','media'),
         automatic_url=d.build_url('admin','schoolbell','automatic'),
         controls_url=d.build_url('admin','schoolbell','controls'),
         manual_url=d.build_url('admin','schoolbell','manual'),
@@ -184,14 +196,25 @@ function page()
         token=d.context.authtoken
     })
 end
+function media()
+ local h=require('luci.http');editor();local m=require('schoolbell.media_web')
+ if h.getenv('REQUEST_METHOD')=='GET'then local op=h.formvalue('operation',true);respond(op and m.lookup(op) or m.list());return end
+ if h.getenv('REQUEST_METHOD')~='POST'then h.status(405,'Method Not Allowed');return end
+ -- Raw stream: token is a same-origin custom header, never a URL or parsed body.
+ local token=h.getenv('HTTP_X_CSRF_TOKEN');local expected=require('luci.dispatcher').context.authtoken
+ if type(token)~='string' or token=='' or token~=expected then h.status(403,'Forbidden');return end
+ local size=tonumber(h.getenv('CONTENT_LENGTH'))
+ if not size or size<1 or size>524288 or h.getenv('CONTENT_TYPE')~='application/octet-stream'then h.status(413,'Unsupported request');return end
+ local result=m.upload({id=h.formvalue('id',true),name=h.formvalue('name',true),generation=tonumber(h.formvalue('generation',true)),operation=h.formvalue('operation',true),size=size},h.source())
+ audit(result.ok and 'media_ok' or 'media_failed',result);respond(result)
+end
 function sample()
-    local h=require("luci.http")
-    h.header("Cache-Control","no-store")
-    local f=io.open(require("schoolbell.sound_test").sample,"rb")
-    if not f then h.status(503,"Sample unavailable"); return end
-    audit('sample_requested')
-    h.prepare_content("audio/mpeg")
-    h.write(f:read("*a")); f:close()
+ local h=require('luci.http');if h.getenv('REQUEST_METHOD')~='GET'then h.status(405,'Method Not Allowed');return end
+ editor();h.header('Cache-Control','no-store');local started=false
+ local result=require('schoolbell.media_web').sample(h.formvalue('id',true) or 'test',function(chunk)
+  if not started then h.prepare_content('audio/mpeg');started=true end;h.write(chunk)
+ end)
+ if not result.ok and not started then h.status(503,'Media unavailable')end
 end
 function play()
     local h=require("luci.http")

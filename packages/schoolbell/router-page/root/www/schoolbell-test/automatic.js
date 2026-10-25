@@ -19,7 +19,7 @@ async function refresh(){if(reading || busy || document.hidden)return;reading=tr
 async function change(enabled){if(busy)return;busy=true;feedback='';draw();try{
  var revision='';if(enabled){var saved=await request(root.dataset.load);if(!saved.ok || saved.revision==='empty')throw Error('Сначала сохраните план.');revision=saved.revision;
  if(!window.confirm('Включить сохранённый план на роутере? Несохранённые правки не применятся. Проверьте дату, время, режим и мелодии. Звонки будут звучать автоматически, пока не включён Mute.'))return;}
- var result=await request(root.dataset.automatic,{enabled:String(enabled),revision:revision});if(!result.ok)throw Error('Не удалось применить. Проверьте сохранение, конфликты времён и хранилище.');
+ var result=await request(root.dataset.automatic,{enabled:String(enabled),revision:revision});if(!result.ok)throw Error(result.code==='missing_media'?'Сначала загрузите пользовательские мелодии, выбранные во включённых строках расписаний.':'Не удалось применить. Проверьте сохранение, конфликты времён и хранилище.');
  sample=null;message.textContent='Запрос принят. Ожидаем подтверждения службы…';
  }catch(e){feedback=(e.message || 'Ответ потерян. Проверьте состояние перед повтором.')+' ';message.textContent=feedback;}finally{busy=false;on.disabled=false;off.disabled=false;setTimeout(refresh,1500);}}
 on.addEventListener('click',function(){change(true);});off.addEventListener('click',function(){change(false);});

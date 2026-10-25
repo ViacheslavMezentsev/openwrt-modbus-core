@@ -1,6 +1,6 @@
 # Schoolbell router page
 
-Schoolbell 5.0.9: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
+Schoolbell 5.0.12: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
 
 Automatic bells: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
 
@@ -11,7 +11,7 @@ HTTP/HTTPS configuration and normal LuCI login. The page includes the editor, se
 
 - **Послушать здесь** plays in the current browser/device speakers.
 - **Позвонить на роутере** sends an authenticated, CSRF-protected POST to play
-  the fixed sample through the router USB audio card.
+  the current test slot through the router USB audio card.
 - One button selects system/dark/light theme. Installation does not activate a plan or change the mixer.
   Process exit 0 does not prove audible output.
 
@@ -27,7 +27,7 @@ record absent paths separately and check overlay capacity. Build using
 Lua modules, six media files and service scripts (init/sbin 0755, data 0644).
 After backup, unpack the payload at the router root, invalidate the LuCI index
 and affected module caches, then enable/start only schoolbell-auto. Do not
-restart the core or NTP. A fresh installation has no active plan.
+restart the core or NTP. Before first use of 5.0.10+, explicitly create private `/etc/modbus-schoolbell/data` with mode 0700 and a trusted parent. Preserve it on upgrades; a missing established library needs investigation, not automatic reset. See [media uploads](../../../docs/packages/schoolbell/MEDIA_UPLOAD.en.md). A fresh installation has no active plan.
 
 Rollback first disables automatic bells and waits for playback completion,
 then stops/disables schoolbell-auto and restores verified previous payload
@@ -37,11 +37,11 @@ Mute state, common directories and user media.
 ## Limits and evidence
 
 The diagnostic executor is separate from the production native player, queue
-and media manager. HTTP clients cannot supply argv, paths or gain. There are
-100 waits of 100 ms, followed by SIGKILL of the owned unreaped child and 20
+adapter. The media manager is connected through an engineering override layer. HTTP clients cannot supply argv or paths; gain is separately validated. There are
+620 waits of 100 ms, followed by SIGKILL of the owned unreaped child and 20
 more waits. This is a call budget, not a Linux realtime guarantee.
 
-The `/tmp/schoolbell-sound-test.lock` directory coordinates only this page.
+The `/tmp/schoolbell-sound-test.lock` directory coordinates manual/automatic playback, uploads and the media library.
 Unknown outcomes retain the lock: inspect live processes over SSH before
 manual recovery. Do not run other players concurrently. Closing the browser
 does not stop playback; the short clip may finish. No worker crash recovery.
@@ -51,7 +51,7 @@ Host test: `lua5.1 packages/schoolbell/tests/test_sound_test.lua`, included in
 routes, anonymous 403 for page/sample/play, harmless native fixture, real
 madplay exit 0. Rejected authorized POST is covered by host tests and LuCI
 inspection, not by a separate authenticated invalid-token HTTP test.
-Observed additional overlay was about 20 KiB, not a universal storage budget.
+The initial page-only experiment used about 20 KiB overlay; that historical figure excludes later features and media and is not the current payload size.
 Core/demo and network/USB settings were preserved; no reboot or power-loss test.
 
 

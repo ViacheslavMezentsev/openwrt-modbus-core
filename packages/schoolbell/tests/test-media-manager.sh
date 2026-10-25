@@ -38,3 +38,12 @@ TZ=UTC lua5.1 packages/schoolbell/tests/test_automatic_service.lua
 
 mkdir -m 700 "$build/automatic"
 lua5.1 packages/schoolbell/tests/test_automatic_storage.lua "$build/automatic"
+
+lua5.1 packages/schoolbell/tests/test_mp3.lua
+mkdir -m 700 "$build/library"
+lua5.1 packages/schoolbell/tests/test_media_library.lua "$build/library"
+
+lua5.1 packages/schoolbell/tests/test_media_http.lua
+
+mkdir -m 700 "$build/web-library"
+lua5.1 packages/schoolbell/tests/test_media_web.lua "$build/web-library"

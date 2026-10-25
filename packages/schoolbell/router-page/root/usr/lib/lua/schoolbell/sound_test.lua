@@ -39,18 +39,24 @@ end
 function M.system(media)
     local n, fs = require("nixio"), require("nixio.fs")
     local catalog={test=13104,['0']=41273,['1']=63321,['2']=69904,['3']=68023,['4']=82368}
-    media=media or 'test';assert(catalog[media],'unknown media')
+    media=media or 'test';assert(catalog[media] or require('schoolbell.media_library').editable(media),'unknown media')
     local sample='/usr/share/schoolbell-sound-test/'..media..'.mp3'
     local control=require('schoolbell.controls');local ok,initial=pcall(control.read)
     return {
-        limit=media=='test' and 100 or 300,
+        limit=620,
         muted=function()local good,current=pcall(control.read);return not ok or not good or current.muted or current.generation~=initial.generation end,
         ready=function()
-            local s=fs.lstat(sample)
-            return s and s.type=="reg" and s.size==catalog[media]
-                and fs.access("/usr/bin/madplay","x") and fs.access("/dev/dsp","w")
+            return fs.access("/usr/bin/madplay","x") and fs.access("/dev/dsp","w")
         end,
-        acquire=function() return fs.mkdir(M.lock,700) end,
+        acquire=function()
+            if not fs.mkdir(M.lock,700)then return false end
+            local good,path=pcall(function()return require('schoolbell.media_web').resolve(media)end)
+            if not good then fs.rmdir(M.lock);return false end
+            local st=fs.lstat(path)
+            if not st or st.type~='reg' or st.size<1 or st.size>524288 then fs.rmdir(M.lock);return false end
+            if path=='/usr/share/schoolbell-sound-test/'..media..'.mp3' and st.size~=catalog[media]then fs.rmdir(M.lock);return false end
+            sample=path;return true
+        end,
         release=function() return fs.rmdir(M.lock) end,
         spawn=function()
             local pid=n.fork()
