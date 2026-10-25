@@ -1,5 +1,7 @@
 # Schoolbell user guide
 
+Calendar months run consecutively across year boundaries. Longer plans use pages of 12 months with previous/next buttons. Navigation does not require saving.
+
 
 After session loss, sound and automation controls are disabled and the status panel requests login. This does not mean the service stopped. An unconfirmed logout does not prove the server session ended: sign in normally and retry logout after connectivity returns.
 
@@ -66,7 +68,7 @@ apply them if they should change working bells.
 
 Choose a plan or Create Plan in Calendar. Enter its name and inclusive start/end dates,
 then apply them to the draft. Ranges cannot overlap; new dates are quiet. Paint with
-schedule colors; View Day never edits. Year of View navigates within the plan without
+schedule colors; View Day never edits. Previous/next month pages navigate within the plan without
 changing boundaries. Save the draft, select Calendar Plan mode in Settings and save;
 activation remains separate. Resize preserves assignments by date and confirms loss.
 Copy requires new dates and warns that day-offset copying may change weekdays.

@@ -1,5 +1,9 @@
 # Changelog
 
+The product is named Shkolnik (previously Shkolnik-4), without a version in its name. Technical schoolbell package names, URLs and data formats are unchanged.
+
+5.1.1: range months appear consecutively across year boundaries; long plans page through 12 months without changing assignments. Shared router and Pages interface.
+
 5.1.0: live named calendar plans with non-overlapping inclusive ranges, painting, resize and civil-time preview. Legacy years are read without rewriting; the editor saves ranges. Pages shares the editor/format with bundled media only. New plan/backup data requires 5.1.0; portable dependency bundles remain planned. Host checks only, no installation.
 
 5.0.37: logout verifies that the current session is absent after destroy; an empty reply alone proves neither success nor failure. ubus errors remain uncertain. Session loss disables sound/automatic controls and shows a login prompt; late replies cannot restore access. Pages synchronized. Host-tested, not installed.

@@ -76,3 +76,6 @@ assert 'Календарные планы' in html and 'id="plan-start"' in html
 assert 'id="session-countdown" hidden' in html and 'role="timer"' not in html
 assert 'target="_blank"' not in html.split('id="session-login"',1)[1].split('>',1)[0]
 print('PASS separate range prototype; compact same-tab login with no visible countdown')
+
+assert "<h1>Школьник</h1>" in (out/"schoolbell/index.html").read_text()
+assert "<title>Школьник · расписания</title>" in (out/"schoolbell/index.html").read_text()

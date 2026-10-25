@@ -1,5 +1,7 @@
 # Calendar plans — schoolbell 5.1.0
 
+Viewing: range months are consecutive across years. Up to 12 months appear together; longer plans use previous/next pages. Navigation does not change draft data, assignments or bulk-fill boundaries.
+
 [Русский](RANGE_PLANS.md)
 
 The live UI and Pages share `ranges.js` and `schedules.js`; Lua validates the same
@@ -12,7 +14,7 @@ index into schedule IDs. December 31, 2026–January 1, 2028 is one 367-day plan
 
 There is no fixed duration/day quota. The actual draft budget is 12288 bytes,
 8 plans, 16 schedules and 128 bell rows. Oversized documents fail before writing;
-previous data and edits remain. Year pages bound rendered calendar cells, not plan
+previous data and edits remain. Pages of 12 consecutive months bound rendered calendar cells, not plan
 boundaries. Create/rename/resize, painting, bulk assignment, copy and delete operate
 on the draft. Resize preserves by date, extends with quiet dates and confirms lost
 assignments. Copy uses day offsets with an explicit weekday warning. Removing the

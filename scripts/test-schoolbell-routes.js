@@ -44,7 +44,20 @@ function fixture(storage={},initialRevision="r1"){
  return x;
 }
 (async()=>{
- let x=fixture();await x.tick();x.get('plan-year').value=2026;await x.get('year-show').click();
+ let y=fixture();await y.tick();
+ const R=require('../packages/schoolbell/router-page/root/www/schoolbell-test/ranges.js');
+ const range=(start,end)=>({id:'p',name:'Range',start,end,schedule_ids:['s'],days:'.'.repeat(R.dates(start,end).length)});
+ const visible=()=>y.get('year-grid').children.flatMap(m=>m.children[1].children.filter(d=>d.dataset.date));
+ y.data.plans=[range('2027-12-31','2028-01-02')];await y.get('schedule-reload').click();
+ assert.deepStrictEqual(visible().map(d=>d.dataset.date),['2027-12-31','2028-01-01','2028-01-02']);assert(y.get('months-navigation').hidden);
+ y.data.plans=[range('2027-09-01','2028-09-02')];await y.get('schedule-reload').click();
+ assert.equal(y.get('year-grid').children.length,12);assert.equal(visible()[0].dataset.date,'2027-09-01');assert.equal(visible().at(-1).dataset.date,'2028-08-31');
+ assert(y.get('months-prev').disabled);assert(!y.get('months-next').disabled);assert(!y.window.schoolbellEditor.snapshot().dirty);
+ await y.get('months-next').click();assert.equal(y.get('year-grid').children.length,1);assert.deepStrictEqual(visible().map(d=>d.dataset.date),['2028-09-01','2028-09-02']);assert(y.get('months-next').disabled);assert(!y.window.schoolbellEditor.snapshot().dirty);
+ await y.brush('Normal').click();await visible()[1].click();assert(y.window.schoolbellEditor.snapshot().dirty);
+ await y.get('months-prev').click();await y.get('months-next').click();assert.equal(visible()[1].title,'2028-09-02 · Normal');assert.equal(y.saves.length,0);assert.equal(y.posts.length,0);
+ console.log('PASS consecutive cross-year months; bounded pages; navigation preserves draft and global assignment indices');
+ let x=fixture();await x.tick();
  assert(x.brush('Просмотр дня')['aria-pressed']==='true');
  await x.day().fire('pointerdown',{pointerType:'mouse',button:0});await x.day().click();await x.tick();
  assert(x.previews.length===1 && x.previews[0].plans[0].days[0]==='A');assert(!x.window.schoolbellEditor.snapshot().dirty);
@@ -87,7 +100,7 @@ function fixture(storage={},initialRevision="r1"){
  await set('plan-name','Новый заголовок');await set('plan-start','2027-01-02');await x.get('plan-apply').click();await x.get('schedule-save').click();assert.equal(x.data.plans[1].name,'Новый заголовок');assert.equal(x.data.plans[1].days.length,365);
  const stable=x.data.plans[1].id;await x.get('schedule-reload').click();assert.equal(x.get('calendar-plan').value,stable);assert.equal(x.get('plan-start').value,'2027-01-02');
  await x.get('plan-new').click();await set('plan-start','2020-01-01');await set('plan-end','2099-01-01');await x.get('plan-apply').click();assert(x.get('plan-form-status').textContent.includes('12 КиБ'));assert.equal(x.data.plans.length,2);await x.get('plan-cancel').click();
- x.data.plans=[];x.data.mode='fixed';await x.get('schedule-reload').click();assert.equal(x.get('plan-start').value,'');assert.equal(x.get('plan-year').value,'');assert(x.get('plan-status').textContent.includes('ещё не создан'));
+ x.data.plans=[];x.data.mode='fixed';await x.get('schedule-reload').click();assert.equal(x.get('plan-start').value,'');assert(x.get('months-navigation').hidden);assert(x.get('plan-status').textContent.includes('ещё не создан'));
  x.window.dispatchEvent({type:'schoolbell-router-date',detail:'2026-10-26'});x.window.dispatchEvent({type:'schoolbell-clock-state',detail:{state:'confirmed'}});await x.get('plan-new').click();assert.equal(x.get('plan-start').value,'2026-09-01');assert.equal(x.get('plan-end').value,'2027-05-31');assert(!x.data.plans.length);
  console.log('PASS range editor: no phantom year, trusted proposal only, overlap refusal, persisted name/range, stable ID, actual size rejection and no activation');
  // C1: rendering never changes mode or fixed selection behind the user's back.
@@ -96,7 +109,7 @@ function fixture(storage={},initialRevision="r1"){
  x.get('fixed-schedule').value='quiet';await x.get('fixed-schedule').fire('change');await x.get('schedule-delete').click();assert(x.get('schedule-select').options.length===0);assert(!x.posts.length && !x.saves.length);
  console.log('PASS fixed reference requires explicit replacement before deletion');
  x=fixture();await x.tick();await x.get('schedule-delete').click();assert(x.get('schedule-result').textContent.includes('во всех планах'));assert(x.confirms===0);
- x.get('plan-year').value=2026;await x.get('year-show').click();x.confirm=false;await x.get('year-clear').click();assert(x.get('work-mode').value==='annual');assert(!x.window.schoolbellEditor.snapshot().dirty);assert(x.confirmMessages.at(-1).includes('последний план'));
+ x.confirm=false;await x.get('year-clear').click();assert(x.get('work-mode').value==='annual');assert(!x.window.schoolbellEditor.snapshot().dirty);assert(x.confirmMessages.at(-1).includes('последний план'));
  x.confirm=true;await x.get('year-clear').click();assert(x.get('work-mode').value==='fixed' && x.get('fixed-schedule').value==='quiet');assert(x.window.schoolbellEditor.snapshot().dirty);assert(!x.saves.length && !x.posts.length);
  console.log('PASS calendar dependencies and explicit last-year mode transition; cancel preserves draft');
  x=fixture();await x.tick();x.get('schedule-name').value='Local';await x.get('schedule-name').fire('input');x.data.schedules[0].name='Remote';x.rev='other';

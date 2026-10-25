@@ -18,7 +18,7 @@
   var mediaIds=["test","0","1","2","3","4","user1","user2","user3","user4","user5","user6","user7","user8"];
   if(root.dataset.load.indexOf('demo-api')>=0)mediaIds=['test','0','1','2','3','4'];
   var counter=0;
-  var R=window.RangePlans,year=0, brush='view', painting=false,planId=null,formPending=false,newPlan=false,copyPlan=null;
+  var R=window.RangePlans,monthPage=0, brush='view', painting=false,planId=null,formPending=false,newPlan=false,copyPlan=null;
   var routerDate=null,trust=null;
   window.addEventListener('schoolbell-router-date',function(e){routerDate={date:e.detail,at:performance.now()};});
   window.addEventListener('schoolbell-clock-state',function(e){trust=e.detail;});
@@ -57,7 +57,7 @@
   function plan() {return (draft.plans || []).find(function(p){return p.id===planId;});}
   function planDates(){var p=plan();return p?R.dates(p.start,p.end):[];}
   function formStatus(t){document.getElementById('plan-form-status').textContent=t;}
-  function fillPlan(){var p=plan();formPending=false;newPlan=false;copyPlan=null;['name','start','end'].forEach(function(k){document.getElementById('plan-'+k).value=p?p[k]:'';});if(p){year=Number(p.start.slice(0,4));document.getElementById('range-first').value=p.start;document.getElementById('range-last').value=p.end;}else year=0;}
+  function fillPlan(){var p=plan();formPending=false;newPlan=false;copyPlan=null;['name','start','end'].forEach(function(k){document.getElementById('plan-'+k).value=p?p[k]:'';});if(p){monthPage=0;document.getElementById('range-first').value=p.start;document.getElementById('range-last').value=p.end;}else monthPage=0;}
   function leaveForm(){return !formPending || window.confirm('Отменить неприменённый ввод названия и дат?');}
   function assigned(p,i) {var c=p?p.days.charAt(i):'.';return c==='.'?'quiet':p.schedule_ids[c.charCodeAt(0)-65];}
   function prune(p) {
@@ -83,7 +83,7 @@
     if(didChange){changed();if(incremental)refreshDays();else renderAnnual();}
   }
   function refreshDays() {
-    var p=plan(year);
+    var p=plan();
     document.querySelectorAll('.calendar-day').forEach(function(b){
       var sid=assigned(p,Number(b.dataset.index));
       b.title=b.dataset.date+' · '+scheduleName(sid);b.setAttribute('aria-label',b.title);
@@ -101,8 +101,14 @@
     document.getElementById('plan-copy').disabled=!selectedPlan || (draft.plans || []).length>=8;
     document.getElementById('plan-new').disabled=(draft.plans || []).length>=8;
     document.getElementById('year-clear').disabled=!selectedPlan;
-    document.getElementById('year-show').disabled=!selectedPlan;
-    document.getElementById('plan-year').value=year || '';
+    var firstMonth=selectedPlan?Number(selectedPlan.start.slice(0,4))*12+Number(selectedPlan.start.slice(5,7))-1:0;
+    var lastMonth=selectedPlan?Number(selectedPlan.end.slice(0,4))*12+Number(selectedPlan.end.slice(5,7))-1:0;
+    var pages=selectedPlan?Math.ceil((lastMonth-firstMonth+1)/12):0;
+    monthPage=Math.max(0,Math.min(monthPage,Math.max(0,pages-1)));
+    document.getElementById('months-prev').disabled=!selectedPlan || monthPage===0;
+    document.getElementById('months-next').disabled=!selectedPlan || monthPage+1>=pages;
+    document.getElementById('months-navigation').hidden=pages<=1;
+    document.getElementById('months-status').textContent=pages?'Страница '+(monthPage+1)+' из '+pages+' · до 12 месяцев подряд':'';
     var picker=document.getElementById('plan-brush');picker.replaceChildren(textOption('view','Просмотр — без изменений'),textOption('quiet','Тихий день / ластик'));
     if(brush!=='quiet' && !draft.schedules.some(function(s){return s.id===brush;}))brush='view';
     draft.schedules.forEach(function(s){picker.appendChild(textOption(s.id,s.name));});picker.value=brush;
@@ -118,7 +124,8 @@
     var count=p?p.days.replace(/\./g,'').length:0;
     document.getElementById('plan-status').textContent=(p?p.name+' · '+p.start+' — '+p.end:'План ещё не создан')+': назначено '+count+' из '+list.length+' дней. Остальные тихие.';
     if(!p)return;
-    for(var month=1;month<=12;month++) {
+    for(var serial=firstMonth+monthPage*12;serial<=Math.min(lastMonth,firstMonth+monthPage*12+11);serial++) {
+      var year=Math.floor(serial/12),month=serial%12+1;
       var box=document.createElement('section');box.className='calendar-month';
       var title=document.createElement('h3');title.textContent=monthNames[month-1];box.appendChild(title);
       var days=document.createElement('div');days.className='month-days';
@@ -245,7 +252,7 @@
   function prepareNavigation(){
     try{
       if((dirty || formPending) && draft){
-        var text=JSON.stringify({user:document.getElementById('session-panel').dataset.user,until:Date.now()+8*3600000,revision:revision,selected:selected,year:year,planId:planId,form:formPending?{name:document.getElementById('plan-name').value,start:document.getElementById('plan-start').value,end:document.getElementById('plan-end').value,newPlan:newPlan,copyPlan:copyPlan}:null,data:draft});
+        var text=JSON.stringify({user:document.getElementById('session-panel').dataset.user,until:Date.now()+8*3600000,revision:revision,selected:selected,monthPage:monthPage,planId:planId,form:formPending?{name:document.getElementById('plan-name').value,start:document.getElementById('plan-start').value,end:document.getElementById('plan-end').value,newPlan:newPlan,copyPlan:copyPlan}:null,data:draft});
         if(text.length>32768)return false;
         sessionStorage.setItem(handoffKey,text);
         if(sessionStorage.getItem(handoffKey)!==text)return false;
@@ -260,7 +267,7 @@
       if(text.length>32768)return false;var kept=JSON.parse(text);
       if(kept.user!==document.getElementById('session-panel').dataset.user || typeof kept.until!=='number' || !Number.isFinite(kept.until) || kept.until<Date.now() || kept.until>Date.now()+8*3600000 || typeof kept.revision!=='string' || !kept.data || !Array.isArray(kept.data.schedules))return false;
       var local=normalize(kept.data);if(local.schedules.length>16 || (local.plans || []).length>8)return false;
-      reconcile=kept.revision!==revision;draft=local;selected=local.schedules.some(function(s){return s.id===kept.selected;})?kept.selected:null;if(Number.isInteger(kept.year)&&kept.year>=1970&&kept.year<=9999)year=kept.year;planId=kept.planId;fillPlan();if(plan() && Number.isInteger(kept.year) && kept.year>=Number(plan().start.slice(0,4)) && kept.year<=Number(plan().end.slice(0,4)))year=kept.year;if(kept.form){formPending=true;newPlan=!!kept.form.newPlan;copyPlan=kept.form.copyPlan;['name','start','end'].forEach(function(k){document.getElementById('plan-'+k).value=kept.form[k];});}dirty=true;return true;
+      reconcile=kept.revision!==revision;draft=local;selected=local.schedules.some(function(s){return s.id===kept.selected;})?kept.selected:null;planId=kept.planId;fillPlan();if(Number.isInteger(kept.monthPage)&&kept.monthPage>=0)monthPage=kept.monthPage;if(kept.form){formPending=true;newPlan=!!kept.form.newPlan;copyPlan=kept.form.copyPlan;['name','start','end'].forEach(function(k){document.getElementById('plan-'+k).value=kept.form[k];});}dirty=true;return true;
     }catch(_){return false;}
   }
   async function load() {
@@ -401,11 +408,9 @@
       draft=candidate;planId=resized.plan.id;fillPlan();brush='view';changed();render();formStatus('План изменён в черновике. Сохранение и активация — отдельные действия.');
     }catch(e){formStatus(e.message);}
   });
-  document.getElementById('year-show').addEventListener('click',function(){
-    var value=Number(document.getElementById('plan-year').value);
-    var p=plan();if(!p || !Number.isInteger(value) || value<Number(p.start.slice(0,4)) || value>Number(p.end.slice(0,4))){formStatus('Год просмотра должен находиться внутри плана.');return;}
-    year=value;var list=planDates().filter(function(d){return Number(d.slice(0,4))===year;});document.getElementById('range-first').value=list[0];document.getElementById('range-last').value=list[list.length-1];renderAnnual();
-  });
+  ['prev','next'].forEach(function(direction){document.getElementById('months-'+direction).addEventListener('click',function(){
+    if(!plan())return;painting=false;monthPage+=direction==='next'?1:-1;renderAnnual();
+  });});
   document.getElementById('plan-brush').addEventListener('change',function(e){chooseBrush(e.target.value);});
   document.getElementById('range-apply').addEventListener('click',function(){
     if(brush==='view' || busy || activationLock || formPending)return;
@@ -416,7 +421,7 @@
     if(indices.length && window.confirm('Назначить «'+scheduleName(brush)+'» для '+indices.length+' дат?'))paint(indices);
   });
   document.getElementById('year-clear').addEventListener('click',function(){
-    if(!plan(year) || busy || activationLock || !leaveForm())return;
+    if(!plan() || busy || activationLock || !leaveForm())return;
     var lastAnnual=draft.mode==='annual' && draft.plans.length===1;
     var consequence=lastAnnual?' Это последний план. В черновике будет выбран режим «По расписанию» и «Тихий день».':'';
     if(window.confirm('Удалить план «'+plan().name+'» и его назначения?' +consequence+' Активный план не изменится; черновик потребуется сохранить и применить отдельно.')){
