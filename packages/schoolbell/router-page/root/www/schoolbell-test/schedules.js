@@ -10,7 +10,8 @@
   var name=document.getElementById('schedule-name');
   var rows=document.getElementById('schedule-rows');
   var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false, activationLock=false;
-  var compared=null;
+  var compared=null, handoffReady=false;
+  var handoffKey="schoolbell-editor-handoff-v1";
   var mediaNames={test:'Тестовый звонок','0':'[Короткая] Время','1':'Шутка Баха','2':'Гостья из XXI','3':'Князь Игорь','4':'Усатый нянь'};
   function mediaLabel(id){return (mediaNames[id] || ('Пользовательская '+id.slice(4)))+' · '+id;}
   window.addEventListener('schoolbell-media',function(e){e.detail.forEach(function(v){mediaNames[v.id]=(v.title || v.name)+(v.source==='empty'?' · пустой слот':'');});document.querySelectorAll('#manual-media option,#pre-media option,#schedule-rows select option').forEach(function(o){o.textContent=mediaLabel(o.value);});});
@@ -159,7 +160,7 @@
     badge.dataset.dirty=dirty?'true':'false';
     window.dispatchEvent(new CustomEvent('schoolbell-editor-state'));
   }
-  function changed() { compared=null;document.getElementById('draft-comparison').hidden=true; document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Черновик изменён. Обновите предпросмотр.'; dirty=true; result.textContent='Изменения только в браузере. Нажмите «Сохранить черновик». Активный план не меняется.'; state(); }
+  function changed() { handoffReady=false;try{sessionStorage.removeItem(handoffKey);}catch(_){} compared=null;document.getElementById('draft-comparison').hidden=true; document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Черновик изменён. Обновите предпросмотр.'; dirty=true; result.textContent='Изменения только в браузере. Нажмите «Сохранить черновик». Активный план не меняется.'; state(); }
   function textOption(value,text) { var o=document.createElement('option'); o.value=value; o.textContent=text; return o; }
   function render() {
     // Legacy drafts are only materialized in browser memory; disk changes on explicit save.
@@ -227,6 +228,27 @@
     } finally {clearTimeout(timer);}
 
   }
+  function prepareNavigation(){
+    try{
+      if(dirty && draft){
+        var text=JSON.stringify({user:document.getElementById('session-panel').dataset.user,until:Date.now()+8*3600000,revision:revision,selected:selected,year:year,data:draft});
+        if(text.length>32768)return false;
+        sessionStorage.setItem(handoffKey,text);
+        if(sessionStorage.getItem(handoffKey)!==text)return false;
+      }else sessionStorage.removeItem(handoffKey);
+      handoffReady=true;return true;
+    }catch(_){return false;}
+  }
+  function restoreNavigation(){
+    try{
+      var text=sessionStorage.getItem(handoffKey);if(!text)return false;
+      sessionStorage.removeItem(handoffKey);
+      if(text.length>32768)return false;var kept=JSON.parse(text);
+      if(kept.user!==document.getElementById('session-panel').dataset.user || typeof kept.until!=='number' || !Number.isFinite(kept.until) || kept.until<Date.now() || kept.until>Date.now()+8*3600000 || typeof kept.revision!=='string' || !kept.data || !Array.isArray(kept.data.schedules))return false;
+      var local=normalize(kept.data);if(local.schedules.length>16 || (local.plans || []).length>8)return false;
+      reconcile=kept.revision!==revision;draft=local;selected=local.schedules.some(function(s){return s.id===kept.selected;})?kept.selected:null;if(Number.isInteger(kept.year)&&kept.year>=1970&&kept.year<=9999)year=kept.year;dirty=true;return true;
+    }catch(_){return false;}
+  }
   async function load() {
     if(busy || activationLock)return;
     if(dirty && !window.confirm('Заменить несохранённые изменения данными с роутера?')) return;
@@ -236,6 +258,7 @@
       if(!value.ok) { result.textContent=errors[value.code] || 'Ошибка чтения.'; reconcile=true; return; }
       document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; compared=null;document.getElementById('draft-comparison').hidden=true; brush='view'; render();
       result.textContent=revision==='empty'?'Сохранённых расписаний ещё нет. Создайте первое.':'Черновик прочитан с роутера. Состояние автозвонков указано в верхней плашке.';
+      if(restoreNavigation()){render();result.textContent=reconcile?'Правки восстановлены. Сохранённый план изменился: сверьте копии перед записью.':'Несохранённые правки восстановлены после входа. Автозвонки не включались.';}
     } catch (_) { result.textContent='Не удалось загрузить данные. Проверьте соединение и вход LuCI.'; }
     finally { busy=false; state(); }
   }
@@ -378,10 +401,10 @@
   var initialDates=dates(year);
   document.getElementById('range-first').value=initialDates[0];document.getElementById('range-last').value=initialDates[initialDates.length-1];
   document.getElementById('preview-date').value=initialDates[0];
-  window.schoolbellEditor={snapshot:function(){return {loaded:!!draft,dirty:dirty,busy:busy || activationLock,reconcile:reconcile,revision:revision};},lock:function(){if(busy || activationLock || !draft || dirty || reconcile || revision==='empty')return false;activationLock=true;state();return true;},unlock:function(){activationLock=false;state();}};
+  window.schoolbellEditor={prepareNavigation:prepareNavigation,snapshot:function(){return {loaded:!!draft,dirty:dirty,busy:busy || activationLock,reconcile:reconcile,revision:revision};},lock:function(){if(busy || activationLock || !draft || dirty || reconcile || revision==='empty')return false;activationLock=true;state();return true;},unlock:function(){activationLock=false;state();}};
   document.getElementById('workflow-save').addEventListener('click',function(){save.click();});
   reload.addEventListener('click',load);
-  window.addEventListener('beforeunload',function (e) { if(dirty) { e.preventDefault(); e.returnValue=''; } });
+  window.addEventListener('beforeunload',function (e) { if(dirty && !handoffReady) { e.preventDefault(); e.returnValue=''; } });
   window.addEventListener('schoolbell-session-lost',function(){
     reconcile=true;compared=null;document.getElementById('draft-comparison').hidden=true;
     result.textContent='Сеанс недоступен. Правки остаются в этой вкладке; после входа нажмите «Сверить с роутером».';state();

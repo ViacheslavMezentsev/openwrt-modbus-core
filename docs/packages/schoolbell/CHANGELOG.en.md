@@ -1,5 +1,7 @@
 # Changelog
 
+5.0.35 (host): compact same-tab login with temporary draft handoff and no visible timer. A separate [named-range prototype](RANGE_PLANS.en.md) is included in Pages; live storage remains year-based. No router installation in this step.
+
 Schoolbell 5.0.34: session recovery without replay or replacing editor changes, CSRF-protected logout, configurable browser idle countdown, striped cheat-sheet routes and separate behavior notes. Host only; Pages synchronized.
 
 5.0.33: first Cheat sheet tab covers setup, calendar, sound, media, reconciliation and backup. No automatic actions; Pages shares the same guide.

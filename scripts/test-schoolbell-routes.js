@@ -2,7 +2,7 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
 const root=path.resolve(__dirname,'..'),ui=process.env.SCHOOLBELL_UI_DIR || path.join(root,'packages/schoolbell/router-page/root/www/schoolbell-test');
 const clone=x=>JSON.parse(JSON.stringify(x));
-function fixture(){
+function fixture(storage={},initialRevision="r1"){
  const all=[],ids=new Map(),listeners={},intervals=[];
  class Element{
   constructor(tag='div'){this.tag=tag;this.children=[];this.dataset={};this.style={};this.events={};this.disabled=false;this._value='';this.textContent='';this.files=[];all.push(this);}
@@ -22,10 +22,11 @@ function fixture(){
  for(const match of html.matchAll(/<(\w+)\b[^>]*\bid="([^"]+)"[^>]*>/g))ids.set(match[2],new Element(match[1]));
  const get=id=>{assert(ids.has(id),'missing DOM id '+id);return ids.get(id);};
  const window={addEventListener(k,f){(listeners[k]??=[]).push(f);},dispatchEvent(e){for(const f of listeners[e.type]||[])f(e);},confirm(message){x.confirms++;x.confirmMessages.push(message);return x.confirm;}};
+ get('session-panel').dataset.user='root';
  get('schedule-editor').dataset={load:'load',save:'save',preview:'preview',automatic:'auto',token:'test'};
  const document={hidden:false,getElementById:get,createElement:t=>new Element(t),addEventListener(){},querySelectorAll(s){return s==='.calendar-day'?all.filter(e=>!e.detached && (e.className||'').split(' ').includes('calendar-day')):[];}};
  let draft={mode:'annual',fixed_schedule:'quiet',manual_media:'test',pre_media:'test',pre_minutes:2,schedules:[{id:'s',name:'Normal',color:1,rows:[{id:'r',time:'08:00',media:'test',enabled:true,pre:false}]}],plans:[{year:2026,schedule_ids:['s'],days:'A'+'.'.repeat(364)}]};
- const x={get,window,confirms:0,confirm:true,confirmMessages:[],saves:[],posts:[],previews:[],rev:'r1',data:draft,active:{state:'disabled',enabled:false},clock:0};
+ const x={get,window,confirms:0,confirm:true,confirmMessages:[],saves:[],posts:[],previews:[],rev:initialRevision,data:draft,active:{state:'disabled',enabled:false},clock:0};
  const fetch=async(url,options={})=>{
   const post=options.method==='POST',body=post?Object.fromEntries(options.body):{};let value;
   if(url==='load'){if(x.pauseLoad)await new Promise(resolve=>x.releaseLoad=resolve);if(x.failLoad)throw Error('network');value={ok:true,data:clone(x.data),revision:x.rev};}
@@ -35,7 +36,7 @@ function fixture(){
   else throw Error('unexpected URL');return {ok:true,json:async()=>clone(value)};
  };
  window.schoolbellClockCommand=async body=>{assert(body.action==='enable');x.posts.push(body);if(x.reject)throw Error('clock_untrusted');return {ok:true};};
- const ctx={window,document,fetch,performance:{now:()=>x.clock},Date,Math,Number,String,Array,JSON,URLSearchParams,AbortController,CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail;}},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
+ const ctx={sessionStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v,removeItem:k=>delete storage[k]},window,document,fetch,performance:{now:()=>x.clock},Date,Math,Number,String,Array,JSON,URLSearchParams,AbortController,CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail;}},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
  vm.createContext(ctx);for(const file of ['automatic.js','schedules.js'])vm.runInContext(fs.readFileSync(path.join(ui,file),'utf8'),ctx);
  x.tick=async()=>{for(let i=0;i<6;i++)await Promise.resolve();};x.poll=async()=>{for(const f of intervals)await f();await x.tick();};
  x.day=()=>all.filter(e=>e.dataset.date==='2026-01-01' && !e.detached).at(-1);
@@ -67,6 +68,16 @@ function fixture(){
  console.log('PASS cancel/read/POST failures unlock; disable allowed with unsaved changes');
  x=fixture();await x.tick();x.get('schedule-name').value='Keep local';await x.get('schedule-name').fire('input');x.window.dispatchEvent({type:'schoolbell-session-lost'});assert(x.get('schedule-name').value==='Keep local' && x.window.schoolbellEditor.snapshot().dirty && x.window.schoolbellEditor.snapshot().reconcile);assert(!x.saves.length && !x.posts.length);
  console.log('PASS session loss retains edits and requires reconciliation without POST');
+ const stash={};x=fixture(stash);await x.tick();x.get('schedule-name').value='Keep through login';await x.get('schedule-name').fire('input');assert(x.window.schoolbellEditor.prepareNavigation());assert(!JSON.stringify(stash).includes('token'));let resumed=fixture(stash);await resumed.tick();assert(resumed.get('schedule-name').value==='Keep through login' && resumed.window.schoolbellEditor.snapshot().dirty);assert(!resumed.posts.length && !resumed.saves.length && Object.keys(stash).length===0);
+ console.log('PASS same-tab login restores unsaved draft without POST; handoff consumed without secrets');
+ x=fixture(stash);await x.tick();x.data.schedules.push({id:'s2',name:'Second',color:2,rows:[]});await x.get('schedule-reload').click();x.get('schedule-select').value='s2';await x.get('schedule-select').fire('change');x.get('schedule-name').value='Second edited';await x.get('schedule-name').fire('input');assert(x.window.schoolbellEditor.prepareNavigation());resumed=fixture(stash);await resumed.tick();assert.equal(resumed.get('schedule-name').value,'Second edited');
+ const broken=new Proxy({}, {set(){throw Error('quota');}});x=fixture(broken);await x.tick();x.get('schedule-name').value='Stay here';await x.get('schedule-name').fire('input');assert.strictEqual(x.window.schoolbellEditor.prepareNavigation(),false);assert.equal(x.get('schedule-name').value,'Stay here');
+ console.log('PASS selected schedule restored; storage quota failure retains editor and cancels handoff');
+
+ for(const bad of ['user','expiry']){x=fixture(stash);await x.tick();x.get('schedule-name').value='Private';await x.get('schedule-name').fire('input');assert(x.window.schoolbellEditor.prepareNavigation());const key=Object.keys(stash)[0],v=JSON.parse(stash[key]);if(bad==='user')v.user='other';else v.until=0;stash[key]=JSON.stringify(v);resumed=fixture(stash);await resumed.tick();assert(resumed.get('schedule-name').value==='Normal' && !resumed.window.schoolbellEditor.snapshot().dirty);}
+ x=fixture(stash);await x.tick();x.get('schedule-name').value='Preserved conflict';await x.get('schedule-name').fire('input');assert(x.window.schoolbellEditor.prepareNavigation());resumed=fixture(stash,'r2');await resumed.tick();assert(resumed.get('schedule-name').value==='Preserved conflict' && resumed.window.schoolbellEditor.snapshot().reconcile && !resumed.saves.length);
+ console.log('PASS expired/foreign handoff discarded; changed revision retains edits but requires comparison');
+
  // C1: rendering never changes mode or fixed selection behind the user's back.
  x=fixture();await x.tick();x.data.mode='fixed';x.data.fixed_schedule='s';x.data.plans=[];await x.get('schedule-reload').click();
  await x.get('schedule-delete').click();assert(x.get('schedule-select').options.length===1);assert(!x.window.schoolbellEditor.snapshot().dirty);assert(x.get('schedule-result').textContent.includes('ежедневное'));assert(x.confirms===0);

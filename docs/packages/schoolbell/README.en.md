@@ -1,5 +1,7 @@
 # Schoolbell package
 
+[Named ranges: prototype](RANGE_PLANS.en.md)
+
 5.0.32: explicit schedule/year dependencies and local/saved reconciliation. Pages demo and host tests updated; router remains on 5.0.31, publication separate.
 
 [UI journeys, symmetric actions and security plan](UI_COMPLETENESS.en.md) — проект для согласования / draft.

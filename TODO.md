@@ -2,9 +2,12 @@
 
 ## Current state and next steps
 
-- [ ] Next schoolbell feature accepted by owner: portable annual/academic-plan bundle with selected years, date assignments, referenced schedules/colors, pre-bell parameters and all referenced media. September–May spans two calendar years. Reuse backup/media mechanisms; preview dependency closure and conflicts before import, validate plan timezone without applying system timezone, import only as draft with automatic bells disabled. Exclude credentials, network, NTP/clock and hardware-specific settings; specify bundled-media compatibility and atomic rollback before implementation.
+- [ ] Next schoolbell feature accepted by owner: portable annual/academic-plan bundle with selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and all referenced media. September–May spans two calendar years. Reuse backup/media mechanisms; preview dependency closure and conflicts before import, validate plan timezone without applying system timezone, import only as draft with automatic bells disabled. Exclude credentials, network, NTP/clock and hardware-specific settings; specify bundled-media compatibility and atomic rollback before implementation.
 
-- [x] S1 host implementation 5.0.34: same-session logout, explicit re-login/check with retained draft and no replay; configurable browser idle countdown; striped guide + behavior notes + Pages.
+- [x] S1 revised in 5.0.35: same-tab login with bounded sessionStorage draft handoff; compact controls, idle preference in Settings, no visible countdown; Pages shares the change.
+- [ ] Target acceptance of 5.0.35: previous 5.0.34 separate-tab route failed operator acceptance (lost edit, excessive UI); host regressions are not a target PASS.
+- [x] Named-range calendar prototype in Pages: multiple non-overlapping plans, date-preserving resize and empty first install; trusted date only proposes September–May.
+- [ ] Implement the accepted range model without a fixed day-count quota (check actual size/resources) in Lua storage, executor, backup/import and live editor with legacy migration; prototype does not change installed plans.
 - [ ] S1 target acceptance: real LuCI expiry/logout/CSRF/unauthenticated endpoints, multiple tabs and suspended browser; browser timer is not server policy. No target installation in this step.
 
 - [x] 5.0.33: shared first-tab quick guide for router UI and Pages; operator acceptance pending.
@@ -52,7 +55,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.48.
+User-facing scope follows core draft 1.33 and schoolbell draft 1.49.
 The engineering application is packaged as a complete 5.0.32 IPK (host; installed target 5.0.31) with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 

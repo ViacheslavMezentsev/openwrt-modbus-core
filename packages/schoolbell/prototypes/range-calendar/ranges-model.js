@@ -1,0 +1,13 @@
+(function(root){
+'use strict';
+const DAY=86400000;
+function ordinal(s){if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))throw Error('Укажите дату');const a=s.split('-').map(Number),d=new Date(0);d.setUTCFullYear(a[0],a[1]-1,a[2]);d.setUTCHours(0,0,0,0);if(a[0]<1||d.toISOString().slice(0,10)!==s)throw Error('Некорректная дата');return d.getTime()/DAY;}
+function dates(start,end){const a=ordinal(start),b=ordinal(end);if(b<a)throw Error('Окончание раньше начала');return Array.from({length:b-a+1},(_,i)=>new Date((a+i)*DAY).toISOString().slice(0,10));}
+function validate(plans){if(plans.length>8)throw Error('Не более 8 планов');const ids=new Set();for(const p of plans){if(!p.id||ids.has(p.id))throw Error('Повтор ID');ids.add(p.id);if(typeof p.name!=='string'||!p.name.trim()||new TextEncoder().encode(p.name).length>96)throw Error('Название: 1–96 байт');const list=dates(p.start,p.end);if(p.days.length!==list.length)throw Error('Длина назначений');if(p.schedule_ids.length>16||new Set(p.schedule_ids).size!==p.schedule_ids.length)throw Error('Ссылки расписаний');for(const c of p.days)if(c!=='.'&&(c<'A'||c.charCodeAt(0)-65>=p.schedule_ids.length))throw Error('Код расписания');}
+const sorted=[...plans].sort((a,b)=>a.start.localeCompare(b.start));for(let i=1;i<sorted.length;i++)if(sorted[i].start<=sorted[i-1].end)throw Error('Диапазон пересекается с «'+sorted[i-1].name+'»');return true;}
+function resize(p,start,end,name){const old=dates(p.start,p.end),next=dates(start,end),map=new Map(old.map((d,i)=>[d,p.days[i]]));const keep=new Set(next);return {removed:old.filter((d,i)=>!keep.has(d)&&p.days[i]!=='.').length,plan:{...p,name,start,end,days:next.map(d=>map.get(d)||'.').join('')}};}
+function migrate(plans){const out=plans.map(p=>p.year!==undefined?{id:'year-'+p.year,name:'План '+p.year,start:String(p.year).padStart(4,'0')+'-01-01',end:String(p.year).padStart(4,'0')+'-12-31',schedule_ids:[...p.schedule_ids],days:p.days}:JSON.parse(JSON.stringify(p)));validate(out);return out;}
+// A proposal is never a saved plan; untrusted router dates must not seed it.
+function suggest(today,trusted){if(!trusted)return null;ordinal(today);const y=Number(today.slice(0,4)),month=Number(today.slice(5,7)),startYear=month>=9?y:y-1;if(startYear<1||startYear>=9999)return null;return {name:'Учебный год '+startYear+'–'+(startYear+1),start:String(startYear).padStart(4,'0')+'-09-01',end:String(startYear+1).padStart(4,'0')+'-05-31'};}
+const api={dates,validate,resize,migrate,suggest};if(typeof module!=='undefined')module.exports=api;else root.RangePlans=api;
+})(typeof window==='undefined'?globalThis:window);

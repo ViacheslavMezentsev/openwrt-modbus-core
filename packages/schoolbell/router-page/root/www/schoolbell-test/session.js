@@ -3,6 +3,9 @@
   var panel=document.getElementById('session-panel'),root=document.getElementById('schedule-editor');
   var status=document.getElementById('session-status'),warning=document.getElementById('session-warning');
   var check=document.getElementById('session-check'),logout=document.getElementById('session-logout');
+  var login=document.getElementById('session-login');
+  function navigate(){if(window.schoolbellEditor && !window.schoolbellEditor.prepareNavigation()){status.hidden=false;status.textContent='Не удалось сохранить правки перед входом. Страница оставлена открытой.';return false;}location.assign(login.href);return true;}
+  login.addEventListener('click',function(e){e.preventDefault();navigate();});
   var countdown=document.getElementById('session-countdown'),duration=document.getElementById('session-duration');
   var endpoint=new URL(panel.dataset.session,location.href),base=endpoint.pathname.replace(/\/session$/,'');
   if(endpoint.pathname.includes('/demo-api/')){
@@ -18,9 +21,9 @@
   function activity(){lastMono=performance.now();lastWall=Date.now();}
   function lose(message){
     blocked=true;epoch++;controllers.forEach(function(c){c.abort();});controllers.clear();
-    warning.hidden=false;logout.disabled=true;status.textContent=message;
+    warning.hidden=true;logout.hidden=true;logout.disabled=true;login.hidden=false;status.hidden=false;status.textContent=message;
     window.dispatchEvent(new CustomEvent('schoolbell-session-lost'));
-    countdown.textContent='Сеанс не подтверждён';
+
   }
   function isAuth(response){return response.status===401 || response.status===403 || response.type==='opaqueredirect' || (response.status>=300 && response.status<400) || /text\/html/i.test(response.headers.get('Content-Type') || '');}
   function scoped(input){var u=new URL(typeof input==='string'?input:input.url,location.href);return u.origin===endpoint.origin && (u.pathname===base || u.pathname.startsWith(base+'/'));}
@@ -40,7 +43,7 @@
     try{
       var response=await rawFetch(input,opts);
       if(current!==epoch)throw Error('schoolbell_session_changed');
-      if(isAuth(response)){lose('Вход или разрешение LuCI не подтверждены. Правки сохранены в этой вкладке.');throw Error('schoolbell_session_required');}
+      if(isAuth(response)){lose('Сеанс завершён. Войдите снова.');throw Error('schoolbell_session_required');}
       return response;
     }finally{controllers.delete(controller);if(external)external.removeEventListener('abort',abort);}
   };
@@ -58,7 +61,7 @@
     if(checking || leaving)return;checking=true;check.disabled=true;var observed=epoch;
     try{
       var response=await sessionRequest();
-      if(isAuth(response)){lose('Войдите в LuCI в отдельной вкладке, затем проверьте сеанс здесь.');return;}
+      if(isAuth(response)){lose('Сеанс завершён. Нажмите «Войти».');return;}
       if(!response.ok)throw Error('unavailable');
       if(observed!==epoch || leaving)return;
       var value=response.sessionValue;
@@ -72,14 +75,15 @@
   });
   async function leave(automatic){
     if(leaving || blocked)return;
-    if(!automatic && !window.confirm('Выйти из LuCI во всех вкладках текущего сеанса? Несохранённые правки останутся только в этой вкладке. Не закрывайте её, если они нужны.'))return;
+    if(!automatic && !window.confirm('Выйти из LuCI? Несохранённые правки будут временно сохранены в этой вкладке браузера.'))return;
+    if(!automatic && window.schoolbellEditor && !window.schoolbellEditor.prepareNavigation()){status.hidden=false;status.textContent='Не удалось сохранить правки. Выход отменён.';return;}
     leaving=true;check.disabled=true;
     lose(automatic?'Время бездействия истекло. Завершаем сеанс LuCI…':'Завершаем сеанс LuCI…');
     try{
       var response=await sessionRequest({method:'POST',body:new URLSearchParams({token:token,action:'logout'})});
       if(isAuth(response)){status.textContent='Сеанс уже недоступен. Правки остаются в этой вкладке.';return;}
       if(!response.ok)throw Error('logout');var value=response.sessionValue;if(!value.ok || value.logged_out!==true)throw Error('logout');
-      status.textContent=automatic?'Выполнен автовыход по бездействию. Правки остаются в этой вкладке.':'Вы вышли из LuCI. Правки остаются в этой вкладке.';
+      status.textContent='Сеанс завершён.';if(!automatic)navigate();
     }catch(_){status.textContent='Выход на роутере не подтверждён. Команды этой вкладки заблокированы; после восстановления связи проверьте сеанс. Правки сохранены в памяти.';}
     finally{leaving=false;check.disabled=false;}
   }
@@ -89,7 +93,7 @@
   function draw(){
     if(blocked || leaving)return;
     var elapsed=Math.max(0,performance.now()-lastMono,Date.now()-lastWall),seconds=Math.max(0,Math.ceil((minutes*60000-elapsed)/1000));
-    countdown.textContent='Автовыход через '+Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0')+' без действий';
+
     if(seconds===0)leave(true);
   }
   draw();setInterval(draw,1000);

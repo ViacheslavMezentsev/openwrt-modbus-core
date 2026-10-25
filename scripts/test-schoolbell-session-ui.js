@@ -3,10 +3,10 @@ const source=fs.readFileSync('packages/schoolbell/router-page/root/www/schoolbel
 function setup(demo=false){
  const ids={},events={},docEvents={},intervals=[],stored={},calls=[];let now=0,reply;
  for(const id of ['session-panel','schedule-editor','session-status','session-warning','session-check','session-logout','session-countdown','session-duration','session-login'])ids[id]={dataset:{},events:{},addEventListener(t,f){this.events[t]=f;},textContent:'',disabled:false};
- ids['session-panel'].dataset={session:demo?'./demo-api/session':'/cgi-bin/luci/admin/schoolbell/session',user:'root'};ids['schedule-editor'].dataset.token='a'.repeat(32);
+ ids['session-panel'].dataset={session:demo?'./demo-api/session':'/cgi-bin/luci/admin/schoolbell/session',user:'root'};ids['schedule-editor'].dataset.token='a'.repeat(32);ids['session-login'].href='http://router/cgi-bin/luci/admin/schoolbell';
  const response=(status=200,value={ok:true},type='application/json')=>({status,ok:status>=200&&status<300,headers:new Headers({'Content-Type':type}),json:async()=>value});
  const window={confirm:()=>true,dispatchEvent(e){for(const f of events[e.type]||[])f(e);},fetch:async(u,o={})=>{calls.push({u:String(u),o});if(reply){const f=reply;reply=null;return f(u,o);}return response();}};
- const ctx={window,document:{getElementById:id=>ids[id],addEventListener(t,f){docEvents[t]=f;}},location:{href:'http://router/cgi-bin/luci/admin/schoolbell'},URL,Headers,URLSearchParams,AbortController,Set,CustomEvent:class{constructor(t){this.type=t;}},performance:{now:()=>now},Date:{now:()=>now},localStorage:{getItem:k=>stored[k]||null,setItem:(k,v)=>stored[k]=v},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
+ const ctx={window,document:{getElementById:id=>ids[id],addEventListener(t,f){docEvents[t]=f;}},location:{href:'http://router/cgi-bin/luci/admin/schoolbell',assign:u=>calls.push({navigation:u})},URL,Headers,URLSearchParams,AbortController,Set,CustomEvent:class{constructor(t){this.type=t;}},performance:{now:()=>now},Date:{now:()=>now},localStorage:{getItem:k=>stored[k]||null,setItem:(k,v)=>stored[k]=v},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
  vm.runInNewContext(source,ctx);
  return {ids,calls,stored,window,docEvents,response,setReply:f=>reply=f,advance:async(ms)=>{now+=ms;for(const f of intervals)f();for(let i=0;i<8;i++)await Promise.resolve();},on:(k,f)=>(events[k]??=[]).push(f),click:id=>ids[id].events.click()};
 }
@@ -24,8 +24,8 @@ function setup(demo=false){
  x=setup();x.setReply(()=>x.response(403));await assert.rejects(x.window.fetch('/cgi-bin/luci/admin/schoolbell/clock'));
  x.setReply(()=>x.response(200,{ok:true,user:'other',token:'c'.repeat(32)}));await x.click('session-check');assert(x.ids['session-logout'].disabled);
  console.log('PASS different identity cannot resume editor session');
- x=setup();x.window.confirm=()=>false;await x.click('session-logout');assert(!x.calls.length);x.window.confirm=()=>true;x.setReply(()=>x.response(200,{ok:true,logged_out:true}));await x.click('session-logout');assert(x.calls.length===1 && x.calls[0].o.body.get('action')==='logout');assert(x.ids['session-status'].textContent.includes('вышли'));
- console.log('PASS cancel and explicit logout without navigation or data writes');
+ x=setup();x.window.confirm=()=>false;await x.click('session-logout');assert(!x.calls.length);x.window.confirm=()=>true;x.setReply(()=>x.response(200,{ok:true,logged_out:true}));await x.click('session-logout');assert(x.calls.length===2 && x.calls[0].o.body.get('action')==='logout');assert(x.calls[1].navigation==='http://router/cgi-bin/luci/admin/schoolbell');
+ console.log('PASS cancel and explicit logout to normal login without data writes');
  x=setup();x.ids['session-duration'].value='1';x.ids['session-duration'].events.change();await x.advance(30000);await x.window.fetch('/cgi-bin/luci/admin/schoolbell/clock');x.setReply(()=>x.response(200,{ok:true,logged_out:true}));await x.advance(30001);assert(x.calls.length===2 && x.calls[1].o.body.get('action')==='logout');assert(x.stored['schoolbell-idle-minutes']==='1');
  x=setup();await x.advance(600000);x.docEvents.pointerdown({isTrusted:true});await x.advance(600000);assert(!x.calls.length);x.docEvents.input({isTrusted:false});x.setReply(()=>x.response(200,{ok:true,logged_out:true}));await x.advance(300001);assert(x.calls.length===1);
  console.log('PASS configurable idle countdown; polling/synthetic input do not extend; trusted user activity extends');

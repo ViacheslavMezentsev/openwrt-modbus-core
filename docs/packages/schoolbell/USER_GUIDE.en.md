@@ -1,13 +1,14 @@
 # Schoolbell user guide
 
-The header shows the LuCI user, logout and a configurable browser idle timer (1–120 minutes, default 15). Polling does not extend it. This works while the page runs; it does not change LuCI server session policy. Logout ends the current session across its LuCI tabs, but does not stop the running bell plan.
-After expiry/logout, keep the editor tab open: use the separate-tab login link, sign in normally, return and explicitly check the session, then reconcile the draft. No commands are replayed. Unsaved edits remain only in page memory; reload/closing can lose them. A failed logout response does not confirm server logout.
+The header contains compact Login/Logout controls, with no visible countdown. Idle duration is under Settings → Login and automatic logout (1–120 minutes, default 15); it is a running-page timer, not LuCI server policy. Polling does not renew it. Logout does not stop automatic bells.
+Login uses the same tab. Before navigation, the unsaved draft is temporarily stored in this tab’s sessionStorage (32768 characters, up to 8 hours, no password/token); storage failure cancels navigation. The same user gets the edits back automatically, without writing them to the router. A changed server revision requires reconciliation. This is not a backup: closing the tab, clearing browser storage, expiry or another user can lose edits; selected upload files are not transferred.
+
 
 The first **Cheat sheet** tab offers short operator journeys. It opens by default; the last tab is remembered within the same session.
 
 [Русский](USER_GUIDE.md)
 
-For **schoolbell 5.0.33** (host-checked; installed 5.0.32 is not updated yet), dated 2026-10-25. This describes the installed interface,
+For **schoolbell 5.0.35** (host checks; router remains 5.0.34), dated 2026-10-26. This describes the installed interface,
 not the public mockup. Supported fixture: OpenWrt 19.07.9, TL-MR3020 v3.30 and USB
 audio. An administrator installs the equipment and [package](PACKAGING.en.md).
 Individual functions have been tested; full endurance, cold-start and power-loss
@@ -63,7 +64,7 @@ apply them if they should change working bells.
 Choose a year and «Показать год». «Просмотр дня» opens preview without editing.
 Choose a schedule color to paint dates by click or left-button drag; on touch, tap
 dates individually. «Тихий день / ластик» removes assignments. Return to viewing
-when finished. Save, choose «По годовому плану» in Settings, save that choice and apply.
+when finished. Save, choose «По календарному плану» in Settings, save that choice and apply.
 
 Advanced controls fill a date range (all days, weekdays or weekends) or clear a year.
 Clearing a draft does not stop the active copy until applied. Clearing the last annual year explicitly warns about switching the draft to Fixed/Quiet; cancellation preserves the mode and assignments. Unassigned dates and
