@@ -1,5 +1,11 @@
 # Time confirmation and native dependency
 
+Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser confirmation verified. Control enabled, time confirmed, automatic bells disabled; clocks/NTP unchanged.
+
+5.0.27: clock-result lock contention is pending, not failure; bounded GET waiting, no POST replay. Storage errors are distinct from busy.
+
+While the worker holds the mailbox lock through a commit, poll returns ok/pending/waiting=writer. The client also tolerates legacy busy GET responses within the same 18-second polling budget. A busy POST was not accepted and is never retried automatically. Real I/O/JSON failures return mailbox_storage, not busy.
+
 [Русский](CLOCK_UI.md)
 
 Schoolbell 5.0.26 is host-tested, not installed on the router. Settings now show a

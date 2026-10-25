@@ -14,8 +14,11 @@ function M.new(open,now)
  local api={}
  local function run(fn)
   local fs;local ok,result=pcall(function()fs=open();return fn(fs)end)
-  if fs then local closed=pcall(fs.close);if not closed then ok=false end end
-  return ok and result or {ok=false,code='busy'}
+  if fs then local closed=pcall(fs.close);if not closed then return {ok=false,code='mailbox_storage'}end end
+  if ok then return result end
+  -- Only failed lock acquisition is contention. Do not hide corrupt files/I/O as busy.
+  if not fs and (result=='busy' or tostring(result):match(': busy$'))then return {ok=false,code='busy',accepted=false}end
+  return {ok=false,code='mailbox_storage'}
  end
  local function read(fs,name)local raw=fs.read(name,4096);return raw and C.decode(raw)end
  local function write(fs,name,v)
@@ -38,11 +41,14 @@ function M.new(open,now)
   end)
  end
  function api.poll(id,owner)
-  return run(function(fs)
+  local result=run(function(fs)
    local v=read(fs,'result.json')
    if v and v.request.id==id and v.request.owner==owner then return v.result end
    return {ok=true,pending=true}
   end)
+  -- The worker holds this lock through commit. A locked result is still pending.
+  if result.code=='busy'then return {ok=true,pending=true,waiting='writer'}end
+  return result
  end
  function api.process(handle)
   return run(function(fs)

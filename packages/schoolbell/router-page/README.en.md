@@ -1,5 +1,9 @@
 # Schoolbell router page
 
+Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser confirmation verified. Control enabled, time confirmed, automatic bells disabled; clocks/NTP unchanged.
+
+5.0.27: clock-result lock contention is pending, not failure; bounded GET waiting, no POST replay. Storage errors are distinct from busy.
+
 5.0.26: native clock dependency and authenticated time confirmation/bypass UI, worker-owned activation, host tests. Not installed. See [time controls](../../../docs/packages/schoolbell/CLOCK_UI.en.md).
 
 Schoolbell 5.0.12: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.

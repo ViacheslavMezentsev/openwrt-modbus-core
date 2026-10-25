@@ -1,5 +1,7 @@
 # Changelog
 
+5.0.27: clock-result lock contention is pending, not failure; bounded GET waiting, no POST replay. Storage errors are distinct from busy.
+
 Schoolbell 5.0.26: host-only time confirmation/bypass UI and native dependency. Reusable [router clock-drift skill](skills/router-clock-drift/SKILL.md); no hardware logs committed.
 
 

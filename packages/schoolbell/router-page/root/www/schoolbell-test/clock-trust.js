@@ -4,7 +4,19 @@ var root=document.getElementById('schedule-editor'),prepare=document.getElementB
 var state=null,busy=false,challenge=null,deadline=0;
 async function request(url,body){var abort=new AbortController(),timer=setTimeout(function(){abort.abort();},8000);try{var options={credentials:'same-origin',cache:'no-store',redirect:'error',signal:abort.signal};if(body){options.method='POST';options.body=new URLSearchParams(Object.assign({token:root.dataset.token},body));}var response=await fetch(url,options);if(!response.ok)throw Error('HTTP '+response.status);return await response.json();}finally{clearTimeout(timer);}}
 function id(){var b=new Uint8Array(16);crypto.getRandomValues(b);return Array.from(b,function(v){return v.toString(16).padStart(2,'0');}).join('');}
-async function command(body){var operation=id();var result=await request(root.dataset.trust,Object.assign({operation:operation},body));var end=performance.now()+18000;while(result.ok && result.pending && performance.now()<end){await new Promise(function(resolve){setTimeout(resolve,500);});result=await request(root.dataset.trust+'?operation='+operation);}if(result.pending)throw Error('Ответ не получен. Обновите состояние перед повтором. Операция '+operation);if(!result.ok)throw Error((result.code==='busy' || result.code==='outcome_unknown'?'Исход не подтверждён. Обновите состояние: ':'Операция не выполнена: ')+result.code);return result;}
+async function command(body){
+ var operation=id(),result=await request(root.dataset.trust,Object.assign({operation:operation},body));
+ // A rejected submission is not retried. Once accepted, only GET may wait/retry.
+ if(!result.ok)throw Error(result.code==='busy'?'Сейчас выполняется другая команда. Эта заявка не принята; дождитесь её окончания.':'Не удалось принять команду: '+result.code);
+ var end=performance.now()+18000;
+ while((result.pending || result.code==='busy') && performance.now()<end){
+  await new Promise(function(resolve){setTimeout(resolve,500);});
+  result=await request(root.dataset.trust+'?operation='+operation);
+ }
+ if(result.pending || result.code==='busy')throw Error('Исполнитель не завершил ответ за отведённое время. Проверьте состояние перед повтором. Операция '+operation);
+ if(!result.ok)throw Error(result.code==='mailbox_storage'?'Не удалось прочитать результат: ошибка хранилища команд. Проверьте состояние перед повтором.':result.code==='outcome_unknown'?'Связь с результатом операции потеряна. Проверьте состояние перед повтором.':'Операция не выполнена: '+result.code);
+ return result;
+}
 window.schoolbellClockCommand=command;
 function draw(){prepare.disabled=busy || !state || !state.enforced;policy.disabled=busy || !state;policy.textContent=state && !state.enforced?'Включить контроль времени':'Отключить контроль времени';confirm.disabled=busy || !challenge || performance.now()>=deadline;}
 window.addEventListener('schoolbell-clock-state',function(e){state=e.detail;var names={confirmed:'Время подтверждено',unconfirmed:'Время ещё не подтверждено',rollback_detected:'Обнаружен откат часов',review_required:'Требуется проверка времени',unchecked:'Время не проверяется'};document.getElementById('trust-status').textContent=state?(!state.enforced?'Контроль отключён. ': '')+(names[state.state] || state.state)+(state.reason?' · '+state.reason:''):'Нет свежего состояния исполнителя';draw();});

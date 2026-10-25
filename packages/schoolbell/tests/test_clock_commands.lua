@@ -35,3 +35,18 @@ assert(m.process(function()calls=calls+1;error('interrupted')end).code=='operati
 assert(not m.submit({id='x',owner=q.owner,action='policy',enforced='false'}).ok)
 assert(not m.submit({id=q.id,owner=q.owner,action='policy',enforced='false',extra=true}).ok)
 print('PASS clock commands: confirmation ownership/expiry/restart, explicit bypass, fail-closed policy, activation, mailbox dedupe/expiry/faults')
+
+local locked=false;local corrupt=false
+local channel=Mail.new(function()if locked then error('busy')end;if corrupt then error('permission denied')end;return fs end,function()return now end)
+q.id=string.rep('1',32);assert(channel.submit(q).ok)
+channel.process(function()
+ locked=true
+ local p=channel.poll(q.id,q.owner);assert(p.ok and p.pending and p.waiting=='writer')
+ local rejected=channel.submit({id=string.rep('2',32),owner=q.owner,action='prepare'})
+ assert(not rejected.ok and rejected.code=='busy' and rejected.accepted==false)
+ locked=false;return {ok=true,completed=true}
+end)
+assert(channel.poll(q.id,q.owner).completed)
+corrupt=true;assert(channel.poll(q.id,q.owner).code=='mailbox_storage');corrupt=false
+files['result.json']='not json';assert(channel.poll(q.id,q.owner).code=='mailbox_storage')
+print('PASS clock mailbox: read during worker commit stays pending, POST is not accepted twice, corruption is not busy')
