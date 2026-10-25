@@ -10,6 +10,8 @@
 
 ## [Unreleased]
 
+- 5.0.20: transient media-list busy receives up to four GET attempts with 200/500/1000 ms pauses. Exhaustion preserves the previous list as unconfirmed, disables actions and leaves refresh available. Busy is not called corruption. Upload POST is never retried.
+
 - Schoolbell 5.0.19: fix empty LuCI audio responses on Lua 5.1. Streaming sources/sinks use coroutine-safe protection throughout; regressions cover yielding upload/download and cleanup after disconnect.
 
 - Schoolbell 5.0.18: confirmed uploads automatically refresh the media list. Every populated row has browser playback; empty slots are labeled in the table and selectors and cannot be played. A refresh failure does not reupload the saved file. The demo includes all six bundled melodies. Host checks without sound; not deployed to the router.
