@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Schoolbell host startup audit: 11 additional real-worker scenarios with injected boot/TZ/clocks/reference and an independent 15+6 oracle. Documented reboot versus same-boot restart with bypass; no runtime/IPK or router changes.
+
 - Added the draft schoolbell 5.x acceptance programme: 12 end-to-end scenarios, legacy parity, attended versus future unattended startup, release gates and open numerical budgets. No runtime, IPK or router changes.
 
 - Schoolbell 5.0.31: lifecycle uses declared Lua/nixio instead of missing BusyBox stat; IPKs explicitly include parent directories; owned LuCI bytecode is invalidated. Host regressions and target installation/recovery downgrade/upgrade passed with identical exported data and automatic bells disabled. Native clock archive receives directory records; its runtime and installed module are unchanged.

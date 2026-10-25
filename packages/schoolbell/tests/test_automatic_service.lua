@@ -7,9 +7,18 @@ local realopen,realtime=io.open,os.time
 local native=os.getenv('SCHOOLBELL_CHILD')=='1' and require('nixio') or nil
 local t=assert(os.time({year=2026,month=10,day=25,hour=8,min=0,sec=0}))
 local function scenario(name,opts)
- local now,up=t-1,100;local plays,claims,checkpoints=0,0,0;local raw,status,last;local active={enabled=true,generation=1,watermark=t-1,boot='boot',zone='UTC',revision='r',plan={}}
+ local now,up=opts.initial_utc or t-1,100;local plays,claims,checkpoints=0,0,0;local raw,status,last;local active={enabled=true,generation=1,watermark=t-1,boot='boot',zone='UTC',revision='r',plan={}}
  local saved,clock_reads,waits,kills=nil,0,0,0
- local clockio={valid_utc=function()return true end,clock=function()clock_reads=clock_reads+1;return {utc_ms=now*1000,before_ms=up*1000,after_ms=up*1000,context=opts.context or 'boot'}end,store={load=function()return {ok=true,revision='empty'}end,save=function(v)local _,hash=Reference.encode(v);saved=v;return {ok=true,revision=hash}end}}
+ if opts.disabled then active.enabled=false end
+ if opts.stored_zone then active.zone=opts.stored_zone end
+ if opts.watermark then active.watermark=opts.watermark end
+ local loaded={ok=true,revision='empty'}
+ if opts.reference_offset then
+  loaded.data={format='schoolbell-clock/1',source='manual',confirmed_utc_ms=(t-1+opts.reference_offset)*1000,checkpoint_utc_ms=(t-1+opts.reference_offset)*1000}
+  local _,hash=Reference.encode(loaded.data);loaded.revision=hash
+ end
+ if opts.reference_fail then loaded={ok=false} end
+ local clockio={valid_utc=function()return true end,clock=function()clock_reads=clock_reads+1;return {utc_ms=now*1000,before_ms=up*1000,after_ms=up*1000,context=opts.context or 'boot'}end,store={load=function()return loaded end,save=function(v)local _,hash=Reference.encode(v);saved=v;return {ok=true,revision=hash}end}}
  local gate=Gate.new(function()if opts.unavailable then error('missing adapter')end;return clockio end,{enforced=opts.enforced or false})
  if opts.confirmed then local q=assert(gate.request_confirmation());assert(gate.confirm(q.token,false).ok)end
  package.loaded['schoolbell.clock_gate']={system=function()return gate end}
@@ -45,13 +54,16 @@ local function scenario(name,opts)
  assert(not ok and tostring(err):find('finished fixture'),tostring(err))
  io.open=realopen;os.time=realtime;require('schoolbell.automatic').events=originalEvents
  assert(plays==(opts.expected or 0),name..' plays '..plays)
- assert(claims==((opts.package_pending or opts.reboot or opts.idle or (opts.enforced and not opts.confirmed and not opts.late_confirm)) and 0 or 1),name..' claims '..claims)
+ assert(claims==(opts.claims or ((opts.package_pending or opts.reboot or opts.idle or (opts.enforced and not opts.confirmed and not opts.late_confirm)) and 0 or 1)),name..' claims '..claims)
  if opts.idle then assert(checkpoints==(opts.jump and 2 or 1),name..' repeated flash writes '..checkpoints)end
  assert(last and ((opts.package_pending and last.state=='executor_error') or (not opts.package_pending and last.state~='executor_error')),name..' executor error')
  if opts.enforced and not opts.confirmed and not opts.late_confirm then assert(checkpoints==0,'untrusted UTC persisted as watermark')end
  if opts.enforced then assert(last.clock_trust.enforced and clock_reads>0 or opts.unavailable);if opts.blocked then assert(not last.clock_trust.automatic_permitted)end end
  if opts.confirmed then assert(last.clock_trust.confirmed_utc==t-1 and last.clock_trust.confirmed_utc_ms==nil,'status seconds')end
  if opts.play_wait then assert(kills==0,'clock trust must not interrupt current sound');assert(clock_reads>=5,'no observations while waiting')end
+ if opts.state then assert(last.state==opts.state,name..' state '..tostring(last.state))end
+ if opts.reason then assert(last.clock_trust.reason==opts.reason,name..' reason '..tostring(last.clock_trust.reason))end
+ if opts.no_writes then assert(saved==nil and checkpoints==0,name..' unexpected persistent write')end
  print('PASS worker '..name)
 end
 scenario('unfinished package never claims or plays',{package_pending=true})
@@ -71,5 +83,17 @@ scenario('clock step during media acquire blocks spawn',{enforced=true,confirmed
 scenario('clock observed throughout player wait',{enforced=true,confirmed=true,play_wait=true,expected=1})
 scenario('trust loss during wait does not interrupt child',{enforced=true,confirmed=true,play_wait=true,wait_step=true,expected=1,blocked=true})
 scenario('late confirmation and explicit activation never replay missed bell',{enforced=true,late_confirm=true,expected=1})
+-- AC-06 / TC-132: new worker instance, retained persisted state, synthetic boot/UTC.
+scenario('same boot restart retains reference but never restores trust',{enforced=true,reference_offset=0,blocked=true,state='clock_untrusted',reason='startup',no_writes=true})
+scenario('future reference detects rollback after startup',{enforced=true,reference_offset=60,blocked=true,state='clock_untrusted',reason='before_reference',no_writes=true})
+scenario('unreadable persisted reference blocks startup',{enforced=true,reference_fail=true,blocked=true,state='clock_untrusted',reason='reference_unavailable',no_writes=true})
+scenario('cold boot blocks even with control disabled',{reboot=true,state='confirm_clock',no_writes=true})
+scenario('stored timezone mismatch blocks even with bypass',{stored_zone='OTHER',claims=0,state='timezone_changed',no_writes=true})
+scenario('confirmation cannot bypass boot mismatch',{enforced=true,confirmed=true,reboot=true,state='confirm_clock'})
+scenario('confirmation cannot bypass stored timezone mismatch',{enforced=true,confirmed=true,stored_zone='OTHER',claims=0,state='timezone_changed'})
+scenario('disabled plan stays disabled after confirmation',{enforced=true,confirmed=true,disabled=true,claims=0,state='disabled'})
+scenario('invalid calendar blocks even with bypass',{initial_utc=100,claims=0,state='clock_invalid'})
+scenario('same boot explicit bypass may resume future bells',{expected=1,state='running'})
+scenario('durable future watermark forbids replay with bypass',{watermark=t+60,claims=0,state='backward_hold'})
 package.loaded['schoolbell.clock_gate']=Gate
 package.loaded['schoolbell.automatic_store']=Store

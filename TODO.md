@@ -4,7 +4,8 @@
 
 - [x] Draft [schoolbell 5.x acceptance programme](docs/packages/schoolbell/ACCEPTANCE.en.md): AC-01–12, appendix B parity, release blockers and evidence rules; documentation only, not product PASS.
 - [ ] Agree acceptance Q1–Q5: numerical timing/resource/accuracy budgets, endurance duration, collision policy and attended-startup release scope. Existing production dependencies below remain until explicit scope agreement.
-- [ ] Next schoolbell branch: startup/boot/TZ audit and AC-06 host scenarios, plus an independent calendar oracle. Cold boot/power and sound acceptance require separate authorization after the ongoing clock measurement; do not change NTP.
+- [x] Schoolbell startup/boot/TZ audit: 11 additional host worker scenarios and independent 15+6 calendar oracle; see [audit](docs/packages/schoolbell/STARTUP_AUDIT.en.md).
+- [ ] AC-06 hardware acceptance remains open. Cold boot/power and sound acceptance require separate authorization after the ongoing clock measurement; do not change NTP.
 - [ ] Execute the agreed AC programme and reconcile the operator/install/recovery guides with shipped behavior before release; historical stage descriptions are not current acceptance results.
 
 

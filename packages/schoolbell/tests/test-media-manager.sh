@@ -35,6 +35,7 @@ TZ=UTC lua5.1 packages/schoolbell/tests/test_automatic.lua
 TZ=Europe/Berlin lua5.1 packages/schoolbell/tests/test_automatic.lua
 
 TZ=UTC lua5.1 packages/schoolbell/tests/test_automatic_service.lua
+TZ=UTC lua5.1 packages/schoolbell/tests/test_automatic_oracle.lua
 
 mkdir -m 700 "$build/automatic"
 lua5.1 packages/schoolbell/tests/test_automatic_storage.lua "$build/automatic"
