@@ -19,3 +19,12 @@ fieldset{border:0;padding:0;margin:0;min-width:0}label{display:flex;gap:8px;flex
 .inline-button{padding:0;border:0;background:transparent;color:var(--accent);text-decoration:underline;font-weight:400}.time-settings{margin-bottom:28px}.time-settings select{max-width:520px}
 
 .quick-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.quick-controls [aria-pressed="true"]{background:#9e1515;color:white}#panel-sound label{display:block;margin:12px 0}#panel-sound select{max-width:100%}
+
+/* Shared settings column and subtle row stripes in both themes. */
+html{--row-alt:#f6f8fa}html[data-theme=dark]{--row-alt:#1c222b}
+.schedule-table tbody tr:nth-child(even){background:var(--row-alt)}
+#panel-sound label{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,320px);align-items:center;gap:16px;max-width:720px}
+#panel-sound label>select,.time-settings label>select{width:100%;max-width:none;min-width:0}
+.minutes-field{display:flex;gap:8px;align-items:center;justify-content:flex-end}.minutes-field input{width:90px}
+.time-settings label{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,320px);align-items:center;gap:16px;max-width:720px}
+@media(max-width:580px){#panel-sound label,.time-settings label{grid-template-columns:1fr;gap:6px}.minutes-field{justify-content:flex-start}}

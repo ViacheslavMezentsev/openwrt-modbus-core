@@ -3,7 +3,7 @@ local C=require('schoolbell.media_codec')
 local J=require('modbus.json_strict')
 local M={segment_bytes=8192,record_bytes=320}
 local names={'journal-previous.jsonl','journal-current.jsonl'}
-local actions={auto_enabled={'user','info'},auto_disabled={'user','info'},auto_requested={'module','info'},auto_ok={'module','info'},auto_skipped={'module','warning'},auto_blocked={'system','error'},mute_on={"user","info"},mute_off={"user","info"},mute_failed={"system","error"},manual_requested={"user","info"},timezone_ok={'user','info'},timezone_failed={'system','error'},save_ok={'user','info'},save_failed={'user','error'},preview_ok={'user','info'},
+local actions={volume_ok={'user','info'},volume_failed={'system','error'},auto_enabled={'user','info'},auto_disabled={'user','info'},auto_requested={'module','info'},auto_ok={'module','info'},auto_skipped={'module','warning'},auto_blocked={'system','error'},mute_on={"user","info"},mute_off={"user","info"},mute_failed={"system","error"},manual_requested={"user","info"},timezone_ok={'user','info'},timezone_failed={'system','error'},save_ok={'user','info'},save_failed={'user','error'},preview_ok={'user','info'},
  preview_failed={'user','warning'},play_requested={'user','info'},play_ok={'module','info'},
  play_failed={'module','error'},sample_requested={'user','info'},storage_error={'system','error'},
  installed={'module','info'}}

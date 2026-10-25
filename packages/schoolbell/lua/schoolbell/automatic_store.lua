@@ -24,7 +24,7 @@ local function write(fs,v)
  if fs.stat('automatic-next.json')then fs.unlink('automatic-next.json')end
  fs.write('automatic-next.json',raw);fs.sync('automatic-next.json')
  fs.rename('automatic-next.json',M.name);fs.sync('')
- assert(fs.read(M.name,M.max_bytes)==raw,'verify');return v
+ assert(fs.read(M.name,M.max_bytes)==raw,'verify');return v,raw
 end
 function M.change(fs,enabled,revision,env)
  local current=M.decode(fs.read(M.name,M.max_bytes))
@@ -40,9 +40,9 @@ function M.change(fs,enabled,revision,env)
  return write(fs,v)
 end
 function M.advance(fs,generation,now)
- local v=M.decode(fs.read(M.name,M.max_bytes))
+ local raw=fs.read(M.name,M.max_bytes);local v=M.decode(raw)
  assert(v.enabled and v.generation==generation,'stale_checkpoint')
- if now<=v.watermark then return v end
+ if now<=v.watermark then return v,raw end
  v.watermark=now;return write(fs,v)
 end
 function M.claim(fs,generation,utc,now)
@@ -53,10 +53,10 @@ function M.claim(fs,generation,utc,now)
 end
 function M.transaction(operation,...)
  local args={...};local fs
- local ok,value=pcall(function()fs=require('schoolbell.media_fs').new(M.root);return operation(fs,unpack(args))end)
+ local ok,value,raw=pcall(function()fs=require('schoolbell.media_fs').new(M.root);return operation(fs,unpack(args))end)
  local closed=true;if fs then closed=pcall(fs.close)end
  if not ok or not closed then return {ok=false,code='automatic_storage',detail=tostring(value):sub(1,160)}end
- return {ok=true,state=value}
+ return {ok=true,state=value,raw=raw}
 end
 function M.environment()
  local function read(p,max)local f=assert(io.open(p,'rb'));local v=f:read(max+1);f:close();assert(v and #v<=max);return v end

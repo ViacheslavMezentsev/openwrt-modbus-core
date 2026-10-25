@@ -5,6 +5,7 @@ function M.new(now,mono,watermark)
  return {watermark=function()return high end,step=function(now,mono,events,muted)
   local floor=high;high=math.max(high,now)
   local gap=mono-last;local jump=math.abs((now-previous)-gap)>2
+  local forward_jump=jump and now>previous
   last,previous=mono,now
   local reason=(gap<0 or gap>M.max_gap or jump) and 'clock_gap' or nil
   local due
@@ -12,7 +13,7 @@ function M.new(now,mono,watermark)
   if due then
    return due,reason or (now-due.utc>M.grace and 'expired') or (muted and 'muted') or nil
   end
-  return nil,reason
+  return nil,reason,forward_jump
  end}
 end
 -- libc local time is accepted only after a roundtrip. Probe both DST branches.

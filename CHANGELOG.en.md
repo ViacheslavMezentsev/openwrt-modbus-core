@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Schoolbell 5.0.9: aligned settings fields and subtle alternating table rows in both themes.
+
+- Fixed in schoolbell 5.0.8: a normal polling delay no longer recursively writes the time watermark; reuse the verified serialized snapshot without repeating SHA before playback.
+
+- Schoolbell 5.0.7: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
+
 - Schoolbell 5.0.6: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
 
 - Schoolbell 5.0.2: distinct xterm256 colors with black/white text, an in-module time-zone selector with confirmation and conflict checks; a GitHub Pages landing page and browser-local demo sharing the router UI.

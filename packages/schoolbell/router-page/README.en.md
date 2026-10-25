@@ -1,6 +1,8 @@
 # Schoolbell router page
 
-Schoolbell 5.0.6: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
+Schoolbell 5.0.9: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
+
+Automatic bells: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
 
 [Русский](README.md)
 
@@ -82,3 +84,7 @@ Missing annual dates are quiet and years never repeat implicitly. Coincident eve
 After reboot or timezone changes, check the router clock and explicitly reactivate. Restarting only the service skips past events. No clock/NTP configuration or correction is performed. This is a procd/Lua/nixio engineering installation using fixed test/0–4 files and the installed madplay, not an autonomous dependency-complete IPK or production core/native-player integration. A short child can finish after parent failure; the shared lock remains for diagnosis. Do not remove it without checking processes. Power-loss and year-long autonomy are unverified.
 
 The separate `/etc/schoolbell-editor/automatic.json` contains the checksummed active snapshot, generation, boot/TZ and watermark. Flash writes occur on control changes, active-service startup, clock/polling gaps and considered event instants; periodic status uses `/tmp`. Journal bounds remain 16 KiB / 24 KiB during publication. Rollback stops/disables only schoolbell-auto, verifies player completion and restores the backed-up payload, retaining the user's draft and Mute settings.
+
+Volume: Settings → Router speaker volume → Apply volume. Presets are −36/−24/−12/−6/0 dB. Volume is saved independently of the draft and activation and applies at the next start, without changing the mixer or browser audio. Use Mute to stop current playback. Legacy state without volume_db means0dB; rollback to5.0.6 ignores attenuation, so disable automatic bells first.
+
+The bench check confirmed annual assignment, Mute cancellation and no catch-up playback; the user confirmed quiet sound. Automation was disabled afterwards and the plan retained. This single check does not guarantee cancellation latency.

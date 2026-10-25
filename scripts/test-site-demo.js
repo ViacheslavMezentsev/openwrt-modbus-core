@@ -20,6 +20,8 @@ async function api(name,data){return (await context.window.fetch('./demo-api/'+n
  await assert.rejects(()=>context.window.fetch('http://192.0.2.1/api'));await assert.rejects(()=>context.window.fetch('/cgi-bin/luci'));
  assert((await api('no-router',{})).state==='unavailable');
  assert((await api('automatic')).hardware===false);
+ let volume=await api('controls',{volume_db:'-12'});assert(volume.volume_db===-12);
+ assert((await api('controls')).volume_db===-12);
  assert((await api('automatic',{enabled:'true'})).enabled===false);
  console.log('PASS demo: local persistence, CAS, midnight/quiet-day preview, mock zone, bounded journal, blocked remote API');
 })().catch(e=>{console.error(e);process.exitCode=1;});

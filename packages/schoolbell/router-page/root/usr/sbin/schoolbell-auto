@@ -11,7 +11,9 @@ local function mono()
  local f=assert(io.open('/proc/uptime','r'));local t=f:read(64);f:close();return assert(tonumber(t:match('^[%d.]+')))
 end
 local function audit(action)require('schoolbell.journal').request(Store.root,action)end
+local last_result
 local function status(v)
+ v.last_result=last_result
  v.updated=os.time();v.uptime=math.floor(mono())
  local f=assert(io.open('/tmp/schoolbell-auto-status.next','wb'));assert(f:write(C.encode(v)));assert(f:close())
  assert(fs.rename('/tmp/schoolbell-auto-status.next','/tmp/schoolbell-auto-status.json'))
@@ -29,7 +31,7 @@ local function tick()
    if v.enabled and v.boot==env.boot and v.zone==env.zone then
     local checkpoint=Store.transaction(Store.advance,v.generation,now)
     assert(checkpoint.ok,'startup checkpoint');v=checkpoint.state
-    local body=C.encode(v);raw=C.encode({data=v,checksum=C.sha(body)})
+    raw=assert(checkpoint.raw)
    end
    engine=A.new(now,up,v.watermark);key=nil
   end
@@ -48,19 +50,19 @@ local function tick()
    local controls=Controls.snapshot();v.mode=active.plan.mode or 'annual'
    v.state=now<engine.watermark() and 'backward_hold' or not controls.ok and 'control_unreadable' or controls.muted and 'muted' or 'running'
    for _,e in ipairs(events)do if e.utc>math.max(now,active.watermark,engine.watermark())then v.next=e;break end end
-   local event,skip=engine.step(now,up,events,not controls.ok or controls.muted)
+   local event,skip,forward_jump=engine.step(now,up,events,not controls.ok or controls.muted)
    if skip then v.skipped=skip end
-   if not event and skip=='clock_gap' then
+   if not event and forward_jump then
     local checkpoint=Store.transaction(Store.advance,active.generation,now)
     if checkpoint.ok then
-     active=checkpoint.state;local body=C.encode(active);cached=C.encode({data=active,checksum=C.sha(body)})
+     active=checkpoint.state;cached=assert(checkpoint.raw)
     else v.state='claim_failed' end
    end
    if event then
     local claimed=Store.transaction(Store.claim,active.generation,event.utc,os.time())
     if not claimed.ok then v.state='claim_failed'
     else
-     active=claimed.state;local body=C.encode(active);cached=C.encode({data=active,checksum=C.sha(body)});v.state='playing';v.event=event;v.next=nil;status(v)
+     active=claimed.state;cached=assert(claimed.raw);v.state='playing';v.event=event;v.next=nil;status(v)
      audit('auto_requested')
      local io=Player.system(event.media);local muted=io.muted;local expected=cached
      local sleep=io.sleep;local last_status=math.floor(mono());io.sleep=function()local tick=math.floor(mono());if tick~=last_status then status(v);last_status=tick end;sleep()end
@@ -76,6 +78,7 @@ local function tick()
      elseif os.time()-event.utc>2 or os.time()<event.utc then result={ok=false,state='expired'}
      else result=Player.run(io)end
      v.state=result.ok and 'running' or result.state;v.result=result.state;v.event=nil
+     last_result={state=result.state,exit_code=result.exit_code,time=os.time()}
      audit(result.ok and 'auto_ok' or 'auto_skipped')
     end
    end

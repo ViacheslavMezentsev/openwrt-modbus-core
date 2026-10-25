@@ -57,20 +57,24 @@ check("cleanup failure",function()
  assert(m.run(x).state=="cleanup_required")
 end)
 check("target nixio modes, descriptors and fixed argv",function()
- local fd={close=function() end}; local stdin,stdout,stderr={},{},{}
+ local fd={close=function() end}; local stdin,stdout,stderr={},{},{};local gain="0"
  package.loaded.nixio={stdin=stdin,stdout=stdout,stderr=stderr,
    fork=function() return 0 end,
    open=function(path,mode) assert(path=="/dev/null" and mode=="r+"); return fd end,
    dup=function(f,to) assert(f==fd and (to==stdin or to==stdout or to==stderr)); return true end,
    exec=function(...)
      local a={...}; assert(#a==9 and a[1]=="/usr/bin/madplay" and a[2]=="--no-tty-control")
-     assert(a[3]=="-a" and a[4]=="0" and a[5]=="-R" and a[6]=="48000")
+     assert(a[3]=="-a" and a[4]==gain and a[5]=="-R" and a[6]=="48000")
      assert(a[7]=="-o" and a[8]=="/dev/dsp" and a[9]==m.sample)
      error("exec-fixture-success")
    end}
  package.loaded["nixio.fs"]={}
  local ok,err=pcall(m.system().spawn)
  assert(not ok and tostring(err):find("exec%-fixture%-success"))
+ local original=package.loaded['schoolbell.controls'];gain='-12'
+ package.loaded['schoolbell.controls']={read=function()return {muted=false,generation=0,volume_db=-12}end}
+ ok,err=pcall(m.system().spawn);assert(not ok and tostring(err):find('exec%-fixture%-success'))
+ package.loaded['schoolbell.controls']=original
 end)
 check("mute rejects before spawn",function()
  local x=fixture();x.muted=function()return true end;assert(m.run(x).state=='muted' and x.spawned==0)

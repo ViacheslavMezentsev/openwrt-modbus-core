@@ -59,7 +59,7 @@ function M.system(media)
                 if not f then os.exit(126) end
                 if not n.dup(f,n.stdin) or not n.dup(f,n.stdout) or not n.dup(f,n.stderr) then os.exit(126) end
                 f:close()
-                n.exec("/usr/bin/madplay","--no-tty-control","-a","0","-R","48000",
+                n.exec("/usr/bin/madplay","--no-tty-control","-a",tostring(ok and initial.volume_db or 0),"-R","48000",
                        "-o","/dev/dsp",sample)
                 os.exit(127)
             end

@@ -7,6 +7,12 @@ local on=M.request(true);assert(on.ok and on.muted and on.generation==1)
 assert(M.request(true).generation==1 and writes==1)
 local off=M.request(false);assert(off.ok and not off.muted and off.generation==2)
 assert(M.decode(files['sound-control.json']).generation==2)
+local quiet=M.request(nil,nil,-12);assert(quiet.ok and quiet.volume_db==-12 and quiet.generation==2 and not quiet.muted)
+local muted=M.request(true);assert(muted.volume_db==-12 and muted.generation==3)
+local low=M.request(nil,nil,-24);assert(low.muted and low.generation==3 and low.volume_db==-24)
+assert(not M.request(nil,nil,1).ok);assert(not M.request(nil,nil,-61).ok);assert(not M.request(nil,nil,-1.5).ok)
+assert(M.decode('{"muted":false,"generation":0}').volume_db==0)
+assert(not pcall(M.decode,'{"muted":false,"generation":0,"volume_db":"-12"}'))
 files['sound-control.json']='broken';assert(not M.request(false).ok)
 package.loaded['schoolbell.media_fs']=original
 local savedRead=M.read;M.read=function()return {muted=true,generation=7}end
@@ -31,3 +37,17 @@ length='100';luci.controller.schoolbell_test.controls();assert(security==1)
 method='PUT';luci.controller.schoolbell_test.controls();assert(status==405)
 luci.controller.schoolbell_test.manual();assert(security==2)
 print('PASS controls HTTP: bounds, method and CSRF before mutation/playback')
+
+assert(not pcall(M.decode,'{"muted":false,"generation":0,"volume_db":false}'))
+
+local form,calls,out={volume_db='-12'},0,nil
+package.loaded['luci.http']={getenv=function(k)if k=='REQUEST_METHOD'then return 'POST' elseif k=='CONTENT_LENGTH'then return '64' else return 'application/x-www-form-urlencoded'end end,header=function()end,prepare_content=function()end,write=function(raw)out=C.decode(raw)end,formvalue=function(k)return form[k]end}
+package.loaded['luci.dispatcher']={test_post_security=function()return true end}
+package.loaded['nixio.fs']={lstat=function()return nil end}
+package.loaded['schoolbell.sound_test']={lock='/test-lock'}
+package.loaded['schoolbell.journal']={request=function()return {ok=true}end}
+package.loaded['schoolbell.controls']={request=function(value,host,volume)assert(value==nil and host==nil and volume==-12);calls=calls+1;return {ok=true,muted=false,generation=0,volume_db=volume}end}
+luci.controller.schoolbell_test.controls();assert(calls==1 and out.volume_db==-12)
+for _,v in ipairs({'1','-61','-1.5','0; touch /tmp/no','false'})do form={volume_db=v};luci.controller.schoolbell_test.controls();assert(not out.ok and calls==1)end
+form={volume_db='-12',muted='true'};luci.controller.schoolbell_test.controls();assert(not out.ok and calls==1)
+print('PASS volume HTTP: separate bounded numeric field; rejects mixed mutations and command text')

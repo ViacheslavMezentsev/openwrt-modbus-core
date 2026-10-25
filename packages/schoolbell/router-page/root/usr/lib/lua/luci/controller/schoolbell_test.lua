@@ -75,17 +75,24 @@ function automatic()
  respond(ok and result or {ok=false,state='unavailable'})
 end
 function controls()
- local h=require('luci.http');local method=h.getenv('REQUEST_METHOD');local value
+ local h=require('luci.http');local method=h.getenv('REQUEST_METHOD');local value,volume
  if method~='GET' then
   if method~='POST' then h.status(405,'Method Not Allowed');return end
   local size=tonumber(h.getenv('CONTENT_LENGTH'))
   if not size or size<1 or size>1024 or not (h.getenv('CONTENT_TYPE') or ''):match('^application/x%-www%-form%-urlencoded')then h.status(413,'Unsupported request');return end
   if not require('luci.dispatcher').test_post_security()then return end
-  local v=h.formvalue('muted');if v~='true' and v~='false' then respond({ok=false,code='invalid'});return end
-  value=v=='true'
+  local v=h.formvalue('muted');local gain=h.formvalue('volume_db')
+  if gain~=nil then
+   if v~=nil or not gain:match('^%-?%d+$') or not tonumber(gain) or tonumber(gain)<-60 or tonumber(gain)>0 then respond({ok=false,code='invalid'});return end
+   volume=tonumber(gain)
+  else
+   if v~='true' and v~='false' then respond({ok=false,code='invalid'});return end
+   value=v=='true'
+  end
  end
- editor();local m=require('schoolbell.controls');local result=value==nil and m.snapshot() or m.request(value)
+ editor();local m=require('schoolbell.controls');local result=value==nil and volume==nil and m.snapshot() or m.request(value,nil,volume)
  result.playing=require('nixio.fs').lstat(require('schoolbell.sound_test').lock)~=nil
+ if volume~=nil then audit(result.ok and 'volume_ok' or 'volume_failed',result)end
  if value~=nil then audit(result.ok and (value and 'mute_on' or 'mute_off') or 'mute_failed',result)end
  respond(result)
 end
