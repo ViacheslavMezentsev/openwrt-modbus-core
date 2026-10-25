@@ -13,22 +13,37 @@ end
 local function expand_plans(d)
     if d.plans==nil then return {} end -- legacy drafts are read without rewriting
     if J.kind(d.plans)~="array" or #d.plans>8 then fail("limit","plans") end
-    local ids,years,out={},{},{}
+    local ids,plan_ids,ranges,out={},{},{},{}
     for _,schedule in ipairs(d.schedules) do ids[schedule.id]=true end
     for i,p in ipairs(d.plans) do
         local path="plans."..i
-        object(p,{year=true,schedule_ids=true,days=true},path)
-        if not C.integer(p.year,1,9999) or years[p.year] then fail("year",path) end
-        years[p.year]=true
+        local first,last
+        if p.year~=nil then
+            object(p,{year=true,schedule_ids=true,days=true},path)
+            if not C.integer(p.year,1,9999) then fail("year",path) end
+            local legacy_id="year-"..p.year
+            if plan_ids[legacy_id] then fail("id",path) end
+            plan_ids[legacy_id]=true
+            first,last=string.format("%04d-01-01",p.year),string.format("%04d-12-31",p.year)
+        else
+            object(p,{id=true,name=true,start=true,["end"]=true,schedule_ids=true,days=true},path)
+            if type(p.id)~="string" or #p.id<1 or #p.id>64 or not p.id:match("^[A-Za-z0-9_-]+$") or plan_ids[p.id] then fail("id",path..".id") end
+            plan_ids[p.id]=true
+            if type(p.name)~="string" or #p.name<1 or #p.name>96 or p.name:find("[%z\1-\31\127]") or not p.name:find("%S") then fail("name",path..".name") end
+            first,last=p.start,p["end"]
+        end
+        local a,b=Calendar.ordinal(first),Calendar.ordinal(last)
+        if not a or not b or b<a then fail("date_range",path) end
+        for _,v in ipairs(ranges)do if a<=v[2] and b>=v[1]then fail("overlap",path)end end
+        ranges[#ranges+1]={a,b}
         if J.kind(p.schedule_ids)~="array" or #p.schedule_ids>16 then fail("limit",path..".schedule_ids") end
         local seen={}
         for _,id in ipairs(p.schedule_ids) do
             if type(id)~="string" or not ids[id] or seen[id] then fail("schedule_reference",path) end
             seen[id]=true
         end
-        local leap=p.year%4==0 and (p.year%100~=0 or p.year%400==0)
-        if type(p.days)~="string" or #p.days~=(leap and 366 or 365) then fail("days",path) end
-        local days,date={},string.format("%04d-01-01",p.year)
+        if type(p.days)~="string" or #p.days~=b-a+1 then fail("days",path) end
+        local days,date={},first
         for day=1,#p.days do
             local char=p.days:sub(day,day)
             if char~="." then
@@ -38,7 +53,7 @@ local function expand_plans(d)
             end
             if day<#p.days then date=assert(Calendar.add_days(date,1)) end
         end
-        out[i]={year=p.year,days=days}
+        out[i]={start=first,["end"]=last,days=days}
     end
     return out
 end
@@ -83,10 +98,7 @@ function M.preview(text,date)
     local schedules={}
     for i,s in ipairs(d.schedules) do schedules[i]={id=s.id,rows=s.rows} end
     local mode=d.mode or 'annual'
-    local year=tonumber(type(date)=='string' and date:sub(1,4));local present=false
-    for _,p in ipairs(d.plans or {})do if p.year==year then present=true end end
     local fixed=d.fixed_schedule or 'quiet'
-    if mode=='annual' and not present then mode='fixed';fixed='quiet' end
     local model,err=Calendar.compile({revision="preview",mode=mode,fixed_schedule=fixed,timezone="civil",
         pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test","0","1","2","3","4","user1","user2","user3","user4","user5","user6","user7","user8"},
         schedules=schedules,plans=expand_plans(d)})

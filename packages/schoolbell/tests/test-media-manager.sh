@@ -18,6 +18,7 @@ lua5.1 packages/schoolbell/tests/test_schedule_store.lua
 python3 packages/schoolbell/tests/test_schedule_store.py "$ROOT"
 
 lua5.1 packages/schoolbell/tests/test_annual_editor.lua
+SCHOOLBELL_LUA="$(command -v lua5.1)" node scripts/test-site-demo.js
 
 lua5.1 packages/schoolbell/tests/test_annual_http.lua
 

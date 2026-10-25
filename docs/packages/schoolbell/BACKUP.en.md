@@ -1,5 +1,7 @@
 # Schoolbell backup
 
+Version 5.1.0 also backs up/restores named calendar ranges. Legacy year payloads remain readable without checksum changes. Downgrading below 5.1.0 requires a pre-migration backup: older modules do not understand ranges. A portable Pages plan bundle is a separate future feature, not this complete backup.
+
 [Русский](BACKUP.md)
 
 Engineering UI 5.0.14: Settings → Backup. Disable automatic ringing and save editor changes before downloading `.sbb`. The copy includes the saved draft (settings, schedules, annual assignments), Mute/volume and current user1–user8 titles/files. Protected bundled audio remains part of installation. Logs, automatic activation, network, passwords, clock and NTP are excluded.

@@ -15,6 +15,11 @@ local resolver=function(_,t)return {t=='08:00' and 200 or 80}end
 test('fixed and pre melody',function()local e=assert(A.events(d,'2026-10-25',resolver));assert(#e==2 and e[1].media=='test' and e[2].media=='1')end)
 test('annual missing year/date stays quiet',function()d.mode='annual';assert(#assert(A.events(d,'2026-10-25',resolver))==0);d.mode='fixed'end)
 test('annual explicit date and no repeated year',function()d.mode='annual';d.plans={{year=2026,schedule_ids={'s'},days='A'..string.rep('.',364)}};assert(#assert(A.events(d,'2026-01-01',resolver))==2);assert(#assert(A.events(d,'2027-01-01',resolver))==0);d.mode='fixed';d.plans=nil end)
+test('named range resolves across years and leaves gaps quiet',function()
+ d.mode='annual';d.plans={{id='academic',name='School year',start='2026-12-31',["end"]='2027-01-01',schedule_ids={'s'},days='AA'}}
+ assert(#assert(A.events(d,'2026-12-31',resolver))==2);assert(#assert(A.events(d,'2027-01-01',resolver))==2)
+ assert(#assert(A.events(d,'2027-01-02',resolver))==0);d.mode='fixed';d.plans=nil
+end)
 test('gap fold and simultaneous times reject day',function()local e,why=A.events(d,'2026-10-25',function()return {}end);assert(not e and why=='nonexistent_time');e,why=A.events(d,'2026-10-25',function()return {1,2}end);assert(not e and why=='ambiguous_time');e,why=A.events(d,'2026-10-25',function()return {1}end);assert(not e and why=='simultaneous_events')end)
 test('libc roundtrip and DST',function()
  local e=A.resolve('2026-01-01','08:00');assert(#e==1)

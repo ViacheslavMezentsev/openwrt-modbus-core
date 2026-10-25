@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5037">
-<script src="/schoolbell-test/theme.js?v=5037"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5100">
+<script src="/schoolbell-test/theme.js?v=5100"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
@@ -37,7 +37,7 @@
 <div class="guide-route"><dt>Вход и выход</dt><dd>«Выйти» в шапке завершает доступ к управлению через LuCI. Для возвращения нажмите «Войти» и введите обычный пароль в этой же вкладке. Несохранённые правки восстановятся; запись плана и включение звонков остаются отдельными действиями. Выход не останавливает уже включённые автозвонки — для этого используйте «Отключить автозвонки» в настройках.</dd></div>
 <div class="guide-route"><dt>Подготовить звонки</dt><dd>«Настройки»: проверьте часовой пояс и дату → «Расписания»: создайте расписание, задайте время и мелодии → сохраните черновик. Подтверждение времени не переводит часы.</dd></div>
 <div class="guide-route"><dt>Звонить каждый день</dt><dd>«Настройки» → «Автоматическая работа: По расписанию» → выберите ежедневное расписание → сохраните. «Тихий день» означает отсутствие звонков.</dd></div>
-<div class="guide-route"><dt>Звонить по учебному календарю</dt><dd>«Календарь» → выберите год и расписание → включите раскраску и отметьте даты → сохраните. В «Настройках» выберите «По календарному плану» и сохраните. Даты без назначения тихие; следующий год заполняется отдельно.</dd></div>
+<div class="guide-route"><dt>Звонить по учебному календарю</dt><dd>«Календарь» → создайте именованный план с началом и окончанием → выберите расписание → включите раскраску и отметьте даты → сохраните. В «Настройках» выберите «По календарному плану» и сохраните. Даты без назначения тихие; новые периоды заполняются отдельно.</dd></div>
 <div class="guide-route"><dt>Проверить и включить</dt><dd>«Календарь» → «Просмотр дня» → нажмите дату: откроется предпросмотр черновика. Когда всё проверено: «Настройки» → «Применить сохранённый план и включить». Это отдельное действие, которое разрешает автоматические звонки.</dd></div>
 <div class="guide-route"><dt>Остановить звук или автоматику</dt><dd>Вверху «Без звука» — остановить и запретить звук роутера; дождитесь подтверждения. Повторное нажатие разрешает звук. «Настройки» → «Отключить автозвонки» — остановить работу по плану, сохранив расписания.</dd></div>
 <div class="guide-route"><dt>Подать ручной звонок</dt><dd>Вверху «Подать звонок» — один звонок через колонки роутера. Его мелодия выбирается в «Настройках». При включённом «Без звука» звонок недоступен.</dd></div>
@@ -81,15 +81,19 @@
 <p id="empty-rows">Нет строк — звонков нет.</p><div class="editor-toolbar"><button id="row-add" type="button">+ Добавить звонок</button><button id="rows-clear" type="button">Очистить строки</button><span id="row-count"></span></div></div>
 </section>
 <section id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" data-panel="calendar" class="annual-editor" hidden>
-<h2>Годовой календарь</h2>
-<div class="editor-toolbar"><label>Год<input id="plan-year" type="number" min="1" max="9999" step="1"></label>
+<h2>Календарные планы</h2>
+<label>План<select id="calendar-plan"></select></label><div class="editor-toolbar"><button id="plan-new" type="button">+ Создать план</button><button id="plan-copy" type="button">Копировать план…</button></div>
+<div class="editor-toolbar"><label>Название плана<input id="plan-name" maxlength="96"></label><label>Начало<input id="plan-start" type="date"></label><label>Окончание включительно<input id="plan-end" type="date"></label></div>
+<div class="editor-toolbar"><button id="plan-apply" type="button">Применить название и даты</button><button id="plan-cancel" type="button">Отменить ввод</button></div><p id="plan-form-status" role="status"></p>
+<p>Планы не пересекаются. Выбор плана меняет только просмотр. Новые даты тихие. Изменения сначала попадают в черновик.</p>
+<div class="editor-toolbar"><label>Год просмотра внутри плана<input id="plan-year" type="number" min="1" max="9999" step="1"></label>
 <button id="year-show" type="button">Показать год</button>
 </div>
-<p>По умолчанию нажатие даты открывает предпросмотр черновика без изменения плана. Для редактирования выберите цвет расписания или ластик и раскрасьте даты: нажимайте или ведите мышью с зажатой левой кнопкой. На планшете нажимайте даты. «Тихий день / ластик» снимает назначение. Другие годы автоматически не повторяются.</p>
+<p>По умолчанию нажатие даты открывает предпросмотр черновика без изменения плана. Для редактирования выберите цвет расписания или ластик и раскрасьте даты: нажимайте или ведите мышью с зажатой левой кнопкой. На планшете нажимайте даты. «Тихий день / ластик» снимает назначение. Планы автоматически не повторяются.</p>
 <p id="calendar-tool" role="status"></p><div id="plan-legend" class="plan-legend"></div>
-<details class="calendar-tools"><summary>Дополнительно: заполнить диапазон или очистить год</summary><label>Назначать дням<select id="plan-brush"></select></label><div class="editor-toolbar"><label>С даты<input id="range-first" type="date"></label><label>По дату<input id="range-last" type="date"></label>
+<details class="calendar-tools"><summary>Дополнительно: заполнить даты или удалить план</summary><label>Назначать дням<select id="plan-brush"></select></label><div class="editor-toolbar"><label>С даты<input id="range-first" type="date"></label><label>По дату<input id="range-last" type="date"></label>
 <label>Какие дни<select id="range-filter"><option value="all">Все дни</option><option value="weekdays">Пн–Пт</option><option value="weekends">Сб–Вс</option></select></label>
-<button id="range-apply" type="button">Назначить диапазон</button><button id="year-clear" type="button">Очистить этот год</button></div></details>
+<button id="range-apply" type="button">Назначить диапазон</button><button id="year-clear" type="button">Удалить выбранный план</button></div></details>
 <p id="plan-status" role="status"></p><div id="year-grid" class="year-grid"></div>
 </section>
 <section id="panel-preview" role="tabpanel" aria-labelledby="tab-preview" data-panel="preview" hidden>
@@ -102,7 +106,7 @@
 </fieldset>
 <div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Отменить правки / загрузить сохранённое</button><button type="button" id="draft-compare">Сверить с роутером</button></div>
 <section id="draft-comparison" hidden aria-label="Сверка черновика"><h3>Локальные правки и сохранённая копия</h3><p id="draft-comparison-status" role="status"></p><p id="draft-local-summary"></p><p id="draft-router-summary"></p>
-<p>При различиях раскройте обе копии: здесь видны режим, расписания, мелодии и назначения годов. Сверка только читает данные.</p>
+<p>При различиях раскройте обе копии: здесь видны режим, расписания, мелодии и назначения дат. Сверка только читает данные.</p>
 <details><summary>Локальная копия — все поля</summary><pre id="draft-local-json" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
 <details><summary>Копия роутера — все поля</summary><pre id="draft-router-json" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
 <button type="button" id="draft-keep-local">Оставить локальные правки</button><button type="button" id="draft-use-router">Взять копию роутера</button></section>
@@ -166,13 +170,13 @@
 <label>Предзвонок за<span class="minutes-field"><input id="pre-minutes" type="number" min="1" max="10" step="1" disabled> минут</span></label>
 <label>Автоматическая работа<select id="work-mode" disabled><option value="fixed">По расписанию</option><option value="annual">По календарному плану</option></select></label>
 <label>Ежедневное расписание<select id="fixed-schedule" disabled></select></label>
-<p id="work-mode-hint">Без годового плана: по расписанию, тихий день по умолчанию.</p>
+<p id="work-mode-hint">Без календарных планов: по расписанию, тихий день по умолчанию.</p>
 <button id="settings-save" type="button" disabled>Сохранить настройки и черновик</button><p id="settings-result" role="status"></p>
 <div class="automatic-controls"><button id="automatic-enable" type="button" disabled>Применить сохранённый черновик и включить</button> <button id="automatic-disable" type="button">Отключить автозвонки</button><p id="automatic-status" role="status"></p>
 <p>Проверьте дату и время роутера перед включением. После перезагрузки или изменения часового пояса включите снова. Пропущенные звонки не повторяются; при занятом проигрывателе новый звонок пропускается. Совпадающие времена звонков недопустимы.</p></div>
 <p>Без звука действует сразу на звук schoolbell через роутер, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Без звука пропущенные звонки не повторяются.</p></section>
 <section class="details" id="backup-panel" data-url="<%=pcdata(backup_url)%>" data-token="<%=pcdata(token)%>"><h2>Резервная копия</h2>
-<p>Сохранённые настройки, расписания, годовой план и восемь пользовательских мелодий — в одном файле. Несохранённые правки страницы в копию не входят. Сначала отключите автозвонки.</p>
+<p>Сохранённые настройки, расписания, календарные планы и восемь пользовательских мелодий — в одном файле. Несохранённые правки страницы в копию не входят. Сначала отключите автозвонки.</p>
 <p>Восстановление заменяет эти данные и оставляет автозвонки выключенными. Системные часы, NTP, сеть и часовой пояс не меняются. Для переноса выберите на другом устройстве тот же часовой пояс заранее.</p>
 <button id="backup-download" type="button">Скачать резервную копию</button>
 <label>Файл резервной копии<input id="backup-file" type="file" accept=".sbb"></label>
@@ -199,4 +203,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/session.js?v=5037"></script><script src="/schoolbell-test/backup.js?v=5037"></script><script src="/schoolbell-test/media.js?v=5037"></script><script src="/schoolbell-test/clock-trust.js?v=5037"></script><script src="/schoolbell-test/automatic.js?v=5037"></script><script src="/schoolbell-test/controls.js?v=5037"></script><script src="/schoolbell-test/app.js?v=5037"></script><script src="/schoolbell-test/schedules.js?v=5037"></script><script src="/schoolbell-test/dashboard.js?v=5037"></script></body></html>
+</main><script src="/schoolbell-test/session.js?v=5100"></script><script src="/schoolbell-test/backup.js?v=5100"></script><script src="/schoolbell-test/media.js?v=5100"></script><script src="/schoolbell-test/clock-trust.js?v=5100"></script><script src="/schoolbell-test/automatic.js?v=5100"></script><script src="/schoolbell-test/controls.js?v=5100"></script><script src="/schoolbell-test/app.js?v=5100"></script><script src="/schoolbell-test/ranges.js?v=5100"></script><script src="/schoolbell-test/schedules.js?v=5100"></script><script src="/schoolbell-test/dashboard.js?v=5100"></script></body></html>

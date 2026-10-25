@@ -1,5 +1,7 @@
 # Changelog
 
+5.1.0: live named calendar plans with non-overlapping inclusive ranges, painting, resize and civil-time preview. Legacy years are read without rewriting; the editor saves ranges. Pages shares the editor/format with bundled media only. New plan/backup data requires 5.1.0; portable dependency bundles remain planned. Host checks only, no installation.
+
 5.0.37: logout verifies that the current session is absent after destroy; an empty reply alone proves neither success nor failure. ubus errors remain uncertain. Session loss disables sound/automatic controls and shows a login prompt; late replies cannot restore access. Pages synchronized. Host-tested, not installed.
 
 5.0.36: login/logout status moved out of header controls into a normal-sized status line; Login styled as a button. Added a Login and Logout cheat-sheet route; Pages shares the interface.

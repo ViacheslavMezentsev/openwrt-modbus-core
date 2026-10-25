@@ -77,3 +77,39 @@ test("bad date rejected; Gregorian century and boundary",function()
  assert(S.preview(plan(data(),9999,string.rep("A",365)),"9999-12-31").ok)
 end)
 print("annual editor: "..count.." groups passed")
+
+-- TC-143: named ranges share the same date assignment semantics as legacy years.
+test("named multi-year range and inclusive endpoints",function()
+ local d=data();d.mode='annual';d.plans={{id='academic',name='Учебный год',start='2026-12-31',["end"]='2028-01-01',schedule_ids={'day'},days=string.rep('A',367)}}
+ local text=C.encode(d);assert(S.validate(text))
+ for _,date in ipairs({'2026-12-31','2027-06-01','2028-01-01'})do assert(#S.preview(text,date).events==2,date)end
+ assert(#S.preview(text,'2026-12-30').events==0);assert(#S.preview(text,'2028-01-02').events==0)
+end)
+test("legacy checkpoint body unchanged; equivalent range previews",function()
+ local d=data();local legacy=plan(d,2028,string.rep('A',366));local _,body=S.validate(legacy);assert(body==C.encode(d))
+ d.plans[1]={id='year-2028',name='План 2028',start='2028-01-01',["end"]='2028-12-31',schedule_ids={'day'},days=string.rep('A',366)}
+ for _,date in ipairs({'2028-01-01','2028-02-29','2028-12-31'})do assert(C.encode(S.preview(legacy,date))==C.encode(S.preview(C.encode(d),date)))end
+end)
+test("ranges reject overlap mixed shape bad names ids dates and codes",function()
+ local d=data();d.plans={{id='x',name='Plan',start='2026-12-31',["end"]='2027-01-01',schedule_ids={'day'},days='AA'}}
+ local good=C.encode(d)
+ for _,change in ipairs({
+ function(p)p.year=2026 end,function(p)p.id='bad/id'end,function(p)p.name=' 'end,
+ function(p)p.start='2026-02-29'end,function(p)p["end"]='2026-01-01'end,function(p)p.days='A'end,
+ function(p)p.days='AZ'end,function(p)p.schedule_ids={'missing'}end})do
+ local x=assert(J.decode(good));change(x.plans[1]);assert(not S.validate(C.encode(x)))
+ end
+ d.plans[2]={id='y',name='Other',start='2027-01-01',["end"]='2027-01-02',schedule_ids={'day'},days='AA'};assert(not S.validate(C.encode(d)))
+ d.plans[2].start='2027-01-02';d.plans[2]["end"]='2027-01-03';assert(S.validate(C.encode(d)))
+end)
+test("no fixed day quota and data size limit still enforced",function()
+ local d=data();local n=assert(require('schoolbell.calendar').ordinal('2046-05-31'))-assert(require('schoolbell.calendar').ordinal('2026-09-01'))+1
+ d.plans={{id='long',name='Long',start='2026-09-01',["end"]='2046-05-31',schedule_ids={'day'},days=string.rep('.',n)}}
+ assert(n>2928 and S.validate(C.encode(d)))
+ d.plans[1].days=string.rep('.',13000);local v,e=S.validate(C.encode(d));assert(not v and e.code=='size')
+end)
+test("pre-bell crosses range boundary only into an audible day",function()
+ local d=data();d.schedules[1].rows[1].time='00:03';d.plans={{id='a',name='A',start='2026-12-31',["end"]='2026-12-31',schedule_ids={'day'},days='A'},{id='b',name='B',start='2027-01-01',["end"]='2027-01-01',schedule_ids={'day'},days='A'}}
+ local p=S.preview(C.encode(d),'2026-12-31');assert(#p.events==2 and p.events[2].origin_date=='2027-01-01')
+ d.plans[1].days='.';assert(#S.preview(C.encode(d),'2026-12-31').events==0);assert(#S.preview(C.encode(d),'2027-01-01').events==1)
+end)

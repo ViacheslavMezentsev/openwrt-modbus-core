@@ -20,3 +20,5 @@ The workflow follows [GitHub Pages documentation](https://docs.github.com/en/pag
 Page and demo footers show the UTC build time and short commit; build-info.json contains the full SHA. Tracked local changes are labeled; missing Git yields unknown. This is the build time, not the page load time or a guaranteed deployment time. Updating main does not republish the site automatically.
 
 The demo includes test.mp3 and five bundled melodies. Each populated row plays its own file in the browser; empty user slots cannot play. There is no autoplay or router command.
+
+Since 5.1.0 the demo shares the working named-range editor and payload checks. It supports device-free training/preparation with bundled melodies only. Portable bundle export is not implemented yet. A shared oracle checks civil preview parity with Lua; DST, clock trust and actual device resources are not emulated.

@@ -36,8 +36,8 @@ function fixture(storage={},initialRevision="r1"){
   else throw Error('unexpected URL');return {ok:true,json:async()=>clone(value)};
  };
  window.schoolbellClockCommand=async body=>{assert(body.action==='enable');x.posts.push(body);if(x.reject)throw Error('clock_untrusted');return {ok:true};};
- const ctx={sessionStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v,removeItem:k=>delete storage[k]},window,document,fetch,performance:{now:()=>x.clock},Date,Math,Number,String,Array,JSON,URLSearchParams,AbortController,CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail;}},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
- vm.createContext(ctx);for(const file of ['automatic.js','schedules.js'])vm.runInContext(fs.readFileSync(path.join(ui,file),'utf8'),ctx);
+ const ctx={sessionStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v,removeItem:k=>delete storage[k]},window,document,fetch,performance:{now:()=>x.clock},Date,Math,Number,String,Array,JSON,URLSearchParams,AbortController,TextEncoder,CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail;}},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
+ vm.createContext(ctx);for(const file of ['ranges.js','automatic.js','schedules.js'])vm.runInContext(fs.readFileSync(path.join(ui,file),'utf8'),ctx);
  x.tick=async()=>{for(let i=0;i<6;i++)await Promise.resolve();};x.poll=async()=>{for(const f of intervals)await f();await x.tick();};
  x.day=()=>all.filter(e=>e.dataset.date==='2026-01-01' && !e.detached).at(-1);
  x.brush=name=>get('plan-legend').children.find(e=>e.textContent===name);
@@ -79,13 +79,24 @@ function fixture(storage={},initialRevision="r1"){
  x=fixture(stash);await x.tick();x.get('schedule-name').value='Preserved conflict';await x.get('schedule-name').fire('input');assert(x.window.schoolbellEditor.prepareNavigation());resumed=fixture(stash,'r2');await resumed.tick();assert(resumed.get('schedule-name').value==='Preserved conflict' && resumed.window.schoolbellEditor.snapshot().reconcile && !resumed.saves.length);
  console.log('PASS expired/foreign handoff discarded; changed revision retains edits but requires comparison');
 
+
+ x=fixture();await x.tick();await x.get('plan-new').click();assert.equal(x.get('plan-start').value,'');assert(x.get('schedule-save').disabled);
+ const set=async(id,v)=>{x.get(id).value=v;await x.get(id).fire('input');};
+ await set('plan-name','Учебный 2026–2027');await set('plan-start','2026-12-31');await set('plan-end','2028-01-01');await x.get('plan-apply').click();assert(x.get('plan-form-status').textContent.includes('пересекается'));assert(x.get('schedule-save').disabled);
+ await set('plan-start','2027-01-01');await x.get('plan-apply').click();assert(x.get('plan-form-status').textContent.includes('черновике'));await x.get('schedule-save').click();assert.equal(x.data.plans.length,2);assert.equal(x.data.plans[1].days.length,366);assert(!x.posts.length);
+ await set('plan-name','Новый заголовок');await set('plan-start','2027-01-02');await x.get('plan-apply').click();await x.get('schedule-save').click();assert.equal(x.data.plans[1].name,'Новый заголовок');assert.equal(x.data.plans[1].days.length,365);
+ const stable=x.data.plans[1].id;await x.get('schedule-reload').click();assert.equal(x.get('calendar-plan').value,stable);assert.equal(x.get('plan-start').value,'2027-01-02');
+ await x.get('plan-new').click();await set('plan-start','2020-01-01');await set('plan-end','2099-01-01');await x.get('plan-apply').click();assert(x.get('plan-form-status').textContent.includes('12 КиБ'));assert.equal(x.data.plans.length,2);await x.get('plan-cancel').click();
+ x.data.plans=[];x.data.mode='fixed';await x.get('schedule-reload').click();assert.equal(x.get('plan-start').value,'');assert.equal(x.get('plan-year').value,'');assert(x.get('plan-status').textContent.includes('ещё не создан'));
+ x.window.dispatchEvent({type:'schoolbell-router-date',detail:'2026-10-26'});x.window.dispatchEvent({type:'schoolbell-clock-state',detail:{state:'confirmed'}});await x.get('plan-new').click();assert.equal(x.get('plan-start').value,'2026-09-01');assert.equal(x.get('plan-end').value,'2027-05-31');assert(!x.data.plans.length);
+ console.log('PASS range editor: no phantom year, trusted proposal only, overlap refusal, persisted name/range, stable ID, actual size rejection and no activation');
  // C1: rendering never changes mode or fixed selection behind the user's back.
  x=fixture();await x.tick();x.data.mode='fixed';x.data.fixed_schedule='s';x.data.plans=[];await x.get('schedule-reload').click();
  await x.get('schedule-delete').click();assert(x.get('schedule-select').options.length===1);assert(!x.window.schoolbellEditor.snapshot().dirty);assert(x.get('schedule-result').textContent.includes('ежедневное'));assert(x.confirms===0);
  x.get('fixed-schedule').value='quiet';await x.get('fixed-schedule').fire('change');await x.get('schedule-delete').click();assert(x.get('schedule-select').options.length===0);assert(!x.posts.length && !x.saves.length);
  console.log('PASS fixed reference requires explicit replacement before deletion');
- x=fixture();await x.tick();await x.get('schedule-delete').click();assert(x.get('schedule-result').textContent.includes('во всех годах'));assert(x.confirms===0);
- x.get('plan-year').value=2026;await x.get('year-show').click();x.confirm=false;await x.get('year-clear').click();assert(x.get('work-mode').value==='annual');assert(!x.window.schoolbellEditor.snapshot().dirty);assert(x.confirmMessages.at(-1).includes('последний год'));
+ x=fixture();await x.tick();await x.get('schedule-delete').click();assert(x.get('schedule-result').textContent.includes('во всех планах'));assert(x.confirms===0);
+ x.get('plan-year').value=2026;await x.get('year-show').click();x.confirm=false;await x.get('year-clear').click();assert(x.get('work-mode').value==='annual');assert(!x.window.schoolbellEditor.snapshot().dirty);assert(x.confirmMessages.at(-1).includes('последний план'));
  x.confirm=true;await x.get('year-clear').click();assert(x.get('work-mode').value==='fixed' && x.get('fixed-schedule').value==='quiet');assert(x.window.schoolbellEditor.snapshot().dirty);assert(!x.saves.length && !x.posts.length);
  console.log('PASS calendar dependencies and explicit last-year mode transition; cancel preserves draft');
  x=fixture();await x.tick();x.get('schedule-name').value='Local';await x.get('schedule-name').fire('input');x.data.schedules[0].name='Remote';x.rev='other';

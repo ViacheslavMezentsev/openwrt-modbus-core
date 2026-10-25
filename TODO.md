@@ -2,16 +2,18 @@
 
 ## Current state and next steps
 
-- [ ] Next separate branch: replace the live “Годовой календарь” tab with “Календарные планы”, named non-overlapping date ranges and painting; integrate Lua storage, backup migration and executor before target installation. No fixed day-count quota.
+- [x] 5.1.0 host: working “Календарные планы” with named non-overlapping ranges, painting, legacy read compatibility, Lua executor/backup support and shared Pages editor. No fixed day-count quota; actual draft bytes remain bounded.
+- [ ] Back up and install 5.1.0 only after merge/approval; verify migration, boundaries, saving and restore on target with automatic bells off. Preserve a pre-range backup for downgrade.
+- [ ] Next: portable plan export/import including dependency closure and compatibility preview; Pages first stage bundled melodies only. Device-free editor/training requirements accepted; archive not implemented.
 - [ ] Verify 5.0.37 logout on a normal authenticated LuCI session: destroy/get confirmation, disabled controls and login-only status. Host tests do not prove target logout.
 
 
 - [ ] Next schoolbell feature accepted by owner: portable annual/academic-plan bundle with selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and all referenced media. September–May spans two calendar years. Reuse backup/media mechanisms; preview dependency closure and conflicts before import, validate plan timezone without applying system timezone, import only as draft with automatic bells disabled. Exclude credentials, network, NTP/clock and hardware-specific settings; specify bundled-media compatibility and atomic rollback before implementation.
 
 - [x] S1 revised in 5.0.35: same-tab login with bounded sessionStorage draft handoff; compact controls, idle preference in Settings, no visible countdown; Pages shares the change.
-- [ ] Target acceptance of 5.0.35: previous 5.0.34 separate-tab route failed operator acceptance (lost edit, excessive UI); host regressions are not a target PASS.
+- [x] Owner confirmed same-tab login preserves the edited name in 5.0.35. The 5.0.36 login/status styling is installed; logout confirmation fix 5.0.37 still needs target acceptance.
 - [x] Named-range calendar prototype in Pages: multiple non-overlapping plans, date-preserving resize and empty first install; trusted date only proposes September–May.
-- [ ] Implement the accepted range model without a fixed day-count quota (check actual size/resources) in Lua storage, executor, backup/import and live editor with legacy migration; prototype does not change installed plans.
+- [x] Range model implemented in Lua storage/preview/executor, backup and live editor; tests on host. Installed router is unchanged.
 - [ ] S1 target acceptance: real LuCI expiry/logout/CSRF/unauthenticated endpoints, multiple tabs and suspended browser; browser timer is not server policy. No target installation in this step.
 
 - [x] 5.0.33: shared first-tab quick guide for router UI and Pages; operator acceptance pending.
@@ -59,8 +61,8 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.49.
-The engineering application is packaged as a complete 5.0.32 IPK (host; installed target 5.0.31) with an offline
+User-facing scope follows core draft 1.33 and schoolbell draft 1.51.
+The engineering application is packaged as a complete 5.1.0 IPK (host; target remains 5.0.36) with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 
 - [ ] P00 — Finish the minimal API contract: the Unix stream v1/live-no-replay/session profile is accepted (core 1.10); finalize codec/field types, quotas, clock validity/correction, calendar boundaries and pause/pending policy. Record unresolved numeric budgets as measurements, not guarantees.

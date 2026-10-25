@@ -1,5 +1,7 @@
 # Annual calendar and preview
 
+Since 5.1.0 the working calendar uses named ranges. This document describes the original year format; see [Calendar plans](RANGE_PLANS.en.md) for current UI, compatibility and migration.
+
 [Русский](ANNUAL_CALENDAR.md) · [Editor](SCHEDULE_EDITOR.en.md)
 
 Select a year and schedule, then assign individual dates or a range filtered

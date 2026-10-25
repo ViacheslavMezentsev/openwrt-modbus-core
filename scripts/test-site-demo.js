@@ -1,7 +1,8 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const elements=new Map(),storage=new Map();
 const document={getElementById(id){if(!elements.has(id))elements.set(id,{addEventListener(){},textContent:''});return elements.get(id);}};
-const context={window:{},document,Intl,Date,Math,Number,JSON,Array,String,URL,URLSearchParams,Response:class{constructor(body){this.body=body;this.ok=true;}json(){return Promise.resolve(JSON.parse(this.body));}},location:{href:'https://example.test/openwrt-modbus-core/schoolbell/',origin:'https://example.test'},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}};
+const context={window:{},document,TextEncoder,Intl,Date,Math,Number,JSON,Array,String,URL,URLSearchParams,Response:class{constructor(body){this.body=body;this.ok=true;}json(){return Promise.resolve(JSON.parse(this.body));}},location:{href:'https://example.test/openwrt-modbus-core/schoolbell/',origin:'https://example.test'},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}};
+vm.runInNewContext(fs.readFileSync('packages/schoolbell/router-page/root/www/schoolbell-test/ranges.js','utf8'),context);
 vm.runInNewContext(fs.readFileSync(require('path').join(__dirname,'../site/demo.js'),'utf8'),context);
 async function api(name,data){return (await context.window.fetch('./demo-api/'+name,data?{method:'POST',body:new URLSearchParams(data)}:undefined)).json();}
 (async()=>{
@@ -26,5 +27,12 @@ async function api(name,data){return (await context.window.fetch('./demo-api/'+n
  let challenge=await api('clock-trust',{action:'prepare'});assert(challenge.challenge==='demo');
  await api('clock-trust',{action:'confirm'});assert((await api('automatic')).clock_trust.state==='confirmed');
  await api('clock-trust',{action:'policy',enforced:'false'});assert((await api('automatic')).clock_trust.enforced===false);assert((await api('automatic')).enabled===false);
+
+ const rangeRaw=fs.readFileSync('packages/schoolbell/tests/range-plan.json','utf8');const rangeDates=['2026-12-29','2026-12-30','2026-12-31','2027-01-01','2027-01-02','2027-01-03','2027-01-04'];
+ const results=[];for(const date of rangeDates)results.push(await api('preview',{date,draft:rangeRaw}));
+ assert.equal(results[1].events.length,0);assert.equal(results[2].events.length,3);assert.equal(results[2].events[2].origin_date,'2027-01-01');assert.equal(results[4].events.length,0);
+ if(process.env.SCHOOLBELL_LUA){const cp=require('child_process');const lua=cp.execFileSync(process.env.SCHOOLBELL_LUA,['packages/schoolbell/tests/range-preview.lua','packages/schoolbell/tests/range-plan.json',...rangeDates],{encoding:'utf8'}).trim().split('\n').map(JSON.parse);for(let i=0;i<results.length;i++)assert.deepStrictEqual(results[i],lua[i]);console.log('PASS exact Pages/Lua preview parity for range edges, gaps and cross-midnight pre-bell');}
+ const bad=JSON.parse(rangeRaw);bad.plans[1].start='2026-12-31';assert.equal((await api('preview',{date:'2027-01-01',draft:JSON.stringify(bad)})).code,'invalid');
+ bad.plans=JSON.parse(rangeRaw).plans;bad.schedules[0].rows[0].media='user1';assert.equal((await api('preview',{date:'2027-01-01',draft:JSON.stringify(bad)})).code,'invalid');
  console.log('PASS demo: local persistence, CAS, midnight/quiet-day preview, mock zone, bounded journal, blocked remote API');
 })().catch(e=>{console.error(e);process.exitCode=1;});

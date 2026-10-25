@@ -11,7 +11,7 @@ The first **Cheat sheet** tab offers short operator journeys. It opens by defaul
 
 [Русский](USER_GUIDE.md)
 
-For **schoolbell 5.0.35** (host checks; router remains 5.0.34), dated 2026-10-26. This describes the installed interface,
+For **schoolbell 5.1.0** (host checks, no installation), dated 2026-10-26.
 not the public mockup. Supported fixture: OpenWrt 19.07.9, TL-MR3020 v3.30 and USB
 audio. An administrator installs the equipment and [package](PACKAGING.en.md).
 Individual functions have been tested; full endurance, cold-start and power-loss
@@ -64,16 +64,14 @@ apply them if they should change working bells.
 
 ## 4. Paint the calendar
 
-Choose a year and «Показать год». «Просмотр дня» opens preview without editing.
-Choose a schedule color to paint dates by click or left-button drag; on touch, tap
-dates individually. «Тихий день / ластик» removes assignments. Return to viewing
-when finished. Save, choose «По календарному плану» in Settings, save that choice and apply.
-
-Advanced controls fill a date range (all days, weekdays or weekends) or clear a year.
-Clearing a draft does not stop the active copy until applied. Clearing the last annual year explicitly warns about switching the draft to Fixed/Quiet; cancellation preserves the mode and assignments. Unassigned dates and
-years without a plan are quiet; years never repeat automatically. Weekends are only
-quiet if you assign them that way. A quiet day also suppresses a preliminary bell
-that would fall on it from the neighboring date.
+Choose a plan or Create Plan in Calendar. Enter its name and inclusive start/end dates,
+then apply them to the draft. Ranges cannot overlap; new dates are quiet. Paint with
+schedule colors; View Day never edits. Year of View navigates within the plan without
+changing boundaries. Save the draft, select Calendar Plan mode in Settings and save;
+activation remains separate. Resize preserves assignments by date and confirms loss.
+Copy requires new dates and warns that day-offset copying may change weekdays.
+Delete preserves schedules/media; removing the last annual plan explicitly switches
+the draft to Fixed/Quiet. Unassigned dates/gaps are quiet, with no annual repeats.
 
 Preview includes unsaved draft edits. It is not the active plan or proof of valid
 time/audio; it does not check timezone transitions or execution readiness.

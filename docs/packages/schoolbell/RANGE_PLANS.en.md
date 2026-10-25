@@ -1,34 +1,47 @@
-# Named calendar plans
+# Calendar plans — schoolbell 5.1.0
 
 [Русский](RANGE_PLANS.md)
 
-Stage 5.0.35 provides an interactive Pages prototype at `schoolbell/ranges.html`,
-linked from the demo. The live editor, Lua storage, executor and `.sbb` format
-remain year-based. The prototype neither persists data nor contacts hardware.
+The live UI and Pages share `ranges.js` and `schedules.js`; Lua validates the same
+payload and resolves assignments. No router installation was performed.
 
-Each plan has a stable ID, editable name and inclusive start/end dates. Multiple
-non-overlapping ranges support creation, rename, resize, copy and deletion.
-Selecting a plan changes the view, not activation. Painting is the main assignment
-method; viewing a date never edits it. Bulk assignment is supplementary.
+A plan is `{id,name,start,end,schedule_ids,days}`. IDs survive rename/resize. Names
+are 1–96 UTF-8 bytes; inclusive dates use YYYY-MM-DD, years 0001–9999. Ranges cannot
+overlap even on quiet dates. `days` has one ASCII code per date: `.` quiet, A–P an
+index into schedule IDs. December 31, 2026–January 1, 2028 is one 367-day plan.
 
-Resize preserves assignments by actual date, adds quiet dates and confirms removal
-of assigned dates. Deleting a plan preserves schedules/media. Prototype copying
-uses day offsets and warns that weekdays may differ. There is no annual repeat.
+There is no fixed duration/day quota. The actual draft budget is 12288 bytes,
+8 plans, 16 schedules and 128 bell rows. Oversized documents fail before writing;
+previous data and edits remain. Year pages bound rendered calendar cells, not plan
+boundaries. Create/rename/resize, painting, bulk assignment, copy and delete operate
+on the draft. Resize preserves by date, extends with quiet dates and confirms lost
+assignments. Copy uses day offsets with an explicit weekday warning. Removing the
+last annual plan explicitly changes the draft to Fixed/Quiet; schedules/media stay.
 
-First installation has no plans. New Plan may propose September–May only from a
-trusted router date; before September it uses the previous autumn's academic year.
-Users can edit the proposal, including choosing next season in summer. Untrusted
-clocks leave dates empty for manual input or clock verification. Explicit creation
-makes all dates quiet and never enables automatic bells. Prototype date/trust inputs
-are labeled synthetic; browser time is not evidence of router trust.
+First install is empty. Only a fresh confirmed router date may propose September–May
+when Create is clicked; otherwise boundaries remain blank. Proposals do not create
+plans. Saving and activation remain separate. Pages clock confirmation is simulated.
 
-Proposed fields: `{id,name,start,end,schedule_ids,days}`. One character per inclusive
-date; `.` is quiet. Provisional bounds retain the existing budget: 8 plans, 16 schedule references per plan, 96 UTF-8 bytes per name. Legacy years map to
-January 1–December 31 without assignment changes. Only a pure conversion copy is
-tested, not on-device file migration.
+Legacy `{year,schedule_ids,days}` is read without byte/checksum changes. The UI
+converts its in-memory copy to `year-N`, January 1–December 31; merely opening never
+writes. CAS/fsync/previous protections remain. Executor and `.sbb` accept both forms;
+restoration preserves new plans and user MP3s with automatic bells disabled.
+New range payloads require >=5.1.0; keep a pre-upgrade `.sbb` alongside the old IPK
+for downgrade. The schema change warrants a minor version rather than a patch.
 
-Checks: `make check-site`, `scripts/test-schoolbell-ranges.js` (TC-142).
-Next: Lua model, persistence/backup migration and execution tests, followed by a
-separately backed-up installation.
+Pages supports device-free preparation/training, local browser storage and six
+bundled melodies only. Unsupported user-media dependencies must fail visibly, never
+be silently substituted. Authentication, clock, storage capacity and automation are
+simulations, not equipment acceptance.
 
-The owner removed the fixed day-count quota. Live integration must check actual document size and available resources, failing clearly without replacing the previous plan. Dates use YYYY-MM-DD (years 0001–9999). The existing 12288-byte live storage bound is unchanged in this prototype stage; it is not a calendar-duration quota.
+A future portable bundle (not implemented here) includes selected plans, referenced
+schedules/colors, pre-bell settings, plan timezone and media dependency closure.
+Bundled media use ID + SHA256; future user-media transfer is outside the initial
+Pages scope. It must declare minimum compatibility, preview conflicts/dependencies,
+and import as a draft with automatic bells off. Credentials, network, NTP, clock
+trust and hardware settings are excluded; importing must not apply system timezone.
+The archive format will be agreed separately from the complete device backup.
+
+Checks cover Lua storage/execution/backup, editor journeys and exact Pages/Lua JSON
+preview parity using `range-plan.json`. Civil preview is not DST/execution-readiness
+validation. Hardware acceptance and long-term autonomy remain unproven.

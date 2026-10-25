@@ -102,6 +102,7 @@
       if(!response.ok)throw new Error('http');
       var v=await response.json(),received=performance.now(),rtt=received-started;
       if(!v.ok || !Number.isInteger(v.epoch) || !['year','month','day','hour','min','sec'].every(function(k){return Number.isInteger(v[k]);}))throw new Error('clock');
+      window.dispatchEvent(new CustomEvent('schoolbell-router-date',{detail:String(v.year).padStart(4,'0')+'-'+String(v.month).padStart(2,'0')+'-'+String(v.day).padStart(2,'0')}));
       var wall=Date.UTC(v.year,v.month-1,v.day,v.hour,v.min,v.sec);
       sample={name:typeof v.zone==='string'?v.zone:null,received:received,epoch:v.epoch*1000+rtt/2,wall:wall+rtt/2,offset:Math.round((wall-v.epoch*1000)/60000),rtt:rtt};
     }catch(_){sample=null;}

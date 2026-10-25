@@ -39,7 +39,7 @@ async function change(enabled){
  if(!saved.ok || saved.revision==='empty')throw Error('Сначала сохраните план.');
  if(saved.revision!==e.revision)throw Error('Сохранённый черновик изменён в другом окне. Загрузите его и проверьте перед применением.');
  revision=saved.revision;
- var data=saved.data,mode=data.mode==='annual'?'Календарный план · годы: '+(data.plans || []).map(function(p){return p.year;}).join(', '):'Ежедневное расписание · '+((data.schedules || []).find(function(s){return s.id===data.fixed_schedule;}) || {name:'Тихий день'}).name;
+ var data=saved.data,mode=data.mode==='annual'?'Календарные планы: '+(data.plans || []).map(function(p){return p.name?p.name+' ['+p.start+' — '+p.end+']':String(p.year);}).join(', '):'Ежедневное расписание · '+((data.schedules || []).find(function(s){return s.id===data.fixed_schedule;}) || {name:'Тихий день'}).name;
  if(!window.confirm('Применить сохранённый черновик '+revision.slice(0,10)+' и включить автозвонки?\n'+mode+'\nПроверьте дату, время и часовой пояс роутера. Без звука продолжает действовать.'))return;}
  sample=null;
  var result=enabled?await window.schoolbellClockCommand({action:'enable',revision:revision}):await request(root.dataset.automatic,{enabled:'false',revision:''});if(!result.ok)throw Error(result.code==='missing_media'?'Сначала загрузите пользовательские мелодии, выбранные во включённых строках расписаний.':'Не удалось применить. Проверьте сохранение, конфликты времён и хранилище.');

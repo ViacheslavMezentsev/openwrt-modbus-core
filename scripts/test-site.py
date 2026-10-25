@@ -71,8 +71,8 @@ print('PASS shared striped guide, separate behavior notes and demo-safe session 
 
 assert (out/'schoolbell/ranges.html').exists()
 range_html=(out/'schoolbell/ranges.html').read_text()
-assert 'ПРОТОТИП' in range_html and 'range-start' in range_html and 'range-end' in range_html
-assert './ranges.html' in html
+assert 'Открыть рабочий редактор' in range_html
+assert 'Календарные планы' in html and 'id="plan-start"' in html and 'id="plan-end"' in html
 assert 'id="session-countdown" hidden' in html and 'role="timer"' not in html
 assert 'target="_blank"' not in html.split('id="session-login"',1)[1].split('>',1)[0]
 print('PASS separate range prototype; compact same-tab login with no visible countdown')

@@ -1,4 +1,4 @@
-const assert=require('assert'),M=require('../packages/schoolbell/prototypes/range-calendar/ranges-model.js');
+const assert=require('assert'),M=require('../packages/schoolbell/router-page/root/www/schoolbell-test/ranges.js');
 const plan=(id,start,end)=>({id,name:id,start,end,schedule_ids:['s'],days:'A'.repeat(M.dates(start,end).length)});
 assert(M.dates('2026-09-01','2027-05-31').length===273);assert(M.dates('2027-09-01','2028-05-31').length===274);
 assert.throws(()=>M.dates('2027-02-29','2027-03-01'));assert.throws(()=>M.dates('2027-01-02','2027-01-01'));
@@ -20,3 +20,5 @@ console.log('PASS first-install proposal: no trusted date, no implicit year; aca
 
 assert.equal(M.dates("2026-12-31","2028-01-01").length,367);assert(M.validate([plan("three-years","2026-12-31","2028-01-01")]));
 console.log("PASS user range 2026-12-31 to 2028-01-01: 367 inclusive days across three years");
+
+for(const plans of [false,0,'']) assert.throws(()=>M.validateDraft({schedules:[],pre_minutes:2,pre_media:'test',plans},true));

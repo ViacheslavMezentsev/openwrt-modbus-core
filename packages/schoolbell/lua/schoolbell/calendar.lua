@@ -73,6 +73,7 @@ end
 function M.limits()
     local copy={}; for k,v in pairs(LIMIT) do copy[k]=v end; return copy
 end
+function M.ordinal(date) return guarded(function() return date_parts(date,"date") end) end
 function M.days_in_month(year,month)
     return guarded(function()
         if not integer(year,1,9999) or not integer(month,1,12) then bad("date","month") end
@@ -155,18 +156,28 @@ local function snapshot(config)
     if config.fixed_schedule~=nil then c.fixed_schedule=schedule(config.fixed_schedule,"fixed_schedule") end
     if c.mode=="fixed" and not c.fixed_schedule then bad("schedule_reference","fixed_schedule") end
     n=array(config.plans,LIMIT.years,"plans")
+    local occupied,legacy_years={},{}
     for i=1,n do
-        local plan=config.plans[i]; object(plan,{year=true,days=true},"plan")
-        if not integer(plan.year,1,9999) then bad("year","plan.year") end
-        if c.plans[plan.year] then bad("duplicate","plan.year") end
-        local days={}; c.plans[plan.year]=days; plain(plan.days,"plan.days")
-        local count=0
+        local plan=config.plans[i]
+        object(plan,{year=true,start=true,["end"]=true,days=true},"plan")
+        local first,last
+        if plan.year~=nil then
+            if plan.start~=nil or plan["end"]~=nil or not integer(plan.year,1,9999) then bad("year","plan.year") end
+            if legacy_years[plan.year] then bad("duplicate","plan.year") end
+            legacy_years[plan.year]=true
+            first,last=string.format("%04d-01-01",plan.year),string.format("%04d-12-31",plan.year)
+        else first,last=plan.start,plan["end"] end
+        local a,b=date_parts(first,"plan.start"),date_parts(last,"plan.end")
+        if b<a then bad("date_range","plan") end
+        for _,p in ipairs(occupied) do if a<=p[2] and b>=p[1] then bad("overlap","plan") end end
+        occupied[#occupied+1]={a,b}
+        local days={};plain(plan.days,"plan.days")
         for date,value in pairs(plan.days) do
-            count=count+1; if count>366 then bad("limit","plan.days") end
-            local _,year=date_parts(date,"plan.date")
-            if year~=plan.year then bad("year","plan.date") end
+            local day=date_parts(date,"plan.date")
+            if day<a or day>b then bad("year","plan.date") end
             days[date]=schedule(value,"plan.schedule")
         end
+        c.plans[i]={start=first,["end"]=last,days=days}
     end
     return c
 end
@@ -179,10 +190,11 @@ function M.compile(config)
         local c=snapshot(config)
         local function selected(date)
             if c.mode=="fixed" then return c.fixed_schedule end
-            local _,year=date_parts(date,"date")
-            local days=c.plans[year]
-            -- schoolbell 3.3.9: no assignment/year means quiet, never repeat another year.
-            return days and days[date] or "quiet"
+            date_parts(date,"date")
+            for _,p in ipairs(c.plans) do
+                if date>=p.start and date<=p["end"] then return p.days[date] or "quiet" end
+            end
+            return "quiet"
         end
         local function quiet(date)
             local sid=selected(date)
