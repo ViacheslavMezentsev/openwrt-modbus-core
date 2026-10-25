@@ -1,5 +1,9 @@
 # Changelog
 
+The save label uses “device” instead of “router”; Pages explicitly saves in the demo.
+
+5.1.2: pagination is immediately above the months and repeated below them. Both controls share page and boundary states; bottom navigation scrolls to the calendar start. Pages is synchronized.
+
 The product is named Shkolnik (previously Shkolnik-4), without a version in its name. Technical schoolbell package names, URLs and data formats are unchanged.
 
 5.1.1: range months appear consecutively across year boundaries; long plans page through 12 months without changing assignments. Shared router and Pages interface.

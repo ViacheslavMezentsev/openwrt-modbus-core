@@ -105,10 +105,12 @@
     var lastMonth=selectedPlan?Number(selectedPlan.end.slice(0,4))*12+Number(selectedPlan.end.slice(5,7))-1:0;
     var pages=selectedPlan?Math.ceil((lastMonth-firstMonth+1)/12):0;
     monthPage=Math.max(0,Math.min(monthPage,Math.max(0,pages-1)));
-    document.getElementById('months-prev').disabled=!selectedPlan || monthPage===0;
-    document.getElementById('months-next').disabled=!selectedPlan || monthPage+1>=pages;
-    document.getElementById('months-navigation').hidden=pages<=1;
-    document.getElementById('months-status').textContent=pages?'Страница '+(monthPage+1)+' из '+pages+' · до 12 месяцев подряд':'';
+    ['months-','months-bottom-'].forEach(function(prefix){
+      document.getElementById(prefix+'prev').disabled=!selectedPlan || monthPage===0;
+      document.getElementById(prefix+'next').disabled=!selectedPlan || monthPage+1>=pages;
+      document.getElementById(prefix+'navigation').hidden=pages<=1;
+      document.getElementById(prefix+'status').textContent=pages?'Страница '+(monthPage+1)+' из '+pages+' · до 12 месяцев подряд':'';
+    });
     var picker=document.getElementById('plan-brush');picker.replaceChildren(textOption('view','Просмотр — без изменений'),textOption('quiet','Тихий день / ластик'));
     if(brush!=='quiet' && !draft.schedules.some(function(s){return s.id===brush;}))brush='view';
     draft.schedules.forEach(function(s){picker.appendChild(textOption(s.id,s.name));});picker.value=brush;
@@ -167,7 +169,7 @@
     document.getElementById('duty-state').textContent=busy?'Обмен с роутером…':reconcile?'Требуется сверка данных':!draft?'Данные недоступны':dirty?'Черновик изменён · не сохранён':revision==='empty'?'План ещё не сохранён':'Черновик сохранён';
 
     root.setAttribute('aria-busy',String(locked));
-    save.textContent=busy?'Обмен с роутером…':formPending?'Сначала примените название и даты':reconcile?'Сначала сверьте сохранённое':dirty?'Сохранить черновик на роутере':'Нет изменений для сохранения';
+    save.textContent=busy?'Обмен с роутером…':formPending?'Сначала примените название и даты':reconcile?'Сначала сверьте сохранённое':dirty?'Сохранить черновик на устройстве':'Нет изменений для сохранения';
     fields.disabled=locked || !draft;
     save.disabled=locked || !draft || !dirty || reconcile || formPending;
     reload.disabled=locked;
@@ -408,9 +410,10 @@
       draft=candidate;planId=resized.plan.id;fillPlan();brush='view';changed();render();formStatus('План изменён в черновике. Сохранение и активация — отдельные действия.');
     }catch(e){formStatus(e.message);}
   });
-  ['prev','next'].forEach(function(direction){document.getElementById('months-'+direction).addEventListener('click',function(){
+  ['months-','months-bottom-'].forEach(function(prefix){['prev','next'].forEach(function(direction){document.getElementById(prefix+direction).addEventListener('click',function(){
     if(!plan())return;painting=false;monthPage+=direction==='next'?1:-1;renderAnnual();
-  });});
+    if(prefix==='months-bottom-')document.getElementById('months-navigation').scrollIntoView({block:'start'});
+  });});});
   document.getElementById('plan-brush').addEventListener('change',function(e){chooseBrush(e.target.value);});
   document.getElementById('range-apply').addEventListener('click',function(){
     if(brush==='view' || busy || activationLock || formPending)return;

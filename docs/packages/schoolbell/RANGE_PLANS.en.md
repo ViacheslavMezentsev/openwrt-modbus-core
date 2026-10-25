@@ -1,5 +1,7 @@
 # Calendar plans — schoolbell 5.1.0
 
+5.1.2: pagination is immediately above the months and repeated below them. Both controls share page and boundary states; bottom navigation scrolls to the calendar start. Pages is synchronized.
+
 Viewing: range months are consecutive across years. Up to 12 months appear together; longer plans use previous/next pages. Navigation does not change draft data, assignments or bulk-fill boundaries.
 
 [Русский](RANGE_PLANS.md)

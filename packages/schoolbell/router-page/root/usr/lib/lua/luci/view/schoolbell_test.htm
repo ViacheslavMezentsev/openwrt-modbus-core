@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьник · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5101">
-<script src="/schoolbell-test/theme.js?v=5101"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5102">
+<script src="/schoolbell-test/theme.js?v=5102"></script></head>
 <body><main><header><div><p class="eyebrow">ШКОЛЬНИК / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьник</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
@@ -86,13 +86,12 @@
 <div class="editor-toolbar"><label>Название плана<input id="plan-name" maxlength="96"></label><label>Начало<input id="plan-start" type="date"></label><label>Окончание включительно<input id="plan-end" type="date"></label></div>
 <div class="editor-toolbar"><button id="plan-apply" type="button">Применить название и даты</button><button id="plan-cancel" type="button">Отменить ввод</button></div><p id="plan-form-status" role="status"></p>
 <p>Планы не пересекаются. Выбор плана меняет только просмотр. Новые даты тихие. Изменения сначала попадают в черновик.</p>
-<div id="months-navigation" class="editor-toolbar" hidden><button id="months-prev" type="button">← Предыдущие месяцы</button><span id="months-status" role="status" aria-live="polite"></span><button id="months-next" type="button">Следующие месяцы →</button></div>
 <p>По умолчанию нажатие даты открывает предпросмотр черновика без изменения плана. Для редактирования выберите цвет расписания или ластик и раскрасьте даты: нажимайте или ведите мышью с зажатой левой кнопкой. На планшете нажимайте даты. «Тихий день / ластик» снимает назначение. Планы автоматически не повторяются.</p>
 <p id="calendar-tool" role="status"></p><div id="plan-legend" class="plan-legend"></div>
 <details class="calendar-tools"><summary>Дополнительно: заполнить даты или удалить план</summary><label>Назначать дням<select id="plan-brush"></select></label><div class="editor-toolbar"><label>С даты<input id="range-first" type="date"></label><label>По дату<input id="range-last" type="date"></label>
 <label>Какие дни<select id="range-filter"><option value="all">Все дни</option><option value="weekdays">Пн–Пт</option><option value="weekends">Сб–Вс</option></select></label>
 <button id="range-apply" type="button">Назначить диапазон</button><button id="year-clear" type="button">Удалить выбранный план</button></div></details>
-<p id="plan-status" role="status"></p><div id="year-grid" class="year-grid"></div>
+<p id="plan-status" role="status"></p><div id="months-navigation" class="editor-toolbar" hidden><button id="months-prev" type="button">← Предыдущие месяцы</button><span id="months-status" role="status" aria-live="polite"></span><button id="months-next" type="button">Следующие месяцы →</button></div><div id="year-grid" class="year-grid"></div><div id="months-bottom-navigation" class="editor-toolbar" hidden><button id="months-bottom-prev" type="button">← Предыдущие месяцы</button><span id="months-bottom-status" role="status"></span><button id="months-bottom-next" type="button">Следующие месяцы →</button></div>
 </section>
 <section id="panel-preview" role="tabpanel" aria-labelledby="tab-preview" data-panel="preview" hidden>
 <h2>Предпросмотр черновика — не активного плана</h2>
@@ -102,7 +101,7 @@
 <ol id="preview-events"></ol>
 </section>
 </fieldset>
-<div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Отменить правки / загрузить сохранённое</button><button type="button" id="draft-compare">Сверить с роутером</button></div>
+<div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на устройстве</button><button type="button" id="schedule-reload">Отменить правки / загрузить сохранённое</button><button type="button" id="draft-compare">Сверить с роутером</button></div>
 <section id="draft-comparison" hidden aria-label="Сверка черновика"><h3>Локальные правки и сохранённая копия</h3><p id="draft-comparison-status" role="status"></p><p id="draft-local-summary"></p><p id="draft-router-summary"></p>
 <p>При различиях раскройте обе копии: здесь видны режим, расписания, мелодии и назначения дат. Сверка только читает данные.</p>
 <details><summary>Локальная копия — все поля</summary><pre id="draft-local-json" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
@@ -201,4 +200,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/session.js?v=5101"></script><script src="/schoolbell-test/backup.js?v=5101"></script><script src="/schoolbell-test/media.js?v=5101"></script><script src="/schoolbell-test/clock-trust.js?v=5101"></script><script src="/schoolbell-test/automatic.js?v=5101"></script><script src="/schoolbell-test/controls.js?v=5101"></script><script src="/schoolbell-test/app.js?v=5101"></script><script src="/schoolbell-test/ranges.js?v=5101"></script><script src="/schoolbell-test/schedules.js?v=5101"></script><script src="/schoolbell-test/dashboard.js?v=5101"></script></body></html>
+</main><script src="/schoolbell-test/session.js?v=5102"></script><script src="/schoolbell-test/backup.js?v=5102"></script><script src="/schoolbell-test/media.js?v=5102"></script><script src="/schoolbell-test/clock-trust.js?v=5102"></script><script src="/schoolbell-test/automatic.js?v=5102"></script><script src="/schoolbell-test/controls.js?v=5102"></script><script src="/schoolbell-test/app.js?v=5102"></script><script src="/schoolbell-test/ranges.js?v=5102"></script><script src="/schoolbell-test/schedules.js?v=5102"></script><script src="/schoolbell-test/dashboard.js?v=5102"></script></body></html>

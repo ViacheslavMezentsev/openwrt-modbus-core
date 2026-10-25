@@ -49,13 +49,17 @@ function fixture(storage={},initialRevision="r1"){
  const range=(start,end)=>({id:'p',name:'Range',start,end,schedule_ids:['s'],days:'.'.repeat(R.dates(start,end).length)});
  const visible=()=>y.get('year-grid').children.flatMap(m=>m.children[1].children.filter(d=>d.dataset.date));
  y.data.plans=[range('2027-12-31','2028-01-02')];await y.get('schedule-reload').click();
- assert.deepStrictEqual(visible().map(d=>d.dataset.date),['2027-12-31','2028-01-01','2028-01-02']);assert(y.get('months-navigation').hidden);
+ assert.deepStrictEqual(visible().map(d=>d.dataset.date),['2027-12-31','2028-01-01','2028-01-02']);assert(y.get('months-navigation').hidden);assert(y.get('months-bottom-navigation').hidden);
  y.data.plans=[range('2027-09-01','2028-09-02')];await y.get('schedule-reload').click();
  assert.equal(y.get('year-grid').children.length,12);assert.equal(visible()[0].dataset.date,'2027-09-01');assert.equal(visible().at(-1).dataset.date,'2028-08-31');
  assert(y.get('months-prev').disabled);assert(!y.get('months-next').disabled);assert(!y.window.schoolbellEditor.snapshot().dirty);
  await y.get('months-next').click();assert.equal(y.get('year-grid').children.length,1);assert.deepStrictEqual(visible().map(d=>d.dataset.date),['2028-09-01','2028-09-02']);assert(y.get('months-next').disabled);assert(!y.window.schoolbellEditor.snapshot().dirty);
  await y.brush('Normal').click();await visible()[1].click();assert(y.window.schoolbellEditor.snapshot().dirty);
  await y.get('months-prev').click();await y.get('months-next').click();assert.equal(visible()[1].title,'2028-09-02 · Normal');assert.equal(y.saves.length,0);assert.equal(y.posts.length,0);
+ assert(y.get('months-bottom-next').disabled);assert.equal(y.get('months-bottom-status').textContent,y.get('months-status').textContent);
+ await y.get('months-bottom-prev').click();assert(y.get('months-prev').disabled && y.get('months-bottom-prev').disabled);assert(!y.get('months-next').disabled && !y.get('months-bottom-next').disabled);
+ await y.get('months-bottom-next').click();assert.equal(visible()[1].title,'2028-09-02 · Normal');assert(y.get('months-next').disabled && y.get('months-bottom-next').disabled);
+ assert.equal(y.saves.length,0);assert.equal(y.posts.length,0);
  console.log('PASS consecutive cross-year months; bounded pages; navigation preserves draft and global assignment indices');
  let x=fixture();await x.tick();
  assert(x.brush('Просмотр дня')['aria-pressed']==='true');
