@@ -60,7 +60,7 @@ function M.new(io,options)
   local previous=last;last=p
   if previous then
    if previous.context~=p.context then saved_at=nil;transition('unconfirmed','context_changed');previous=nil
-   elseif p.before_ms<previous.after_ms then transition('review_required','monotonic_reversed')
+   elseif p.before_ms<previous.before_ms or p.after_ms<previous.after_ms then transition('review_required','monotonic_reversed')
    elseif p.after_ms-previous.before_ms>M.max_gap_ms then transition('review_required','observation_gap')
    else
     local delta=p.utc_ms-previous.utc_ms

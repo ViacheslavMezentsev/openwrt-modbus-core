@@ -36,3 +36,5 @@ Commit: temp → fsync → atomic replacement → directory fsync. Only successf
 Ambiguous threshold crossing requires review, not optimistic admission. Observation continues while awaiting the player; lost trust does not interrupt existing audio. Ordinary observation does not write flash, access networks or launch processes. Threshold changes never clear a block. Next: system adapter and observation integration, without claiming hardware accuracy.
 
 Revision 1.33 adds the [host model API and limitations](CLOCK_TRUST_MODEL.en.md). Planned checks above have partial isolated coverage; system integration, UI and router changes remain outside this stage.
+
+Revision 1.34: the [system adapter](CLOCK_SYSTEM.en.md) is implemented and host-tested. Earlier references to future system work now concern target validation and integration. Executor/UI integration remains pending.

@@ -98,3 +98,5 @@ The Feedback tab links to [Issues](https://github.com/ViacheslavMezentsev/openwr
 Specification 1.32 defines the reference format and observation budgets; isolated implementation is pending.
 
 [Isolated clock trust model](CLOCK_TRUST_MODEL.en.md): codec, fake clock/storage and host tests; no executor integration.
+
+[System clock/reference adapter](CLOCK_SYSTEM.en.md): isolated host ports, no router deployment.

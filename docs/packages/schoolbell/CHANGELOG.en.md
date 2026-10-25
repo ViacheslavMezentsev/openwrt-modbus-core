@@ -10,6 +10,8 @@
 
 ## [Unreleased]
 
+- Specification 1.34: BOOTTIME/REALTIME system ports and bounded FD reference storage, real host operations/fault tests; overlapping rounded observation brackets. No payload/executor/router changes.
+
 - Specification 1.33: isolated UTC-ms reference codec, atomic CAS store and clock trust model; host boundary/fault tests. Version 5.0.14 and payload unchanged.
 
 - Specification 1.32 accepts schoolbell-clock/1, hourly checkpointing and observation/confirmation budgets; TC-120–124 planned. Requirements only; no implementation or package version change.

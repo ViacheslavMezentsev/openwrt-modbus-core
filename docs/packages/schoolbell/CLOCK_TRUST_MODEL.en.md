@@ -34,3 +34,5 @@ Diagnostics retain at most 16 transitions plus a loss counter, not a durable jou
 ## Validation and limits
 
 test_clock_trust.lua runs in the normal host runner: schema/vector/limits, CAS, persistence-stage failures and reopening, boot/rollback/step, uncertain samples, TTL, observation continuity and hourly writes. Injected storage verifies logic, not physical power-loss durability. Production UI/API, system clock source/accuracy, RAM/CPU/flash and executor integration remain unverified. NTP is unchanged.
+
+Revision 1.34: the [system adapter](CLOCK_SYSTEM.en.md) is implemented and host-tested. Earlier references to future system work now concern target validation and integration. Executor/UI integration remains pending.
