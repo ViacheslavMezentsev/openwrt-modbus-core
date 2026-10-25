@@ -1,0 +1,33 @@
+#!/bin/sh
+set -eu
+[ -z "${IPKG_INSTROOT:-}" ] || exit 0
+umask 077
+for directory in /etc/schoolbell-editor /etc/modbus-schoolbell /etc/modbus-schoolbell/data; do
+    [ ! -L "$directory" ] || { echo "schoolbell: symlink directory" >&2; exit 1; }
+    if [ ! -e "$directory" ]; then mkdir -m 700 "$directory"; fi
+    [ -d "$directory" ] || exit 1
+    case "$directory:$(stat -c %a "$directory")" in
+        /etc/modbus-schoolbell:755|*:700) ;;
+        *) echo "schoolbell: unsafe directory permissions" >&2; exit 1 ;;
+    esac
+done
+# Disable startup before stopping; even a failed upgrade stays stopped after reboot.
+if [ -x /etc/init.d/schoolbell-auto ]; then
+    /etc/init.d/schoolbell-auto disable
+    /etc/init.d/schoolbell-auto stop
+fi
+pending=/etc/schoolbell-editor/package.pending
+lock=/tmp/schoolbell-sound-test.lock
+[ ! -L "$pending" ] && [ ! -L "$lock" ] || exit 1
+if [ -e "$pending" ]; then
+    [ -f "$pending" ] && [ "$(cat "$pending")" = schoolbell-ipk-1 ] || exit 1
+fi
+if ! mkdir -m 700 "$lock" 2>/dev/null; then
+    [ -f "$pending" ] && [ ! -L "$lock/package-owner" ] &&
+        [ "$(cat "$lock/package-owner" 2>/dev/null)" = schoolbell-ipk-1 ] || {
+        echo "schoolbell: active/unknown sound or media operation; do not delete its lock" >&2; exit 1;
+    }
+fi
+printf '%s\n' schoolbell-ipk-1 > "$lock/package-owner"
+printf '%s\n' schoolbell-ipk-1 > "$pending"
+sync

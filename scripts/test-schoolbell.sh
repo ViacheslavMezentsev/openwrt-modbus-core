@@ -13,3 +13,5 @@ sh packages/schoolbell/tests/test-lua-player.sh
 sh packages/schoolbell/tests/test-media-manager.sh
 
 lua5.1 packages/schoolbell/tests/test_sound_test.lua
+
+python3 packages/schoolbell/tests/test_offline_bundle.py

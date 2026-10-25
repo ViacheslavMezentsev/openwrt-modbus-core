@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""Verify pinned media and the media-only schoolbell preview IPK (no extraction)."""
+"""Verify pinned media and complete and historical preview schoolbell IPKs (no extraction)."""
 import hashlib
-import io
 import json
 from pathlib import Path
 import sys
-import tarfile
 
 root = Path(__file__).resolve().parent.parent
 media = root / 'packages/schoolbell/media'
@@ -20,16 +18,21 @@ assert source_sample.read_bytes() == sample, 'package source differs from pinned
 out = Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'out'
 packages = list(out.glob('modbus-schoolbell_*.ipk'))
 assert packages, 'schoolbell IPK missing'
+from schoolbell_ipk import read
 for package in packages:
-    with tarfile.open(package, 'r:gz') as outer:
-        with tarfile.open(fileobj=io.BytesIO(outer.extractfile('./control.tar.gz').read()), mode='r:gz') as control:
-            files = {(m.name[2:] if m.name.startswith('./') else m.name) for m in control if not m.isdir()}
-            assert files == {'control'}, 'unexpected lifecycle hook in preview'
-            text = control.extractfile('./control').read().decode()
-            assert 'Package: modbus-schoolbell\n' in text
-        with tarfile.open(fileobj=io.BytesIO(outer.extractfile('./data.tar.gz').read()), mode='r:gz') as data:
-            files = {(m.name[2:] if m.name.startswith('./') else m.name) for m in data if not m.isdir()}
-            expected = {'usr/share/modbus-schoolbell/NOTICE', 'usr/share/modbus-schoolbell/melodies/test.mp3'}
-            assert files == expected, 'unexpected preview payload (service/config/extra media)'
-            assert data.extractfile('./usr/share/modbus-schoolbell/melodies/test.mp3').read() == sample
-    print('[schoolbell] pinned media and preview payload OK:', package.name)
+    meta,control,data=read(package)
+    if 'usr/sbin/schoolbell-auto' not in data:
+        assert set(control)=={'control'}, 'invalid historical preview'
+        assert set(data)=={'usr/share/modbus-schoolbell/NOTICE','usr/share/modbus-schoolbell/melodies/test.mp3'}
+        assert tuple(map(int,meta['Version'].split('.'))) < (5,0,28), 'current package cannot be preview'
+    else:
+        assert set(control)=={'control','preinst','postinst','prerm'}
+        assert 'modbus-schoolbell-clock (= 1.0.0)' in meta['Depends']
+        assert data['usr/share/schoolbell-editor/VERSION'][0].decode().strip()==meta['Version']
+        assert all(not n.startswith(('etc/schoolbell-editor/','etc/modbus-schoolbell/')) for n in data), 'owned user data'
+        for name in ('etc/init.d/schoolbell-auto','usr/sbin/schoolbell-auto','usr/sbin/schoolbell-package'):
+            assert data[name][1]&0o111, name
+        for name in ('test','0','1','2','3','4'):
+            assert data['usr/share/schoolbell-sound-test/'+name+'.mp3'][0]==(media/(name+'.mp3')).read_bytes()
+        for name in ('preinst','postinst','prerm'):assert control[name][1]&0o111
+    print('[schoolbell] pinned media and IPK payload OK:',package.name)

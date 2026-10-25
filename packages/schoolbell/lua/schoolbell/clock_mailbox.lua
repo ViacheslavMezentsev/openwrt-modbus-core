@@ -18,6 +18,7 @@ function M.new(open,now)
   if ok then return result end
   -- Only failed lock acquisition is contention. Do not hide corrupt files/I/O as busy.
   if not fs and (result=='busy' or tostring(result):match(': busy$'))then return {ok=false,code='busy',accepted=false}end
+  if tostring(result):match('package_maintenance$')then return {ok=false,code='package_maintenance',accepted=false}end
   return {ok=false,code='mailbox_storage'}
  end
  local function read(fs,name)local raw=fs.read(name,4096);return raw and C.decode(raw)end
@@ -72,6 +73,14 @@ end
 function M.system()
  local root='/tmp/schoolbell-clock-control';local fs=require('nixio.fs')
  local function now()local f=assert(io.open('/proc/uptime','r'));local v=f:read(64);f:close();return assert(tonumber(v:match('^[%d.]+')))end
- return M.new(function()if not fs.lstat(root)then fs.mkdir(root,700)end;return require('schoolbell.media_fs').new(root)end,now)
+ return M.new(function()
+  local pending='/etc/schoolbell-editor/package.pending'
+  assert(not fs.lstat(pending),'package_maintenance')
+  if not fs.lstat(root)then assert(fs.mkdir(root,700))end
+  local handle=require('schoolbell.media_fs').new(root)
+  -- Close the race with preinst after lock acquisition, before any mailbox mutation.
+  if fs.lstat(pending)then handle.close();error('package_maintenance')end
+  return handle
+ end,now)
 end
 return M

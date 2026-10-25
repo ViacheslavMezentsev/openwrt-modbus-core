@@ -34,7 +34,7 @@ local function scenario(name,opts)
   now=opts.jump and t+60+rounds or now+(opts.slow and 4 or 1);up=up+(opts.slow and 4 or 1)
   if opts.late_confirm and rounds==2 then local q=assert(gate.request_confirmation());assert(gate.confirm(q.token,false).ok);active.generation=2;publish()end
  end}
- package.loaded['nixio.fs']={rename=function()last=status;return true end}
+ package.loaded['nixio.fs']={lstat=function(path)assert(path=='/unused/package.pending');return opts.package_pending and {type='reg'} or nil end,rename=function()last=status;return true end}
  os.time=function()return now end
  io.open=function(path,mode)
   if path=='/proc/uptime'then return {read=function()return tostring(up)..' 0' end,close=function()return true end}end
@@ -45,15 +45,16 @@ local function scenario(name,opts)
  assert(not ok and tostring(err):find('finished fixture'),tostring(err))
  io.open=realopen;os.time=realtime;require('schoolbell.automatic').events=originalEvents
  assert(plays==(opts.expected or 0),name..' plays '..plays)
- assert(claims==((opts.reboot or opts.idle or (opts.enforced and not opts.confirmed and not opts.late_confirm)) and 0 or 1),name..' claims '..claims)
+ assert(claims==((opts.package_pending or opts.reboot or opts.idle or (opts.enforced and not opts.confirmed and not opts.late_confirm)) and 0 or 1),name..' claims '..claims)
  if opts.idle then assert(checkpoints==(opts.jump and 2 or 1),name..' repeated flash writes '..checkpoints)end
- assert(last and last.state~='executor_error',name..' executor error')
+ assert(last and ((opts.package_pending and last.state=='executor_error') or (not opts.package_pending and last.state~='executor_error')),name..' executor error')
  if opts.enforced and not opts.confirmed and not opts.late_confirm then assert(checkpoints==0,'untrusted UTC persisted as watermark')end
  if opts.enforced then assert(last.clock_trust.enforced and clock_reads>0 or opts.unavailable);if opts.blocked then assert(not last.clock_trust.automatic_permitted)end end
  if opts.confirmed then assert(last.clock_trust.confirmed_utc==t-1 and last.clock_trust.confirmed_utc_ms==nil,'status seconds')end
  if opts.play_wait then assert(kills==0,'clock trust must not interrupt current sound');assert(clock_reads>=5,'no observations while waiting')end
  print('PASS worker '..name)
 end
+scenario('unfinished package never claims or plays',{package_pending=true})
 scenario('normal once, durable before spawn',{expected=1})
 scenario('mute never plays',{muted=true})
 scenario('busy never requeues',{busy=true})

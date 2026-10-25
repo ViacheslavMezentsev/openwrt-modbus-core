@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+[ -z "${IPKG_INSTROOT:-}" ] || exit 0
+/usr/sbin/schoolbell-package finish
+# LuCI dispatcher cache only, never user data or system configuration.
+rm -f /tmp/luci-indexcache
+/etc/init.d/schoolbell-auto enable
+/etc/init.d/schoolbell-auto start

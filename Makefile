@@ -24,7 +24,7 @@ build-demo: prepare
 	BUILD_VERSION=$(VERSION) PKG_DIR=pkg-demo OUT_DIR=$(OUT_DIR) ./scripts/build-ipk.sh
 
 build-schoolbell:
-	BUILD_VERSION=$(SCHOOLBELL_VERSION) PKG_DIR=pkg-schoolbell OUT_DIR=$(OUT_DIR) sh scripts/build-ipk.sh
+	python3 scripts/build-schoolbell.py --out $(OUT_DIR) --version $(SCHOOLBELL_VERSION)
 
 test:
 	./scripts/run-tests.sh

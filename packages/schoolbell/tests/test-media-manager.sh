@@ -65,3 +65,7 @@ node packages/schoolbell/tests/test-clock-ui.js
 python3 packages/schoolbell/tests/test_clock_system.py "$ROOT"
 "$CC" -std=c99 -O2 -Wall -Wextra -Werror -pedantic -shared -fPIC $LUA_CFLAGS "$ROOT/packages/schoolbell/tests/clock_faults.c" -lm -o "$build/schoolbell/clock_linux.so"
 python3 packages/schoolbell/tests/test_clock_system.py "$ROOT"
+
+python3 packages/schoolbell/tests/test_package_lifecycle.py
+
+lua5.1 packages/schoolbell/tests/test_package_mailbox.lua

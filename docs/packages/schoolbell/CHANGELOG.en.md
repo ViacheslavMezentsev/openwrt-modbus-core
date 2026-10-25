@@ -16,6 +16,8 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ## [Unreleased]
 
+- Schoolbell 5.0.28: full script IPK, safe auto-off lifecycle, pinned offline dependencies and joint core release manifest; host install/upgrade/rollback tests. No router installation.
+
 - 5.0.25: executor clock admission with explicit optional bypass and injected-clock tests. Not deployed. Native dependency and confirmation UI remain deployment prerequisites: [integration scope](CLOCK_EXECUTOR.en.md).
 
 

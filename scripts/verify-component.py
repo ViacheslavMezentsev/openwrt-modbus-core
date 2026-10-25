@@ -49,7 +49,7 @@ def verify(component, out):
         with tarfile.open(fileobj=io.BytesIO(outer.extractfile('./control.tar.gz').read()), mode='r:gz') as control:
             text = control.extractfile('./control').read().decode()
             assert 'Package: '+name+'\n' in text and 'Architecture: all\n' in text
-            for hook in ('postinst','prerm'):
+            for hook in ('preinst','postinst','prerm'):
                 if (source/'CONTROL'/hook).exists():
                     assert control.getmember('./'+hook).mode & 0o111, hook+' not executable'
         with tarfile.open(fileobj=io.BytesIO(outer.extractfile('./data.tar.gz').read()), mode='r:gz') as data:

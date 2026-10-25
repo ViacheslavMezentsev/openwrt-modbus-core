@@ -13,6 +13,14 @@ case "$OUT_DIR" in
     *) OUT_DIR="$PROJECT_ROOT/$OUT_DIR" ;;
 esac
 
+# Schoolbell runtime is generated from its authoritative engineering payload.
+if [ "$PKG_DIR" = pkg-schoolbell ]; then
+    if [ -n "${BUILD_VERSION:-}" ]; then
+        exec python3 "$PROJECT_ROOT/scripts/build-schoolbell.py" --out "$OUT_DIR" --version "$BUILD_VERSION"
+    fi
+    exec python3 "$PROJECT_ROOT/scripts/build-schoolbell.py" --out "$OUT_DIR"
+fi
+
 CONTROL_FILE="$PROJECT_ROOT/$PKG_DIR/CONTROL/control"
 if [ ! -f "$CONTROL_FILE" ]; then
     echo "ERROR: control file not found: $CONTROL_FILE" >&2

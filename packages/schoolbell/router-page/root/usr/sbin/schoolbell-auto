@@ -48,6 +48,7 @@ end
 local cached,active,engine,key,events,calendar_error,previous_state
 local started=Store.environment()
 local function tick()
+ assert(not fs.lstat(Store.root..'/package.pending'),'package operation pending')
  commands();Clock.observe()
  local raw=Store.raw();local env=Store.environment();local now,up=env.now,mono()
  if started.zone~=env.zone then os.exit(0)end -- procd respawns with libc's new TZ
