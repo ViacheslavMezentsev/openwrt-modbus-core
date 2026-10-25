@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5035">
-<script src="/schoolbell-test/theme.js?v=5035"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5036">
+<script src="/schoolbell-test/theme.js?v=5036"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
-<h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-status" role="status" hidden></span><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div></header><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
+<h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
 <summary><strong>Schoolbell <%=pcdata(module_version)%></strong> · <span id="duty-compact">Получаем состояние службы…</span> <span class="collapse-hint">Подробности ▾</span></summary>
 <div class="duty-panel" aria-label="Состояние для дежурного">
@@ -34,6 +34,7 @@
 <h2>Шпаргалка</h2>
 <p><strong>Правки → сохранить черновик → применить план.</strong> Сохранение само по себе не включает звонки. Верхняя плашка показывает состояние работающего плана.</p>
 <dl class="quick-guide">
+<div class="guide-route"><dt>Вход и выход</dt><dd>«Выйти» в шапке завершает доступ к управлению через LuCI. Для возвращения нажмите «Войти» и введите обычный пароль в этой же вкладке. Несохранённые правки восстановятся; запись плана и включение звонков остаются отдельными действиями. Выход не останавливает уже включённые автозвонки — для этого используйте «Отключить автозвонки» в настройках.</dd></div>
 <div class="guide-route"><dt>Подготовить звонки</dt><dd>«Настройки»: проверьте часовой пояс и дату → «Расписания»: создайте расписание, задайте время и мелодии → сохраните черновик. Подтверждение времени не переводит часы.</dd></div>
 <div class="guide-route"><dt>Звонить каждый день</dt><dd>«Настройки» → «Автоматическая работа: По расписанию» → выберите ежедневное расписание → сохраните. «Тихий день» означает отсутствие звонков.</dd></div>
 <div class="guide-route"><dt>Звонить по учебному календарю</dt><dd>«Календарь» → выберите год и расписание → включите раскраску и отметьте даты → сохраните. В «Настройках» выберите «По календарному плану» и сохраните. Даты без назначения тихие; следующий год заполняется отдельно.</dd></div>
@@ -198,4 +199,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/session.js?v=5035"></script><script src="/schoolbell-test/backup.js?v=5035"></script><script src="/schoolbell-test/media.js?v=5035"></script><script src="/schoolbell-test/clock-trust.js?v=5035"></script><script src="/schoolbell-test/automatic.js?v=5035"></script><script src="/schoolbell-test/controls.js?v=5035"></script><script src="/schoolbell-test/app.js?v=5035"></script><script src="/schoolbell-test/schedules.js?v=5035"></script><script src="/schoolbell-test/dashboard.js?v=5035"></script></body></html>
+</main><script src="/schoolbell-test/session.js?v=5036"></script><script src="/schoolbell-test/backup.js?v=5036"></script><script src="/schoolbell-test/media.js?v=5036"></script><script src="/schoolbell-test/clock-trust.js?v=5036"></script><script src="/schoolbell-test/automatic.js?v=5036"></script><script src="/schoolbell-test/controls.js?v=5036"></script><script src="/schoolbell-test/app.js?v=5036"></script><script src="/schoolbell-test/schedules.js?v=5036"></script><script src="/schoolbell-test/dashboard.js?v=5036"></script></body></html>

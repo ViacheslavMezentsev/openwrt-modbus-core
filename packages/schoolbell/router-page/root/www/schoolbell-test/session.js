@@ -84,7 +84,7 @@
       if(isAuth(response)){status.textContent='Сеанс уже недоступен. Правки остаются в этой вкладке.';return;}
       if(!response.ok)throw Error('logout');var value=response.sessionValue;if(!value.ok || value.logged_out!==true)throw Error('logout');
       status.textContent='Сеанс завершён.';if(!automatic)navigate();
-    }catch(_){status.textContent='Выход на роутере не подтверждён. Команды этой вкладки заблокированы; после восстановления связи проверьте сеанс. Правки сохранены в памяти.';}
+    }catch(_){status.textContent='Не удалось подтвердить выход. Доступ к управлению приостановлен. Нажмите «Войти», чтобы вернуться; правки остаются в этой вкладке.';}
     finally{leaving=false;check.disabled=false;}
   }
   logout.addEventListener('click',function(){return leave(false);});

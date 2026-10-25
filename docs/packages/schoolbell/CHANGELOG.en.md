@@ -1,5 +1,7 @@
 # Changelog
 
+5.0.36: login/logout status moved out of header controls into a normal-sized status line; Login styled as a button. Added a Login and Logout cheat-sheet route; Pages shares the interface.
+
 5.0.35 (host): compact same-tab login with temporary draft handoff and no visible timer. A separate [named-range prototype](RANGE_PLANS.en.md) is included in Pages; live storage remains year-based. No router installation in this step.
 
 Schoolbell 5.0.34: session recovery without replay or replacing editor changes, CSRF-protected logout, configurable browser idle countdown, striped cheat-sheet routes and separate behavior notes. Host only; Pages synchronized.
