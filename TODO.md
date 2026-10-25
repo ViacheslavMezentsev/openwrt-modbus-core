@@ -2,6 +2,11 @@
 
 ## Current state and next steps
 
+- [x] Static [UI completeness/security plan](docs/packages/schoolbell/UI_COMPLETENESS.en.md): UX-01–12, proposed C1–C6/S1–S2, endpoint acceptance SEC-01–06; no live security certification.
+- [ ] C1/S1 next: explicit dependencies before deleting fixed/annual references or clearing the last year; preserve local edits during reconciliation; audit session/CSRF and normal logout/expiry. No silent fixed→quiet or annual→fixed transitions.
+- [ ] Agree and implement C2–C6/S2 separately: browser clock setting, active preview, safe media rename/delete, bounded undo, complete import/onboarding and server-enforced roles/TLS profile. Do not grant root credentials as a substitute for operator permissions.
+
+
 - [x] Current 5.0.31 user guide in Markdown (RU/EN), based on the installed UI; startup/time and browser-preview limitations are explicit.
 - [ ] Validate the guide with an independent operator on desktop/touch during AC-10/12; documentation alone does not close usability acceptance.
 

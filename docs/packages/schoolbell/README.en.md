@@ -1,5 +1,7 @@
 # Schoolbell package
 
+[UI journeys, symmetric actions and security plan](UI_COMPLETENESS.en.md) — проект для согласования / draft.
+
 [Schoolbell user guide](USER_GUIDE.en.md) — schoolbell 5.0.31.
 
 [Startup audit and host checks](STARTUP_AUDIT.en.md): boot/TZ, clock reference and an independent 15+6 oracle; no hardware acceptance.

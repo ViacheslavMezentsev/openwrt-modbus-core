@@ -47,7 +47,9 @@ Select a schedule or «+ Создать», set a name and palette color. «+ Д�
 adds a row: local school time HH:MM, main melody, enabled flag and preliminary flag.
 The preliminary melody and common offset of 1–10 minutes are in Settings.
 An empty schedule is silent. «Копировать» makes a variant. Remove calendar/fixed
-references before deleting a used schedule. «Очистить строки» clears draft rows.
+references before deleting a used schedule. Annual references block deletion; a fixed
+selection may currently become Quiet automatically. Check the mode before saving;
+explicit confirmation of this transition is planned. «Очистить строки» clears draft rows.
 
 Avoid two events at the same minute, including preliminary bells: the current
 executor rejects such a day, rather than queuing melodies. Save edits, then separately
