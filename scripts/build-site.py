@@ -39,6 +39,7 @@ values={'trust_url':'./demo-api/clock-trust','backup_url':'./demo-api/backup','m
 for key,value in values.items():text=text.replace('<%=pcdata('+key+')%>',html.escape(value,quote=True))
 text=text.replace("<%=url('admin')%>",'../').replace('← Управление роутером LuCI','← О проекте')
 text=text.replace('/schoolbell-test/','./assets/')
+text=text.replace('Сверить с роутером','Сверить с локальной моделью').replace('Копия роутера','Сохранённая копия демо').replace('Взять копию роутера','Взять сохранённую копию демо')
 text=text.replace('<p class="intro">','<aside class="notice"><strong>ДЕМО · оборудование не подключено.</strong> Расписания и часовой пояс изменяются только в этом браузере. Автозвонков нет. <span id="demo-storage">Данные демо сохраняются локально.</span> <button id="demo-reset" type="button">Сбросить демо</button></aside><p class="intro">',1)
 text=text.replace('Подготовьте расписания и сохраните их на роутере.','Попробуйте расписания и календарь на тестовых данных.')
 text=text.replace('Инженерная установка','Демонстрация интерфейса').replace('На роутере · оценка между опросами','Демо-часы · выбранная зона').replace('Сохраняется на роутере','Сохраняется в браузере').replace('Настройка сохраняется на роутере и действует для всех его приложений.','Настройка меняет только часовой пояс этого демо, не устройства или компьютера.')

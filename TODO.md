@@ -3,11 +3,12 @@
 ## Current state and next steps
 
 - [x] Static [UI completeness/security plan](docs/packages/schoolbell/UI_COMPLETENESS.en.md): UX-01–12, proposed C1–C6/S1–S2, endpoint acceptance SEC-01–06; no live security certification.
-- [ ] C1/S1 next: explicit dependencies before deleting fixed/annual references or clearing the last year; preserve local edits during reconciliation; audit session/CSRF and normal logout/expiry. No silent fixed→quiet or annual→fixed transitions.
+- [x] C1 initial UI: fixed/annual deletion guards, explicit last-year transition and two-copy reconciliation with CAS; shared Pages regressions, host-only 5.0.32.
+- [ ] C1 acceptance / S1 next: verify editor changes on the router and publish the updated Pages demo after merge; audit session/CSRF and normal logout/expiry. Dependency navigation and further UX items remain in the completeness plan.
 - [ ] Agree and implement C2–C6/S2 separately: browser clock setting, active preview, safe media rename/delete, bounded undo, complete import/onboarding and server-enforced roles/TLS profile. Do not grant root credentials as a substitute for operator permissions.
 
 
-- [x] Current 5.0.31 user guide in Markdown (RU/EN), based on the installed UI; startup/time and browser-preview limitations are explicit.
+- [x] Current 5.0.32 user guide in Markdown (RU/EN), including host-checked editor changes; router remains 5.0.31; startup/time and browser-preview limitations are explicit.
 - [ ] Validate the guide with an independent operator on desktop/touch during AC-10/12; documentation alone does not close usability acceptance.
 
 - [x] Draft [schoolbell 5.x acceptance programme](docs/packages/schoolbell/ACCEPTANCE.en.md): AC-01–12, appendix B parity, release blockers and evidence rules; documentation only, not product PASS.
@@ -44,8 +45,8 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.45.
-The engineering application is packaged as a complete 5.0.31 IPK with an offline
+User-facing scope follows core draft 1.33 and schoolbell draft 1.46.
+The engineering application is packaged as a complete 5.0.32 IPK (host; installed target 5.0.31) with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 
 - [ ] P00 — Finish the minimal API contract: the Unix stream v1/live-no-replay/session profile is accepted (core 1.10); finalize codec/field types, quotas, clock validity/correction, calendar boundaries and pause/pending policy. Record unresolved numeric budgets as measurements, not guarantees.

@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Schoolbell 5.0.32: deleting a fixed selection requires explicit replacement; clearing the last year explains fixed/quiet. Reconciliation retains local edits, reads both copies and never repeats writes/activation; subsequent save retains CAS. Pages shares UI and regressions. Host only, no installation or publication.
+
 - Added a static schoolbell journey/completeness plan: deletion dependencies, undo/reconciliation, active preview, time/media and LuCI roles. Recorded HTTP/admin-login limitations; no implementation or router changes.
 
 - Added the schoolbell 5.0.31 Markdown user guide: startup, schedules/year plan, sound, media, time, backups and troubleshooting, including current UI limitations. No runtime or router changes.

@@ -10,6 +10,7 @@
   var name=document.getElementById('schedule-name');
   var rows=document.getElementById('schedule-rows');
   var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false, activationLock=false;
+  var compared=null;
   var mediaNames={test:'Тестовый звонок','0':'[Короткая] Время','1':'Шутка Баха','2':'Гостья из XXI','3':'Князь Игорь','4':'Усатый нянь'};
   function mediaLabel(id){return (mediaNames[id] || ('Пользовательская '+id.slice(4)))+' · '+id;}
   window.addEventListener('schoolbell-media',function(e){e.detail.forEach(function(v){mediaNames[v.id]=(v.title || v.name)+(v.source==='empty'?' · пустой слот':'');});document.querySelectorAll('#manual-media option,#pre-media option,#schedule-rows select option').forEach(function(o){o.textContent=mediaLabel(o.value);});});
@@ -149,13 +150,16 @@
     fields.disabled=locked || !draft;
     save.disabled=locked || !draft || !dirty || reconcile;
     reload.disabled=locked;
+    document.getElementById('draft-compare').disabled=locked || !draft;
+    document.getElementById('draft-keep-local').disabled=locked || !compared;
+    document.getElementById('draft-use-router').disabled=locked || !compared;
     document.getElementById('settings-save').disabled=locked || !dirty || reconcile;
     document.getElementById('settings-result').textContent=result.textContent;
     badge.textContent=busy?'Обмен с роутером…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Черновик сохранён';
     badge.dataset.dirty=dirty?'true':'false';
     window.dispatchEvent(new CustomEvent('schoolbell-editor-state'));
   }
-  function changed() { document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Черновик изменён. Обновите предпросмотр.'; dirty=true; result.textContent='Изменения только в браузере. Нажмите «Сохранить черновик». Активный план не меняется.'; state(); }
+  function changed() { compared=null;document.getElementById('draft-comparison').hidden=true; document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Черновик изменён. Обновите предпросмотр.'; dirty=true; result.textContent='Изменения только в браузере. Нажмите «Сохранить черновик». Активный план не меняется.'; state(); }
   function textOption(value,text) { var o=document.createElement('option'); o.value=value; o.textContent=text; return o; }
   function render() {
     // Legacy drafts are only materialized in browser memory; disk changes on explicit save.
@@ -172,11 +176,10 @@
     document.getElementById('pre-minutes').value=draft.pre_minutes;
     ['manual-media','pre-media'].forEach(function(id){var box=document.getElementById(id);box.replaceChildren();mediaIds.forEach(function(m){box.appendChild(textOption(m,mediaLabel(m)));});box.value=id==='manual-media'?(draft.manual_media || 'test'):draft.pre_media;box.disabled=false;});
     if(!draft.mode)draft.mode=(draft.plans || []).length?'annual':'fixed';
-    if(draft.mode==='annual' && !(draft.plans || []).length){draft.mode='fixed';draft.fixed_schedule='quiet';}
     var mode=document.getElementById('work-mode');mode.disabled=false;mode.value=draft.mode;mode.querySelector('[value="annual"]').disabled=!(draft.plans || []).length;
     var fixed=document.getElementById('fixed-schedule');fixed.replaceChildren(textOption('quiet','Тихий день'));
     draft.schedules.forEach(function(s){fixed.appendChild(textOption(s.id,s.name));});
-    if(!draft.schedules.some(function(s){return s.id===draft.fixed_schedule;}))draft.fixed_schedule='quiet';
+    if(draft.fixed_schedule===undefined)draft.fixed_schedule='quiet';
     fixed.value=draft.fixed_schedule;fixed.disabled=draft.mode!=='fixed';document.getElementById('pre-minutes').disabled=false;
     document.getElementById('work-mode-hint').textContent=draft.mode==='annual'?'Используется назначение датам; даты без назначения и годы без плана тихие.':'Одно расписание на каждый день. По умолчанию — тихий день.';
     rows.replaceChildren();
@@ -212,7 +215,7 @@
     space:'Недостаточно свободного места с защитным запасом. Черновик в браузере сохранён.',
     recovery_required:'Сохранённые данные повреждены или неполны. Они не заменены. Нужна проверка по SSH.',
     storage_unavailable:'Хранилище занято или недоступно. Изменения в браузере сохранены.',
-    storage_uncertain:'Результат записи не подтверждён. Не повторяем сохранение: загрузите данные роутера и сравните.',
+    storage_uncertain:'Результат записи не подтверждён. Не повторяем сохранение: нажмите «Сверить с роутером».',
     revision:'Неизвестная ревизия. Загрузите данные роутера.',size:'Превышен размер черновика: 12 КиБ.'
   };
   async function request(url,options) {
@@ -231,11 +234,59 @@
     try {
       var value=await request(root.dataset.load);
       if(!value.ok) { result.textContent=errors[value.code] || 'Ошибка чтения.'; reconcile=true; return; }
-      document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; brush='view'; render();
+      document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; compared=null;document.getElementById('draft-comparison').hidden=true; brush='view'; render();
       result.textContent=revision==='empty'?'Сохранённых расписаний ещё нет. Создайте первое.':'Черновик прочитан с роутера. Состояние автозвонков указано в верхней плашке.';
     } catch (_) { result.textContent='Не удалось загрузить данные. Проверьте соединение и вход LuCI.'; }
     finally { busy=false; state(); }
   }
+  function canonical(value) {
+    if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';
+    if(value && typeof value==='object')return '{'+Object.keys(value).sort().map(function(k){return JSON.stringify(k)+':'+canonical(value[k]);}).join(',')+'}';
+    return JSON.stringify(value);
+  }
+  function normalize(value) {
+    var data=JSON.parse(JSON.stringify(value));
+    data.schedules.forEach(function(s,i){if(s.color===undefined)s.color=i%16+1;});
+    if(data.mode===undefined)data.mode=(data.plans || []).length?'annual':'fixed';
+    if(data.fixed_schedule===undefined)data.fixed_schedule='quiet';
+    return data;
+  }
+  function describe(data) {
+    var mode=data.mode==='annual'?'Годовой план':'По расписанию';
+    var fixed=data.schedules.find(function(s){return s.id===data.fixed_schedule;});
+    return mode+' · ежедневное: '+(fixed?fixed.name:'Тихий день')+' · расписания: '+data.schedules.map(function(s){return s.name+' ('+s.rows.length+' строк)';}).join(', ')+' · годы: '+(data.plans || []).map(function(p){return p.year+' ('+p.days.replace(/\./g,'').length+' назначений)';}).join(', ')+' · предзвонок: '+data.pre_minutes+' мин, '+data.pre_media+' · ручной: '+(data.manual_media || 'test');
+  }
+  async function compare() {
+    if(busy || activationLock || !draft)return;
+    busy=true;compared=null;document.getElementById('draft-comparison').hidden=true;state();
+    try {
+      var value=await request(root.dataset.load);
+      if(!value.ok)throw Error('read');
+      var remote=normalize(value.data);
+      compared={data:remote,revision:value.revision};reconcile=true;
+      document.getElementById('draft-local-summary').textContent='Локально: '+describe(draft);
+      document.getElementById('draft-router-summary').textContent='Сохранено: '+describe(remote);
+      document.getElementById('draft-local-json').textContent=JSON.stringify(draft,null,2);
+      document.getElementById('draft-router-json').textContent=JSON.stringify(remote,null,2);
+      document.getElementById('draft-comparison-status').textContent=(canonical(draft)===canonical(remote)?'Данные совпадают.':'Данные различаются.')+' На роутере: '+value.revision+'. Выберите, какую копию оставить в редакторе. Это не сохранение и не включение звонков.';
+      document.getElementById('draft-comparison').hidden=false;
+      result.textContent='Сверка прочитана. Локальные правки сохранены; выберите копию ниже.';
+    } catch(_){reconcile=true;result.textContent='Сверка недоступна. Локальные правки сохранены. Проверьте соединение и вход LuCI, затем повторите чтение.';}
+    finally{busy=false;state();}
+  }
+  function chooseCompared(local) {
+    if(busy || activationLock || !compared)return;
+    if(!window.confirm(local?'Оставить локальную копию для следующего явного сохранения поверх проверенной версии роутера? Изменения другого редактора могут быть заменены.':'Заменить правки в браузере проверенной копией роутера?'))return;
+    var same=canonical(draft)===canonical(compared.data);
+    if(!local)draft=compared.data;
+    revision=compared.revision;dirty=local && !same;reconcile=false;compared=null;
+    document.getElementById('draft-comparison').hidden=true;
+    document.getElementById('preview-events').replaceChildren();document.getElementById('preview-status').textContent='Черновик сверен. Обновите предпросмотр.';
+    render();result.textContent=dirty?'Локальные правки оставлены. Для записи нажмите «Сохранить черновик». Активный план не менялся.':'Копия сверена. Автозвонки не включались.';state();
+  }
+  document.getElementById('draft-compare').addEventListener('click',compare);
+  document.getElementById('draft-keep-local').addEventListener('click',function(){chooseCompared(true);});
+  document.getElementById('draft-use-router').addEventListener('click',function(){chooseCompared(false);});
   select.addEventListener('change',function () { selected=select.value; render(); });
   name.addEventListener('input',function () {
     if(!current()) return; current().name=name.value;
@@ -254,9 +305,11 @@
     draft.schedules.push(s); selected=s.id; changed(); render();
   });
   document.getElementById('schedule-delete').addEventListener('click',function () {
-    if(!current() || !window.confirm('Удалить расписание «'+current().name+'» из черновика?')) return;
+    if(!current() || busy || activationLock)return;
+    if(draft.fixed_schedule===selected){result.textContent='Это ежедневное расписание. В «Настройках» явно выберите другое или «Тихий день», затем повторите удаление. Активный план не меняется.';return;}
     var used=(draft.plans || []).some(function(p){var i=p.schedule_ids.indexOf(selected);return i>=0 && p.days.includes(String.fromCharCode(65+i));});
     if(used){result.textContent='Расписание назначено датам. Сначала снимите назначения во всех годах.';return;}
+    if(!window.confirm('Удалить расписание «'+current().name+'» из черновика? Активный план не изменится.'))return;
     (draft.plans || []).forEach(prune);
     draft.schedules=draft.schedules.filter(function (s) { return s.id!==selected; }); selected=null; changed(); render();
   });
@@ -281,7 +334,7 @@
       }
       document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; render();
       result.textContent='Сохранено на роутере. Активный план не меняется до отдельного применения.'+(value.journal_warning?' Внимание: событие не удалось записать в журнал.':'');
-    } catch (_) { reconcile=true; result.textContent='Ответ потерян: запись могла завершиться. Правки остались в браузере. Загрузите данные роутера и сравните.'; }
+    } catch (_) { reconcile=true; result.textContent='Ответ потерян: запись могла завершиться. Правки остались в браузере. Нажмите «Сверить с роутером».'; }
     finally { busy=false; state(); }
   });
   document.getElementById('year-show').addEventListener('click',function(){
@@ -299,9 +352,11 @@
     if(indices.length && window.confirm('Назначить «'+scheduleName(brush)+'» для '+indices.length+' дат?'))paint(indices);
   });
   document.getElementById('year-clear').addEventListener('click',function(){
-    if(!plan(year))return;
-    if(window.confirm('Снять все назначения '+year+' года? Сохранённые данные изменятся только после сохранения.')){
-      draft.plans=draft.plans.filter(function(p){return p.year!==year;});changed();renderAnnual();
+    if(!plan(year) || busy || activationLock)return;
+    var lastAnnual=draft.mode==='annual' && draft.plans.length===1;
+    var consequence=lastAnnual?' Это последний год. В черновике будет выбран режим «По расписанию» и «Тихий день».':'';
+    if(window.confirm('Снять все назначения '+year+' года?'+consequence+' Активный план не изменится; черновик потребуется сохранить и применить отдельно.')){
+      draft.plans=draft.plans.filter(function(p){return p.year!==year;});if(lastAnnual){draft.mode='fixed';draft.fixed_schedule='quiet';}changed();render();
     }
   });
   document.getElementById('preview-day').addEventListener('click',async function(){

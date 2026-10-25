@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5027">
-<script src="/schoolbell-test/theme.js?v=5027"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5032">
+<script src="/schoolbell-test/theme.js?v=5032"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button></div></header><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
@@ -65,7 +65,12 @@
 <ol id="preview-events"></ol>
 </section>
 </fieldset>
-<div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Загрузить сохранённое</button></div>
+<div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на роутере</button><button type="button" id="schedule-reload">Отменить правки / загрузить сохранённое</button><button type="button" id="draft-compare">Сверить с роутером</button></div>
+<section id="draft-comparison" hidden aria-label="Сверка черновика"><h3>Локальные правки и сохранённая копия</h3><p id="draft-comparison-status" role="status"></p><p id="draft-local-summary"></p><p id="draft-router-summary"></p>
+<p>При различиях раскройте обе копии: здесь видны режим, расписания, мелодии и назначения годов. Сверка только читает данные.</p>
+<details><summary>Локальная копия — все поля</summary><pre id="draft-local-json" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
+<details><summary>Копия роутера — все поля</summary><pre id="draft-router-json" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
+<button type="button" id="draft-keep-local">Оставить локальные правки</button><button type="button" id="draft-use-router">Взять копию роутера</button></section>
 </section>
 <section id="panel-media" role="tabpanel" aria-labelledby="tab-media" data-panel="media" hidden>
 <section class="details"><h2>Мелодии</h2>
@@ -158,4 +163,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/backup.js?v=5027"></script><script src="/schoolbell-test/media.js?v=5027"></script><script src="/schoolbell-test/clock-trust.js?v=5027"></script><script src="/schoolbell-test/automatic.js?v=5027"></script><script src="/schoolbell-test/controls.js?v=5027"></script><script src="/schoolbell-test/app.js?v=5027"></script><script src="/schoolbell-test/schedules.js?v=5027"></script><script src="/schoolbell-test/dashboard.js?v=5027"></script></body></html>
+</main><script src="/schoolbell-test/backup.js?v=5032"></script><script src="/schoolbell-test/media.js?v=5032"></script><script src="/schoolbell-test/clock-trust.js?v=5032"></script><script src="/schoolbell-test/automatic.js?v=5032"></script><script src="/schoolbell-test/controls.js?v=5032"></script><script src="/schoolbell-test/app.js?v=5032"></script><script src="/schoolbell-test/schedules.js?v=5032"></script><script src="/schoolbell-test/dashboard.js?v=5032"></script></body></html>

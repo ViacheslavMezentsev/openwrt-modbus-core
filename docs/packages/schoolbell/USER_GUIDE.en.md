@@ -2,7 +2,7 @@
 
 [Русский](USER_GUIDE.md)
 
-For **schoolbell 5.0.31**, dated 2026-10-25. This describes the installed interface,
+For **schoolbell 5.0.32** (host-checked; installed 5.0.31 is not updated yet), dated 2026-10-25. This describes the installed interface,
 not the public mockup. Supported fixture: OpenWrt 19.07.9, TL-MR3020 v3.30 and USB
 audio. An administrator installs the equipment and [package](PACKAGING.en.md).
 Individual functions have been tested; full endurance, cold-start and power-loss
@@ -47,9 +47,7 @@ Select a schedule or «+ Создать», set a name and palette color. «+ Д�
 adds a row: local school time HH:MM, main melody, enabled flag and preliminary flag.
 The preliminary melody and common offset of 1–10 minutes are in Settings.
 An empty schedule is silent. «Копировать» makes a variant. Remove calendar/fixed
-references before deleting a used schedule. Annual references block deletion; a fixed
-selection may currently become Quiet automatically. Check the mode before saving;
-explicit confirmation of this transition is planned. «Очистить строки» clears draft rows.
+references before deleting a used schedule. Annual and fixed references block deletion until explicitly replaced. Draft edits do not alter the active copy. «Очистить строки» clears draft rows.
 
 Avoid two events at the same minute, including preliminary bells: the current
 executor rejects such a day, rather than queuing melodies. Save edits, then separately
@@ -63,7 +61,7 @@ dates individually. «Тихий день / ластик» removes assignments. 
 when finished. Save, choose «По годовому плану» in Settings, save that choice and apply.
 
 Advanced controls fill a date range (all days, weekdays or weekends) or clear a year.
-Clearing a draft does not stop the active copy until applied. Unassigned dates and
+Clearing a draft does not stop the active copy until applied. Clearing the last annual year explicitly warns about switching the draft to Fixed/Quiet; cancellation preserves the mode and assignments. Unassigned dates and
 years without a plan are quiet; years never repeat automatically. Weekends are only
 quiet if you assign them that way. A quiet day also suppresses a preliminary bell
 that would fall on it from the neighboring date.
@@ -81,8 +79,13 @@ time/audio; it does not check timezone transitions or execution readiness.
 | «Применить сохранённый план и включить» | Explicitly activate the saved copy after confirmation |
 | «Отключить автозвонки» | Disable automatic bells without deleting the plan |
 
-Read the separate draft and active-plan lines. Reconcile another editor's changes
-or an unknown save outcome before applying. Once enabled, bells work with the browser
+Read the separate draft and active-plan lines. For conflicts or unknown save outcomes,
+click «Сверить с роутером». Local edits remain; read the two summaries and expand full
+fields as needed. «Оставить локальные правки» prepares a separate future save against
+the inspected revision; «Взять копию роутера» discards local edits only after confirmation.
+Matching copies after a lost reply need no repeated write. Editing invalidates the
+comparison. Failed reads preserve edits and require another comparison. Choosing a
+copy never activates bells. Once enabled, bells work with the browser
 closed. Missed bells are not replayed. Use Mute for urgently stopping current sound;
 disabling automatic bells alone does not prohibit manual ringing.
 
