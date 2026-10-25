@@ -14,7 +14,7 @@ function M.new(fs,options)
   local t=C.decode(raw);C.fields(t,{'melodies'});check(J.kind(t.melodies)=='array' and #t.melodies<=32,'melodies')
   local ids,refs,count={},{},0
   for _,m in ipairs(t.melodies)do
-   C.fields(m,{'id','name','revisions'});check(id(m.id) and not ids[m.id] and type(m.name)=='string' and #m.name<=256,'melody');ids[m.id]=true
+   C.fields(m,m.title~=nil and {'id','name','title','revisions'} or {'id','name','revisions'});if m.title~=nil then check(type(m.title)=='string' and #m.title>0 and #m.title<=96 and not m.title:find('[%c]'),'title')end;check(id(m.id) and not ids[m.id] and type(m.name)=='string' and #m.name<=256,'melody');ids[m.id]=true
    check(J.kind(m.revisions)=='array' and #m.revisions>0,'revisions');local seen={}
    for _,v in ipairs(m.revisions)do
     C.fields(v,{'revision','source','size_bytes','audio'});C.fields(v.audio,{'format','duration_ms','sample_rate_hz','channels'})

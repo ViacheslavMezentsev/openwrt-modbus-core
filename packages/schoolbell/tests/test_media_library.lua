@@ -1,7 +1,7 @@
 local L=require('schoolbell.media_library');local F=require('schoolbell.media_fs');local C=require('schoolbell.media_codec')
 local root=assert(arg[1]);local host=os.getenv('MEDIA_HOST') and require('schoolbell.media_fs_host') or nil
 local fs=F.new(root,host);local lib=L.open(fs,root,function()return true end)
-local initial=lib.list();assert(initial.generation==0 and #initial.slots==11);assert(initial.storage.total_kib>0 and initial.storage.free_kib>=0 and initial.storage.media_kib==0 and initial.storage.media_limit_kib==2048)
+local initial=lib.list();assert(initial.generation==0 and #initial.slots==14);assert(initial.storage.total_kib>0 and initial.storage.free_kib>=0 and initial.storage.media_kib==0 and initial.storage.media_limit_kib==2048)
 assert(lib.resolve('test')=='/usr/share/schoolbell-sound-test/test.mp3')
 local function upload(source,id,op,gen)
  if fs.stat('upload.part')then fs.unlink('upload.part')end

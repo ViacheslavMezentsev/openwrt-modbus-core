@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=media5010">
-<script src="/schoolbell-test/theme.js"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5014">
+<script src="/schoolbell-test/theme.js?v=5014"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Mute · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button></div></header><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
@@ -66,38 +66,14 @@
 <section id="panel-media" role="tabpanel" aria-labelledby="tab-media" data-panel="media" hidden>
 <section class="details"><h2>Мелодии</h2>
 <div class="storage-status"><strong>Постоянное хранилище роутера</strong><p id="storage-text" role="status">Обновите список, чтобы узнать свободное место.</p><progress id="storage-bar" max="100" value="0" aria-label="Занятое место в постоянном хранилище" hidden></progress><p id="storage-reserve"></p></div>
-<p>Шесть штатных мелодий защищены от замены и удаления. Для ваших файлов есть пять отдельных позиций user1–user5. При замене пользовательской мелодии расписания сохраняют ссылку на её позицию.</p>
+<p>Шесть штатных мелодий защищены от замены и удаления. Для ваших файлов есть восемь отдельных позиций user1–user8. При замене пользовательской мелодии расписания сохраняют ссылку на её позицию.</p>
 <p>Перед заменой отключите автозвонки в настройках. Во время загрузки проигрывание заблокировано. MP3: до 512 КиБ и 60 секунд; свободное место проверяется на роутере. Файл проверяется без звука.</p>
-<div class="table-scroll"><table class="schedule-table"><thead><tr><th>Позиция</th><th>Файл</th><th>Размер</th><th>Источник</th></tr></thead><tbody id="media-rows"></tbody></table></div>
-<label>Позиция для замены<select id="media-slot"><option>user1</option><option>user2</option><option>user3</option><option>user4</option><option>user5</option></select></label>
+<div class="table-scroll"><table class="schedule-table"><thead><tr><th>Позиция</th><th>Название</th><th>Файл</th><th>Размер</th><th>Источник</th></tr></thead><tbody id="media-rows"></tbody></table></div>
+<label>Позиция для замены<select id="media-slot"><option>user1</option><option>user2</option><option>user3</option><option>user4</option><option>user5</option><option>user6</option><option>user7</option><option>user8</option></select></label>
+<label>Название мелодии<input id="media-title" type="text" maxlength="96" placeholder="Например: Начало урока"></label>
 <label>Новый MP3<input id="media-file" type="file" accept=".mp3,audio/mpeg"></label>
 <div class="editor-toolbar"><button id="media-upload" type="button" disabled>Загрузить и заменить</button><button id="media-refresh" type="button">Обновить список</button><button id="media-listen" type="button" disabled>Послушать выбранную здесь</button></div>
 <audio id="media-audio" controls preload="none"></audio><p id="media-status" role="status">Загрузите список мелодий.</p>
-</section></section>
-<section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" data-panel="sound" hidden>
-<section class="details"><h2>Звонки и режим работы</h2>
-<label>Громкость колонок роутера<select id="router-volume" disabled>
-<option value="-36">Едва слышно (−36 дБ)</option><option value="-24">Очень тихо (−24 дБ)</option><option value="-12">Тихо (−12 дБ)</option><option value="-6">Средне (−6 дБ)</option><option value="0">Без ослабления (0 дБ)</option></select></label>
-<button type="button" id="volume-save" disabled>Применить громкость</button><p id="volume-status" role="status"></p>
-<p>Громкость применяется к следующему звонку на роутере: ручному, тестовому и автоматическому. Для немедленной остановки используйте Mute. Звук браузера регулируется на вашем устройстве.</p>
-<p>Мелодия оперативного звонка применяется после сохранения. Автозвонки работают без открытого браузера по отдельно применённой копии плана.</p>
-<label>Мелодия оперативного звонка<select id="manual-media" disabled></select></label>
-<label>Мелодия предзвонка<select id="pre-media" disabled></select></label>
-<label>Предзвонок за<span class="minutes-field"><input id="pre-minutes" type="number" min="1" max="10" step="1" disabled> минут</span></label>
-<label>Автоматическая работа<select id="work-mode" disabled><option value="fixed">По расписанию</option><option value="annual">По годовому плану</option></select></label>
-<label>Ежедневное расписание<select id="fixed-schedule" disabled></select></label>
-<p id="work-mode-hint">Без годового плана: по расписанию, тихий день по умолчанию.</p>
-<button id="settings-save" type="button" disabled>Сохранить настройки и черновик</button><p id="settings-result" role="status"></p>
-<div class="automatic-controls"><button id="automatic-enable" type="button">Применить сохранённый план и включить</button> <button id="automatic-disable" type="button">Отключить автозвонки</button><p id="automatic-status" role="status"></p>
-<p>Проверьте дату и время роутера перед включением. После перезагрузки или изменения часового пояса включите снова. Пропущенные звонки не повторяются; при занятом проигрывателе новый звонок пропускается. Совпадающие времена звонков недопустимы.</p></div>
-<p>Mute действует сразу на звук schoolbell через роутер, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Mute пропущенные звонки не повторяются.</p></section>
-<section class="details time-settings"><h2>Часовой пояс школы</h2>
-<p>Выберите место, где установлен школьный звонок. Настройка сохраняется на роутере и действует для всех его приложений. Сами часы и расписания не переводятся.</p>
-<p id="timezone-current" role="status">Настройки ещё не загружены.</p>
-<label>Город / часовой пояс<select id="timezone-select" disabled></select></label>
-<div class="editor-toolbar"><button id="timezone-browser" type="button" disabled>Выбрать как на этом устройстве</button><button id="timezone-save" type="button" disabled>Применить часовой пояс</button><button id="timezone-reload" type="button">Обновить</button></div>
-<p id="timezone-result" role="status"></p>
-<p>Если дата или минуты неверны, смена пояса этого не исправит. Автоматическая синхронизация часов здесь не выполняется.</p>
 </section>
 <h2 class="sound-heading">Ручная проверка звука</h2><p>Эти две кнопки воспроизводят штатную тестовую мелодию сразу, независимо от черновика.</p>
 <section class="routes"><article><span class="badge">1 · РЯДОМ С ВАМИ</span><h2>На этом устройстве</h2>
@@ -117,6 +93,42 @@
 <p>Роутер: madplay · выход /dev/dsp · 48 кГц · громкость — по сохранённой настройке. Громкость колонок регулируется на самих колонках.</p>
 <p>Успешное завершение проигрывателя ещё не подтверждает, что звук был слышен.</p></section>
 </section>
+<section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" data-panel="sound" hidden>
+<section class="details time-settings"><h2>Часовой пояс школы</h2>
+<p>Выберите место, где установлен школьный звонок. Настройка сохраняется на роутере и действует для всех его приложений. Сами часы и расписания не переводятся.</p>
+<p id="timezone-current" role="status">Настройки ещё не загружены.</p>
+<label>Город / часовой пояс<select id="timezone-select" disabled></select></label>
+<div class="editor-toolbar"><button id="timezone-browser" type="button" disabled>Выбрать как на этом устройстве</button><button id="timezone-save" type="button" disabled>Применить часовой пояс</button><button id="timezone-reload" type="button">Обновить</button></div>
+<p id="timezone-result" role="status"></p>
+<p>Если дата или минуты неверны, смена пояса этого не исправит. Автоматическая синхронизация часов здесь не выполняется.</p>
+</section>
+<section class="details"><h2>Звонки и режим работы</h2>
+<label>Громкость колонок роутера<select id="router-volume" disabled>
+<option value="-36">Едва слышно (−36 дБ)</option><option value="-24">Очень тихо (−24 дБ)</option><option value="-12">Тихо (−12 дБ)</option><option value="-6">Средне (−6 дБ)</option><option value="0">Без ослабления (0 дБ)</option></select></label>
+<button type="button" id="volume-save" disabled>Применить громкость</button><p id="volume-status" role="status"></p>
+<p>Громкость применяется к следующему звонку на роутере: ручному, тестовому и автоматическому. Для немедленной остановки используйте Mute. Звук браузера регулируется на вашем устройстве.</p>
+<p>Мелодия ручного звонка применяется после сохранения. Автозвонки работают без открытого браузера по отдельно применённой копии плана.</p>
+<label>Мелодия ручного звонка<select id="manual-media" disabled></select></label>
+<label>Мелодия предзвонка<select id="pre-media" disabled></select></label>
+<label>Предзвонок за<span class="minutes-field"><input id="pre-minutes" type="number" min="1" max="10" step="1" disabled> минут</span></label>
+<label>Автоматическая работа<select id="work-mode" disabled><option value="fixed">По расписанию</option><option value="annual">По годовому плану</option></select></label>
+<label>Ежедневное расписание<select id="fixed-schedule" disabled></select></label>
+<p id="work-mode-hint">Без годового плана: по расписанию, тихий день по умолчанию.</p>
+<button id="settings-save" type="button" disabled>Сохранить настройки и черновик</button><p id="settings-result" role="status"></p>
+<div class="automatic-controls"><button id="automatic-enable" type="button">Применить сохранённый план и включить</button> <button id="automatic-disable" type="button">Отключить автозвонки</button><p id="automatic-status" role="status"></p>
+<p>Проверьте дату и время роутера перед включением. После перезагрузки или изменения часового пояса включите снова. Пропущенные звонки не повторяются; при занятом проигрывателе новый звонок пропускается. Совпадающие времена звонков недопустимы.</p></div>
+<p>Mute действует сразу на звук schoolbell через роутер, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Mute пропущенные звонки не повторяются.</p></section>
+<section class="details" id="backup-panel" data-url="<%=pcdata(backup_url)%>" data-token="<%=pcdata(token)%>"><h2>Резервная копия</h2>
+<p>Сохранённые настройки, расписания, годовой план и восемь пользовательских мелодий — в одном файле. Несохранённые правки страницы в копию не входят. Сначала отключите автозвонки.</p>
+<p>Восстановление заменяет эти данные и оставляет автозвонки выключенными. Системные часы, NTP, сеть и часовой пояс не меняются. Для переноса выберите на другом устройстве тот же часовой пояс заранее.</p>
+<button id="backup-download" type="button">Скачать резервную копию</button>
+<label>Файл резервной копии<input id="backup-file" type="file" accept=".sbb"></label>
+<button id="backup-restore" type="button" disabled>Восстановить из файла</button>
+<button id="backup-resume" type="button" hidden>Продолжить прерванное восстановление</button>
+<button id="backup-refresh" type="button">Проверить состояние</button>
+<p id="backup-status" role="status">Проверяем состояние восстановления…</p></section>
+
+</section>
 <section id="panel-journal" role="tabpanel" aria-labelledby="tab-journal" data-panel="journal" class="details" hidden>
 <h2>Журнал schoolbell</h2><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC роутера; порядок — по номеру, даже после коррекции часов.</p>
 <p>Хранятся последние события — до 16 КиБ. При заполнении самые старые записи удаляются автоматически.</p>
@@ -134,4 +146,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/media.js"></script><script src="/schoolbell-test/automatic.js"></script><script src="/schoolbell-test/controls.js"></script><script src="/schoolbell-test/app.js"></script><script src="/schoolbell-test/schedules.js?v=media5010"></script><script src="/schoolbell-test/dashboard.js?v=503"></script></body></html>
+</main><script src="/schoolbell-test/backup.js?v=5014"></script><script src="/schoolbell-test/media.js?v=5014"></script><script src="/schoolbell-test/automatic.js?v=5014"></script><script src="/schoolbell-test/controls.js?v=5014"></script><script src="/schoolbell-test/app.js?v=5014"></script><script src="/schoolbell-test/schedules.js?v=5014"></script><script src="/schoolbell-test/dashboard.js?v=5014"></script></body></html>

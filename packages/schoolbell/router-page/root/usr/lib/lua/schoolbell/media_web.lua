@@ -6,6 +6,8 @@ local function session(fn)
  if not fs.mkdir(lock,700)then return {ok=false,code='busy'}end
  local backend,library;local keep=false
  local ok,value=pcall(function()
+  local editor=require('schoolbell.automatic_store').root or '/etc/schoolbell-editor'
+  assert(not fs.lstat or not fs.lstat(editor..'/restore.pending'),'restore_pending')
   backend=require('schoolbell.media_fs').new(L.root)
   library=L.open(backend,L.root,function()return true end)
   return fn(library,backend,function()keep=true end)
@@ -40,7 +42,7 @@ function M.plan_ready(plan)
  if lib then lib.close()else fs.close()end
  return ok and ready
 end
-local function decode(path,retain)
+function M.decode(path,retain)
  local n=require('nixio');local player=require('schoolbell.sound_test')
  local result=player.run({ready=function()return true end,acquire=function()return true end,release=function()return true end,
   limit=100,spawn=function()
@@ -55,7 +57,7 @@ local function decode(path,retain)
  assert(result.ok,'decoder failed')
 end
 function M.upload(args,source)
- if not L.editable(args.id) or type(args.name)~='string' or #args.name<1 or #args.name>96 or args.name:find('[%c]')
+ if (args.title~=nil and (type(args.title)~='string' or #args.title<1 or #args.title>96 or args.title:find('[%c]'))) or not L.editable(args.id) or type(args.name)~='string' or #args.name<1 or #args.name>96 or args.name:find('[%c]')
   or not C.integer(args.generation,0,2147483646) or not C.hex(args.operation,32) or not C.integer(args.size,1,524288)then return {ok=false,code='invalid'}end
  return session(function(lib,fs,retain)
   local A=require('schoolbell.automatic_store');if A.decode(A.raw()).enabled then return {ok=false,code='automatic_enabled'}end
@@ -72,9 +74,9 @@ function M.upload(args,source)
     assert(bytes<=args.size,'upload too large');assert(file:write(chunk),'write')
    end
    assert(file:close());file=nil;assert(bytes==args.size,'upload truncated');fs.sync('upload.part')
-   local audio=require('schoolbell.mp3').inspect(path);decode(path,function()uncertain=true;retain()end)
+   local audio=require('schoolbell.mp3').inspect(path);M.decode(path,function()uncertain=true;retain()end)
    assert(not A.decode(A.raw()).enabled,'automatic changed')
-   local value=lib.replace(args.id,args.name,args.generation,args.operation,path,audio)
+   local value=lib.replace(args.id,args.name,args.generation,args.operation,path,audio,args.title)
    return {ok=value.status=='saved',code=value.status,generation=value.generation,operation_id=value.operation_id,revision=value.revision,cleanup=value.cleanup}
   end)
   if file then file:close()end

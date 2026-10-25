@@ -1,6 +1,6 @@
 # Schoolbell package
 
-Schoolbell 5.0.12: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
+Schoolbell 5.0.14: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
 
 Automatic bells: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
 
@@ -90,3 +90,5 @@ Isolated [admission-time revision retention](MEDIA_ADMISSION.en.md): TC-72, nine
 The Feedback tab links to [Issues](https://github.com/ViacheslavMezentsev/openwrt-modbus-core/issues) and bug/feature forms, available after the templates reach main. Internet and a GitHub account are required; logs are submitted manually after removing secrets.
 
 [Melody uploads](MEDIA_UPLOAD.en.md).
+
+[Backup and transfer](BACKUP.en.md): restore leaves automatic ringing disabled.

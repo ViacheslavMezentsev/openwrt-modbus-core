@@ -10,6 +10,10 @@
 
 ## [Unreleased]
 
+- Schoolbell 5.0.14: fix yielding LuCI backup download/upload; timezone is the first settings section.
+
+- Schoolbell 5.0.13: backup/restore with automatic ringing disabled; eight user melodies with display titles; manual sound checks in the Melodies tab.
+
 - Schoolbell 5.0.12: six protected bundled melodies plus five user slots; missing user media blocks plan activation.
 
 - Schoolbell 5.0.11: persistent-storage usage bar, free space, protected reserve and retained media usage.

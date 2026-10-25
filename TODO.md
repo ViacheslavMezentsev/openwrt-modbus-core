@@ -216,3 +216,7 @@ Rover does not replace pending core native-I/O and Lua memory work.
 - [ ] P03 media production integration — real settings/calendar schemas, validated uploads/bundled resolver, operation ID generator/retention, explicit fallback confirmation, process/backup ownership, queue FD leases, decoder capacity and total RAM/FD measurements. Current prepared dependency manifests are not user plans.
 
 - [x] P03 isolated router storage check — TC-92 passed on MR3020 in tmpfs and an isolated persistent directory, 25 process-crash checkpoints each plus negative tests; cleanup verified, core/demo preserved. This does not validate power-loss durability or install schoolbell.
+
+- [x] Schoolbell: инженерный backup сохранённого плана/настроек/пользовательских MP3, восстановление с autooff; восемь слотов и названия (5.0.14).
+- [ ] Schoolbell: отдельный шаблон партии; production-привязка активных планов к ревизиям медиатеки и восстановление после аппаратного сбоя питания.
+- [ ] Schoolbell: согласовать признак достоверности времени и обнаружение отката после reboot по сохранённой подтверждённой отметке; без автоматической установки часов из года плана.

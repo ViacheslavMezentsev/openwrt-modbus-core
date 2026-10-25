@@ -1,6 +1,6 @@
 # Melody uploads (engineering profile)
 
-The Melodies tab has six protected bundled slots (test and 0–4) and five user slots (user1–user5). The API rejects bundled replacement and exposes no delete operation. Only user slots accept uploads and replacement. Disable automatic bells first. Existing draft references keep their slot; the next playback uses its new revision. This is not production revision-pinned schedule migration.
+The Melodies tab has six protected bundled slots (test and 0–4) and eight user slots (user1–user8). The API rejects bundled replacement and exposes no delete operation. Only user slots accept uploads and replacement. Disable automatic bells first. Existing draft references keep their slot; the next playback uses its new revision. This is not production revision-pinned schedule migration.
 
 Authenticated raw POST uses a CSRF header, an expected generation and a 128-bit random operation ID. Uploads are streamed with a 16 KiB chunk limit. MP3 limits: 512 KiB and 60 seconds. A frame scan and madplay decoding to null precede publication; neither plays sound. Decoder completion does not prove audible quality. The shared player gate excludes replacement, cleanup and activation races. An uncertain decoder outcome retains the gate for administrative recovery; it is never removed based on age alone.
 

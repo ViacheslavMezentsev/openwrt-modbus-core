@@ -1,6 +1,6 @@
 -- Trusted private root only; not a hostile-filesystem sandbox.
 local M={};local active={}
-function M.new(root,host)
+function M.new(root,host,restore_owner)
  assert(type(root)=='string' and root:match('^/[%w_./-]+$') and not root:find('..',1,true) and not root:find('//',1,true) and not root:find('/./',1,true) and root:sub(-1)~='/','root')
  local b
  if host then b=host else
@@ -14,7 +14,8 @@ function M.new(root,host)
    unlock=function(f)return f:close()end}
  end
  local s=assert(b.stat(root),'root absent');assert(s.type=='dir' and s.mode%64==0,'root must be private')
- assert(not active[root],'busy');local lock=assert(b.lock(root..'/.lock'),'busy');active[root]=true
+ assert(restore_owner or not b.stat(root..'/restore.pending'),'restore_pending')
+ assert(not active[root],'busy');local lock=assert(b.lock(root..'/.lock'),'busy');if not restore_owner and b.stat(root..'/restore.pending')then b.unlock(lock);error('restore_pending')end;active[root]=true
  local self={}
  local function path(rel)
   assert(rel=='' or (rel:match('^[%w_./-]+$') and rel:sub(1,1)~='/' and not rel:find('..',1,true)),'relative path')
@@ -26,6 +27,8 @@ function M.new(root,host)
  function self.mkdir(p)local q=path(p);local st=b.stat(q);if st then assert(st.type=='dir')else assert(b.mkdir(q))end end
  function self.list(p)return assert(b.list(path(p)))end
  function self.read(p,max)local q=path(p);local st=b.stat(q);if not st then return nil end;assert(st.type=='reg' and st.size<=max,'file size');local f=assert(io.open(q,'rb'));local data=f:read(max+1);local ok=f:close();assert(ok and data and #data==st.size,'read');return data end
+ function self.open_read(p)local q=path(p);local st=assert(b.stat(q));assert(st.type=='reg');return assert(io.open(q,'rb'))end
+ function self.open_write(p)local q=path(p);assert(not b.stat(q),'exists');return assert(io.open(q,'wb'))end
  function self.write(p,data)local q=path(p);assert(not b.stat(q),'exists');local f=assert(io.open(q,'wb'));local ok=f:write(data);local closed=f:close();assert(ok and closed,'write')end
  function self.sync(p)assert(b.sync(path(p)),'sync')end
  function self.rename(a,z)assert(b.rename(path(a),path(z)),'rename')end

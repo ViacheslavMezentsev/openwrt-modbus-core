@@ -23,12 +23,12 @@ local copied='';assert(W.sample('user1',function(s)copied=copied..s end).ok and 
 assert(W.lookup(string.rep('d',32)).state=='unknown')
 local plan={pre_media='test',schedules={{rows={{media='user5',enabled=true,pre=false}}}}}
 assert(not W.plan_ready(plan));plan.schedules[1].rows[1].media='user1';assert(W.plan_ready(plan))
-for i=2,5 do
+for i=2,8 do
  local at=1;local result=W.upload({id='user'..i,name='bell'..i..'.mp3',size=#bytes,generation=i-1,operation=string.rep(tostring(i),32)},function()if at>#bytes then return nil end;local b=bytes:sub(at,at+4095);at=at+#b;return b end);assert(result.ok)
 end
-assert(W.list().generation==5 and #W.list().slots==11)
+assert(W.list().generation==8 and #W.list().slots==14)
 plan.schedules[1].rows[1].media='user5';assert(W.plan_ready(plan))
-local forbidden=W.upload({id='0',name='no.mp3',size=#bytes,generation=5,operation=string.rep('f',32)},function()error('protected file read')end);assert(forbidden.code=='invalid')
+local forbidden=W.upload({id='0',name='no.mp3',size=#bytes,generation=8,operation=string.rep('f',32)},function()error('protected file read')end);assert(forbidden.code=='invalid')
 local S=require('schoolbell.schedule_store');local draft=S.empty();draft.schedules={{id='u',name='User',rows={{id='r',time='08:00',media='user5',enabled=true,pre=false}}}};assert(S.validate(C.encode(draft)))
 assert(host.mkdir(L.root..'/gate'));assert(W.list().code=='busy');assert(host.rmdir(L.root..'/gate'))
 print('PASS media gateway: disabled-auto, stream failure/bounds, invalid MP3, decoder refusal, CAS before read, lookup, preview, gate')

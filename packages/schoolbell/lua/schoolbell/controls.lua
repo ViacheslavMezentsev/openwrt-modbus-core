@@ -10,6 +10,7 @@ function M.decode(raw)
  return v
 end
 function M.read()
+ local pending=io.open(M.root..'/restore.pending','rb');if pending then pending:close();error('restore_pending')end
  local f=io.open(M.root..'/sound-control.json','rb')
  if not f then
   local fs=require('nixio.fs');assert(not fs.lstat(M.root..'/sound-control.json'),'unreadable mute state')

@@ -47,3 +47,8 @@ lua5.1 packages/schoolbell/tests/test_media_http.lua
 
 mkdir -m 700 "$build/web-library"
 lua5.1 packages/schoolbell/tests/test_media_web.lua "$build/web-library"
+
+mkdir -m 700 "$build/backup"
+lua5.1 packages/schoolbell/tests/test_backup.lua "$build/backup"
+
+lua5.1 packages/schoolbell/tests/test_backup_http.lua

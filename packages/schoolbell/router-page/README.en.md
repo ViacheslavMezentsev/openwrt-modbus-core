@@ -88,3 +88,5 @@ The separate `/etc/schoolbell-editor/automatic.json` contains the checksummed ac
 Volume: Settings → Router speaker volume → Apply volume. Presets are −36/−24/−12/−6/0 dB. Volume is saved independently of the draft and activation and applies at the next start, without changing the mixer or browser audio. Use Mute to stop current playback. Legacy state without volume_db means0dB; rollback to5.0.6 ignores attenuation, so disable automatic bells first.
 
 The bench check confirmed annual assignment, Mute cancellation and no catch-up playback; the user confirmed quiet sound. Automation was disabled afterwards and the plan retained. This single check does not guarantee cancellation latency.
+
+After a payload update clear the schoolbell bytecode cache: `ssh openwrt sh -s < packages/schoolbell/router-page/invalidate-cache.sh`. No network/NTP/uhttpd restart is required.

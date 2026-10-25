@@ -10,7 +10,10 @@
   var name=document.getElementById('schedule-name');
   var rows=document.getElementById('schedule-rows');
   var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false;
-  var mediaIds=["test","0","1","2","3","4","user1","user2","user3","user4","user5"];
+  var mediaNames={test:'Тестовый звонок','0':'[Короткая] Время','1':'Шутка Баха','2':'Гостья из XXI','3':'Князь Игорь','4':'Усатый нянь'};
+  function mediaLabel(id){return (mediaNames[id] || ('Пользовательская '+id.slice(4)))+' · '+id;}
+  window.addEventListener('schoolbell-media',function(e){e.detail.forEach(function(v){mediaNames[v.id]=v.title || v.name;});document.querySelectorAll('#manual-media option,#pre-media option,#schedule-rows select option').forEach(function(o){o.textContent=mediaLabel(o.value);});});
+  var mediaIds=["test","0","1","2","3","4","user1","user2","user3","user4","user5","user6","user7","user8"];
   var counter=0;
   var year=new Date().getFullYear(), brush='quiet', painting=false;
   var monthNames=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -158,7 +161,7 @@
     document.getElementById('schedule-copy').disabled=!s || draft.schedules.length>=16 || total()+(s?s.rows.length:0)>128;
     document.getElementById('schedule-delete').disabled=!s;
     document.getElementById('pre-minutes').value=draft.pre_minutes;
-    ['manual-media','pre-media'].forEach(function(id){var box=document.getElementById(id);box.replaceChildren();mediaIds.forEach(function(m){box.appendChild(textOption(m,m+'.mp3'));});box.value=id==='manual-media'?(draft.manual_media || 'test'):draft.pre_media;box.disabled=false;});
+    ['manual-media','pre-media'].forEach(function(id){var box=document.getElementById(id);box.replaceChildren();mediaIds.forEach(function(m){box.appendChild(textOption(m,mediaLabel(m)));});box.value=id==='manual-media'?(draft.manual_media || 'test'):draft.pre_media;box.disabled=false;});
     if(!draft.mode)draft.mode=(draft.plans || []).length?'annual':'fixed';
     if(draft.mode==='annual' && !(draft.plans || []).length){draft.mode='fixed';draft.fixed_schedule='quiet';}
     var mode=document.getElementById('work-mode');mode.disabled=false;mode.value=draft.mode;mode.querySelector('[value="annual"]').disabled=!(draft.plans || []).length;
@@ -177,7 +180,7 @@
         time.setAttribute('aria-label','Время звонка '+(index+1));
         time.addEventListener('input',function () { row.time=time.value; changed(); }); cell(time);
         var media=document.createElement('select'); media.setAttribute('aria-label','Мелодия звонка '+(index+1));
-        mediaIds.forEach(function(m){media.appendChild(textOption(m,m+'.mp3'));}); media.value=row.media;media.addEventListener('change',function(){row.media=media.value;changed();}); cell(media);
+        mediaIds.forEach(function(m){media.appendChild(textOption(m,mediaLabel(m)));}); media.value=row.media;media.addEventListener('change',function(){row.media=media.value;changed();}); cell(media);
         ['enabled','pre'].forEach(function (key) {
           var box=document.createElement('input'); box.type='checkbox'; box.checked=row[key];
           box.setAttribute('aria-label',(key==='enabled'?'Включить звонок ':'Предзвонок ')+(index+1));

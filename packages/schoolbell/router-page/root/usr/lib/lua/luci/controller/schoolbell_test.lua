@@ -2,6 +2,7 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","backup"},call("backup")).leaf=true
     entry({"admin","schoolbell","media"},call("media")).leaf=true
     entry({"admin","schoolbell","automatic"},call("automatic")).leaf=true
     entry({"admin","schoolbell","controls"},call("controls")).leaf=true
@@ -179,6 +180,7 @@ function page()
     local d=require("luci.dispatcher")
     require("luci.http").header("Cache-Control","no-store")
     require("luci.template").render("schoolbell_test",{
+        backup_url=d.build_url('admin','schoolbell','backup'),
         media_url=d.build_url('admin','schoolbell','media'),
         automatic_url=d.build_url('admin','schoolbell','automatic'),
         controls_url=d.build_url('admin','schoolbell','controls'),
@@ -205,7 +207,7 @@ function media()
  if type(token)~='string' or token=='' or token~=expected then h.status(403,'Forbidden');return end
  local size=tonumber(h.getenv('CONTENT_LENGTH'))
  if not size or size<1 or size>524288 or h.getenv('CONTENT_TYPE')~='application/octet-stream'then h.status(413,'Unsupported request');return end
- local result=m.upload({id=h.formvalue('id',true),name=h.formvalue('name',true),generation=tonumber(h.formvalue('generation',true)),operation=h.formvalue('operation',true),size=size},h.source())
+ local result=m.upload({id=h.formvalue('id',true),name=h.formvalue('name',true),title=h.formvalue('title',true),generation=tonumber(h.formvalue('generation',true)),operation=h.formvalue('operation',true),size=size},h.source())
  audit(result.ok and 'media_ok' or 'media_failed',result);respond(result)
 end
 function sample()
@@ -227,4 +229,29 @@ function play()
     h.prepare_content("application/json")
     audit(result.ok and 'play_ok' or 'play_failed',result)
     h.write_json(result)
+end
+
+function backup()
+ local h=require('luci.http');local method=h.getenv('REQUEST_METHOD')
+ if method~='GET' and method~='POST'then h.status(405,'Method Not Allowed');return end
+ if method=='POST'then
+  local token=h.getenv('HTTP_X_CSRF_TOKEN');local expected=require('luci.dispatcher').context.authtoken
+  if type(token)~='string' or token=='' or token~=expected then h.status(403,'Forbidden');return end
+  local size=tonumber(h.getenv('CONTENT_LENGTH'))
+  if not size or size<0 or size%1~=0 or size>2162816 or h.getenv('CONTENT_TYPE')~='application/octet-stream'then h.status(413,'Unsupported request');return end
+  local action=h.formvalue('action',true);local op=h.formvalue('operation',true)
+  editor();if not require('schoolbell.media_codec').hex(op,32) or (action~='restore' and action~='resume') or (action=='resume' and size~=0) or (action=='restore' and size==0)then h.status(400,'Invalid request');return end
+  local m=require('schoolbell.backup_web');local result
+  if action=='resume'then result=m.resume(op)else result=m.restore(op,h.source(),size)end
+  audit(result.ok and 'restore_ok' or 'restore_failed',result);respond(result);return
+ end
+ editor();local m=require('schoolbell.backup_web');local action=h.formvalue('action',true)
+ if action=='status'then respond(m.status());return end
+ if action~='download'then h.status(400,'Invalid request');return end
+ local started=false;h.header('Cache-Control','no-store')
+ local result=m.export(function(chunk)
+  if not started then h.header('Content-Disposition','attachment; filename="schoolbell-backup.sbb"');h.prepare_content('application/octet-stream');started=true end
+  h.write(chunk)
+ end)
+ if not result.ok and not started then h.status(409,'Backup unavailable');respond(result)end
 end
