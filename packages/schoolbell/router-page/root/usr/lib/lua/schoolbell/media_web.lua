@@ -1,11 +1,13 @@
 -- Engineering media gateway: same exclusive gate as the diagnostic player.
 local M={}
+-- LuCI request sources and response sinks may yield on Lua 5.1.
+local protect=require('luci.util').copcall
 local L=require('schoolbell.media_library');local C=require('schoolbell.media_codec')
 local function session(fn)
  local n,fs=require('nixio'),require('nixio.fs');local lock=require('schoolbell.sound_test').lock
  if not fs.mkdir(lock,700)then return {ok=false,code='busy'}end
  local backend,library;local keep=false
- local ok,value=pcall(function()
+ local ok,value=protect(function()
   local editor=require('schoolbell.automatic_store').root or '/etc/schoolbell-editor'
   assert(not fs.lstat or not fs.lstat(editor..'/restore.pending'),'restore_pending')
   backend=require('schoolbell.media_fs').new(L.root)
@@ -67,7 +69,7 @@ function M.upload(args,source)
   if fs.stat('upload.part')then fs.unlink('upload.part');fs.sync('')end
   local path=L.root..'/upload.part';local file=assert(io.open(path,'wb'))
   local uncertain=false
-  local ok,result=pcall(function()
+  local ok,result=protect(function()
    local bytes=0
    while true do local chunk,err=source();assert(not err,'upload interrupted');if not chunk then break end
     assert(type(chunk)=='string' and #chunk>0 and #chunk<=16384,'chunk');bytes=bytes+#chunk
@@ -90,7 +92,7 @@ function M.sample(id,write)
  if not L.valid(id)then return {ok=false,code='invalid'}end
  return session(function(lib)
   local path=lib.resolve(id);local f=assert(io.open(path,'rb'))
-  local ok,why=pcall(function()while true do local chunk=f:read(16384);if not chunk then break end;write(chunk)end end)
+  local ok,why=protect(function()while true do local chunk=f:read(16384);if not chunk then break end;write(chunk)end end)
   f:close();assert(ok,why);return {ok=true}
  end)
 end
