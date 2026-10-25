@@ -24,7 +24,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.34. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.35. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -225,3 +225,6 @@ Rover does not replace pending core native-I/O and Lua memory work.
 - [x] Schoolbell: изолированный системный адаптер BOOTTIME/REALTIME и приватного FD-хранилища; host-тесты и syscall faults (ТЗ 1.34).
 - [ ] Schoolbell: изолированная target-проверка адаптера после согласования; затем интеграция контекста и контроля в ожидание player/допуск, UI подтверждения отдельно от включения.
 - [ ] Schoolbell: NTP/RTC-критерии подтверждения, предел неопределённости и срок автономного доверия после измерений; без обещания годовой точности по суточному опыту.
+
+- [x] Schoolbell 5.0.15: жёлтая полоса места >75%, красная >90%, текстовое предупреждение; без установки.
+- [ ] Schoolbell: согласовать улучшения UI-маршрутов — просмотр дня без правки, явные черновик/активный план, переходы после замены мелодии и таймаут скачивания backup.

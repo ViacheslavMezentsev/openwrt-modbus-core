@@ -10,6 +10,8 @@
 
 ## [Unreleased]
 
+- Schoolbell 5.0.15: storage usage >75% turns yellow, >90% red, with a text warning; shared router/demo styles. Not deployed to the router.
+
 - Specification 1.34: BOOTTIME/REALTIME system ports and bounded FD reference storage, real host operations/fault tests; overlapping rounded observation brackets. No payload/executor/router changes.
 
 - Specification 1.33: isolated UTC-ms reference codec, atomic CAS store and clock trust model; host boundary/fault tests. Version 5.0.14 and payload unchanged.

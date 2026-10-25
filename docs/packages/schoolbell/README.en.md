@@ -100,3 +100,5 @@ Specification 1.32 defines the reference format and observation budgets; isolate
 [Isolated clock trust model](CLOCK_TRUST_MODEL.en.md): codec, fake clock/storage and host tests; no executor integration.
 
 [System clock/reference adapter](CLOCK_SYSTEM.en.md): isolated host ports, no router deployment.
+
+Storage bar: normal through 75%, yellow above 75%, red above 90%. Usage refers to the displayed filesystem, not just the media quota. Reserve and upload admission limits are unchanged.
