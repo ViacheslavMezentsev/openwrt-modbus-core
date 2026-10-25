@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5017">
-<script src="/schoolbell-test/theme.js?v=5017"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5018">
+<script src="/schoolbell-test/theme.js?v=5018"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Mute · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button></div></header><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
@@ -72,7 +72,7 @@
 <div class="storage-status"><strong>Постоянное хранилище роутера</strong><p id="storage-text" role="status">Обновите список, чтобы узнать свободное место.</p><progress id="storage-bar" max="100" value="0" aria-label="Занятое место в постоянном хранилище" hidden></progress><p id="storage-reserve"></p></div>
 <p>Шесть штатных мелодий защищены от замены и удаления. Для ваших файлов есть восемь отдельных позиций user1–user8. При замене пользовательской мелодии расписания сохраняют ссылку на её позицию.</p>
 <p>Перед заменой отключите автозвонки в настройках. Во время загрузки проигрывание заблокировано. MP3: до 512 КиБ и 60 секунд; свободное место проверяется на роутере. Файл проверяется без звука.</p>
-<div class="table-scroll"><table class="schedule-table"><thead><tr><th>Позиция</th><th>Название</th><th>Файл</th><th>Размер</th><th>Источник</th></tr></thead><tbody id="media-rows"></tbody></table></div>
+<div class="table-scroll"><table class="schedule-table"><thead><tr><th>Позиция</th><th>Название</th><th>Файл</th><th>Размер</th><th>Источник</th><th>Прослушивание</th></tr></thead><tbody id="media-rows"></tbody></table></div>
 <label>Позиция для замены<select id="media-slot"><option>user1</option><option>user2</option><option>user3</option><option>user4</option><option>user5</option><option>user6</option><option>user7</option><option>user8</option></select></label>
 <label>Название мелодии<input id="media-title" type="text" maxlength="96" placeholder="Например: Начало урока"></label>
 <label>Новый MP3<input id="media-file" type="file" accept=".mp3,audio/mpeg"></label>
@@ -137,7 +137,7 @@
 <h2>Журнал schoolbell</h2><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC роутера; порядок — по номеру, даже после коррекции часов.</p>
 <p>Хранятся последние события — до 16 КиБ. При заполнении самые старые записи удаляются автоматически.</p>
 <button type="button" id="journal-reload">Обновить журнал</button><p id="journal-status" role="status"></p>
-<div class="table-scroll"><table class="schedule-table"><thead><tr><th>№ / Время UTC</th><th>Источник</th><th>Событие</th></tr></thead><tbody id="journal-rows"></tbody></table></div>
+<div class="table-scroll"><table class="schedule-table"><thead><tr><th>№ / Время UTC</th><th>Источник</th><th>Прослушивание</th><th>Событие</th></tr></thead><tbody id="journal-rows"></tbody></table></div>
 </section>
 <section id="panel-feedback" role="tabpanel" aria-labelledby="tab-feedback" data-panel="feedback" class="details" hidden>
 <h2>Обратная связь</h2><p>Нашли ошибку или хотите предложить улучшение? Обсуждение ведём в Issues репозитория openwrt-modbus-core. Нужны доступ в интернет и учётная запись GitHub.</p>
@@ -150,4 +150,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/backup.js?v=5017"></script><script src="/schoolbell-test/media.js?v=5017"></script><script src="/schoolbell-test/automatic.js?v=5017"></script><script src="/schoolbell-test/controls.js?v=5017"></script><script src="/schoolbell-test/app.js?v=5017"></script><script src="/schoolbell-test/schedules.js?v=5017"></script><script src="/schoolbell-test/dashboard.js?v=5017"></script></body></html>
+</main><script src="/schoolbell-test/backup.js?v=5018"></script><script src="/schoolbell-test/media.js?v=5018"></script><script src="/schoolbell-test/automatic.js?v=5018"></script><script src="/schoolbell-test/controls.js?v=5018"></script><script src="/schoolbell-test/app.js?v=5018"></script><script src="/schoolbell-test/schedules.js?v=5018"></script><script src="/schoolbell-test/dashboard.js?v=5018"></script></body></html>

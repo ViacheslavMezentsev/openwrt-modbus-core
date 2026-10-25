@@ -112,3 +112,4 @@ check-site: site
 	node scripts/test-site-demo.js
 	node scripts/test-schoolbell-routes.js
 	node scripts/test-schoolbell-backup-ui.js
+	node scripts/test-schoolbell-media-ui.js

@@ -40,3 +40,6 @@ assert datetime.datetime.fromisoformat(info['built_at_utc'].replace('Z','+00:00'
 for name in ['index.html','index.en.html','schoolbell/index.html']:
  page=(out/name).read_text();assert info['built_at_utc'] in page and info['commit'][:12] in page,name
 print('PASS build provenance: UTC timestamp, HEAD commit, dirty flag and visible footer')
+
+for name in ["test","0","1","2","3","4"]:
+ assert (out/("schoolbell/assets/"+name+".mp3")).read_bytes()==(root/("packages/schoolbell/media/"+name+".mp3")).read_bytes()

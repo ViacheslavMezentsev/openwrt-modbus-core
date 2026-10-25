@@ -1,5 +1,7 @@
 # Schoolbell package
 
+Schoolbell 5.0.18: confirmed uploads automatically refresh the media list. Every populated row has browser playback; empty slots are labeled in the table and selectors and cannot be played. A refresh failure does not reupload the saved file. The demo includes all six bundled melodies. Host checks without sound; not deployed to the router.
+
 Schoolbell 5.0.17: backup downloads have a 180-second overall deadline, including the response body. Timeout/disconnection returns control; check status before retrying. Late responses are not saved and restoration is never started automatically. Pages displays the UTC build date and commit. Host-tested; not deployed to the router.
 
 Schoolbell 5.0.16: the calendar starts in view mode; clicking a date previews draft bells without erasing its assignment. Explicitly select a schedule or eraser to paint. A shared panel distinguishes the draft from the active snapshot. Save edits first, then separately apply the checked revision; changes from another window require reloading. Preview is not execution evidence. Validated on the host and in the browser demo; not deployed to the router.
@@ -14,7 +16,7 @@ Automatic bells: independent fixed/annual bell service, explicit saved-plan acti
 
 School calendar, bells and melodies. Calendar calculation, the LuCI editor and an engineering automatic executor are implemented. Public core registration and the production player remain separate stages.
 
-[ТЗ 1.37](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.38](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision

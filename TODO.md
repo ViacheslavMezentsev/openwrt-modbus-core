@@ -3,8 +3,9 @@
 ## Current state and next steps
 
 - [x] Schoolbell safe date viewing and explicit draft/active-plan separation: clean saved revision gating, race/error tests and browser demo. Version 5.0.16 installed; target date-viewing and status separation confirmed by the user.
-- [x] Backup download deadline and recovery controls, controlled-network regressions; Pages build date/commit. Version 5.0.17 is host-only.
-- [ ] Validate backup-download interruption on the router after deployment approval; finish media refresh/listening routes.
+- [x] Backup download deadline and recovery controls, controlled-network regressions; Pages build date/commit. Version 5.0.17 installed; user confirmed download; installed JS tested with a local HTTP body disconnect.
+- [x] Media auto-refresh after confirmed upload, per-row browser listening and empty-slot labels; six bundled demo melodies, host-tested in 5.0.18.
+- [ ] Validate media upload/listening routes on the router after deployment approval. Physical network disconnection was not used for the backup test.
 
 - [x] Engineering automatic schoolbell service: explicit saved fixed/annual snapshot activation, Mute and no catch-up. Host tests and target commissioning are documented separately.
 - [ ] Measure audible auto-bell/Mute latency and long-run resources; integrate the production player, core scheduler and trusted startup clock before unattended operation across power loss.
@@ -28,7 +29,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.37. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.38. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.

@@ -12,7 +12,7 @@
   var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false, activationLock=false;
   var mediaNames={test:'Тестовый звонок','0':'[Короткая] Время','1':'Шутка Баха','2':'Гостья из XXI','3':'Князь Игорь','4':'Усатый нянь'};
   function mediaLabel(id){return (mediaNames[id] || ('Пользовательская '+id.slice(4)))+' · '+id;}
-  window.addEventListener('schoolbell-media',function(e){e.detail.forEach(function(v){mediaNames[v.id]=v.title || v.name;});document.querySelectorAll('#manual-media option,#pre-media option,#schedule-rows select option').forEach(function(o){o.textContent=mediaLabel(o.value);});});
+  window.addEventListener('schoolbell-media',function(e){e.detail.forEach(function(v){mediaNames[v.id]=(v.title || v.name)+(v.source==='empty'?' · пустой слот':'');});document.querySelectorAll('#manual-media option,#pre-media option,#schedule-rows select option').forEach(function(o){o.textContent=mediaLabel(o.value);});});
   var mediaIds=["test","0","1","2","3","4","user1","user2","user3","user4","user5","user6","user7","user8"];
   var counter=0;
   var year=new Date().getFullYear(), brush='view', painting=false;

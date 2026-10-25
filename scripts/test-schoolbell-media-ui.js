@@ -1,0 +1,22 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const code=fs.readFileSync('packages/schoolbell/router-page/root/www/schoolbell-test/media.js','utf8');
+const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
+function fixture(demo=false){
+ class E{constructor(){this.children=[];this.events={};this.dataset={};this.disabled=false;this.value='';this.files=[];this.textContent='';}appendChild(v){this.children.push(v);}replaceChildren(...v){this.children=v;}addEventListener(k,f){this.events[k]=f;}click(){if(!this.disabled)return this.events.click?.();}setAttribute(){}removeAttribute(){this.src='';}querySelectorAll(){return this.children.flatMap(r=>r.children.flatMap(c=>c.children)).filter(b=>b.dataset.id);}get options(){return this.children;}}
+ const ids=['media-title','schedule-editor','media-rows','media-slot','media-file','media-upload','media-refresh','media-listen','media-audio','media-status','storage-bar','storage-text','storage-reserve','tab-media'];const els=Object.fromEntries(ids.map(id=>[id,new E()])),get=id=>els[id];
+ get('schedule-editor').dataset={media:'media',sample:demo?'./assets/test.mp3':'sample',token:'test'};get('media-slot').value='user1';const opt=new E();opt.value='user1';get('media-slot').children=[opt];get('media-title').value='Bell';get('media-file').files=[{name:'bell.mp3',size:100}];
+ let plays=[],stops=0;get('media-audio').pause=()=>stops++;get('media-audio').load=()=>{};get('media-audio').play=()=>{plays.push(get('media-audio').src);return Promise.resolve();};
+ const x={get,plays,get stops(){return stops;},events:[],posts:0,gets:0,failList:false,upload:'ok',retained:false,filled:false};
+ const data=()=>({ok:true,demo,generation:x.filled?2:1,slots:[{id:'test',title:'Test',name:'test.mp3',source:'bundled',size_bytes:10},{id:'0',title:'Standard',name:'0.mp3',source:'bundled',size_bytes:20},{id:'user1',title:'User',name:'bell.mp3',source:x.filled?'user':'empty',revision:'revision',size_bytes:x.filled?100:0}]});
+ const fetch=async(url,o={})=>{let v;if(o.method==='POST'){x.posts++;if(x.upload==='lost'){x.filled=x.retained;throw Error('lost');}x.filled=true;v={ok:true};}else if(url.includes('?operation=')){v={ok:true,state:x.retained?'retained':'unknown'};}else{x.gets++;if(x.failList)throw Error('offline');v=data();}return {ok:true,json:async()=>v};};
+ vm.runInNewContext(code,{document:{getElementById:get,createElement:()=>new E()},window:{dispatchEvent:e=>x.events.push(e)},CustomEvent:class{constructor(type,o){this.type=type;this.detail=o.detail;}},fetch,AbortController,TextEncoder,URLSearchParams,Uint8Array,Array,Math,encodeURIComponent,confirm:()=>true,crypto:{getRandomValues:a=>a},setTimeout:()=>1,clearTimeout(){}});
+ x.button=id=>get('media-rows').querySelectorAll().find(b=>b.dataset.id===id);return x;
+}
+(async()=>{
+ let x=fixture();await flush();assert(x.plays.length===0 && x.button('user1').disabled);assert(x.get('media-slot').options[0].textContent.includes('пусто'));
+ await x.button('0').click();assert(x.plays[0]==='sample?id=0');await x.button('test').click();assert(x.plays[1]==='sample?id=test');assert(x.stops>=3);
+ await x.get('media-upload').click();assert(x.posts===1 && x.gets===2 && !x.button('user1').disabled);assert(x.get('media-slot').value==='user1');await x.button('user1').click();assert(x.plays.at(-1)==='sample?id=user1');console.log('PASS bundled/user listening, empty disabled, automatic refresh, stable slot ID and no autoplay');
+ x=fixture();await flush();x.failList=true;await x.get('media-upload').click();assert(x.posts===1 && x.get('media-upload').disabled && !x.get('media-refresh').disabled);assert(x.get('media-status').textContent.includes('Мелодия сохранена, но'));assert(x.get('media-rows').children.length===0);x.failList=false;await x.get('media-refresh').click();assert(!x.button('user1').disabled);console.log('PASS upload committed but refresh failed: clear stale rows, explicit retry without reupload');
+ for(const retained of [true,false]){x=fixture();await flush();x.upload='lost';x.retained=retained;await x.get('media-upload').click();assert(x.posts===1);assert(x.gets===(retained?2:1));assert(retained?!x.button('user1').disabled:x.get('media-rows').children.length===0);}
+ x=fixture(true);await flush();await x.button('0').click();assert(x.plays[0]==='./assets/0.mp3');assert(x.get('media-upload').disabled);console.log('PASS retained/unknown operation recovery and demo bundled audio without upload');
+})().catch(e=>{console.error(e);process.exitCode=1;});
