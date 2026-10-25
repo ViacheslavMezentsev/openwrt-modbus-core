@@ -6,10 +6,13 @@ for directory in /etc/schoolbell-editor /etc/modbus-schoolbell /etc/modbus-schoo
     [ ! -L "$directory" ] || { echo "schoolbell: symlink directory" >&2; exit 1; }
     if [ ! -e "$directory" ]; then mkdir -m 700 "$directory"; fi
     [ -d "$directory" ] || exit 1
-    case "$directory:$(stat -c %a "$directory")" in
-        /etc/modbus-schoolbell:755|*:700) ;;
-        *) echo "schoolbell: unsafe directory permissions" >&2; exit 1 ;;
-    esac
+    # OpenWrt BusyBox may omit stat; Lua/nixio are declared dependencies.
+    lua - "$directory" <<'LUA'
+local path=assert(arg[1]);local st=assert(require('nixio.fs').lstat(path))
+local mode=tonumber(tostring(st.modedec),8)%512
+assert(st.type=='dir' and (mode==448 or (path=='/etc/modbus-schoolbell' and mode==493)),
+       'schoolbell: unsafe directory permissions')
+LUA
 done
 # Disable startup before stopping; even a failed upgrade stays stopped after reboot.
 if [ -x /etc/init.d/schoolbell-auto ]; then

@@ -16,6 +16,9 @@ with tempfile.TemporaryDirectory(prefix='schoolbell-clock-') as tmp:
  def archive(files):
   b=io.BytesIO()
   with tarfile.open(fileobj=b,mode='w:gz')as t:
+   parents={str(p) for name in files for p in Path(name).parents if str(p)!='.'}
+   for name in sorted(parents,key=lambda x:(x.count('/'),x)):
+    info=tarfile.TarInfo(name+'/');info.type=tarfile.DIRTYPE;info.mode=0o755;t.addfile(info)
    for name,body in files.items():
     info=tarfile.TarInfo(name);info.size=len(body);info.mode=0o644;t.addfile(info,io.BytesIO(body))
   return b.getvalue()

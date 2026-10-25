@@ -1,5 +1,7 @@
 # Schoolbell package
 
+Schoolbell 5.0.31: target opkg compatibility fixes (no stat dependency, explicit archive directories, owned LuCI cache invalidation). Installation, recovery downgrade and upgrade preserve data and leave automatic bells off; no clock/NTP changes.
+
 Schoolbell 5.0.28: complete engineering IPK and pinned offline bundle; host lifecycle tests, no target installation. [Packaging](PACKAGING.en.md).
 
 Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser confirmation verified. Control enabled, time confirmed, automatic bells disabled; clocks/NTP unchanged.

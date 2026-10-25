@@ -29,8 +29,8 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.44.
-The engineering application is packaged as a complete 5.0.28 IPK with an offline
+User-facing scope follows core draft 1.33 and schoolbell draft 1.45.
+The engineering application is packaged as a complete 5.0.31 IPK with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 
 - [ ] P00 — Finish the minimal API contract: the Unix stream v1/live-no-replay/session profile is accepted (core 1.10); finalize codec/field types, quotas, clock validity/correction, calendar boundaries and pause/pending policy. Record unresolved numeric budgets as measurements, not guarantees.
@@ -55,7 +55,8 @@ OpenWrt 19.07.9 bundle. Core event API and production player integration remain 
 - [x] P05 engineering upload — six protected bundled slots and eight user slots through the media manager, bounded MP3/decoder validation, inactive-auto/shared-gate admission and CAS; engineering backup/restore with user MP3 passed in 5.0.24; production revision-pinned plans and migrations remain pending.
 - [ ] P05 — Implement schoolbell media IDs/revisions and bounded validated replacement with recovery (schoolbell TC-22/23). Preserve active/referenced files; the complete offline profile includes five original melodies plus test.
 - [x] P06 engineering packaging — full 5.0.28 IPK, native dependency, pinned offline closure and joint core manifest; host installation/upgrade/rollback and fail-closed tests.
-- [ ] P06 target packaging acceptance — separately approve first migration from engineering payload, measure incremental space, validate actual opkg install/update/rollback with retained user MP3/plans and auto-off. Reboot/offline/power-loss tests need separate approval. Production event/player integration remains dependent on P01–P05.
+- [x] P06 target packaging — real opkg migration, local recovery downgrade and upgrade to 5.0.31; full payload hashes and byte-identical backup confirm retained settings/plans/user MP3 with auto-off. Fixed missing stat, omitted directory entries and stale LuCI bytecode; dependencies/core/NTP unchanged.
+- [ ] P06 remaining acceptance — browser confirmation after package migration; separately approve reboot/offline-first-boot/power-loss and full dependency installation on a clean target. Production event/player integration remains dependent on P01–P05.
 - [x] P07 saved schedule editor — Create/copy/delete/edit rows and persistent inactive drafts, content-revision conflicts and strict calendar validation; host/target filesystem checks. Initial editor stage used test.mp3 only; annual/media/activation work followed in the entries above. [Details](docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).
 - [x] P07 annual draft — Twelve-month grid, date/range assignment, up to eight explicit years, shared persistence and civil preview through Lua calendar. Legacy read is unchanged; no UTC/DST or activation. [Details](docs/packages/schoolbell/ANNUAL_CALENDAR.en.md).
 - [ ] P07 editor integration — Validate timezone/DST and clock quality, then migrate inactive drafts into the validated production snapshot/media contract before activation. Do not silently treat editor checkpoints as active plans or backup/import format.

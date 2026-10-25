@@ -49,3 +49,15 @@ def closure(packages,baseline):
             if actual is None or (version and actual!=version):raise ValueError('unsatisfied '+name+' -> '+dep)
 
 def sha(path):return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+
+def check_directories(path):
+    """opkg requires explicit parent directory entries, unlike Python extraction."""
+    outer=archive(pathlib.Path(path).read_bytes())
+    with tarfile.open(fileobj=io.BytesIO(outer['data.tar.gz'][0]),mode='r:gz') as t:
+        directories={'.'}
+        for member in t:
+            name=member.name[2:] if member.name.startswith('./') else member.name
+            if member.isdir():directories.add(name.rstrip('/'))
+            else:
+                for parent in pathlib.PurePosixPath(name).parents:
+                    if str(parent) not in directories:raise ValueError('missing preceding directory: '+str(parent))

@@ -5,6 +5,11 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 def tar_bytes(files):
     out=io.BytesIO()
     with tarfile.open(fileobj=out,mode='w:gz') as t:
+        # opkg/libbb extraction does not create omitted parent directories.
+        parents={str(p) for name in files for p in pathlib.PurePosixPath(name).parents if str(p)!='.'}
+        for name in sorted(parents,key=lambda x:(x.count('/'),x)):
+            m=tarfile.TarInfo('./'+name+'/');m.type=tarfile.DIRTYPE;m.mode=0o755;m.mtime=0
+            t.addfile(m)
         for name,(data,mode) in sorted(files.items()):
             m=tarfile.TarInfo('./'+name);m.size=len(data);m.mode=mode;m.mtime=0
             t.addfile(m,io.BytesIO(data))

@@ -2,10 +2,10 @@
 
 [Русский](PACKAGING.md)
 
-5.0.28 packages the existing engineering executor, LuCI UI, calendar, media library,
+5.0.31 packages the existing engineering executor, LuCI UI, calendar, media library,
 backup, time trust and six MP3s. It is a complete IPK of the current application,
 not completed production integration with the core event API or isolated player queue.
-Native clock 1.0.0 remains a separate IPK. No router installation in this stage.
+Native clock 1.0.0 remains a separate IPK. Target opkg installation, recovery downgrade and upgrade have been checked with preserved settings/media and automatic bells off; browser acceptance is separate.
 
 ## Build and joint release
 
@@ -14,7 +14,7 @@ make build-schoolbell
 # Build native clock with scripts/build-schoolbell-clock.py (see CLOCK_UI.en.md).
 make build-core VERSION=0.4.0-1+g$(git rev-parse --short HEAD)
 python3 scripts/build-schoolbell-bundle.py \
-  --schoolbell out/modbus-schoolbell_5.0.28_all.ipk \
+  --schoolbell out/modbus-schoolbell_5.0.31_all.ipk \
   --native out/schoolbell-clock/modbus-schoolbell-clock_1.0.0_mipsel_24kc.ipk \
   --core out/modbus-rtu-core_0.4.0-1+g$(git rev-parse --short HEAD)_all.ipk \
   --out out/schoolbell-release --download
@@ -98,3 +98,15 @@ power loss and year-long autonomous accuracy are not validated here.
 Finishing installation clears only temporary mailbox request/result/next files under
 its lock. A pending package marker rejects new commands before and after lock
 acquisition, preventing stale enable requests from executing in the new worker.
+
+Target compatibility findings: OpenWrt BusyBox can omit `stat`, so hooks use the
+declared Lua/nixio dependencies. opkg may return zero even after failing to extract
+files into omitted directories; both builders emit directory entries, and artifact
+checks reject missing parents. Verify every installed payload hash, not exit code
+alone. LuCI 19.07 bytecode ignores source mtimes, so postinst clears only schoolbell
+module/controller caches and dispatcher indexes. Kernel/native clock runtime unchanged.
+
+The first rollback used a locally generated `5.0.27+recovery` IPK made from the
+installed engineering payload plus safe lifecycle support, not an old public release.
+It preserved the original code bytes and user data. Reboot/power-loss/offline-first-boot
+remain untested; no guarantee for incompatible older data schemas is implied.

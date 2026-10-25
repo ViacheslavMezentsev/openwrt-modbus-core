@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Assemble an offline release directory. No target access, install or publication."""
 import argparse, json, pathlib, shutil, subprocess, tempfile, re, urllib.request
-from schoolbell_ipk import read, sha, closure
+from schoolbell_ipk import read, sha, closure, check_directories
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 def build(lock_path,schoolbell,native,core,cache,out,download=False):
     lock=json.loads(pathlib.Path(lock_path).read_text());out=pathlib.Path(out);cache=pathlib.Path(cache)
@@ -32,6 +32,7 @@ def build(lock_path,schoolbell,native,core,cache,out,download=False):
         if meta['Architecture'] not in ('all',lock['architecture']):raise ValueError('architecture')
         if pin and any(meta[k]!=pin[v] for k,v in [('Package','name'),('Version','version'),('Architecture','architecture')]):raise ValueError('pinned metadata')
         if pin and meta.get('Depends','')!=pin['depends']:raise ValueError('pinned dependencies')
+        if role in ('schoolbell','native'):check_directories(path)
         if role=='schoolbell':
             if name!='modbus-schoolbell' or not {'preinst','postinst','prerm'}<=set(control) or 'usr/sbin/schoolbell-auto' not in data:raise ValueError('complete schoolbell required')
         if role=='core' and name!='modbus-rtu-core':raise ValueError('core required')

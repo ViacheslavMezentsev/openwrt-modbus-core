@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Schoolbell 5.0.31: lifecycle uses declared Lua/nixio instead of missing BusyBox stat; IPKs explicitly include parent directories; owned LuCI bytecode is invalidated. Host regressions and target installation/recovery downgrade/upgrade passed with identical exported data and automatic bells disabled. Native clock archive receives directory records; its runtime and installed module are unchanged.
+
 - Schoolbell 5.0.28: full script IPK, safe auto-off lifecycle, pinned offline dependencies and joint core release manifest; host install/upgrade/rollback tests. No router installation.
 
 - Schoolbell 5.0.12: six protected bundled melodies plus five user slots; missing user media blocks plan activation.

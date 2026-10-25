@@ -18,7 +18,7 @@ assert source_sample.read_bytes() == sample, 'package source differs from pinned
 out = Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'out'
 packages = list(out.glob('modbus-schoolbell_*.ipk'))
 assert packages, 'schoolbell IPK missing'
-from schoolbell_ipk import read
+from schoolbell_ipk import read, check_directories
 for package in packages:
     meta,control,data=read(package)
     if 'usr/sbin/schoolbell-auto' not in data:
@@ -26,6 +26,7 @@ for package in packages:
         assert set(data)=={'usr/share/modbus-schoolbell/NOTICE','usr/share/modbus-schoolbell/melodies/test.mp3'}
         assert tuple(map(int,meta['Version'].split('.'))) < (5,0,28), 'current package cannot be preview'
     else:
+        check_directories(package)
         assert set(control)=={'control','preinst','postinst','prerm'}
         assert 'modbus-schoolbell-clock (= 1.0.0)' in meta['Depends']
         assert data['usr/share/schoolbell-editor/VERSION'][0].decode().strip()==meta['Version']

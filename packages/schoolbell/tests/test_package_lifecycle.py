@@ -2,7 +2,7 @@
 """TC-134: real hooks in a translated temporary root, real Lua/FS, fake procd.
 This is NOT target opkg or a power-cut test. No audio/network/hardware calls.
 """
-import io, os, pathlib, re, subprocess, sys, tempfile
+import io, os, pathlib, re, subprocess, sys, tempfile, tarfile
 ROOT=pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT/'scripts'))
 from schoolbell_ipk import read
@@ -12,6 +12,16 @@ spec=importlib.util.spec_from_file_location('builder',ROOT/'scripts/build-school
 with tempfile.TemporaryDirectory(prefix='schoolbell-package-') as tmp:
     base=pathlib.Path(tmp);target=base/'target';target.mkdir();(target/'etc').mkdir();(target/'tmp').mkdir()
     ipk=builder.build(base/'out');meta,hooks,files=read(ipk)
+    with tarfile.open(ipk) as outer:
+        with tarfile.open(fileobj=io.BytesIO(outer.extractfile('./data.tar.gz').read())) as payload:
+            directories={'.'}
+            for member in payload:
+                name=member.name[2:] if member.name.startswith('./') else member.name
+                if member.isdir():directories.add(name.rstrip('/'))
+                else:
+                    for parent in pathlib.PurePosixPath(name).parents:
+                        assert str(parent) in directories, 'opkg requires earlier directory entry: '+str(parent)
+    print('PASS archive explicitly defines every parent directory before files')
     def translate(s):
         return re.sub(r'/etc/|/tmp/|/usr/sbin/|/usr/share/',lambda m:str(target)+m.group(),s)
     def unpack(payload):
@@ -45,9 +55,14 @@ arg={action};dofile(root..'/usr/sbin/schoolbell-package.lua')
     def lua(action,good=True):
         q=subprocess.run(['lua5.1',str(shim),str(target),action],capture_output=True,text=True)
         assert (q.returncode==0)==good,(action,q.stdout,q.stderr)
+    # Model the target PATH: stat must never be called; lua uses native host lstat.
+    tools=base/'bin';tools.mkdir()
+    (tools/'stat').write_text('#!/bin/sh\necho forbidden-stat >&2\nexit 127\n');(tools/'stat').chmod(0o755)
+    (tools/'lua').write_text('#!/bin/sh\nexec lua5.1 "$@"\n');(tools/'lua').chmod(0o755)
+    preload=base/'nixio.lua';preload.write_text("local H=require('schoolbell.media_fs_host');package.loaded['nixio.fs']={lstat=function(p)local s=H.stat(p);if s then s.modedec=tonumber(string.format('%o',s.mode))end;return s end}")
     def hook(name,good=True,offline=False):
         p=base/name;p.write_text(translate(hooks[name][0].decode()))
-        env=os.environ.copy()
+        env=os.environ.copy();env['PATH']=str(tools)+':'+env['PATH'];env['LUA_INIT']='@'+str(preload)
         if offline:env['IPKG_INSTROOT']=str(target)
         q=subprocess.run(['sh',str(p)],env=env,capture_output=True,text=True)
         assert (q.returncode==0)==good,(name,q.stdout,q.stderr)
@@ -58,9 +73,14 @@ arg={action};dofile(root..'/usr/sbin/schoolbell-package.lua')
     for name in hooks:
         if name!='control':hook(name,offline=True)
     assert not (base/'service.log').exists() and not (target/'etc/schoolbell-editor').exists()
+    cache=target/'tmp/luci-modulecache';cache.mkdir()
+    ours=cache/'7363686F6F6C62656C6C2E636C6F636B5F6D61696C626F78';ours.write_text('old schoolbell bytecode')
+    other=cache/'6C7563692E64697370617463686572';other.write_text('unrelated cache')
     (target/'etc/modbus-schoolbell').mkdir(mode=0o755) # Existing public parent; private data child is required.
     hook('preinst');unpack(files);helpers();hook('postinst');lua('disabled')
     assert (base/'service.log').read_text().splitlines()==['enable','start']
+    assert not ours.exists() and other.read_text()=='unrelated cache'
+    print('PASS package bytecode invalidated; unrelated LuCI modules retained')
     print('PASS fresh package, offline hooks, disabled startup')
     lua('seed')
     user=target/'etc/modbus-schoolbell/data/user.mp3';user.write_bytes(b'user-melody-fixture')
@@ -87,7 +107,8 @@ arg={action};dofile(root..'/usr/sbin/schoolbell-package.lua')
     (lock/'foreign').unlink();lock.rmdir()
     private=target/'etc/modbus-schoolbell/data';renamed=private.with_name('data-saved');private.rename(renamed);private.symlink_to(renamed)
     hook('preinst',good=False);private.unlink();renamed.rename(private)
-    print('PASS foreign lock and symlink refusal')
+    private.chmod(0o777);hook('preinst',good=False);private.chmod(0o700)
+    print('PASS missing stat, foreign lock, symlink and unsafe permissions refusal')
     # Corrupt state: postinst fails closed, no enable/start, no fallback that activates.
     hook('preinst');auto=target/'etc/schoolbell-editor/automatic.json';old=auto.read_bytes();auto.write_text('corrupt')
     calls=(base/'service.log').read_bytes();hook('postinst',good=False)
