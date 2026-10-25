@@ -1,13 +1,14 @@
 # Schoolbell package
 
-Schoolbell 5.0.5: collapsible status, tabs preserving edits, router/browser clocks and an in-module time-zone selector; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
+Schoolbell 5.0.6: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
+
 
 
 [Русский](README.md)
 
-School calendar, bells and melodies. Isolated schedule calculation is implemented; core registration, player and operator UI remain pending.
+School calendar, bells and melodies. Calendar calculation, the LuCI editor and an engineering automatic executor are implemented. Public core registration and the production player remain separate stages.
 
-[ТЗ 1.19](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
+[ТЗ 1.27](TECHNICAL_SPECIFICATION.md) · [CHANGELOG](CHANGELOG.en.md)
 
 The specification remains a draft. Requirement/test IDs belong to this component;
 qualify references with `core`, `demo` or `schoolbell`. A specification revision

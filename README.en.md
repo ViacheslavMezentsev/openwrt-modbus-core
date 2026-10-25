@@ -1,6 +1,7 @@
 # openwrt-modbus-core
 
-Schoolbell 5.0.5: collapsible status, tabs preserving edits, router/browser clocks and an in-module time-zone selector; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
+Schoolbell 5.0.6: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
+
 
 
 [Русский](README.md)

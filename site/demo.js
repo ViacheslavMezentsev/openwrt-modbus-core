@@ -43,6 +43,7 @@ window.fetch=async function(url,options){
   else if(!valid(d) || JSON.stringify(d).length>12288)out={ok:false,code:'invalid'};
   else{s.data=d;s.revision++;log(s,'save_ok');out={ok:true,active:false,data:clone(d),revision:String(s.revision)};}
  }else if(name==='preview'){try{var data=JSON.parse(body.get('draft'));out=valid(data)?preview(data,body.get('date')):{ok:false,code:'invalid'};}catch(_){out={ok:false,code:'invalid'};}}
+ else if(name==='automatic'){out={ok:true,state:'disabled',enabled:false,hardware:false};}
  else if(name==='controls'){if(options && options.method==='POST'){s.muted=body.get('muted')==='true';log(s,s.muted?'mute_on':'mute_off');}out={ok:true,muted:!!s.muted,playing:false,hardware:false};}
  else if(name==='journal')out={ok:true,entries:clone(s.log),limit_bytes:16384};
  else if(name==='clock'){

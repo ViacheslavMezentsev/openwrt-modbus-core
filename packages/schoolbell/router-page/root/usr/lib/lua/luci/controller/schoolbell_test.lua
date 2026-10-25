@@ -2,6 +2,7 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","automatic"},call("automatic")).leaf=true
     entry({"admin","schoolbell","controls"},call("controls")).leaf=true
     entry({"admin","schoolbell","manual"},call("manual")).leaf=true
     entry({"admin","schoolbell","journal"},call("journal")).leaf=true
@@ -45,6 +46,33 @@ function timezone()
     editor();local zone=h.formvalue('zone');if not zone then respond({ok=false,code='invalid_zone'});return end
     local value=require('schoolbell.timezone').run(zone,h.formvalue('revision'))
     audit(value.ok and 'timezone_ok' or 'timezone_failed',value);respond(value)
+end
+function automatic()
+ local h=require('luci.http');local method=h.getenv('REQUEST_METHOD')
+ if method~='GET' and method~='POST' then h.status(405,'Method Not Allowed');return end
+ if method=='POST' then
+  local size=tonumber(h.getenv('CONTENT_LENGTH'))
+  if not size or size<1 or size>1024 or not (h.getenv('CONTENT_TYPE') or ''):match('^application/x%-www%-form%-urlencoded')then h.status(413,'Unsupported request');return end
+  if not require('luci.dispatcher').test_post_security()then return end
+  local enabled=h.formvalue('enabled');if enabled~='true' and enabled~='false' then respond({ok=false,code='invalid'});return end
+  editor();local m=require('schoolbell.automatic_store')
+  local result=m.transaction(m.change,enabled=='true',h.formvalue('revision'),m.environment())
+  audit(result.ok and (enabled=='true' and 'auto_enabled' or 'auto_disabled') or 'auto_blocked',result)
+  -- Never echo the private snapshot or internal storage error to the browser.
+  respond({ok=result.ok,code=result.code,generation=result.ok and result.state.generation or nil});return
+ end
+ editor();local m=require('schoolbell.automatic_store');local codec=require('schoolbell.media_codec')
+ local ok,result=pcall(function()
+  local active=m.decode(m.raw());local f=io.open('/tmp/schoolbell-auto-status.json','rb')
+  local status
+  if f then local raw=f:read(8193);f:close();if raw and #raw<=8192 then status=codec.decode(raw)end end
+  local up=assert(io.open('/proc/uptime','r'));local now=tonumber(up:read(64):match('^[%d.]+'));up:close()
+  if not status or type(status.uptime)~='number' or now-status.uptime<0 or now-status.uptime>40 or status.generation~=active.generation then
+   return {ok=true,state='waiting',enabled=active.enabled,revision=active.revision}
+  end
+  status.enabled=active.enabled;return status
+ end)
+ respond(ok and result or {ok=false,state='unavailable'})
 end
 function controls()
  local h=require('luci.http');local method=h.getenv('REQUEST_METHOD');local value
@@ -133,6 +161,7 @@ function page()
     local d=require("luci.dispatcher")
     require("luci.http").header("Cache-Control","no-store")
     require("luci.template").render("schoolbell_test",{
+        automatic_url=d.build_url('admin','schoolbell','automatic'),
         controls_url=d.build_url('admin','schoolbell','controls'),
         manual_url=d.build_url('admin','schoolbell','manual'),
         journal_url=d.build_url('admin','schoolbell','journal'),

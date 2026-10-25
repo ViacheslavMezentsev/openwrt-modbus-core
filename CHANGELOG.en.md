@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Schoolbell 5.0.6: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
+
 - Schoolbell 5.0.2: distinct xterm256 colors with black/white text, an in-module time-zone selector with confirmation and conflict checks; a GitHub Pages landing page and browser-local demo sharing the router UI.
 
 - Schoolbell Feedback tab and bilingual GitHub Issue Forms for bugs and feature requests; submission remains a user action.

@@ -2,12 +2,14 @@
 
 ## Current state and next steps
 
-- [ ] Integrate automatic schoolbell execution for saved fixed/annual modes; preserve mute priority and do not replay missed bells. Measure real-audio cancellation latency separately from the sleep-child test.
+- [x] Engineering automatic schoolbell service: explicit saved fixed/annual snapshot activation, Mute and no catch-up. Host tests and target commissioning are documented separately.
+- [ ] Measure audible auto-bell/Mute latency and long-run resources; integrate the production player, core scheduler and trusted startup clock before unattended operation across power loss.
 
 - [ ] Publish the repository Pages site after merge/CI using the manual workflow; see site/README.md.
 - [ ] Verify schoolbell timezone handling on zoneinfo-file targets; the POSIX TZ target has passed live application through the UI.
 
-- [ ] Connect schoolbell duty countdown to an active executor; keep drafts inactive. Define system-event subscription for the package journal (current log covers observed package/storage events only).
+- [x] Connect duty countdown to the engineering executor (today horizon); drafts remain separate.
+- [ ] Extend countdown to future assigned days and subscribe the package journal to core system events.
 
 Core 0.4.0 and firmware map v2 implement router-driven button/LED control.
 Completed work is summarized in [the stage archive](docs/archive/completed-stages.en.md).
@@ -22,7 +24,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.26. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.27. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.

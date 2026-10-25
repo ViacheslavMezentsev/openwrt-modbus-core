@@ -1,0 +1,94 @@
+#!/usr/bin/lua
+-- No dependency on a browser, modbusd, serial port, cron or NTP configuration.
+package.path='/usr/share/schoolbell-editor/lua/?.lua;'..package.path
+local n=require('nixio');local fs=require('nixio.fs')
+local A=require('schoolbell.automatic');local Store=require('schoolbell.automatic_store')
+local C=require('schoolbell.media_codec');local Controls=require('schoolbell.controls')
+local Player=require('schoolbell.sound_test')
+local lock=assert(n.open('/tmp/schoolbell-auto.lock','w',600))
+assert(lock:lock('tlock'),'another executor is running')
+local function mono()
+ local f=assert(io.open('/proc/uptime','r'));local t=f:read(64);f:close();return assert(tonumber(t:match('^[%d.]+')))
+end
+local function audit(action)require('schoolbell.journal').request(Store.root,action)end
+local function status(v)
+ v.updated=os.time();v.uptime=math.floor(mono())
+ local f=assert(io.open('/tmp/schoolbell-auto-status.next','wb'));assert(f:write(C.encode(v)));assert(f:close())
+ assert(fs.rename('/tmp/schoolbell-auto-status.next','/tmp/schoolbell-auto-status.json'))
+end
+local cached,active,engine,key,events,calendar_error,previous_state
+local started=Store.environment()
+local function tick()
+ local raw=Store.raw();local env=Store.environment();local now,up=env.now,mono()
+ if started.zone~=env.zone then os.exit(0)end -- procd respawns with libc's new TZ
+ if raw~=cached or not active then
+  local v=Store.decode(raw)
+  if not active or active.generation~=v.generation then
+   -- Persist the startup floor too: downtime followed by clock rollback and
+   -- another restart must not resurrect an event missed during downtime.
+   if v.enabled and v.boot==env.boot and v.zone==env.zone then
+    local checkpoint=Store.transaction(Store.advance,v.generation,now)
+    assert(checkpoint.ok,'startup checkpoint');v=checkpoint.state
+    local body=C.encode(v);raw=C.encode({data=v,checksum=C.sha(body)})
+   end
+   engine=A.new(now,up,v.watermark);key=nil
+  end
+  active=v;cached=raw
+ end
+ local v={ok=true,enabled=active.enabled,generation=active.generation,revision=active.revision,now=now}
+ if not active.enabled then v.state='disabled'
+ elseif active.boot~=env.boot then v.state='confirm_clock'
+ elseif active.zone~=env.zone or started.zone~=env.zone then v.state='timezone_changed'
+ elseif now<1577836800 or now>=2145916800 then v.state='clock_invalid'
+ else
+  local k=active.generation..'/'..env.date
+  if key~=k then events,calendar_error=A.events(active.plan,env.date);key=k end
+  if not events then v.state=calendar_error
+  else
+   local controls=Controls.snapshot();v.mode=active.plan.mode or 'annual'
+   v.state=now<engine.watermark() and 'backward_hold' or not controls.ok and 'control_unreadable' or controls.muted and 'muted' or 'running'
+   for _,e in ipairs(events)do if e.utc>math.max(now,active.watermark,engine.watermark())then v.next=e;break end end
+   local event,skip=engine.step(now,up,events,not controls.ok or controls.muted)
+   if skip then v.skipped=skip end
+   if not event and skip=='clock_gap' then
+    local checkpoint=Store.transaction(Store.advance,active.generation,now)
+    if checkpoint.ok then
+     active=checkpoint.state;local body=C.encode(active);cached=C.encode({data=active,checksum=C.sha(body)})
+    else v.state='claim_failed' end
+   end
+   if event then
+    local claimed=Store.transaction(Store.claim,active.generation,event.utc,os.time())
+    if not claimed.ok then v.state='claim_failed'
+    else
+     active=claimed.state;local body=C.encode(active);cached=C.encode({data=active,checksum=C.sha(body)});v.state='playing';v.event=event;v.next=nil;status(v)
+     audit('auto_requested')
+     local io=Player.system(event.media);local muted=io.muted;local expected=cached
+     local sleep=io.sleep;local last_status=math.floor(mono());io.sleep=function()local tick=math.floor(mono());if tick~=last_status then status(v);last_status=tick end;sleep()end
+     local spawn=io.spawn;io.spawn=function()local t=os.time();if t<event.utc or t-event.utc>2 then return nil end;return spawn()end
+     io.muted=function()
+      local ok,raw_now=pcall(Store.raw)
+      local good,current=pcall(Store.environment)
+      return muted() or not ok or raw_now~=expected or not good or current.zone~=active.zone
+     end
+     -- A slow claim/audit must never turn into a late launch.
+     local result
+     if skip then result={ok=false,state=skip}
+     elseif os.time()-event.utc>2 or os.time()<event.utc then result={ok=false,state='expired'}
+     else result=Player.run(io)end
+     v.state=result.ok and 'running' or result.state;v.result=result.state;v.event=nil
+     audit(result.ok and 'auto_ok' or 'auto_skipped')
+    end
+   end
+  end
+ end
+ if v.state~=previous_state then
+  if v.state~='running' and v.state~='disabled' and v.state~='muted' then audit('auto_blocked')end
+  previous_state=v.state
+ end
+ status(v)
+end
+while true do
+ local ok=pcall(tick)
+ if not ok then pcall(status,{ok=false,state='executor_error'}) end
+ n.nanosleep(1,0)
+end

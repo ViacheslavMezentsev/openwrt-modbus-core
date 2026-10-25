@@ -132,7 +132,7 @@
   function total() { return draft.schedules.reduce(function (n,s) { return n+s.rows.length; },0); }
   function state() {
     document.getElementById('duty-state').textContent=busy?'Обмен с роутером…':reconcile?'Требуется сверка данных':!draft?'Данные недоступны':dirty?'Черновик изменён · не сохранён':revision==='empty'?'План ещё не сохранён':'Черновик сохранён';
-    document.getElementById('duty-compact').textContent='Автозвонки отключены · '+document.getElementById('duty-state').textContent;
+
     root.setAttribute('aria-busy',String(busy));
     save.textContent=busy?'Обмен с роутером…':reconcile?'Сначала сверьте сохранённое':dirty?'Сохранить черновик на роутере':'Нет изменений для сохранения';
     fields.disabled=busy || !draft;
@@ -140,10 +140,10 @@
     reload.disabled=busy;
     document.getElementById('settings-save').disabled=busy || !dirty || reconcile;
     document.getElementById('settings-result').textContent=result.textContent;
-    badge.textContent=busy?'Обмен с роутером…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Сохранено · не активно';
+    badge.textContent=busy?'Обмен с роутером…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Черновик сохранён';
     badge.dataset.dirty=dirty?'true':'false';
   }
-  function changed() { document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Черновик изменён. Обновите предпросмотр.'; dirty=true; result.textContent='Изменения только в браузере. Нажмите «Сохранить черновик». Автозвонков нет.'; state(); }
+  function changed() { document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Черновик изменён. Обновите предпросмотр.'; dirty=true; result.textContent='Изменения только в браузере. Нажмите «Сохранить черновик». Активный план не меняется.'; state(); }
   function textOption(value,text) { var o=document.createElement('option'); o.value=value; o.textContent=text; return o; }
   function render() {
     // Legacy drafts are only materialized in browser memory; disk changes on explicit save.
@@ -219,7 +219,7 @@
       var value=await request(root.dataset.load);
       if(!value.ok) { result.textContent=errors[value.code] || 'Ошибка чтения.'; reconcile=true; return; }
       document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; render();
-      result.textContent=revision==='empty'?'Сохранённых расписаний ещё нет. Создайте первое.':'Данные прочитаны с роутера. Автоматическое воспроизведение отключено.';
+      result.textContent=revision==='empty'?'Сохранённых расписаний ещё нет. Создайте первое.':'Черновик прочитан с роутера. Состояние автозвонков указано в верхней плашке.';
     } catch (_) { result.textContent='Не удалось загрузить данные. Проверьте соединение и вход LuCI.'; }
     finally { busy=false; state(); }
   }
@@ -266,7 +266,7 @@
         return;
       }
       document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=value.data; revision=value.revision; dirty=false; reconcile=false; render();
-      result.textContent='Сохранено на роутере. Автоматические звонки не включены.'+(value.journal_warning?' Внимание: событие не удалось записать в журнал.':'');
+      result.textContent='Сохранено на роутере. Активный план не меняется до отдельного применения.'+(value.journal_warning?' Внимание: событие не удалось записать в журнал.':'');
     } catch (_) { reconcile=true; result.textContent='Ответ потерян: запись могла завершиться. Правки остались в браузере. Загрузите данные роутера и сравните.'; }
     finally { busy=false; state(); }
   });

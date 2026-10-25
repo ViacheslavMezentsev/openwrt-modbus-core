@@ -1,15 +1,16 @@
 # Schoolbell router page
 
+Schoolbell 5.0.6: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
+
 [Русский](README.md)
 
 Open `http://<router>/cgi-bin/luci/admin/schoolbell` using the router's actual
-HTTP/HTTPS configuration and normal LuCI login. This commissioning page plays
-the bundled short test.mp3; it is not an automatic bell scheduler.
+HTTP/HTTPS configuration and normal LuCI login. The page includes the editor, separately activated automatic bells and manual sound tests.
 
 - **Послушать здесь** plays in the current browser/device speakers.
 - **Позвонить на роутере** sends an authenticated, CSRF-protected POST to play
   the fixed sample through the router USB audio card.
-- One button selects system/dark/light theme. No autoplay or mixer changes.
+- One button selects system/dark/light theme. Installation does not activate a plan or change the mixer.
   Process exit 0 does not prove audible output.
 
 ## Deployment and rollback
@@ -19,16 +20,17 @@ Lua 5.1, LuCI/nixio/luci.jsonc, madplay and working USB audio. No dependency
 installation or uhttpd configuration changes are performed.
 
 Back up all existing target paths under `root/`, including modes and hashes;
-record absent paths separately and check overlay capacity. Copy `root/` to
-the router root (directories 0755, files 0644), plus `../media/test.mp3` to
-`/usr/share/schoolbell-sound-test/test.mp3` (0644). Expected SHA256:
-`1ae57af4d27698b0cd3795de7287c0dd1b5e2b336e8d9e8dcc9b853cbd8b4e0d`.
-Invalidate only generated `/tmp/luci-indexcache`; no service restart is needed.
+record absent paths separately and check overlay capacity. Build using
+`python3 build-payload.py /tmp/schoolbell-payload.tar`, which includes private
+Lua modules, six media files and service scripts (init/sbin 0755, data 0644).
+After backup, unpack the payload at the router root, invalidate the LuCI index
+and affected module caches, then enable/start only schoolbell-auto. Do not
+restart the core or NTP. A fresh installation has no active plan.
 
-For rollback, confirm playback has ended and deployed files have not changed.
-Restore backed-up originals with metadata, remove only newly installed payload
-files, then invalidate that index again. Do not remove shared directories,
-user settings or unrelated media.
+Rollback first disables automatic bells and waits for playback completion,
+then stops/disables schoolbell-auto and restores verified previous payload
+files. Remove only files introduced by this payload. Preserve user drafts,
+Mute state, common directories and user media.
 
 ## Limits and evidence
 
@@ -70,3 +72,13 @@ luci.controller.schoolbell_test module cache after updating the controller.
 The earlier root-only copy instructions cover the sound-only subset;
 use this complete payload for the editor. Rollback restores code and preserves
 /etc/schoolbell-editor drafts; restoring user data is a separate deliberate action.
+
+## Automatic bells (engineering profile 5.0.6)
+
+Check router date/time/timezone, choose the fixed schedule or explicit annual plan, save the draft, then use **Apply saved plan and enable** in Settings. The duty panel shows service confirmation and the next bell **today**. Closing the browser does not stop scheduling. Saving edits does not replace the active snapshot. Disable automatic bells leaves manual playback available; Mute blocks/cancels all schoolbell router audio.
+
+Missing annual dates are quiet and years never repeat implicitly. Coincident event times and DST gaps/folds block that day. Busy playback, Mute, expired events and downtime never create a queue. A durable watermark precedes playback; storage failure prevents admission. Start grace is 2 seconds with a polling gap up to 3 seconds, a skip policy rather than a realtime guarantee.
+
+After reboot or timezone changes, check the router clock and explicitly reactivate. Restarting only the service skips past events. No clock/NTP configuration or correction is performed. This is a procd/Lua/nixio engineering installation using fixed test/0–4 files and the installed madplay, not an autonomous dependency-complete IPK or production core/native-player integration. A short child can finish after parent failure; the shared lock remains for diagnosis. Do not remove it without checking processes. Power-loss and year-long autonomy are unverified.
+
+The separate `/etc/schoolbell-editor/automatic.json` contains the checksummed active snapshot, generation, boot/TZ and watermark. Flash writes occur on control changes, active-service startup, clock/polling gaps and considered event instants; periodic status uses `/tmp`. Journal bounds remain 16 KiB / 24 KiB during publication. Rollback stops/disables only schoolbell-auto, verifies player completion and restores the backed-up payload, retaining the user's draft and Mute settings.
