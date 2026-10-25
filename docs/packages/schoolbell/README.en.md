@@ -92,3 +92,5 @@ The Feedback tab links to [Issues](https://github.com/ViacheslavMezentsev/openwr
 [Melody uploads](MEDIA_UPLOAD.en.md).
 
 [Backup and transfer](BACKUP.en.md): restore leaves automatic ringing disabled.
+
+[Clock trust and rollback](CLOCK_TRUST.en.md): accepted requirements, implementation pending.

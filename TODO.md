@@ -24,7 +24,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.29. A one-sample
+User-facing scope follows core draft 1.33 and schoolbell draft 1.31. A one-sample
 engineering MVP is an intermediate result; replacement of the original requires
 the complete schoolbell acceptance matrix. Details listed as open questions are
 not silently approved by this sequence. API versions are independent of spec revisions.
@@ -219,4 +219,6 @@ Rover does not replace pending core native-I/O and Lua memory work.
 
 - [x] Schoolbell: инженерный backup сохранённого плана/настроек/пользовательских MP3, восстановление с autooff; восемь слотов и названия (5.0.14).
 - [ ] Schoolbell: отдельный шаблон партии; production-привязка активных планов к ревизиям медиатеки и восстановление после аппаратного сбоя питания.
-- [ ] Schoolbell: согласовать признак достоверности времени и обнаружение отката после reboot по сохранённой подтверждённой отметке; без автоматической установки часов из года плана.
+- [x] Schoolbell: принят контракт clock trust/rollback (ТЗ 1.31, CLOCK_TRUST.md), TC-113–119 плановые; без реализации и изменений роутера.
+- [ ] Schoolbell: согласовать формат/миграцию опоры, период записи, диапазоны порогов, наблюдение/свежесть подтверждения; затем изолированная модель и host-тесты clock trust.
+- [ ] Schoolbell: NTP/RTC-критерии подтверждения, предел неопределённости и срок автономного доверия после измерений; без обещания годовой точности по суточному опыту.

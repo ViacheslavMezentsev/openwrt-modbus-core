@@ -10,6 +10,8 @@
 
 ## [Unreleased]
 
+- Accepted clock-trust and rollback contract (specification 1.31): automatic admission gate, separate time confirmation and enable; TC-113–119 planned. Documentation only, no version/runtime/router changes.
+
 - Schoolbell 5.0.14: fix yielding LuCI backup download/upload; timezone is the first settings section.
 
 - Schoolbell 5.0.13: backup/restore with automatic ringing disabled; eight user melodies with display titles; manual sound checks in the Melodies tab.
