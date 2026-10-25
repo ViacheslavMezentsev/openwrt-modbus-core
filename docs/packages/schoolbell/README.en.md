@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.0.26: native clock dependency and authenticated time confirmation/bypass UI, worker-owned activation, host tests. Not installed. See [time controls](CLOCK_UI.en.md).
+
 
 5.0.25: executor clock admission with explicit optional bypass and injected-clock tests. Not deployed. Native dependency and confirmation UI remain deployment prerequisites: [integration scope](CLOCK_EXECUTOR.en.md).
 

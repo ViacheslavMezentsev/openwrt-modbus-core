@@ -59,15 +59,18 @@ end
 -- Native dependency and an authenticated confirmation UI are deployment prerequisites.
 function M.system()
  local C=require('schoolbell.media_codec');local fs=require('nixio.fs')
- local policy='/etc/schoolbell-clock-policy.json';local ok,enforced=pcall(function()
+ local policy=require('schoolbell.automatic_store').root..'/clock-policy.json'
+ local function read_policy()
+  assert(not fs.lstat(require('schoolbell.automatic_store').root..'/clock-policy.pending'),'policy interrupted')
   local st=fs.lstat(policy);if not st then return true end
   assert(st.type=='reg' and type(st.size)=='number' and st.size>=1 and st.size<=256,'policy file')
   local f=assert(io.open(policy,'rb'),'policy unreadable')
   local raw=f:read(257);local closed=f:close();assert(closed and raw and #raw==st.size and #raw<=256,'policy size')
   local v=C.decode(raw);C.fields(v,{'enforced'});assert(type(v.enforced)=='boolean','policy');return v.enforced
- end)
- if not ok then return M.new(function()error('invalid policy')end)end
+ end
+ local ok,enforced=pcall(read_policy);if not ok then enforced=true end
  return M.new(function()
+  assert(read_policy()==true,'invalid policy')
   local native=require('schoolbell.clock_linux')
   local root=require('schoolbell.automatic_store').root -- provisioned private editor directory
   local observer=tostring({})

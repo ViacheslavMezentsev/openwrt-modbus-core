@@ -1,5 +1,9 @@
 # Clock control in the executor
 
+5.0.26: native clock dependency and authenticated time confirmation/bypass UI, worker-owned activation, host tests. Not installed. See [time controls](CLOCK_UI.en.md).
+
+The 5.0.25 scope below is historical; native/UI work is now complete on host.
+
 [Русский](CLOCK_EXECUTOR.md)
 
 5.0.25 is a host integration, not a router deployment. The actual `schoolbell-auto` script uses `clock_gate` over `clock_trust`; tests inject clock, storage and player ports. They do not test real audio or deployed hardware execution.
@@ -10,7 +14,7 @@ Observation runs each nominal one-second pass and once per second while waiting 
 
 ## Disabling control
 
-Local `/etc/schoolbell-clock-policy.json`, at most 256 bytes, accepts only `{"enforced":true}` or `{"enforced":false}`. Missing means true; invalid, duplicate or extra fields and non-boolean values never disable control. The worker reads it at startup; portable SBB archives neither include nor restore it. In-process `gate.configure(boolean)` revokes admission and previous confirmations; enabling control requires fresh confirmation. Policy changes never write automatic.enabled=true. If a plan is already enabled, bypass removes only the trust requirement, retaining boot/TZ, Mute, TTL and watermark checks. The future UI must keep mode selection separate from plan activation.
+Local `/etc/schoolbell-editor/clock-policy.json`, at most 256 bytes, accepts only `{"enforced":true}` or `{"enforced":false}`. Missing means true; invalid, duplicate or extra fields and non-boolean values never disable control. The worker reads it at startup; portable SBB archives neither include nor restore it. In-process `gate.configure(boolean)` revokes admission and previous confirmations; enabling control requires fresh confirmation. Policy changes never write automatic.enabled=true. If a plan is already enabled, bypass removes only the trust requirement, retaining boot/TZ, Mute, TTL and watermark checks. The future UI must keep mode selection separate from plan activation.
 
 Bypass reports `unchecked`, enforced=false and accuracy_known=false, never confirmed. It opens neither clock ports nor reference storage. Explicit enable is still required after a mode change. Re-enabling creates a new trust model without inherited trust/tokens.
 

@@ -14,7 +14,7 @@
   audio.addEventListener('error',function () { localButton.disabled=false; localResult.textContent='Файл недоступен. Обновите страницу и проверьте вход в LuCI.'; });
   var form=document.getElementById('router-form'), button=document.getElementById('router-play'), result=document.getElementById('router-result');
   var messages={
-    muted:'Звук отключён кнопкой Mute.',
+    muted:'Звук отключён кнопкой Без звука.',
     completed:'Проигрыватель завершился успешно. Было слышно через колонки роутера?',
     busy:'Тест уже выполняется или заблокирован после сбоя. Повторно не запускаем.',
     unavailable:'Нет проигрывателя, аудиовыхода или тестовой мелодии.',

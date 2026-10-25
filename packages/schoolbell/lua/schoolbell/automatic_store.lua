@@ -30,7 +30,7 @@ end
 function M.change(fs,enabled,revision,env)
  local current=M.decode(fs.read(M.name,M.max_bytes))
  assert(current.generation<2147483647,'generation')
- local v={enabled=enabled,generation=current.generation+1,watermark=math.max(current.watermark,env.now)}
+ local v={enabled=enabled,generation=current.generation+1,watermark=enabled and math.max(current.watermark,env.now) or current.watermark}
  if enabled then
   local draft=S.load(fs);assert(draft.ok and draft.revision~='empty' and draft.revision==revision,'draft_conflict')
   assert(env.now>=1577836800 and env.now<2145916800,'clock_range')

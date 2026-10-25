@@ -1,4 +1,5 @@
 -- Execute the actual infinite worker with injected host clock/storage/player I/O.
+package.loaded['schoolbell.clock_mailbox']={system=function()return {process=function()end}end}
 local C=require('schoolbell.media_codec');local Store=require('schoolbell.automatic_store')
 local Sound=dofile('packages/schoolbell/router-page/root/usr/lib/lua/schoolbell/sound_test.lua')
 local Gate=require('schoolbell.clock_gate');local Reference=require('schoolbell.clock_reference')

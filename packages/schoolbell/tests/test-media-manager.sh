@@ -55,6 +55,10 @@ lua5.1 packages/schoolbell/tests/test_backup_http.lua
 
 lua5.1 packages/schoolbell/tests/test_clock_trust.lua
 lua5.1 packages/schoolbell/tests/test_clock_gate.lua
+lua5.1 packages/schoolbell/tests/test_clock_commands.lua
+lua5.1 packages/schoolbell/tests/test_clock_http.lua
+lua5.1 packages/schoolbell/tests/test_clock_policy.lua
+node packages/schoolbell/tests/test-clock-ui.js
 
 # Compile actual system ports and the test-only syscall fault variant.
 "$CC" -std=c99 -O2 -Wall -Wextra -Werror -pedantic -shared -fPIC $LUA_CFLAGS "$ROOT/packages/schoolbell/native/clock_lua.c" -lm -o "$build/schoolbell/clock_linux.so"

@@ -1,5 +1,7 @@
 # openwrt-modbus-core
 
+Schoolbell 5.0.26: host-only time confirmation/bypass UI and native dependency. Reusable [router clock-drift skill](skills/router-clock-drift/SKILL.md); no hardware logs committed.
+
 Schoolbell 5.0.12: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
 
 Automatic bells: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.

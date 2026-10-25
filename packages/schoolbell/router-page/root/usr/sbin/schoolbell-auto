@@ -12,6 +12,27 @@ local function mono()
  local f=assert(io.open('/proc/uptime','r'));local t=f:read(64);f:close();return assert(tonumber(t:match('^[%d.]+')))
 end
 local function audit(action)require('schoolbell.journal').request(Store.root,action)end
+local mailbox=require('schoolbell.clock_mailbox').system()
+local command=require('schoolbell.clock_commands').new(Clock,{
+ enable=function(revision)
+  local saved=require('schoolbell.schedule_store').request(Store.root,'load')
+  if not saved.ok or not require('schoolbell.media_web').plan_ready(saved.data)then return {ok=false,code='missing_media'}end
+  if not Clock.admit()then return {ok=false,code='clock_untrusted'}end
+  local v=Store.transaction(Store.change,true,revision,Store.environment());return {ok=v.ok,code=v.code}
+ end,
+ localtime=function(utc)return os.date('%Y-%m-%d %H:%M:%S',utc)end,
+ zone=function()return Store.environment().zone end,
+ stop=function()local v=Store.transaction(Store.change,false,nil,Store.environment());return v.ok end,
+ policy=function(value)return require('schoolbell.clock_policy').save(Store.root,value)end})
+local function commands()
+ mailbox.process(function(q)
+  local value=command(q)
+  if q.action~='prepare'then
+   pcall(audit,value.ok and (q.action=='enable' and 'auto_enabled' or q.action=='confirm' and 'clock_confirmed' or q.enforced=='true' and 'clock_control_on' or 'clock_control_off') or 'clock_control_failed')
+  end
+  return value
+ end)
+end
 local last_result
 local function status(v)
  v.last_result=last_result
@@ -27,7 +48,7 @@ end
 local cached,active,engine,key,events,calendar_error,previous_state
 local started=Store.environment()
 local function tick()
- Clock.observe()
+ commands();Clock.observe()
  local raw=Store.raw();local env=Store.environment();local now,up=env.now,mono()
  if started.zone~=env.zone then os.exit(0)end -- procd respawns with libc's new TZ
  if raw~=cached or not active then
@@ -80,7 +101,7 @@ local function tick()
      active=claimed.state;cached=assert(claimed.raw);v.state='playing';v.event=event;v.next=nil;status(v)
      audit('auto_requested')
      local io=Player.system(event.media);local muted=io.muted;local expected=cached
-     local sleep=io.sleep;local last_status=math.floor(mono());io.sleep=function()local tick=math.floor(mono());if tick~=last_status then Clock.observe();status(v);last_status=tick end;sleep()end
+     local sleep=io.sleep;local last_status=math.floor(mono());io.sleep=function()local tick=math.floor(mono());if tick~=last_status then commands();Clock.observe();status(v);last_status=tick end;sleep()end
      local spawn=io.spawn;io.spawn=function()local t=os.time();if t<event.utc or t-event.utc>2 or not Clock.admit()then return nil end;return spawn()end
      io.muted=function()
       local ok,raw_now=pcall(Store.raw)

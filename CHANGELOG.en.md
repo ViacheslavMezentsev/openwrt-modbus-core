@@ -1,5 +1,7 @@
 # Changelog
 
+Schoolbell 5.0.26: host-only time confirmation/bypass UI and native dependency. Reusable [router clock-drift skill](skills/router-clock-drift/SKILL.md); no hardware logs committed.
+
 
 5.0.5 fixes mute status reads during concurrent saves/journal writes and distinguishes network, authentication and storage errors.
 

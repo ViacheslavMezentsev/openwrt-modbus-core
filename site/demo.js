@@ -44,7 +44,16 @@ window.fetch=async function(url,options){
   else{s.data=d;s.revision++;log(s,'save_ok');out={ok:true,active:false,data:clone(d),revision:String(s.revision)};}
  }else if(name==='preview'){try{var data=JSON.parse(body.get('draft'));out=valid(data)?preview(data,body.get('date')):{ok:false,code:'invalid'};}catch(_){out={ok:false,code:'invalid'};}}
  else if(name==='media')out={ok:true,demo:true,generation:0,storage:{total_kib:4096,free_kib:1536,used_kib:2560,reserve_kib:512,media_kib:0,media_limit_kib:2048},slots:['test','0','1','2','3','4','user1','user2','user3','user4','user5','user6','user7','user8'].map(function(id,i){return {id:id,name:i<6?id+'.mp3':'Свободная позиция',title:['Тестовый звонок','[Короткая] Время','Шутка Баха','Гостья из XXI','Князь Игорь','Усатый нянь'][i] || ('Пользовательская '+(i-5)),source:i<6?'bundled':'empty',size_bytes:[13104,41273,63321,69904,68023,82368][i] || 0};})};
- else if(name==='automatic'){out={ok:true,state:'disabled',enabled:false,hardware:false};}
+ else if(name==='automatic'){out={ok:true,state:'disabled',enabled:false,hardware:false,clock_trust:{enforced:s.clockEnforced!==false,state:s.clockConfirmed?'confirmed':s.clockEnforced===false?'unchecked':'unconfirmed',reason:'demo'}};}
+ else if(name==='clock-trust'){
+ if(options && options.method==='POST'){
+ var action=body.get('action');out={ok:true};
+ if(action==='prepare')out={ok:true,challenge:'demo',utc:Math.floor(Date.now()/1000),rollback:false,zone:s.zone || 'UTC'};
+ else if(action==='confirm'){s.clockConfirmed=true;log(s,'clock_confirmed');}
+ else if(action==='policy'){s.clockEnforced=body.get('enforced')==='true';s.clockConfirmed=false;log(s,s.clockEnforced?'clock_control_on':'clock_control_off');}
+ else out={ok:false,code:'demo_no_hardware'};
+ }else out={ok:false,code:'demo_no_pending'};
+ }
  else if(name==='controls'){if(options && options.method==='POST'){if(body.has('volume_db')){s.volume_db=Number(body.get('volume_db'));log(s,'volume_ok');}else{s.muted=body.get('muted')==='true';log(s,s.muted?'mute_on':'mute_off');}}out={ok:true,muted:!!s.muted,volume_db:s.volume_db || 0,playing:false,hardware:false};}
  else if(name==='journal')out={ok:true,entries:clone(s.log),limit_bytes:16384};
  else if(name==='clock'){

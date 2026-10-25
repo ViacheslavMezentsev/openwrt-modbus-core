@@ -1,5 +1,7 @@
 # Changelog
 
+5.0.26: native clock dependency and authenticated time confirmation/bypass UI, worker-owned activation, host tests. Not installed. See [time controls](CLOCK_UI.en.md).
+
 
 5.0.5: lock-free atomic mute snapshots; distinct network/auth/storage errors.
 

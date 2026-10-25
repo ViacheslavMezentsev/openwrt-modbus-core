@@ -23,5 +23,8 @@ async function api(name,data){return (await context.window.fetch('./demo-api/'+n
  let volume=await api('controls',{volume_db:'-12'});assert(volume.volume_db===-12);
  assert((await api('controls')).volume_db===-12);
  assert((await api('automatic',{enabled:'true'})).enabled===false);
+ let challenge=await api('clock-trust',{action:'prepare'});assert(challenge.challenge==='demo');
+ await api('clock-trust',{action:'confirm'});assert((await api('automatic')).clock_trust.state==='confirmed');
+ await api('clock-trust',{action:'policy',enforced:'false'});assert((await api('automatic')).clock_trust.enforced===false);assert((await api('automatic')).enabled===false);
  console.log('PASS demo: local persistence, CAS, midnight/quiet-day preview, mock zone, bounded journal, blocked remote API');
 })().catch(e=>{console.error(e);process.exitCode=1;});

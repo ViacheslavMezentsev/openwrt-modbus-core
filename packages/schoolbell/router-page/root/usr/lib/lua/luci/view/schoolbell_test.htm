@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьный звонок · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5020">
-<script src="/schoolbell-test/theme.js?v=5020"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5026">
+<script src="/schoolbell-test/theme.js?v=5026"></script></head>
 <body><main><header><div><p class="eyebrow">SCHOOLBELL / РАСПИСАНИЯ И ЗВУК</p>
-<h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Mute · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button></div></header><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
+<h1>Школьный звонок</h1></div><div class="quick-controls"><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button></div></header><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <details id="duty-panel" class="duty-box" open>
 <summary><strong>Schoolbell <%=pcdata(module_version)%></strong> · <span id="duty-compact">Получаем состояние службы…</span> <span class="collapse-hint">Подробности ▾</span></summary>
 <div class="duty-panel" aria-label="Состояние для дежурного">
@@ -33,7 +33,7 @@
 <p id="workflow-draft" role="status">Черновик: загружается…</p><p id="workflow-active" role="status">Активный план: состояние неизвестно</p><p id="workflow-difference">Сохранение и применение — отдельные действия.</p>
 <button id="workflow-save" type="button" disabled>Сохранить черновик</button> <button id="workflow-apply" type="button">К применению плана</button>
 </section>
-<section id="schedule-editor" class="details" data-media="<%=pcdata(media_url)%>" data-sample="<%=pcdata(sample_url)%>" data-automatic="<%=pcdata(automatic_url)%>" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
+<section id="schedule-editor" class="details" data-media="<%=pcdata(media_url)%>" data-sample="<%=pcdata(sample_url)%>" data-trust="<%=pcdata(trust_url)%>" data-automatic="<%=pcdata(automatic_url)%>" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
 <div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
 <p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с роутера…</p>
 <fieldset id="schedule-fields" disabled>
@@ -106,11 +106,19 @@
 <p id="timezone-result" role="status"></p>
 <p>Если дата или минуты неверны, смена пояса этого не исправит. Автоматическая синхронизация часов здесь не выполняется.</p>
 </section>
+<section class="details"><h2>Проверка времени</h2>
+<p>Сверьте дату и время роутера с надёжными часами. Подтверждение не переводит часы и не меняет NTP. После перезапуска службы потребуется новая проверка.</p>
+<p id="trust-status" role="status">Ожидаем состояние исполнителя…</p>
+<div class="editor-toolbar"><button id="trust-prepare" type="button" disabled>Проверить и подтвердить время</button><button id="trust-policy" type="button" disabled>Изменить контроль времени</button></div>
+<div id="trust-review" hidden><p id="trust-date"></p><label><input id="trust-rollback" type="checkbox"> Подтверждаю намеренное время раньше сохранённой опоры</label><button id="trust-confirm" type="button">Время верно — подтвердить</button></div>
+<p id="trust-result" role="status"></p>
+<p>Эти действия отключают автозвонки. Включение плана выполняется отдельно ниже. Если контроль отключён, защита от неверных часов не действует; «Без звука» и запрет повторного проигрывания сохраняются.</p>
+</section>
 <section class="details"><h2>Звонки и режим работы</h2>
 <label>Громкость колонок роутера<select id="router-volume" disabled>
 <option value="-36">Едва слышно (−36 дБ)</option><option value="-24">Очень тихо (−24 дБ)</option><option value="-12">Тихо (−12 дБ)</option><option value="-6">Средне (−6 дБ)</option><option value="0">Без ослабления (0 дБ)</option></select></label>
 <button type="button" id="volume-save" disabled>Применить громкость</button><p id="volume-status" role="status"></p>
-<p>Громкость применяется к следующему звонку на роутере: ручному, тестовому и автоматическому. Для немедленной остановки используйте Mute. Звук браузера регулируется на вашем устройстве.</p>
+<p>Громкость применяется к следующему звонку на роутере: ручному, тестовому и автоматическому. Для немедленной остановки используйте Без звука. Звук браузера регулируется на вашем устройстве.</p>
 <p>Мелодия ручного звонка применяется после сохранения. Автозвонки работают без открытого браузера по отдельно применённой копии плана.</p>
 <label>Мелодия ручного звонка<select id="manual-media" disabled></select></label>
 <label>Мелодия предзвонка<select id="pre-media" disabled></select></label>
@@ -121,7 +129,7 @@
 <button id="settings-save" type="button" disabled>Сохранить настройки и черновик</button><p id="settings-result" role="status"></p>
 <div class="automatic-controls"><button id="automatic-enable" type="button" disabled>Применить сохранённый черновик и включить</button> <button id="automatic-disable" type="button">Отключить автозвонки</button><p id="automatic-status" role="status"></p>
 <p>Проверьте дату и время роутера перед включением. После перезагрузки или изменения часового пояса включите снова. Пропущенные звонки не повторяются; при занятом проигрывателе новый звонок пропускается. Совпадающие времена звонков недопустимы.</p></div>
-<p>Mute действует сразу на звук schoolbell через роутер, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Mute пропущенные звонки не повторяются.</p></section>
+<p>Без звука действует сразу на звук schoolbell через роутер, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Без звука пропущенные звонки не повторяются.</p></section>
 <section class="details" id="backup-panel" data-url="<%=pcdata(backup_url)%>" data-token="<%=pcdata(token)%>"><h2>Резервная копия</h2>
 <p>Сохранённые настройки, расписания, годовой план и восемь пользовательских мелодий — в одном файле. Несохранённые правки страницы в копию не входят. Сначала отключите автозвонки.</p>
 <p>Восстановление заменяет эти данные и оставляет автозвонки выключенными. Системные часы, NTP, сеть и часовой пояс не меняются. Для переноса выберите на другом устройстве тот же часовой пояс заранее.</p>
@@ -150,4 +158,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/backup.js?v=5020"></script><script src="/schoolbell-test/media.js?v=5020"></script><script src="/schoolbell-test/automatic.js?v=5020"></script><script src="/schoolbell-test/controls.js?v=5020"></script><script src="/schoolbell-test/app.js?v=5020"></script><script src="/schoolbell-test/schedules.js?v=5020"></script><script src="/schoolbell-test/dashboard.js?v=5020"></script></body></html>
+</main><script src="/schoolbell-test/backup.js?v=5026"></script><script src="/schoolbell-test/media.js?v=5026"></script><script src="/schoolbell-test/clock-trust.js?v=5026"></script><script src="/schoolbell-test/automatic.js?v=5026"></script><script src="/schoolbell-test/controls.js?v=5026"></script><script src="/schoolbell-test/app.js?v=5026"></script><script src="/schoolbell-test/schedules.js?v=5026"></script><script src="/schoolbell-test/dashboard.js?v=5026"></script></body></html>

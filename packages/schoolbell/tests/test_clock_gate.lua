@@ -49,14 +49,15 @@ test('missing dependency blocks by default; explicit bypass remains separate',fu
 end)
 test('local policy defaults on; only explicit boolean false bypasses native port',function()
  local oldopen=io.open;local oldfs=package.loaded['nixio.fs'];local oldnative=package.loaded['schoolbell.clock_linux'];local oldpreload=package.preload['schoolbell.clock_linux']
- local raw,exists,native_calls=nil,false,0
- package.loaded['nixio.fs']={lstat=function()return exists and {type='reg',size=raw and #raw or 1} or nil end}
+ local raw,exists,native_calls=nil,false,0;local pending=false
+ package.loaded['nixio.fs']={lstat=function(path)if path:match('clock%-policy.pending$')then return pending and {type='reg'} or nil end;return exists and {type='reg',size=raw and #raw or 1} or nil end}
  package.loaded['schoolbell.clock_linux']=nil
  package.preload['schoolbell.clock_linux']=function()native_calls=native_calls+1;error('not installed')end
- io.open=function(path)assert(path=='/etc/schoolbell-clock-policy.json');if raw==nil then return nil end;return {read=function(_,n)return raw:sub(1,n)end,close=function()return true end}end
+ io.open=function(path)assert(path=='/etc/schoolbell-editor/clock-policy.json');if raw==nil then return nil end;return {read=function(_,n)return raw:sub(1,n)end,close=function()return true end}end
  local g=Gate.system();assert(g.status().enforced and not g.enable().ok and native_calls==1)
  raw='{"enforced":false}';exists=true;g=Gate.system();assert(not g.status().enforced and not g.admit());assert(g.enable().ok and g.admit());assert(native_calls==1)
  for _,bad in ipairs({'{"enforced":"false"}','{"enforced":false,"extra":1}','{"enforced":false,"enforced":true}',string.rep(' ',257),'null'})do raw=bad;g=Gate.system();assert(g.status().enforced and not g.enable().ok)end
+ raw='{"enforced":false}';pending=true;g=Gate.system();assert(g.status().enforced and not g.enable().ok);pending=false
  raw=nil;g=Gate.system();assert(g.status().enforced and not g.admit())
  io.open=oldopen;package.loaded['nixio.fs']=oldfs;package.loaded['schoolbell.clock_linux']=oldnative;package.preload['schoolbell.clock_linux']=oldpreload
 end)

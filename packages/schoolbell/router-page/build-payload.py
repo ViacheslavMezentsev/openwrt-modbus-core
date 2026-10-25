@@ -12,7 +12,7 @@ files = {str(p.relative_to(base / "root")): p
 files["usr/share/schoolbell-sound-test/test.mp3"] = base.parent / "media/test.mp3"
 for media in range(5):
     files["usr/share/schoolbell-sound-test/"+str(media)+".mp3"] = base.parent / ("media/"+str(media)+".mp3")
-for name in ("clock_gate", "clock_trust", "clock_reference", "clock_reference_store", "clock_system", "backup", "backup_codec", "mp3", "media_manager", "media_library", "calendar", "media_codec", "media_fs", "schedule_store", "journal", "timezone", "controls", "automatic", "automatic_store"):
+for name in ("clock_commands", "clock_mailbox", "clock_policy", "clock_gate", "clock_trust", "clock_reference", "clock_reference_store", "clock_system", "backup", "backup_codec", "mp3", "media_manager", "media_library", "calendar", "media_codec", "media_fs", "schedule_store", "journal", "timezone", "controls", "automatic", "automatic_store"):
     files["usr/share/schoolbell-editor/lua/schoolbell/" + name + ".lua"] = (
         base.parent / "lua/schoolbell" / (name + ".lua"))
 files["usr/share/schoolbell-editor/lua/modbus/json_strict.lua"] = (
@@ -28,6 +28,9 @@ with tarfile.open(sys.argv[1], "w") as archive:
     entry.mode = 0o644
     entry.size = len(data)
     archive.addfile(entry, io.BytesIO(data))
+    dependency=b'{"time_control":{"package":"modbus-schoolbell-clock","version":"1.0.0","architecture":"mipsel_24kc","lua":"5.1","required_when_enforced":true}}\n'
+    info=tarfile.TarInfo('usr/share/schoolbell-editor/dependencies.json');info.mode=0o644;info.size=len(dependency)
+    archive.addfile(info,io.BytesIO(dependency))
     for name, source in sorted(files.items()):
         data = source.read_bytes()
         entry = tarfile.TarInfo(name)

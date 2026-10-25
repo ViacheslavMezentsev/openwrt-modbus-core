@@ -1,0 +1,71 @@
+-- One bounded private request and result. CGI submits; only the worker executes.
+local C=require('schoolbell.media_codec');local M={}
+local function hex(s,n)return type(s)=='string' and #s==n and s:match('^[0-9a-f]+$')end
+function M.valid(q)
+ if type(q)~='table' or not hex(q.id,32) or not hex(q.owner,64)then return false end
+ for k in pairs(q)do if not ({id=true,owner=true,action=true,challenge=true,ack=true,enforced=true,revision=true})[k]then return false end end
+ if q.action=='enable'then return hex(q.revision,64) and q.enforced==nil and q.challenge==nil and q.ack==nil end
+ if q.revision~=nil then return false end
+ if q.action=='prepare'then return q.challenge==nil and q.ack==nil and q.enforced==nil end
+ if q.action=='confirm'then return hex(q.challenge,32) and (q.ack=='true' or q.ack=='false') and q.enforced==nil end
+ return q.action=='policy' and (q.enforced=='true' or q.enforced=='false') and q.challenge==nil and q.ack==nil
+end
+function M.new(open,now)
+ local api={}
+ local function run(fn)
+  local fs;local ok,result=pcall(function()fs=open();return fn(fs)end)
+  if fs then local closed=pcall(fs.close);if not closed then ok=false end end
+  return ok and result or {ok=false,code='busy'}
+ end
+ local function read(fs,name)local raw=fs.read(name,4096);return raw and C.decode(raw)end
+ local function write(fs,name,v)
+  if fs.stat('next')then fs.unlink('next')end
+  local raw=C.encode(v);assert(#raw<=4096);fs.write('next',raw);fs.rename('next',name)
+ end
+ function api.submit(q)
+  if not M.valid(q)then return {ok=false,code='invalid'}end
+  return run(function(fs)
+   local old=read(fs,'result.json');local pending=read(fs,'request.json')
+   for _,v in pairs({old,pending})do
+    if v.request.id==q.id then
+     if C.encode(v.request)~=C.encode(q)then return {ok=false,code='conflict'}end
+     return {ok=true,pending=true,id=q.id}
+    end
+   end
+   if pending and now()-pending.at>=0 and now()-pending.at<=20 then return {ok=false,code='busy'}end
+   write(fs,'request.json',{request=q,at=math.floor(now())})
+   return {ok=true,pending=true,id=q.id}
+  end)
+ end
+ function api.poll(id,owner)
+  return run(function(fs)
+   local v=read(fs,'result.json')
+   if v and v.request.id==id and v.request.owner==owner then return v.result end
+   return {ok=true,pending=true}
+  end)
+ end
+ function api.process(handle)
+  return run(function(fs)
+   local q=read(fs,'request.json');if not q then return {ok=true}end
+   local old=read(fs,'result.json');local result
+   if old and old.request.id==q.request.id then result=old.result
+   elseif not M.valid(q.request) or now()-q.at<0 or now()-q.at>15 then result={ok=false,code='expired'}
+   else
+    -- Consume before side effects: interruption is an unknown outcome, never replay.
+    write(fs,'result.json',{request=q.request,result={ok=false,code='outcome_unknown'}})
+    fs.unlink('request.json')
+    local ok,v=pcall(handle,q.request);result=ok and v or {ok=false,code='operation_failed'}
+   end
+   write(fs,'result.json',{request=q.request,result=result})
+   if fs.stat('request.json')then fs.unlink('request.json')end
+   return result
+  end)
+ end
+ return api
+end
+function M.system()
+ local root='/tmp/schoolbell-clock-control';local fs=require('nixio.fs')
+ local function now()local f=assert(io.open('/proc/uptime','r'));local v=f:read(64);f:close();return assert(tonumber(v:match('^[%d.]+')))end
+ return M.new(function()if not fs.lstat(root)then fs.mkdir(root,700)end;return require('schoolbell.media_fs').new(root)end,now)
+end
+return M

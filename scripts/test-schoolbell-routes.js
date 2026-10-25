@@ -34,6 +34,7 @@ function fixture(){
   else if(url==='auto'){if(post){x.posts.push(body);value=x.reject?{ok:false,code:'conflict'}:{ok:true};}else value=x.active;}
   else throw Error('unexpected URL');return {ok:true,json:async()=>clone(value)};
  };
+ window.schoolbellClockCommand=async body=>{assert(body.action==='enable');x.posts.push(body);if(x.reject)throw Error('clock_untrusted');return {ok:true};};
  const ctx={window,document,fetch,performance:{now:()=>x.clock},Date,Math,Number,String,Array,JSON,URLSearchParams,AbortController,CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail;}},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
  vm.createContext(ctx);for(const file of ['automatic.js','schedules.js'])vm.runInContext(fs.readFileSync(path.join(ui,file),'utf8'),ctx);
  x.tick=async()=>{for(let i=0;i<6;i++)await Promise.resolve();};x.poll=async()=>{for(const f of intervals)await f();await x.tick();};

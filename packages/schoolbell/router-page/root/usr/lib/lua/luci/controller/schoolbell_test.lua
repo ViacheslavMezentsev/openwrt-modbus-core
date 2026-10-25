@@ -9,6 +9,7 @@ function index()
     entry({"admin","schoolbell","manual"},call("manual")).leaf=true
     entry({"admin","schoolbell","journal"},call("journal")).leaf=true
     entry({"admin","schoolbell","timezone"},call("timezone")).leaf=true
+    entry({"admin","schoolbell","clock-trust"},call("clock_trust")).leaf=true
     entry({"admin","schoolbell","clock"},call("clock")).leaf=true
     entry({"admin","schoolbell","preview"},call("preview")).leaf=true
     entry({"admin","schoolbell","schedules"},call("schedules")).leaf=true
@@ -38,6 +39,20 @@ function journal()
     if h.getenv('REQUEST_METHOD')~='GET' then h.status(405,'Method Not Allowed');return end
     editor();respond(require('schoolbell.journal').request('/etc/schoolbell-editor'))
 end
+function clock_trust()
+ local h=require('luci.http');local d=require('luci.dispatcher');local method=h.getenv('REQUEST_METHOD')
+ if method~='GET' and method~='POST'then h.status(405,'Method Not Allowed');return end
+ if method=='POST'then
+  local size=tonumber(h.getenv('CONTENT_LENGTH'))
+  if not size or size<1 or size>1024 or not (h.getenv('CONTENT_TYPE') or ''):match('^application/x%-www%-form%-urlencoded')then h.status(413,'Unsupported request');return end
+  if not d.test_post_security()then return end
+ end
+ local _,C=editor();local session=d.context.authsession
+ if type(session)~='string' or #session==0 then h.status(403,'Forbidden');return end
+ local owner=C.sha(session);local m=require('schoolbell.clock_mailbox').system()
+ if method=='GET'then respond(m.poll(h.formvalue('operation',true),owner));return end
+ respond(m.submit({id=h.formvalue('operation'),owner=owner,action=h.formvalue('action'),challenge=h.formvalue('challenge'),ack=h.formvalue('ack'),enforced=h.formvalue('enforced'),revision=h.formvalue('revision')}))
+end
 function timezone()
     local h=require('luci.http');local method=h.getenv('REQUEST_METHOD')
     if method=='GET' then editor();respond(require('schoolbell.timezone').run());return end
@@ -57,6 +72,7 @@ function automatic()
   if not size or size<1 or size>1024 or not (h.getenv('CONTENT_TYPE') or ''):match('^application/x%-www%-form%-urlencoded')then h.status(413,'Unsupported request');return end
   if not require('luci.dispatcher').test_post_security()then return end
   local enabled=h.formvalue('enabled');if enabled~='true' and enabled~='false' then respond({ok=false,code='invalid'});return end
+  if enabled=='true'then respond({ok=false,code='use_clock_command'});return end
   editor();local m=require('schoolbell.automatic_store')
   local gate=require('schoolbell.sound_test').lock;local fs=require('nixio.fs');local acquired=false
   if enabled=='true' then acquired=fs.mkdir(gate,700);if not acquired then respond({ok=false,code='busy'});return end end
@@ -182,6 +198,7 @@ function page()
     require("luci.template").render("schoolbell_test",{
         backup_url=d.build_url('admin','schoolbell','backup'),
         media_url=d.build_url('admin','schoolbell','media'),
+        trust_url=d.build_url('admin','schoolbell','clock-trust'),
         automatic_url=d.build_url('admin','schoolbell','automatic'),
         controls_url=d.build_url('admin','schoolbell','controls'),
         manual_url=d.build_url('admin','schoolbell','manual'),
