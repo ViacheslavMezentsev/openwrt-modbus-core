@@ -2,7 +2,7 @@
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import urlsplit,unquote
-import ast,hashlib,re
+import ast,hashlib,re,json,datetime,subprocess
 root=Path(__file__).resolve().parent.parent
 out=root/'out/site'
 class Links(HTMLParser):
@@ -32,3 +32,11 @@ html=(out/'schoolbell/index.html').read_text();assert 'id="router-play" type="su
 assert html.index('assets/demo.js')<html.index('assets/app.js')
 assert not any(p.is_symlink() for p in out.rglob('*'))
 print('PASS site: relative links, no router URLs, audio hash, disabled hardware action, 16 xterm colors with readable text')
+
+info=json.loads((out/'build-info.json').read_text())
+assert info['commit']==subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+assert info['dirty']==bool(subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],cwd=root,text=True).strip())
+assert datetime.datetime.fromisoformat(info['built_at_utc'].replace('Z','+00:00')).utcoffset()==datetime.timedelta(0)
+for name in ['index.html','index.en.html','schoolbell/index.html']:
+ page=(out/name).read_text();assert info['built_at_utc'] in page and info['commit'][:12] in page,name
+print('PASS build provenance: UTC timestamp, HEAD commit, dirty flag and visible footer')

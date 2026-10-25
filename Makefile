@@ -111,3 +111,4 @@ check-site: site
 	python3 scripts/test-site.py
 	node scripts/test-site-demo.js
 	node scripts/test-schoolbell-routes.js
+	node scripts/test-schoolbell-backup-ui.js

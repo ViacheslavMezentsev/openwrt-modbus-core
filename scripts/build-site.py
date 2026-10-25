@@ -1,15 +1,26 @@
 #!/usr/bin/env python3
 """Static GitHub Pages, sharing the router UI sources; no network or device calls."""
 from pathlib import Path
-import html, re, shutil, sys
+import html, re, shutil, sys, subprocess, datetime, json
 root=Path(__file__).resolve().parent.parent
 out=Path(sys.argv[1]) if len(sys.argv)>1 else root/'out/site'
 out.mkdir(parents=True,exist_ok=True)
+try:
+ commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+ dirty=bool(subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],cwd=root,text=True).strip())
+except (OSError,subprocess.CalledProcessError):
+ commit='unknown';dirty=True
+built=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
+metadata={'built_at_utc':built,'commit':commit,'dirty':dirty}
+(out/'build-info.json').write_text(json.dumps(metadata,indent=2)+'\n')
+label='Сборка: '+built+' · commit '+commit[:12]+(' · локальные изменения' if dirty else '')
+provenance='<p class="build-info">'+html.escape(label)+'</p>'
 version=re.search(r'^Version: (.+)$',(root/'pkg-schoolbell/CONTROL/control').read_text(),re.M)[1]
 source=root/'packages/schoolbell/router-page/root'
 for name in ['index.html','index.en.html']:
  text=(root/'site'/name).read_text().replace('{{VERSION}}',html.escape(version)).replace('{{DAYS}}',''.join('<span>'+str(i)+'</span>' for i in range(1,22)))
- (out/name).write_text(text)
+ footer=provenance if name=='index.html' else provenance.replace('Сборка:', 'Build:').replace('локальные изменения','local changes')
+ (out/name).write_text(text.replace('</footer>',footer+'</footer>'))
 shutil.copyfile(root/'site/style.css',out/'style.css')
 shutil.copyfile(source/'www/schoolbell-test/theme.js',out/'theme.js')
 (out/'.nojekyll').write_text('')
@@ -33,5 +44,6 @@ text=text.replace('Инженерная установка','Демонстра�
 text=text.replace('id="router-play" type="submit"','id="router-play" type="submit" disabled').replace('▶ Позвонить на роутере','Недоступно в демо · нет роутера').replace('Колонки должны быть включены и подключены к аудиовыходу.','В демо нет подключения к роутеру. Доступен только звук браузера.')
 text=re.sub(r'(?=<script src="\./assets/automatic\.js(?:\?[^"]*)?">)', '<script src="./assets/demo.js"></script>', text, count=1)
 assert '<%=' not in text,'unresolved template'
+text=text.replace('</footer>',provenance+'</footer>')
 (demo/'index.html').write_text(text)
 print('Built static site:',out)

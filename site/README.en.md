@@ -16,3 +16,5 @@ Data stays in this site's localStorage (openwrt-schoolbell-public-demo-v1), or t
 After merging and passing CI for the exact main commit, the owner selects Settings → Pages → Source: GitHub Actions and manually runs the GitHub Pages workflow on main. It never deploys on push. Expected URL after successful deployment: https://viacheslavmezentsev.github.io/openwrt-modbus-core/ . Do not treat that URL as published until deployment succeeds.
 
 The workflow follows [GitHub Pages documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages). No private hardware logs or configuration enter the site.
+
+Page and demo footers show the UTC build time and short commit; build-info.json contains the full SHA. Tracked local changes are labeled; missing Git yields unknown. This is the build time, not the page load time or a guaranteed deployment time. Updating main does not republish the site automatically.

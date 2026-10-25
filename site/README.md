@@ -23,3 +23,5 @@ python3 -m http.server 8769 --bind 127.0.0.1 --directory out/site
 После merge и успешного CI точного main: Settings → Pages → Build and deployment → Source: GitHub Actions. Затем Actions → GitHub Pages → Run workflow на main. Workflow намеренно ручной и не запускается при push, чтобы публикация оставалась отдельным решением владельца. Ожидаемый адрес после успешного deployment: https://viacheslavmezentsev.github.io/openwrt-modbus-core/ . Пока workflow не завершился, адрес не считается опубликованным.
 
 Используется стандартный [workflow GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages): configure-pages, upload-pages-artifact и deploy-pages. CI проверяет сборку и локальную модель; фотографии реального стенда и телеметрия в сайт не включаются.
+
+Внизу страниц и демо указаны время сборки UTC и короткий коммит; build-info.json содержит полный SHA. Отслеживаемые локальные изменения отмечаются явно; без Git выводится unknown. Это дата сборки, не дата загрузки страницы или гарантированная дата публикации. Обновление main само по себе не перепубликует сайт.

@@ -10,6 +10,8 @@
 
 ## [Unreleased]
 
+- Schoolbell 5.0.17: backup downloads have a 180-second overall deadline, including the response body. Timeout/disconnection returns control; check status before retrying. Late responses are not saved and restoration is never started automatically. Pages displays the UTC build date and commit. Host-tested; not deployed to the router.
+
 - Schoolbell 5.0.16: the calendar starts in view mode; clicking a date previews draft bells without erasing its assignment. Explicitly select a schedule or eraser to paint. A shared panel distinguishes the draft from the active snapshot. Save edits first, then separately apply the checked revision; changes from another window require reloading. Preview is not execution evidence. Validated on the host and in the browser demo; not deployed to the router.
 
 - Schoolbell 5.0.15: storage usage >75% turns yellow, >90% red, with a text warning; shared router/demo styles. Not deployed to the router.
