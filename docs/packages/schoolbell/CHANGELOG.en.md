@@ -1,5 +1,7 @@
 # Changelog
 
+Specification 1.54: Shkolnik update notifications, stable identity/versioning and a simple administrator journey through the shared service. Bells remain disabled after installation; update UI is not implemented.
+
 The save label uses “device” instead of “router”; Pages explicitly saves in the demo.
 
 5.1.2: pagination is immediately above the months and repeated below them. Both controls share page and boundary states; bottom navigation scrolls to the calendar start. Pages is synchronized.

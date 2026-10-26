@@ -1,5 +1,7 @@
 # Schoolbell IPK and offline bundle
 
+GitHub release checks and UI-driven installation are future shared requirements: [release updates](../../core/RELEASE_UPDATES.en.md), schoolbell specification 4.8. Current 5.1.2 does not check or install online releases. The build manifest and SHA256SUMS are not a signed release manifest.
+
 [Русский](PACKAGING.md)
 
 5.0.31 packages the existing engineering executor, LuCI UI, calendar, media library,

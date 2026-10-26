@@ -2,35 +2,36 @@
 
 ## Current state and next steps
 
-- [x] 5.1.0 host: working “Календарные планы” with named non-overlapping ranges, painting, legacy read compatibility, Lua executor/backup support and shared Pages editor. No fixed day-count quota; actual draft bytes remain bounded.
-- [ ] Back up and install 5.1.0 only after merge/approval; verify migration, boundaries, saving and restore on target with automatic bells off. Preserve a pre-range backup for downgrade.
-- [ ] Next: portable plan export/import including dependency closure and compatibility preview; Pages first stage bundled melodies only. Device-free editor/training requirements accepted; archive not implemented.
-- [ ] Verify 5.0.37 logout on a normal authenticated LuCI session: destroy/get confirmation, disabled controls and login-only status. Host tests do not prove target logout.
-
+- [x] Installed Shkolnik 5.1.2: named non-overlapping calendar ranges, consecutive month pages, synchronized top/bottom navigation and device-neutral save label. Owner confirmed cross-year viewing, paging, painting persistence, save/reload and both navigation panels. Automatic bells remain off. Pages publication matches dbca301.
+- [x] Range model shared by Lua storage/preview/executor, backup and Pages; legacy checksums preserved on read. Target installation backed up and payload/data checked. This does not close full power-loss or security acceptance.
+- [x] Release discovery/update requirements: core 1.34 / schoolbell 1.54, stable package identity and dependencies, simple notification UI and separate administrator installation. Documentation only; current IPK has no updater.
+- [ ] Update-contract next step: settle strict signed manifest/API, keys, HTTPS/redirect profile and bounded scan/time/memory/recovery parameters (core 9.2.31); then isolated notification-only discovery tests. No automatic installation.
+- [ ] Next application feature: portable plan export/import with dependency closure and compatibility preview. Pages first stage uses bundled melodies only. Archive not implemented.
+- [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.2 includes the later logout fix.
 
 - [ ] Next schoolbell feature accepted by owner: portable annual/academic-plan bundle with selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and all referenced media. September–May spans two calendar years. Reuse backup/media mechanisms; preview dependency closure and conflicts before import, validate plan timezone without applying system timezone, import only as draft with automatic bells disabled. Exclude credentials, network, NTP/clock and hardware-specific settings; specify bundled-media compatibility and atomic rollback before implementation.
 
 - [x] S1 revised in 5.0.35: same-tab login with bounded sessionStorage draft handoff; compact controls, idle preference in Settings, no visible countdown; Pages shares the change.
-- [x] Owner confirmed same-tab login preserves the edited name in 5.0.35. The 5.0.36 login/status styling is installed; logout confirmation fix 5.0.37 still needs target acceptance.
-- [x] Named-range calendar prototype in Pages: multiple non-overlapping plans, date-preserving resize and empty first install; trusted date only proposes September–May.
-- [x] Range model implemented in Lua storage/preview/executor, backup and live editor; tests on host. Installed router is unchanged.
-- [ ] S1 target acceptance: real LuCI expiry/logout/CSRF/unauthenticated endpoints, multiple tabs and suspended browser; browser timer is not server policy. No target installation in this step.
+- [x] Owner confirmed same-tab login preserves the edited name in 5.0.35 and accepted 5.0.36 styling. Current package includes subsequent fixes; the security matrix below remains open.
+- [x] Named-range calendar is now the working shared Pages/router editor, superseding the prototype; trusted date only proposes September–May.
+- [x] Range format installed and tested through 5.1.2; persistence and month navigation accepted by owner. Complete portable bundle remains pending.
+- [ ] S1 target acceptance: real LuCI expiry/logout/CSRF/unauthenticated endpoints, multiple tabs and suspended browser; browser timer is not server policy. Do not infer security acceptance from successful installation.
 
-- [x] 5.0.33: shared first-tab quick guide for router UI and Pages; operator acceptance pending.
+- [x] Shared first-tab quick guide for router UI and Pages; owner confirmed display and tab switching. Independent operator acceptance remains below.
 
 - [x] Static [UI completeness/security plan](docs/packages/schoolbell/UI_COMPLETENESS.en.md): UX-01–12, proposed C1–C6/S1–S2, endpoint acceptance SEC-01–06; no live security certification.
 - [x] C1 initial UI: fixed/annual deletion guards, explicit last-year transition and two-copy reconciliation with CAS; shared Pages regressions, host-only 5.0.32.
-- [ ] C1 acceptance / S1 next: verify editor changes on the router and publish the updated Pages demo after merge; audit session/CSRF and normal logout/expiry. Dependency navigation and further UX items remain in the completeness plan.
+- [ ] C1 remaining / S1: accept referenced-schedule deletion and last-plan transition where not yet demonstrated; audit session/CSRF/logout/expiry. Calendar editing/persistence and Pages publication are confirmed; dependency navigation and other UX items remain.
 - [ ] Agree and implement C2–C6/S2 separately: browser clock setting, active preview, safe media rename/delete, bounded undo, complete import/onboarding and server-enforced roles/TLS profile. Do not grant root credentials as a substitute for operator permissions.
 
 
-- [x] Current 5.0.32 user guide in Markdown (RU/EN), including host-checked editor changes; router remains 5.0.31; startup/time and browser-preview limitations are explicit.
+- [x] RU/EN Markdown guide covers named ranges, month pages, draft/active separation and current interface; installed router is 5.1.2. Startup/time and browser-preview limitations remain explicit.
 - [ ] Validate the guide with an independent operator on desktop/touch during AC-10/12; documentation alone does not close usability acceptance.
 
 - [x] Draft [schoolbell 5.x acceptance programme](docs/packages/schoolbell/ACCEPTANCE.en.md): AC-01–12, appendix B parity, release blockers and evidence rules; documentation only, not product PASS.
 - [ ] Agree acceptance Q1–Q5: numerical timing/resource/accuracy budgets, endurance duration, collision policy and attended-startup release scope. Existing production dependencies below remain until explicit scope agreement.
 - [x] Schoolbell startup/boot/TZ audit: 11 additional host worker scenarios and independent 15+6 calendar oracle; see [audit](docs/packages/schoolbell/STARTUP_AUDIT.en.md).
-- [ ] AC-06 hardware acceptance remains open. Cold boot/power and sound acceptance require separate authorization after the ongoing clock measurement; do not change NTP.
+- [ ] AC-06 hardware acceptance remains open. Cold boot/power and sound acceptance require separate authorization; the clock measurement is closed. Do not change NTP.
 - [ ] Execute the agreed AC programme and reconcile the operator/install/recovery guides with shipped behavior before release; historical stage descriptions are not current acceptance results.
 
 
@@ -61,8 +62,8 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.33 and schoolbell draft 1.51.
-The engineering application is packaged as a complete 5.1.0 IPK (host; target remains 5.0.36) with an offline
+User-facing scope follows core draft 1.34 and schoolbell draft 1.54.
+The engineering application is packaged and installed as 5.1.2 with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 
 - [ ] P00 — Finish the minimal API contract: the Unix stream v1/live-no-replay/session profile is accepted (core 1.10); finalize codec/field types, quotas, clock validity/correction, calendar boundaries and pause/pending policy. Record unresolved numeric budgets as measurements, not guarantees.

@@ -1,5 +1,7 @@
 # Changelog
 
+Specification 1.34: GitHub release discovery and administrator-directed extension updates. Notification is separate from installation; identity, trust, dependencies and recovery are specified, not implemented.
+
 [Русский](CHANGELOG.md)
 
 ## [Unreleased]

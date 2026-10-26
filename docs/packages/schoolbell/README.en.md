@@ -1,5 +1,7 @@
 # Schoolbell package
 
+[Release checks and updates — requirements](../../core/RELEASE_UPDATES.en.md). Not implemented yet.
+
 The product is named Shkolnik (previously Shkolnik-4), without a version in its name. Technical schoolbell package names, URLs and data formats are unchanged.
 
 5.1.0: live named calendar plans with non-overlapping inclusive ranges, painting, resize and civil-time preview. Legacy years are read without rewriting; the editor saves ranges. Pages shares the editor/format with bundled media only. New plan/backup data requires 5.1.0; portable dependency bundles remain planned. Host checks only, no installation.
