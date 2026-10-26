@@ -18,7 +18,16 @@ local command=require('schoolbell.clock_commands').new(Clock,{
   local saved=require('schoolbell.schedule_store').request(Store.root,'load')
   if not saved.ok or not require('schoolbell.media_web').plan_ready(saved.data)then return {ok=false,code='missing_media'}end
   if not Clock.admit()then return {ok=false,code='clock_untrusted'}end
-  local v=Store.transaction(Store.change,true,revision,Store.environment());return {ok=v.ok,code=v.code}
+  local v=Store.transaction(Store.change,true,revision,Store.environment());return {ok=v.ok,code=v.code,generation=v.ok and v.state.generation or nil}
+ end,
+ resume=function(revision,generation)
+  if not fs.mkdir(Player.lock,700)then return {ok=false,code='busy'}end
+  local ok,v=pcall(function()return Store.transaction(Store.resume,revision,generation,Store.environment(),function(plan)
+   return require('schoolbell.media_web').plan_ready(plan) and Clock.admit()
+  end)end)
+  local closed=fs.rmdir(Player.lock)
+  if not ok or not closed then return {ok=false,code='automatic_storage'}end
+  return {ok=v.ok,code=v.code,generation=v.ok and v.state.generation or nil}
  end,
  localtime=function(utc)return os.date('%Y-%m-%d %H:%M:%S',utc)end,
  zone=function()return Store.environment().zone end,
@@ -28,7 +37,7 @@ local function commands()
  mailbox.process(function(q)
   local value=command(q)
   if q.action~='prepare'then
-   pcall(audit,value.ok and (q.action=='enable' and 'auto_enabled' or q.action=='confirm' and 'clock_confirmed' or q.enforced=='true' and 'clock_control_on' or 'clock_control_off') or 'clock_control_failed')
+   pcall(audit,value.ok and ((q.action=='enable' or q.action=='resume') and 'auto_enabled' or q.action=='confirm' and 'clock_confirmed' or q.enforced=='true' and 'clock_control_on' or 'clock_control_off') or 'clock_control_failed')
   end
   return value
  end)

@@ -6,9 +6,10 @@ function M.decode(raw)
  local envelope=assert(C.decode(raw),'json');local v=envelope.data
  assert(v and C.sha(C.encode(v))==envelope.checksum,'checksum')
  assert(type(v.enabled)=='boolean' and C.integer(v.generation,1,2147483647) and C.integer(v.watermark,0,2147483647),'state')
- if v.enabled then
+ if v.enabled or v.plan~=nil then
   assert(type(v.boot)=='string' and #v.boot<=64 and type(v.zone)=='string' and #v.zone<=256,'environment')
   local data,body=S.validate(C.encode(v.plan));assert(data and C.sha(body)==v.revision,'plan')
+ elseif v.revision~=nil then error('orphan_revision')
  end
  return v
 end
@@ -37,7 +38,23 @@ function M.change(fs,enabled,revision,env)
   local events,why=require('schoolbell.automatic').events(draft.data,env.date,env.resolve)
   assert(events,why)
   v.plan=draft.data;v.revision=draft.revision;v.boot=env.boot;v.zone=env.zone
+ elseif current.plan then
+  v.plan=current.plan;v.revision=current.revision;v.boot=current.boot;v.zone=current.zone
  end
+ return write(fs,v)
+end
+-- Resume the retained applied snapshot under the same storage lock. Never load draft.
+function M.resume(fs,revision,generation,env,admit)
+ local current=M.decode(fs.read(M.name,M.max_bytes))
+ assert(current.plan and not current.enabled,'no_stopped_plan')
+ assert(current.revision==revision and current.generation==generation,'active_conflict')
+ assert(current.generation<2147483647,'generation')
+ assert(env.now>=1577836800 and env.now<2145916800,'clock_range')
+ local events,why=require('schoolbell.automatic').events(current.plan,env.date,env.resolve)
+ assert(events,why)
+ assert(admit(current.plan),'resume_not_ready')
+ local v={enabled=true,generation=current.generation+1,plan=current.plan,revision=current.revision,
+  boot=env.boot,zone=env.zone,watermark=math.max(current.watermark,env.now)}
  return write(fs,v)
 end
 function M.advance(fs,generation,now)

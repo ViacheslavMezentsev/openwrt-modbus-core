@@ -55,6 +55,38 @@ test('all publication failures prohibit playback; old or new complete state',fun
   local restored=Store.decode(files['automatic.json']);assert(type(restored.enabled)=='boolean')
  end
 end)
+test('stop retains applied plan, resume ignores newer draft and preserves watermark',function()
+ files['automatic.json']=nil;fail_at=nil
+ local applied=Store.change(fs,true,draft.revision,env)
+ Store.claim(fs,applied.generation,env.now+60,env.now+60)
+ local stopped=Store.change(fs,false,nil,env)
+ assert(not stopped.enabled and stopped.revision==draft.revision and stopped.plan.schedules[1].name=='School')
+ local changed=C.decode(C.encode(d));changed.schedules[1].name='New draft'
+ local saved=assert(S.save(fs,C.encode(changed),draft.revision));assert(saved.ok)
+ local snapshot=files['automatic.json'];local checked=0
+ assert(not pcall(Store.resume,fs,saved.revision,stopped.generation,env,function()error('wrong plan admitted')end))
+ assert(not pcall(Store.resume,fs,stopped.revision,stopped.generation-1,env,function()return true end))
+ assert(not pcall(Store.resume,fs,stopped.revision,stopped.generation,env,function()return false end))
+ assert(files['automatic.json']==snapshot)
+ local resumed=Store.resume(fs,stopped.revision,stopped.generation,env,function(plan)checked=checked+1;assert(plan.schedules[1].name=='School');return true end)
+ assert(resumed.enabled and resumed.revision==draft.revision and resumed.watermark==env.now+60 and checked==1)
+ assert(S.load(fs).revision==saved.revision)
+ assert(not pcall(Store.resume,fs,stopped.revision,stopped.generation,env,function()return true end))
+end)
+test('resume publication faults retain a complete old or new snapshot',function()
+ local stopped=Store.change(fs,false,nil,env);local baseline=files['automatic.json']
+ for i=1,4 do
+  files['automatic.json']=baseline;files['automatic-next.json']=nil;steps=0;fail_at=i
+  assert(not pcall(Store.resume,fs,stopped.revision,stopped.generation,env,function()return true end));fail_at=nil
+  local recovered=Store.decode(files['automatic.json']);assert(recovered.revision==stopped.revision)
+  assert(recovered.generation==stopped.generation or recovered.generation==stopped.generation+1)
+ end
+end)
+test('legacy stopped state and failed resume cannot invent a plan',function()
+ files['automatic.json']=nil
+ local stopped=Store.change(fs,false,nil,env);assert(not stopped.plan)
+ assert(not pcall(Store.resume,fs,draft.revision,stopped.generation,env,function()return true end))
+end)
 test('corruption refuses recovery/activation',function()files['automatic.json']='broken';assert(not pcall(Store.change,fs,true,draft.revision,env))end)
 local method,length,security,status='POST','2000',0,nil
 package.loaded['luci.http']={getenv=function(k)if k=='REQUEST_METHOD'then return method elseif k=='CONTENT_LENGTH'then return length else return 'application/x-www-form-urlencoded'end end,status=function(s)status=s end,formvalue=function()error('unexpected parse')end}

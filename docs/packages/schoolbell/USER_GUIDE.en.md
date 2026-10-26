@@ -215,3 +215,9 @@ In Feedback, search existing Issues or report a bug with module/core versions,
 equipment, steps, expected/actual result and exact error/operation ID. Attach a
 screenshot or short log only after removing credentials/tokens/personal data.
 GitHub submission requires Internet/account and is performed by you, not automatically.
+
+## Auto bells in the header (5.1.3)
+
+The button stops or resumes the **previously applied plan**, without applying saved or unsaved draft changes. First apply a checked, saved draft in Settings. With no applied plan the header takes you there. Stop retains that plan; missed bells are not replayed. It also stops an automatic bell already playing; manual sound is controlled separately by the sound-mute button. The worker stays running for status reporting.
+
+The badge below the button is green for confirmed operation, yellow for off/muted/waiting, red for blocked/error/no connection. Text accompanies every color. A command acknowledgement is not a running-status confirmation. After a connection loss, wait for status rather than clicking repeatedly. Time checks and media admission still apply. Pages shows “Демо” and does not play scheduled audio.

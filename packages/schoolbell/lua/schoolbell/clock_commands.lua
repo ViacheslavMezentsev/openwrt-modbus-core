@@ -3,10 +3,11 @@ local M={}
 function M.new(gate,ports)
  local challenge
  return function(q)
-  if q.action=='enable' then
+  if q.action=='enable' or q.action=='resume' then
    local allowed=gate.enable();if not allowed.ok then return allowed end
-   if not gate.admit()then return {ok=false,code='clock_untrusted'}end
-   local result=ports.enable(q.revision);gate.disable();return result
+   if not gate.admit()then gate.disable();return {ok=false,code='clock_untrusted'}end
+   local ok,result=pcall(function()if q.action=='resume'then return ports.resume(q.revision,tonumber(q.generation))end;return ports.enable(q.revision)end)
+   gate.disable();if not ok then return {ok=false,code='operation_failed'}end;return result
   end
   if q.action=='prepare' then
    local value,why=gate.request_confirmation()

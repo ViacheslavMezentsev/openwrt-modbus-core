@@ -79,7 +79,7 @@ function clock_trust()
  if type(session)~='string' or #session==0 then h.status(403,'Forbidden');return end
  local owner=C.sha(session);local m=require('schoolbell.clock_mailbox').system()
  if method=='GET'then respond(m.poll(h.formvalue('operation',true),owner));return end
- respond(m.submit({id=h.formvalue('operation'),owner=owner,action=h.formvalue('action'),challenge=h.formvalue('challenge'),ack=h.formvalue('ack'),enforced=h.formvalue('enforced'),revision=h.formvalue('revision')}))
+ respond(m.submit({id=h.formvalue('operation'),owner=owner,action=h.formvalue('action'),challenge=h.formvalue('challenge'),ack=h.formvalue('ack'),enforced=h.formvalue('enforced'),revision=h.formvalue('revision'),generation=h.formvalue('generation')}))
 end
 function timezone()
     local h=require('luci.http');local method=h.getenv('REQUEST_METHOD')
@@ -124,7 +124,7 @@ function automatic()
   if f then local raw=f:read(8193);f:close();if raw and #raw<=8192 then status=codec.decode(raw)end end
   local up=assert(io.open('/proc/uptime','r'));local now=tonumber(up:read(64):match('^[%d.]+'));up:close()
   if not status or type(status.uptime)~='number' or now-status.uptime<0 or now-status.uptime>40 or status.generation~=active.generation then
-   return {ok=true,state='waiting',enabled=active.enabled,revision=active.revision}
+   return {ok=true,state='waiting',enabled=active.enabled,revision=active.revision,generation=active.generation}
   end
   status.enabled=active.enabled;return status
  end)

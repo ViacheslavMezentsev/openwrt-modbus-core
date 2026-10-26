@@ -40,6 +40,8 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ## [Unreleased]
 
+- 5.1.3 (host only): compact Auto bells button with a confirmed colored status. Stop retains the applied snapshot; resume checks its revision/generation, time and media, without reading or applying the draft. Pages simulates the same flow without automatic audio. No router installation.
+
 - Schoolbell 5.0.32: deleting a fixed selection requires explicit replacement; clearing the last year explains fixed/quiet. Reconciliation retains local edits, reads both copies and never repeats writes/activation; subsequent save retains CAS. Pages shares UI and regressions. Host only, no installation or publication.
 
 - Added a static schoolbell journey/completeness plan: deletion dependencies, undo/reconciliation, active preview, time/media and LuCI roles. Recorded HTTP/admin-login limitations; no implementation or router changes.

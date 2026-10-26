@@ -32,10 +32,10 @@ function fixture(storage={},initialRevision="r1"){
   if(url==='load'){if(x.pauseLoad)await new Promise(resolve=>x.releaseLoad=resolve);if(x.failLoad)throw Error('network');value={ok:true,data:clone(x.data),revision:x.rev};}
   else if(url==='save'){x.saves.push(body);if(body.revision!==x.rev)value={ok:false,code:'conflict'};else{x.data=JSON.parse(body.draft);x.rev='r2';if(x.loseSave)throw Error('lost response');value={ok:true,data:clone(x.data),revision:x.rev};}}
   else if(url==='preview'){x.previews.push(JSON.parse(body.draft));value={ok:true,date:body.date,selected_schedule:'s',events:[]};}
-  else if(url==='auto'){if(post){x.posts.push(body);value=x.reject?{ok:false,code:'conflict'}:{ok:true};}else value=x.active;}
+  else if(url==='auto'){if(post){x.posts.push(body);value=x.reject?{ok:false,code:'conflict'}:{ok:true,generation:x.commandGeneration || 2};}else value=x.active;}
   else throw Error('unexpected URL');return {ok:true,json:async()=>clone(value)};
  };
- window.schoolbellClockCommand=async body=>{assert(body.action==='enable');x.posts.push(body);if(x.reject)throw Error('clock_untrusted');return {ok:true};};
+ window.schoolbellClockCommand=async body=>{assert(['enable','resume'].includes(body.action));x.posts.push(body);if(x.pauseCommand)await new Promise(resolve=>x.releaseCommand=resolve);if(x.reject)throw Error('clock_untrusted');return {ok:true,generation:x.commandGeneration || 2};};
  const ctx={sessionStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v,removeItem:k=>delete storage[k]},window,document,fetch,performance:{now:()=>x.clock},Date,Math,Number,String,Array,JSON,URLSearchParams,AbortController,TextEncoder,CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail;}},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
  vm.createContext(ctx);for(const file of ['ranges.js','automatic.js','schedules.js'])vm.runInContext(fs.readFileSync(path.join(ui,file),'utf8'),ctx);
  x.tick=async()=>{for(let i=0;i<6;i++)await Promise.resolve();};x.poll=async()=>{for(const f of intervals)await f();await x.tick();};
@@ -44,6 +44,37 @@ function fixture(storage={},initialRevision="r1"){
  return x;
 }
 (async()=>{
+ let h=fixture();await h.tick();
+ assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').dataset.tone,'danger');
+ h.active={ok:true,state:'disabled',enabled:false,generation:1,revision:'applied'};await h.poll();
+ assert(!h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').textContent,'Выключены');
+ h.window.schoolbellEditor.snapshot().dirty=true;
+ // Deliberately edit the real draft; header resume must not load or apply it.
+ h.get('schedule-name').value='Unsaved name';await h.get('schedule-name').fire('input');
+ const saves=h.saves.length;h.failLoad=true;
+ await h.get('quick-automatic').click();await h.tick();
+ assert.equal(h.posts.length,1);assert.equal(h.posts[0].action,'resume');assert.equal(h.posts[0].revision,'applied');assert.equal(h.posts[0].generation,'1');assert.equal(h.saves.length,saves);
+ assert(h.get('quick-automatic').disabled);assert(h.get('quick-automatic-status').textContent.includes('подтверждения'));
+ await h.poll();assert(h.get('quick-automatic').disabled); // Old generation cannot confirm.
+ h.active={ok:true,state:'running',enabled:true,generation:2,revision:'applied'};await h.poll();
+ assert.equal(h.get('quick-automatic-status').dataset.tone,'success');assert.equal(h.get('quick-automatic-status').textContent,'Работают');
+ assert.equal(h.get('schedule-name').value,'Unsaved name');
+ h.commandGeneration=3;await h.get('quick-automatic').click();await h.tick();assert.equal(h.posts[1].enabled,'false');
+ h.active={ok:true,state:'disabled',enabled:false,generation:3,revision:'applied'};await h.poll();assert.equal(h.get('quick-automatic-status').textContent,'Выключены');
+ h.active={ok:true,state:'muted',enabled:true,generation:3,revision:'applied'};await h.poll();assert.equal(h.get('quick-automatic-status').dataset.tone,'warning');
+ h.active.state='clock_untrusted';await h.poll();assert.equal(h.get('quick-automatic-status').dataset.tone,'danger');assert(!h.get('quick-automatic').disabled);
+ h.active.state='waiting';await h.poll();assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').textContent,'Нет связи');
+ h.window.schoolbellSessionBlocked=true;h.window.dispatchEvent({type:'schoolbell-session-lost'});assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').textContent,'Войдите');
+ h=fixture();await h.tick();h.active={ok:true,state:'disabled',enabled:false,generation:0};await h.poll();await h.get('quick-automatic').click();assert.equal(h.posts.length,0);assert(h.get('automatic-status').textContent.includes('Сначала примените'));
+ h.active={ok:true,state:'disabled',enabled:false,generation:1,revision:'applied'};h.reject=true;await h.poll();await h.get('quick-automatic').click();await h.tick();assert.equal(h.posts.length,1);await h.poll();assert.equal(h.posts.length,1);
+ h=fixture();await h.tick();h.active={ok:true,state:'disabled',enabled:false,generation:1,revision:'applied'};await h.poll();
+ await h.get('quick-automatic').click();await h.tick();h.clock=20000;await h.poll();
+ assert.equal(h.posts.length,1);assert(h.get('automatic-status').textContent.includes('Подтверждение не получено'));
+ h=fixture();await h.tick();h.active={ok:true,state:'disabled',enabled:false,generation:1,revision:'applied'};await h.poll();h.pauseCommand=true;
+ const pendingResume=h.get('quick-automatic').click();await h.tick();h.window.schoolbellSessionBlocked=true;h.window.dispatchEvent({type:'schoolbell-session-lost'});h.releaseCommand();await pendingResume;
+ assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').textContent,'Войдите');assert.equal(h.posts.length,1);
+ console.log('PASS header: applied-only resume, dirty draft retained, confirmed generation, stop, colors, missing plan/session and no replay');
+
  let y=fixture();await y.tick();
  const R=require('../packages/schoolbell/router-page/root/www/schoolbell-test/ranges.js');
  const range=(start,end)=>({id:'p',name:'Range',start,end,schedule_ids:['s'],days:'.'.repeat(R.dates(start,end).length)});

@@ -50,3 +50,13 @@ assert(channel.poll(q.id,q.owner).completed)
 corrupt=true;assert(channel.poll(q.id,q.owner).code=='mailbox_storage');corrupt=false
 files['result.json']='not json';assert(channel.poll(q.id,q.owner).code=='mailbox_storage')
 print('PASS clock mailbox: read during worker commit stays pending, POST is not accepted twice, corruption is not busy')
+
+local qresume={id=string.rep('9',32),owner=string.rep('8',64),action='resume',revision=string.rep('7',64),generation='3'}
+assert(Mail.valid(qresume));qresume.generation='03';assert(not Mail.valid(qresume));qresume.generation='2147483648';assert(not Mail.valid(qresume));qresume.generation='3'
+qresume.action='enable';assert(not Mail.valid(qresume));qresume.action='resume'
+local disabled=0;local resumed=0
+local fake={enable=function()return {ok=true}end,admit=function()return true end,disable=function()disabled=disabled+1 end}
+local dispatch=Commands.new(fake,{resume=function(rev,gen)assert(rev==qresume.revision and gen==3);resumed=resumed+1;return {ok=true,generation=4}end})
+assert(dispatch(qresume).generation==4 and resumed==1 and disabled==1)
+dispatch=Commands.new(fake,{resume=function()error('storage fault')end});assert(dispatch(qresume).code=='operation_failed' and disabled==2)
+print('PASS resume mailbox bounds, separate port and clock-gate cleanup on failure')

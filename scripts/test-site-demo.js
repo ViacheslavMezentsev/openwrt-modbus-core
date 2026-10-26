@@ -21,6 +21,17 @@ async function api(name,data){return (await context.window.fetch('./demo-api/'+n
  await assert.rejects(()=>context.window.fetch('http://192.0.2.1/api'));await assert.rejects(()=>context.window.fetch('/cgi-bin/luci'));
  assert((await api('no-router',{})).state==='unavailable');
  assert((await api('automatic')).hardware===false);
+ const appliedDraft=await api('load');await api('clock-trust',{action:'confirm'});
+ assert((await api('clock-trust',{action:'enable',revision:appliedDraft.revision})).ok);
+ let auto=await api('automatic');assert(auto.enabled && auto.simulated && auto.hardware===false);
+ await api('automatic',{enabled:'false'});auto=await api('automatic');assert(!auto.enabled && auto.revision===appliedDraft.revision);
+ const changedDraft=JSON.parse(JSON.stringify(appliedDraft.data));changedDraft.schedules[0].name='Newer draft';
+ assert((await api('save',{revision:appliedDraft.revision,draft:JSON.stringify(changedDraft)})).ok);
+ assert((await api('clock-trust',{action:'resume',revision:auto.revision,generation:String(auto.generation)})).ok);
+ assert((await api('automatic')).revision===appliedDraft.revision);
+ assert((await api('clock-trust',{action:'resume',revision:auto.revision,generation:String(auto.generation)})).code==='active_conflict');
+ await api('automatic',{enabled:'false'});
+
  let volume=await api('controls',{volume_db:'-12'});assert(volume.volume_db===-12);
  assert((await api('controls')).volume_db===-12);
  assert((await api('automatic',{enabled:'true'})).enabled===false);

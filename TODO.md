@@ -8,7 +8,8 @@
 - [x] Signed manifest/API requirements: core 1.35 / schoolbell 1.55, exact-byte Ed25519, bounded discovery, independent modules, shared dependencies and platform-specific builds. Documentation only.
 - [x] Isolated strict manifest/discovery host model: 32 tests with fake network/clock/verifier/opkg comparator, deadline and input bounds, dependency/reissue conflicts and partial results. Core specification 1.36; no real crypto/HTTP or updater.
 - [ ] Next update stage: select verifier/key delivery and HTTPS/redirect/Link protections, real opkg comparator, wire/ACL, memory/cache/backoff and recovery (core 9.2.31); then integrate isolated adapters. No automatic installation.
-- [ ] Agree a header Auto bells on/off control with confirmed running/off/blocked/unknown status. Resume the previously applied plan without silently applying a newer draft; initial activation remains explicit. Synchronize Pages. This is a proposed separate UI stage, not implemented.
+- [x] Shkolnik 5.1.3 host implementation: compact header Auto bells button, confirmed colored status, retained applied copy and revision/generation-checked resume. Draft remains separate; shared Pages simulation, quick guide and specification 1.56 updated.
+- [ ] Install/accept 5.1.3 separately after backup: header start/stop, stale/blocked states and retained-plan resume. No installation or sound in this branch.
 - [ ] Next application feature: portable plan export/import with dependency closure and compatibility preview. Pages first stage uses bundled melodies only. Archive not implemented.
 - [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.2 includes the later logout fix.
 

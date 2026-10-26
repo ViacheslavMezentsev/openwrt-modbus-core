@@ -46,13 +46,21 @@ window.fetch=async function(url,options){
   else{s.data=d;s.revision++;log(s,'save_ok');out={ok:true,active:false,data:clone(d),revision:String(s.revision)};}
  }else if(name==='preview'){try{var data=JSON.parse(body.get('draft'));out=valid(data)?preview(data,body.get('date')):{ok:false,code:'invalid'};}catch(_){out={ok:false,code:'invalid'};}}
  else if(name==='media')out={ok:true,demo:true,generation:0,storage:{total_kib:4096,free_kib:1536,used_kib:2560,reserve_kib:512,media_kib:0,media_limit_kib:2048},slots:['test','0','1','2','3','4','user1','user2','user3','user4','user5','user6','user7','user8'].map(function(id,i){return {id:id,name:i<6?id+'.mp3':'Свободная позиция',title:['Тестовый звонок','[Короткая] Время','Шутка Баха','Гостья из XXI','Князь Игорь','Усатый нянь'][i] || ('Пользовательская '+(i-5)),source:i<6?'bundled':'empty',size_bytes:[13104,41273,63321,69904,68023,82368][i] || 0};})};
- else if(name==='automatic'){out={ok:true,state:'disabled',enabled:false,hardware:false,clock_trust:{enforced:s.clockEnforced!==false,state:s.clockConfirmed?'confirmed':s.clockEnforced===false?'unchecked':'unconfirmed',reason:'demo'}};}
+ else if(name==='automatic'){
+ if(options && options.method==='POST' && body.get('enabled')==='false'){s.autoEnabled=false;s.autoGeneration=(s.autoGeneration || 0)+1;log(s,'auto_disabled');}
+ out={ok:true,state:s.autoEnabled?(s.muted?'muted':'running'):'disabled',enabled:!!s.autoEnabled,generation:s.autoGeneration || 0,revision:s.applied && s.applied.revision,mode:s.applied && s.applied.data.mode,hardware:false,simulated:true,clock_trust:{enforced:s.clockEnforced!==false,state:s.clockConfirmed?'confirmed':s.clockEnforced===false?'unchecked':'unconfirmed',reason:'demo'}};}
  else if(name==='clock-trust'){
  if(options && options.method==='POST'){
  var action=body.get('action');out={ok:true};
  if(action==='prepare')out={ok:true,challenge:'demo',utc:Math.floor(Date.now()/1000),rollback:false,zone:s.zone || 'UTC'};
- else if(action==='confirm'){s.clockConfirmed=true;log(s,'clock_confirmed');}
- else if(action==='policy'){s.clockEnforced=body.get('enforced')==='true';s.clockConfirmed=false;log(s,s.clockEnforced?'clock_control_on':'clock_control_off');}
+ else if(action==='confirm'){s.autoEnabled=false;s.autoGeneration=(s.autoGeneration || 0)+1;s.clockConfirmed=true;log(s,'clock_confirmed');}
+ else if(action==='policy'){s.autoEnabled=false;s.autoGeneration=(s.autoGeneration || 0)+1;s.clockEnforced=body.get('enforced')==='true';s.clockConfirmed=false;log(s,s.clockEnforced?'clock_control_on':'clock_control_off');}
+ else if(action==='enable' || action==='resume'){
+  if(s.clockEnforced!==false && !s.clockConfirmed)out={ok:false,code:'clock_untrusted'};
+  else if(action==='enable' && body.get('revision')!==String(s.revision))out={ok:false,code:'draft_conflict'};
+  else if(action==='resume' && (!s.applied || s.autoEnabled || body.get('revision')!==s.applied.revision || body.get('generation')!==String(s.autoGeneration)))out={ok:false,code:'active_conflict'};
+  else{if(action==='enable')s.applied={revision:String(s.revision),data:clone(s.data)};s.autoEnabled=true;s.autoGeneration=(s.autoGeneration || 0)+1;log(s,'auto_enabled');out={ok:true,generation:s.autoGeneration};}
+ }
  else out={ok:false,code:'demo_no_hardware'};
  }else out={ok:false,code:'demo_no_pending'};
  }
