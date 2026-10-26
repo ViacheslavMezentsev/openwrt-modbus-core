@@ -1,8 +1,10 @@
 # Changelog
 
-5.1.5: bounded exact-byte SHA-256 cache (four entries up to 16 KiB) and clock observation during computation without nested checkpoint writes; gap threshold unchanged. Confirmed results clear waiting text; clock confirmation errors are explained. Device button acceptance must be repeated.
+5.1.5 installed and accepted by the owner in a short quiet-day test: the header button resumes the previously applied plan (green Running) and stops it (yellow Off). Four samples over 12 seconds confirmed operation and clock trust without recurring observation_gap. Final state: automatic bells off, applied copy retained, exported backup byte-identical, clock/NTP and system configuration unchanged. This does not validate audible bells, maximum-size plans or sustained operation. Pages is synchronized locally; publication remains a separate owner action.
 
-5.1.5: left-align the status below the full button group and size its background to the text. Pages synchronized; not installed yet.
+5.1.5: bounded exact-byte SHA-256 cache (four entries up to 16 KiB) and clock observation during computation without nested checkpoint writes; gap threshold unchanged. Confirmed results clear waiting text; clock confirmation errors are explained. Short device button acceptance is complete; limitations are listed above.
+
+5.1.5: left-align the status below the full button group and size its background to the text. Pages synchronized; installation and short acceptance completed.
 
 5.1.4: automatic-bell status moved below the entire header button group; responsive layout and Pages demo synchronized. Command logic unchanged; not installed.
 

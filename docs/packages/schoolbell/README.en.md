@@ -1,6 +1,8 @@
 # Schoolbell package
 
-5.1.5 (host only): status below the controls is left-aligned, with a colored background sized to the message. Pages shares this style.
+5.1.5 installed and accepted by the owner in a short quiet-day test: the header button resumes the previously applied plan (green Running) and stops it (yellow Off). Four samples over 12 seconds confirmed operation and clock trust without recurring observation_gap. Final state: automatic bells off, applied copy retained, exported backup byte-identical, clock/NTP and system configuration unchanged. This does not validate audible bells, maximum-size plans or sustained operation. Pages is synchronized locally; publication remains a separate owner action.
+
+5.1.5: status below the controls is left-aligned, with a colored background sized to the message. Pages shares this style.
 
 5.1.4 (host only): the colored automatic-bell status spans the entire header button group, including sign-in/out. Pages shares the same markup and styles. Command behavior is unchanged; no device installation.
 

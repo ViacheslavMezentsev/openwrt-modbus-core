@@ -2,7 +2,7 @@
 
 ## Current state and next steps
 
-- [x] Installed Shkolnik 5.1.2: named non-overlapping calendar ranges, consecutive month pages, synchronized top/bottom navigation and device-neutral save label. Owner confirmed cross-year viewing, paging, painting persistence, save/reload and both navigation panels. Automatic bells remain off. Pages publication matches dbca301.
+- [x] Calendar acceptance through Shkolnik 5.1.2: named non-overlapping calendar ranges, consecutive month pages, synchronized top/bottom navigation and device-neutral save label. Owner confirmed cross-year viewing, paging, painting persistence, save/reload and both navigation panels. Automatic bells remain off. Pages publication is a separate owner action; local demo is synchronized with the current sources.
 - [x] Range model shared by Lua storage/preview/executor, backup and Pages; legacy checksums preserved on read. Target installation backed up and payload/data checked. This does not close full power-loss or security acceptance.
 - [x] Release discovery/update requirements: core 1.34 / schoolbell 1.54, stable package identity and dependencies, simple notification UI and separate administrator installation. Documentation only; current IPK has no updater.
 - [x] Signed manifest/API requirements: core 1.35 / schoolbell 1.55, exact-byte Ed25519, bounded discovery, independent modules, shared dependencies and platform-specific builds. Documentation only.
@@ -10,11 +10,12 @@
 - [ ] Next update stage: select verifier/key delivery and HTTPS/redirect/Link protections, real opkg comparator, wire/ACL, memory/cache/backoff and recovery (core 9.2.31); then integrate isolated adapters. No automatic installation.
 - [x] Shkolnik 5.1.3 host implementation: compact header Auto bells button, confirmed colored status, retained applied copy and revision/generation-checked resume. Draft remains separate; shared Pages simulation, quick guide and specification 1.56 updated.
 - [x] Install 5.1.3 after backup; owner confirmed header button and yellow no-applied-plan status with automatic bells off.
-- [x] 5.1.4: move automatic status below the whole header button group; share responsive layout with Pages (host only).
+- [x] 5.1.5 installed after verified backup/rollback: automatic status below the full header button group, left-aligned text-sized background, shared Pages layout.
 - [ ] Add a “Resolve problem” route: read-only diagnosis, clear cause and explicit recovery actions; no automatic enabling, clock changes, bypassing time control or lock deletion.
-- [ ] Accept header start/stop and retained-plan resume on device after separate permission to enable automatic bells; do not push the current layout branch before button acceptance.
+- [x] Owner accepted 5.1.5 header resume/stop of the retained applied plan: green running and yellow disabled; four running samples over 12 seconds retained confirmed clock trust. Final auto off, applied copy retained, backup byte-identical and system/NTP guard unchanged.
+- [ ] Extend acceptance beyond the short quiet-day test: large plans, sustained load, repeated transitions and audible scheduled bells. The 5.1.4 observation-gap failure motivated bounded SHA caching/cooperative observation; the short 5.1.5 check is not a long-run guarantee.
 - [ ] Next application feature: portable plan export/import with dependency closure and compatibility preview. Pages first stage uses bundled melodies only. Archive not implemented.
-- [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.2 includes the later logout fix.
+- [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.5 includes the later logout fix.
 
 - [ ] Next schoolbell feature accepted by owner: portable annual/academic-plan bundle with selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and all referenced media. September–May spans two calendar years. Reuse backup/media mechanisms; preview dependency closure and conflicts before import, validate plan timezone without applying system timezone, import only as draft with automatic bells disabled. Exclude credentials, network, NTP/clock and hardware-specific settings; specify bundled-media compatibility and atomic rollback before implementation.
 
@@ -69,8 +70,8 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.36 and schoolbell draft 1.55.
-The engineering application is packaged and installed as 5.1.2 with an offline
+User-facing scope follows core draft 1.36 and schoolbell draft 1.56.
+The engineering application is packaged and installed as 5.1.5 with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 
 - [ ] P00 — Finish the minimal API contract: the Unix stream v1/live-no-replay/session profile is accepted (core 1.10); finalize codec/field types, quotas, clock validity/correction, calendar boundaries and pause/pending policy. Record unresolved numeric budgets as measurements, not guarantees.
