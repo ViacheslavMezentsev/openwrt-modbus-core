@@ -5,7 +5,8 @@
 - [x] Installed Shkolnik 5.1.2: named non-overlapping calendar ranges, consecutive month pages, synchronized top/bottom navigation and device-neutral save label. Owner confirmed cross-year viewing, paging, painting persistence, save/reload and both navigation panels. Automatic bells remain off. Pages publication matches dbca301.
 - [x] Range model shared by Lua storage/preview/executor, backup and Pages; legacy checksums preserved on read. Target installation backed up and payload/data checked. This does not close full power-loss or security acceptance.
 - [x] Release discovery/update requirements: core 1.34 / schoolbell 1.54, stable package identity and dependencies, simple notification UI and separate administrator installation. Documentation only; current IPK has no updater.
-- [ ] Update-contract next step: settle strict signed manifest/API, keys, HTTPS/redirect profile and bounded scan/time/memory/recovery parameters (core 9.2.31); then isolated notification-only discovery tests. No automatic installation.
+- [x] Signed manifest/API requirements: core 1.35 / schoolbell 1.55, exact-byte Ed25519, bounded discovery, independent modules, shared dependencies and platform-specific builds. Documentation only.
+- [ ] Next: isolated strict manifest codec/discovery state model with fake network/clock/verifier and boundary/error tests. Before system integration settle verifier/key delivery, HTTPS/redirects, wire/ACL, memory/cache/backoff and recovery (core 9.2.31). No automatic installation.
 - [ ] Next application feature: portable plan export/import with dependency closure and compatibility preview. Pages first stage uses bundled melodies only. Archive not implemented.
 - [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.2 includes the later logout fix.
 
@@ -62,7 +63,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.34 and schoolbell draft 1.54.
+User-facing scope follows core draft 1.35 and schoolbell draft 1.55.
 The engineering application is packaged and installed as 5.1.2 with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 

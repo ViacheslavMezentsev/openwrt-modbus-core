@@ -1,5 +1,7 @@
 # Changelog
 
+Specification 1.55: [signed manifest and discovery API](../../core/SIGNED_RELEASES.en.md), multiple components/platforms and compatible application versions. Requirements only; no updater or router changes.
+
 Specification 1.54: Shkolnik update notifications, stable identity/versioning and a simple administrator journey through the shared service. Bells remain disabled after installation; update UI is not implemented.
 
 The save label uses “device” instead of “router”; Pages explicitly saves in the demo.

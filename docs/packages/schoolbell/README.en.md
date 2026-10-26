@@ -1,5 +1,7 @@
 # Schoolbell package
 
+Specification 1.55: [signed manifest and discovery API](../../core/SIGNED_RELEASES.en.md), multiple components/platforms and compatible application versions. Requirements only; no updater or router changes.
+
 [Release checks and updates — requirements](../../core/RELEASE_UPDATES.en.md). Not implemented yet.
 
 The product is named Shkolnik (previously Shkolnik-4), without a version in its name. Technical schoolbell package names, URLs and data formats are unchanged.

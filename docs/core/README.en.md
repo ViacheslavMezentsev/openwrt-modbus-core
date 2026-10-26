@@ -1,5 +1,7 @@
 # Core
 
+Specification 1.35: [signed manifest and discovery API](SIGNED_RELEASES.en.md), multiple components/platforms and compatible application versions. Requirements only; no updater or router changes.
+
 [Release checks and updates — requirements](RELEASE_UPDATES.en.md). Not implemented yet.
 
 [Русский](README.md)
