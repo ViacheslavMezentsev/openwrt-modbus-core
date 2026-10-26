@@ -1,5 +1,7 @@
 # Changelog
 
+5.1.4: automatic-bell status moved below the entire header button group; responsive layout and Pages demo synchronized. Command logic unchanged; not installed.
+
 Specification 1.55: [signed manifest and discovery API](../../core/SIGNED_RELEASES.en.md), multiple components/platforms and compatible application versions. Requirements only; no updater or router changes.
 
 Specification 1.54: Shkolnik update notifications, stable identity/versioning and a simple administrator journey through the shared service. Bells remain disabled after installation; update UI is not implemented.

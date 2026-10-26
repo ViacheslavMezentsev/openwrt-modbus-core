@@ -9,7 +9,9 @@
 - [x] Isolated strict manifest/discovery host model: 32 tests with fake network/clock/verifier/opkg comparator, deadline and input bounds, dependency/reissue conflicts and partial results. Core specification 1.36; no real crypto/HTTP or updater.
 - [ ] Next update stage: select verifier/key delivery and HTTPS/redirect/Link protections, real opkg comparator, wire/ACL, memory/cache/backoff and recovery (core 9.2.31); then integrate isolated adapters. No automatic installation.
 - [x] Shkolnik 5.1.3 host implementation: compact header Auto bells button, confirmed colored status, retained applied copy and revision/generation-checked resume. Draft remains separate; shared Pages simulation, quick guide and specification 1.56 updated.
-- [ ] Install/accept 5.1.3 separately after backup: header start/stop, stale/blocked states and retained-plan resume. No installation or sound in this branch.
+- [x] Install 5.1.3 after backup; owner confirmed header button and yellow no-applied-plan status with automatic bells off.
+- [x] 5.1.4: move automatic status below the whole header button group; share responsive layout with Pages (host only).
+- [ ] Accept header start/stop and retained-plan resume on device after separate permission to enable automatic bells; do not push the current layout branch before button acceptance.
 - [ ] Next application feature: portable plan export/import with dependency closure and compatibility preview. Pages first stage uses bundled melodies only. Archive not implemented.
 - [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.2 includes the later logout fix.
 
