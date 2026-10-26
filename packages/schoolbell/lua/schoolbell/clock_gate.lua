@@ -20,8 +20,8 @@ function M.new(open,options)
   return s
  end
  function api.status()return status()end
- function api.observe()
-  if model then model.observe();if not model.status().enabled then armed=false end end
+ function api.observe(checkpoint)
+  if model then model.observe(checkpoint);if not model.status().enabled then armed=false end end
   return status()
  end
  function api.configure(value)

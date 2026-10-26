@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.5 (host only): status below the controls is left-aligned, with a colored background sized to the message. Pages shares this style.
+
 5.1.4 (host only): the colored automatic-bell status spans the entire header button group, including sign-in/out. Pages shares the same markup and styles. Command behavior is unchanged; no device installation.
 
 5.1.3 (host only): compact Auto bells button with a confirmed colored status. Stop retains the applied snapshot; resume checks its revision/generation, time and media, without reading or applying the draft. Pages simulates the same flow without automatic audio. No router installation.

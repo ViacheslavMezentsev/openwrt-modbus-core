@@ -58,9 +58,9 @@ function fixture(storage={},initialRevision="r1"){
  await h.poll();assert(h.get('quick-automatic').disabled); // Old generation cannot confirm.
  h.active={ok:true,state:'running',enabled:true,generation:2,revision:'applied'};await h.poll();
  assert.equal(h.get('quick-automatic-status').dataset.tone,'success');assert.equal(h.get('quick-automatic-status').textContent,'Работают');
- assert.equal(h.get('schedule-name').value,'Unsaved name');
+ assert.equal(h.get('schedule-name').value,'Unsaved name');assert(!h.get('automatic-status').textContent.includes('Ожидаем подтверждения'));
  h.commandGeneration=3;await h.get('quick-automatic').click();await h.tick();assert.equal(h.posts[1].enabled,'false');
- h.active={ok:true,state:'disabled',enabled:false,generation:3,revision:'applied'};await h.poll();assert.equal(h.get('quick-automatic-status').textContent,'Выключены');
+ h.active={ok:true,state:'disabled',enabled:false,generation:3,revision:'applied'};await h.poll();assert.equal(h.get('quick-automatic-status').textContent,'Выключены');assert(!h.get('automatic-status').textContent.includes('Ожидаем подтверждения'));
  h.active={ok:true,state:'muted',enabled:true,generation:3,revision:'applied'};await h.poll();assert.equal(h.get('quick-automatic-status').dataset.tone,'warning');
  h.active.state='clock_untrusted';await h.poll();assert.equal(h.get('quick-automatic-status').dataset.tone,'danger');assert(!h.get('quick-automatic').disabled);
  h.active.state='waiting';await h.poll();assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').textContent,'Нет связи');

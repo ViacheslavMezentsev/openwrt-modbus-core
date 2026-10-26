@@ -11,6 +11,7 @@
 - [x] Shkolnik 5.1.3 host implementation: compact header Auto bells button, confirmed colored status, retained applied copy and revision/generation-checked resume. Draft remains separate; shared Pages simulation, quick guide and specification 1.56 updated.
 - [x] Install 5.1.3 after backup; owner confirmed header button and yellow no-applied-plan status with automatic bells off.
 - [x] 5.1.4: move automatic status below the whole header button group; share responsive layout with Pages (host only).
+- [ ] Add a “Resolve problem” route: read-only diagnosis, clear cause and explicit recovery actions; no automatic enabling, clock changes, bypassing time control or lock deletion.
 - [ ] Accept header start/stop and retained-plan resume on device after separate permission to enable automatic bells; do not push the current layout branch before button acceptance.
 - [ ] Next application feature: portable plan export/import with dependency closure and compatibility preview. Pages first stage uses bundled melodies only. Archive not implemented.
 - [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.2 includes the later logout fix.

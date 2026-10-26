@@ -43,6 +43,6 @@ html{--row-alt:#f6f8fa}html[data-theme=dark]{--row-alt:#1c222b}
 
 /* Confirmed automatic state spans the whole header button group. */
 .header-controls{display:grid;gap:8px;min-width:0;max-width:100%}.header-controls .quick-controls{justify-content:flex-end}@media(max-width:700px){.header-controls{width:100%}.header-controls .quick-controls{justify-content:flex-start}}
-#quick-automatic{white-space:nowrap}.automatic-badge{display:block;text-align:center;border-radius:6px;padding:4px 8px;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+#quick-automatic{white-space:nowrap}.automatic-badge{display:block;justify-self:start;max-width:100%;text-align:left;border-radius:6px;padding:4px 8px;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
 .automatic-badge[data-tone="success"]{background:#dafbe1;color:#116329}.automatic-badge[data-tone="warning"]{background:#fff8c5;color:#6a4b16}.automatic-badge[data-tone="danger"]{background:#ffebe9;color:#a40e26}
 html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27;color:#7ee787}html[data-theme="dark"] .automatic-badge[data-tone="warning"]{background:#493a12;color:#e3b341}html[data-theme="dark"] .automatic-badge[data-tone="danger"]{background:#522326;color:#ffa198}

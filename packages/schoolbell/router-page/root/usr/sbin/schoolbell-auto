@@ -11,6 +11,13 @@ local Clock=require('schoolbell.clock_gate').system()
 local function mono()
  local f=assert(io.open('/proc/uptime','r'));local t=f:read(64);f:close();return assert(tonumber(t:match('^[%d.]+')))
 end
+-- Long Lua metadata work must not starve time observation. Observe only;
+-- persistence remains in the normal tick, avoiding nested reference writes.
+local observed=mono()
+C.set_observer(function()
+ local now=mono()
+ if now-observed>=0.5 then observed=now;Clock.observe(false)end
+end)
 local function audit(action)require('schoolbell.journal').request(Store.root,action)end
 local mailbox=require('schoolbell.clock_mailbox').system()
 local command=require('schoolbell.clock_commands').new(Clock,{

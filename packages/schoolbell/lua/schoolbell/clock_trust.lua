@@ -87,7 +87,7 @@ function M.new(io,options)
  end
  -- Lua local-function recursion is used above: all observations pass through the same guard.
  local api={}
- function api.observe()observe(true);return snapshot()end
+ function api.observe(checkpoint)observe(checkpoint~=false);return snapshot()end
  function api.status()return snapshot()end -- cached diagnostic snapshot, never an admission permit
  function api.drain_events()local out=events;events={};local lost=dropped;dropped=0;return out,lost end
  function api.request_confirmation()

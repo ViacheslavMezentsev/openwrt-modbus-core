@@ -57,6 +57,7 @@ lua5.1 packages/schoolbell/tests/test_backup_http.lua
 
 lua5.1 packages/schoolbell/tests/test_clock_trust.lua
 lua5.1 packages/schoolbell/tests/test_clock_gate.lua
+lua5.1 packages/schoolbell/tests/test_metadata_progress.lua
 lua5.1 packages/schoolbell/tests/test_clock_commands.lua
 lua5.1 packages/schoolbell/tests/test_clock_http.lua
 lua5.1 packages/schoolbell/tests/test_clock_policy.lua

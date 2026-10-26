@@ -1,5 +1,9 @@
 # Changelog
 
+5.1.5: bounded exact-byte SHA-256 cache (four entries up to 16 KiB) and clock observation during computation without nested checkpoint writes; gap threshold unchanged. Confirmed results clear waiting text; clock confirmation errors are explained. Device button acceptance must be repeated.
+
+5.1.5: left-align the status below the full button group and size its background to the text. Pages synchronized; not installed yet.
+
 5.1.4: automatic-bell status moved below the entire header button group; responsive layout and Pages demo synchronized. Command logic unchanged; not installed.
 
 Specification 1.55: [signed manifest and discovery API](../../core/SIGNED_RELEASES.en.md), multiple components/platforms and compatible application versions. Requirements only; no updater or router changes.

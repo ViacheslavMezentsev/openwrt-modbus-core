@@ -43,6 +43,14 @@ test('hourly persistence failure blocks; observation does not write every second
  for i=1,3599 do x.advance(1000);x.gate.observe()end;assert(x.writes==1)
  x.write_fail=true;x.advance(1000);x.gate.observe();assert(not x.gate.admit())
 end)
+test('computation observations never checkpoint and still reject steps',function()
+ local x=rig();x.confirm();x.gate.enable()
+ for i=1,3601 do x.advance(1000);x.gate.observe(false)end
+ assert(x.writes==1 and x.gate.admit()) -- admit performs the regular checkpoint
+ assert(x.writes==2)
+ x.advance(500,6000);x.gate.observe(false)
+ assert(not x.gate.status().automatic_permitted and x.gate.status().reason=='clock_step')
+end)
 test('missing dependency blocks by default; explicit bypass remains separate',function()
  local g=Gate.new(function()error('native absent')end);assert(g.status().reason=='clock_unavailable');assert(not g.enable().ok and not g.admit())
  assert(g.configure(false).ok);assert(not g.admit());assert(g.enable().ok and g.admit())

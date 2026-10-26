@@ -46,7 +46,7 @@ function draw(){
  document.getElementById('workflow-difference').textContent=!e || !e.loaded?'Дождитесь загрузки черновика.':e.reconcile?'Сверьте сохранение перед применением.':e.dirty?'Правки в браузере не входят в активный план. Сначала сохраните черновик.':applied && e.revision!==v.revision?'Сохранённый черновик отличается от активного плана. Для изменения звонков примените его отдельно.':applied?'Сохранённый черновик соответствует активной копии.': 'Сохранение само по себе не включает звонки.';
  on.disabled=busy || !!pending || !ready(e) || !!(v && v.hardware===false && !v.simulated);off.disabled=busy || !!pending || !!(v && v.hardware===false && !v.simulated);
 }
-async function refresh(){if(window.schoolbellSessionBlocked || reading || busy || document.hidden)return;reading=true;var captured=generation;try{var v=await request(root.dataset.automatic);if(captured===generation){sample={value:v,at:performance.now()};var current=confirmed();if(current){uncertain=false;if(pending && current.generation>=pending.generation){if(current.enabled!==pending.enabled)feedback='Состояние изменено другой командой. ';pending=null;}}}}catch(_){if(captured===generation)sample=null;}finally{reading=false;draw();}}
+async function refresh(){if(window.schoolbellSessionBlocked || reading || busy || document.hidden)return;reading=true;var captured=generation;try{var v=await request(root.dataset.automatic);if(captured===generation){sample={value:v,at:performance.now()};var current=confirmed();if(current){uncertain=false;if(pending && current.generation>=pending.generation){feedback=current.enabled!==pending.enabled?'Состояние изменено другой командой. ':'';pending=null;}}}}catch(_){if(captured===generation)sample=null;}finally{reading=false;draw();}}
 async function change(enabled){
  if(busy)return;
  var e=editor(),locked=false;
@@ -61,7 +61,7 @@ async function change(enabled){
  if(!window.confirm('Применить сохранённый черновик '+revision.slice(0,10)+' и включить автозвонки?\n'+mode+'\nПроверьте дату, время и часовой пояс роутера. Без звука продолжает действовать.'))return;}
  sample=null;
  var result=enabled?await window.schoolbellClockCommand({action:'enable',revision:revision}):await request(root.dataset.automatic,{enabled:'false',revision:''});if(!result.ok)throw Error(result.code==='missing_media'?'Сначала загрузите пользовательские мелодии, выбранные во включённых строках расписаний.':'Не удалось применить. Проверьте сохранение, конфликты времён и хранилище.');
- sample=null;feedback='Запрос принят. Ожидаем подтверждения службы… ';message.textContent=feedback;
+ sample=null;pending={enabled:enabled,generation:result.generation,until:performance.now()+20000};feedback='Запрос принят. Ожидаем подтверждения службы… ';message.textContent=feedback;
  }catch(e){feedback=(e.message || 'Ответ потерян. Проверьте состояние перед повтором.')+' ';message.textContent=feedback;}
  finally{busy=false;if(locked)window.schoolbellEditor.unlock();draw();setTimeout(refresh,1500);}}
 async function toggleApplied(){
