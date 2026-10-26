@@ -11,7 +11,7 @@
   if(endpoint.pathname.includes('/demo-api/')){
     status.textContent='Демо: вход LuCI и выход недоступны. Данные хранятся в этом браузере.';
     document.getElementById('session-login').hidden=true;check.disabled=true;logout.disabled=true;duration.disabled=true;
-    countdown.textContent='Демо: сеанс роутера не используется.';return;
+    countdown.textContent='Демо: сеанс устройства не используется.';return;
   }
   var rawFetch=window.fetch.bind(window),user=panel.dataset.user,token=root.dataset.token;
   var blocked=false,checking=false,leaving=false,epoch=0,controllers=new Set(),minutes=15;
@@ -68,7 +68,7 @@
       if(!value.ok || typeof value.token!=='string' || !/^[a-zA-Z0-9]{16,128}$/.test(value.token))throw Error('response');
       if(value.user!==user){lose('Вход выполнен другим пользователем. Эта вкладка не возобновляет доступ; локальные правки остаются здесь.');return;}
       token=value.token;root.dataset.token=token;blocked=false;window.schoolbellSessionBlocked=false;window.dispatchEvent(new CustomEvent('schoolbell-session-restored'));logout.disabled=false;warning.hidden=true;activity();
-      status.textContent='Вход подтверждён: '+user+'. Правки не заменены. Сверьте черновик с роутером; команды не повторялись.';
+      status.textContent='Вход подтверждён: '+user+'. Правки не заменены. Сверьте черновик с устройством; команды не повторялись.';
       // No replay, reload, save, activation or clock operation on reconnect.
     }catch(_){status.textContent='Не удалось проверить сеанс. Правки остаются здесь. Проверьте связь и повторите проверку.';}
     finally{checking=false;check.disabled=false;}

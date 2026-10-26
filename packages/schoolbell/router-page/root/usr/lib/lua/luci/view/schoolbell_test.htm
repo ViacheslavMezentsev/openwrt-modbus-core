@@ -1,10 +1,15 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьник · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5105">
-<script src="/schoolbell-test/theme.js?v=5102"></script></head>
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5106">
+<script src="/schoolbell-test/theme.js?v=5106"></script></head>
 <body><main><header><div><p class="eyebrow">ШКОЛЬНИК / РАСПИСАНИЯ И ЗВУК</p>
-<h1>Школьник</h1></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
+<h1>Школьник</h1></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="problem-open" type="button" aria-controls="problem-panel" aria-expanded="false">Решить проблему</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
+<section id="problem-panel" class="details problem-panel" hidden aria-labelledby="problem-heading">
+<h2 id="problem-heading">Диагностика</h2><p id="problem-summary" role="status" aria-live="polite">Ожидаем данные состояния.</p>
+<p id="problem-explanation"></p><p>Проверка не включает звонки, не меняет часы, настройки или ваши правки. Действия, меняющие состояние, выполняются отдельно в соответствующем разделе.</p>
+<div class="editor-toolbar"><button type="button" id="problem-refresh">Повторить чтение состояния</button><button type="button" id="problem-action">Открыть настройки</button><button type="button" id="problem-journal">Открыть журнал</button><button type="button" id="problem-close">Закрыть</button></div>
+<details><summary>Технические подробности</summary><p>Идентификатор копии помогает сравнивать версии плана; это не номер ошибки.</p><pre id="problem-details"></pre></details></section>
 <details id="duty-panel" class="duty-box" open>
 <summary><strong>Школьник <%=pcdata(module_version)%></strong> · <span id="duty-compact">Получаем состояние службы…</span> <span class="collapse-hint">Подробности ▾</span></summary>
 <div class="duty-panel" aria-label="Состояние для дежурного">
@@ -12,11 +17,11 @@
 <div><span>Режим</span><strong id="automatic-mode">Получаем состояние службы…</strong></div>
 <div><span>До следующего звонка</span><strong id="automatic-next">—</strong><small id="automatic-detail">Ожидаем ответ исполнителя.</small></div>
 <div><span>Версии</span><strong>Модуль: <%=pcdata(module_version)%></strong><small>Инженерная установка · ядро (пакет): <%=pcdata(core_version)%></small></div>
-<div><span>На роутере · оценка между опросами</span><strong id="router-clock">Получаем время…</strong><small id="router-zone"></small></div>
+<div><span>На устройстве · оценка между опросами</span><strong id="router-clock">Получаем время…</strong><small id="router-zone"></small></div>
 <div><span>В браузере</span><strong id="browser-clock">—</strong><small id="browser-zone"></small></div>
 </div><p id="clock-status" role="status">Проверяем часы…</p>
 <p id="clock-sync" hidden>Проверьте, что время на вашем устройстве верно. <button type="button" class="inline-button" data-open-settings>Настройки времени</button>. Изменение часового пояса не синхронизирует часы.</p>
-<p id="timezone-hint" hidden>Местное время роутера отличается от браузера. <button type="button" class="inline-button" data-open-settings>Выбрать часовой пояс школы</button></p>
+<p id="timezone-hint" hidden>Местное время устройства отличается от браузера. <button type="button" class="inline-button" data-open-settings>Выбрать часовой пояс школы</button></p>
 </details>
 
 <nav class="page-tabs" role="tablist" aria-label="Разделы schoolbell">
@@ -33,17 +38,17 @@
 <section id="panel-help" role="tabpanel" aria-labelledby="tab-help" data-panel="help" class="details">
 <h2>Шпаргалка</h2>
 <p><strong>Правки → сохранить черновик → применить план.</strong> Сохранение само по себе не включает звонки. Верхняя плашка показывает состояние работающего плана.</p>
-<dl class="quick-guide">
+<dl class="quick-guide"><div class="guide-route"><dt>Решить проблему</dt><dd>Кнопка в шапке поясняет последнее состояние и предлагает повторить чтение или перейти к нужным настройкам. «Нет свежих данных» не означает установленную неисправность Wi-Fi. Проверка ничего не включает и не сохраняет; идентификаторы копий находятся в технических подробностях.</dd></div>
 <div class="guide-route"><dt>Вход и выход</dt><dd>«Выйти» в шапке завершает доступ к управлению через LuCI. Для возвращения нажмите «Войти» и введите обычный пароль в этой же вкладке. Несохранённые правки восстановятся; запись плана и включение звонков остаются отдельными действиями. Выход не останавливает уже включённые автозвонки — для этого используйте «Отключить автозвонки» в настройках.</dd></div>
 <div class="guide-route"><dt>Подготовить звонки</dt><dd>«Настройки»: проверьте часовой пояс и дату → «Расписания»: создайте расписание, задайте время и мелодии → сохраните черновик. Подтверждение времени не переводит часы.</dd></div>
 <div class="guide-route"><dt>Звонить каждый день</dt><dd>«Настройки» → «Автоматическая работа: По расписанию» → выберите ежедневное расписание → сохраните. «Тихий день» означает отсутствие звонков.</dd></div>
 <div class="guide-route"><dt>Звонить по учебному календарю</dt><dd>«Календарь» → создайте именованный план с началом и окончанием → выберите расписание → включите раскраску и отметьте даты → сохраните. В «Настройках» выберите «По календарному плану» и сохраните. Даты без назначения тихие; новые периоды заполняются отдельно.</dd></div>
-<div class="guide-route"><dt>Остановить и возобновить</dt><dd>Кнопка «Автозвонки» в шапке выключает автоматические звонки или снова включает ранее применённый план. Черновик не применяется. Зелёный статус — работают; жёлтый — выключены, без звука или ожидается ответ; красный — ошибка, блокировка или нет связи. Подпись подтверждается исполнителем. Выключение останавливает текущий автоматический звонок; ручной звук управляется отдельно кнопкой «Без звука». Пропущенные звонки не повторяются. Если применённого плана нет, сначала примените сохранённый черновик в настройках.</dd></div><div class="guide-route"><dt>Проверить и включить</dt><dd>«Календарь» → «Просмотр дня» → нажмите дату: откроется предпросмотр черновика. Когда всё проверено: «Настройки» → «Применить сохранённый план и включить». Это отдельное действие, которое разрешает автоматические звонки.</dd></div>
-<div class="guide-route"><dt>Остановить звук или автоматику</dt><dd>Вверху «Без звука» — остановить и запретить звук роутера; дождитесь подтверждения. Повторное нажатие разрешает звук. «Настройки» → «Отключить автозвонки» — остановить работу по плану, сохранив расписания.</dd></div>
-<div class="guide-route"><dt>Подать ручной звонок</dt><dd>Вверху «Подать звонок» — один звонок через колонки роутера. Его мелодия выбирается в «Настройках». При включённом «Без звука» звонок недоступен.</dd></div>
-<div class="guide-route"><dt>Добавить и послушать мелодию</dt><dd>«Мелодии» → выберите user1–user8 → название и MP3 → «Загрузить и заменить». «В браузере» воспроизводит звук на вашем устройстве; проверка через роутер — на его колонках. Штатные мелодии защищены.</dd></div>
+<div class="guide-route"><dt>Остановить и возобновить</dt><dd>Кнопка «Автозвонки» в шапке выключает автоматические звонки или снова включает ранее применённый план. Черновик не применяется. Зелёный статус — работают; жёлтый — выключены, без звука или ожидается ответ; красный — ошибка, блокировка или нет свежих данных. Подпись подтверждается исполнителем. Выключение останавливает текущий автоматический звонок; ручной звук управляется отдельно кнопкой «Без звука». Пропущенные звонки не повторяются. Если применённого плана нет, сначала примените сохранённый черновик в настройках.</dd></div><div class="guide-route"><dt>Проверить и включить</dt><dd>«Календарь» → «Просмотр дня» → нажмите дату: откроется предпросмотр черновика. Когда всё проверено: «Настройки» → «Применить сохранённый план и включить». Это отдельное действие, которое разрешает автоматические звонки.</dd></div>
+<div class="guide-route"><dt>Остановить звук или автоматику</dt><dd>Вверху «Без звука» — остановить и запретить звук устройства; дождитесь подтверждения. Повторное нажатие разрешает звук. «Настройки» → «Отключить автозвонки» — остановить работу по плану, сохранив расписания.</dd></div>
+<div class="guide-route"><dt>Подать ручной звонок</dt><dd>Вверху «Подать звонок» — один звонок через колонки устройства. Его мелодия выбирается в «Настройках». При включённом «Без звука» звонок недоступен.</dd></div>
+<div class="guide-route"><dt>Добавить и послушать мелодию</dt><dd>«Мелодии» → выберите user1–user8 → название и MP3 → «Загрузить и заменить». «В браузере» воспроизводит звук на вашем устройстве; проверка через устройство — на его колонках. Штатные мелодии защищены.</dd></div>
 <div class="guide-route"><dt>Убрать расписание или назначения</dt><dd>Сначала снимите назначения в календаре и смените ежедневное расписание в «Настройках», если оно используется → «Расписания» → «Удалить». При очистке последнего года прочтите предупреждение о переходе в «Тихий день». Изменения относятся к черновику.</dd></div>
-<div class="guide-route"><dt>Отменить правки или разобраться после ошибки</dt><dd>В редакторе «Отменить правки / загрузить сохранённое» убирает несохранённые изменения. «Сверить с роутером» показывает две копии, сохраняя ваши правки: выберите локальную или сохранённую. Сверка ничего не записывает и не включает звонки.</dd></div>
+<div class="guide-route"><dt>Отменить правки или разобраться после ошибки</dt><dd>В редакторе «Отменить правки / загрузить сохранённое» убирает несохранённые изменения. «Сверить с устройством» показывает две копии, сохраняя ваши правки: выберите локальную или сохранённую. Сверка ничего не записывает и не включает звонки.</dd></div>
 <div class="guide-route"><dt>Сохранить резервную копию</dt><dd>«Настройки» → «Резервная копия» → «Скачать резервную копию». Для возврата выберите файл .sbb и «Восстановить». После восстановления автозвонки выключены: проверьте план перед отдельным включением.</dd></div>
 </dl>
 <details id="guide-important"><summary>Важно знать: неочевидные правила</summary>
@@ -51,7 +56,7 @@
 <li><strong>Черновик и рабочий план — разные копии.</strong> «Сохранить» не включает звонки и не меняет уже работающий план. Для этого нужно отдельно применить сохранённый план.</li>
 <li><strong>Тихие даты.</strong> Дата без назначенного расписания не звонит. План на следующий календарный год сам не повторяется; учебный сезон сентябрь–май заполняется в двух годах.</li>
 <li><strong>Пропущенные звонки не догоняются.</strong> Возврат связи, вход или разрешение звука не запускают прошедшие события заново.</li>
-<li><strong>«Без звука» и выключение автоматики — разные действия.</strong> Первое запрещает звук роутера, второе выключает исполнение плана. Звук браузера регулируется на вашем устройстве.</li>
+<li><strong>«Без звука» и выключение автоматики — разные действия.</strong> Первое запрещает звук устройства, второе выключает исполнение плана. Звук браузера регулируется на вашем устройстве.</li>
 <li><strong>Выход не останавливает школьный звонок.</strong> Уже включённый план работает без открытой страницы. Если нужно остановить звонки, выключите автоматику отдельно до выхода.</li>
 <li><strong>Таймер считает действия человека.</strong> Фоновые обновления не продлевают автовыход. Настройка хранится в этом браузере и действует при работающей странице; она не заменяет серверный срок сеанса LuCI, который может закончиться раньше. Выход завершает текущий сеанс также в других вкладках LuCI.</li>
 <li><strong>Правки при переходе на вход сохраняются временно в этой вкладке браузера (до 8 часов).</strong> Нажмите «Войти» и выполните обычный вход в этой же вкладке: черновик восстановится автоматически. Если сохранённый план изменился, сверьте копии перед записью. Пароль и токен не сохраняются вместе с правками. Закрытие вкладки или очистка данных браузера может удалить временную копию.</li>
@@ -62,7 +67,7 @@
 <p>Если действие не подтвердилось, не повторяйте его вслепую: обновите состояние. Подробности — во вкладке «Журнал»; порядок обращения — в «Обратной связи».</p>
 </section>
 
-<p class="intro">Подготовьте расписания и сохраните их на роутере.</p>
+<p class="intro">Подготовьте расписания и сохраните их на устройстве.</p>
 <p class="notice">Сохранение записывает черновик. Для автозвонков сохраните изменения и отдельно примените их во вкладке «Настройки».</p>
 <section class="plan-workflow" aria-label="Черновик и активный план">
 <p id="workflow-draft" role="status">Черновик: загружается…</p><p id="workflow-active" role="status">Активный план: состояние неизвестно</p><p id="workflow-difference">Сохранение и применение — отдельные действия.</p>
@@ -70,7 +75,7 @@
 </section>
 <section id="schedule-editor" class="details" hidden data-media="<%=pcdata(media_url)%>" data-sample="<%=pcdata(sample_url)%>" data-trust="<%=pcdata(trust_url)%>" data-automatic="<%=pcdata(automatic_url)%>" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
 <div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
-<p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с роутера…</p>
+<p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с устройства…</p>
 <fieldset id="schedule-fields" disabled>
 <section id="panel-schedules" role="tabpanel" aria-labelledby="tab-schedules" data-panel="schedules" hidden>
 <div class="editor-toolbar"><label>Расписание<select id="schedule-select"></select></label>
@@ -101,18 +106,18 @@
 <ol id="preview-events"></ol>
 </section>
 </fieldset>
-<div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на устройстве</button><button type="button" id="schedule-reload">Отменить правки / загрузить сохранённое</button><button type="button" id="draft-compare">Сверить с роутером</button></div>
+<div class="editor-toolbar savebar"><button type="button" id="schedule-save" class="primary" disabled>Сохранить черновик на устройстве</button><button type="button" id="schedule-reload">Отменить правки / загрузить сохранённое</button><button type="button" id="draft-compare">Сверить с устройством</button></div>
 <section id="draft-comparison" hidden aria-label="Сверка черновика"><h3>Локальные правки и сохранённая копия</h3><p id="draft-comparison-status" role="status"></p><p id="draft-local-summary"></p><p id="draft-router-summary"></p>
 <p>При различиях раскройте обе копии: здесь видны режим, расписания, мелодии и назначения дат. Сверка только читает данные.</p>
 <details><summary>Локальная копия — все поля</summary><pre id="draft-local-json" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
-<details><summary>Копия роутера — все поля</summary><pre id="draft-router-json" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
-<button type="button" id="draft-keep-local">Оставить локальные правки</button><button type="button" id="draft-use-router">Взять копию роутера</button></section>
+<details><summary>Копия устройства — все поля</summary><pre id="draft-router-json" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
+<button type="button" id="draft-keep-local">Оставить локальные правки</button><button type="button" id="draft-use-router">Взять копию устройства</button></section>
 </section>
 <section id="panel-media" role="tabpanel" aria-labelledby="tab-media" data-panel="media" hidden>
 <section class="details"><h2>Мелодии</h2>
-<div class="storage-status"><strong>Постоянное хранилище роутера</strong><p id="storage-text" role="status">Обновите список, чтобы узнать свободное место.</p><progress id="storage-bar" max="100" value="0" aria-label="Занятое место в постоянном хранилище" hidden></progress><p id="storage-reserve"></p></div>
+<div class="storage-status"><strong>Постоянное хранилище устройства</strong><p id="storage-text" role="status">Обновите список, чтобы узнать свободное место.</p><progress id="storage-bar" max="100" value="0" aria-label="Занятое место в постоянном хранилище" hidden></progress><p id="storage-reserve"></p></div>
 <p>Шесть штатных мелодий защищены от замены и удаления. Для ваших файлов есть восемь отдельных позиций user1–user8. При замене пользовательской мелодии расписания сохраняют ссылку на её позицию.</p>
-<p>Перед заменой отключите автозвонки в настройках. Во время загрузки проигрывание заблокировано. MP3: до 512 КиБ и 60 секунд; свободное место проверяется на роутере. Файл проверяется без звука.</p>
+<p>Перед заменой отключите автозвонки в настройках. Во время загрузки проигрывание заблокировано. MP3: до 512 КиБ и 60 секунд; свободное место проверяется на устройстве. Файл проверяется без звука.</p>
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>Позиция</th><th>Название</th><th>Файл</th><th>Размер</th><th>Источник</th><th>Прослушивание</th></tr></thead><tbody id="media-rows"></tbody></table></div>
 <label>Позиция для замены<select id="media-slot"><option>user1</option><option>user2</option><option>user3</option><option>user4</option><option>user5</option><option>user6</option><option>user7</option><option>user8</option></select></label>
 <label>Название мелодии<input id="media-title" type="text" maxlength="96" placeholder="Например: Начало урока"></label>
@@ -126,21 +131,21 @@
 <div class="diagram"><div>▣<br><strong>Ваш браузер</strong></div><b>→</b><div>♫<br><strong>Динамик устройства</strong></div></div>
 <audio id="browser-audio" preload="none" src="<%=pcdata(sample_url)%>"></audio>
 <button id="browser-play" type="button" class="primary">▶ Послушать здесь</button>
-<p id="browser-result" role="status">Роутер передаст файл. Его колонки будут молчать.</p></article>
-<article><span class="badge">2 · ТАМ, ГДЕ РОУТЕР</span><h2>Через колонки роутера</h2>
+<p id="browser-result" role="status">Устройство передаст файл. Его колонки будут молчать.</p></article>
+<article><span class="badge">2 · ТАМ, ГДЕ РОУТЕР</span><h2>Через колонки устройства</h2>
 <p>Браузер отправит команду. Звук пойдёт через USB-аудиокарту к подключённым колонкам.</p>
-<div class="diagram"><div>▣<br><strong>Браузер</strong></div><b>→</b><div>⌘<br><strong>Роутер</strong></div><b>→</b><div>♫<br><strong>USB → колонки</strong></div></div>
+<div class="diagram"><div>▣<br><strong>Браузер</strong></div><b>→</b><div>⌘<br><strong>Устройство</strong></div><b>→</b><div>♫<br><strong>USB → колонки</strong></div></div>
 <form id="router-form" action="<%=pcdata(play_url)%>" method="post">
 <input type="hidden" name="token" value="<%=pcdata(token)%>">
-<button id="router-play" type="submit" class="primary">▶ Позвонить на роутере</button></form>
+<button id="router-play" type="submit" class="primary">▶ Позвонить на устройстве</button></form>
 <p id="router-result" role="status">Колонки должны быть включены и подключены к аудиовыходу.</p></article></section>
 <section class="details"><h2>Что будет воспроизведено</h2><p><strong>Штатная test.mp3</strong> · около 3,3 секунды · один раз.</p>
-<p>Роутер: madplay · выход /dev/dsp · 48 кГц · громкость — по сохранённой настройке. Громкость колонок регулируется на самих колонках.</p>
+<p>Устройство: madplay · выход /dev/dsp · 48 кГц · громкость — по сохранённой настройке. Громкость колонок регулируется на самих колонках.</p>
 <p>Успешное завершение проигрывателя ещё не подтверждает, что звук был слышен.</p></section>
 </section>
 <section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" data-panel="sound" hidden>
 <section class="details time-settings"><h2>Часовой пояс школы</h2>
-<p>Выберите место, где установлен школьный звонок. Настройка сохраняется на роутере и действует для всех его приложений. Сами часы и расписания не переводятся.</p>
+<p>Выберите место, где установлен школьный звонок. Настройка сохраняется на устройстве и действует для всех его приложений. Сами часы и расписания не переводятся.</p>
 <p id="timezone-current" role="status">Настройки ещё не загружены.</p>
 <label>Город / часовой пояс<select id="timezone-select" disabled></select></label>
 <div class="editor-toolbar"><button id="timezone-browser" type="button" disabled>Выбрать как на этом устройстве</button><button id="timezone-save" type="button" disabled>Применить часовой пояс</button><button id="timezone-reload" type="button">Обновить</button></div>
@@ -149,7 +154,7 @@
 <details><summary>Вход и автовыход</summary><label>Автовыход при бездействии<select id="session-duration"><option value="1">1 минута</option><option value="5">5 минут</option><option value="15" selected>15 минут</option><option value="30">30 минут</option><option value="60">1 час</option><option value="120">2 часа</option></select></label><p>Автовыход считает бездействие пользователя, а не фоновые обновления. Настройка действует в этом браузере при работающей странице; сервер LuCI может завершить сеанс раньше.</p></details>
 </section>
 <section class="details"><h2>Проверка времени</h2>
-<p>Сверьте дату и время роутера с надёжными часами. Подтверждение не переводит часы и не меняет NTP. После перезапуска службы потребуется новая проверка.</p>
+<p>Сверьте дату и время устройства с надёжными часами. Подтверждение не переводит часы и не меняет NTP. После перезапуска службы потребуется новая проверка.</p>
 <p id="trust-status" role="status">Ожидаем состояние исполнителя…</p>
 <div class="editor-toolbar"><button id="trust-prepare" type="button" disabled>Проверить и подтвердить время</button><button id="trust-policy" type="button" disabled>Изменить контроль времени</button></div>
 <div id="trust-review" hidden><p id="trust-date"></p><label><input id="trust-rollback" type="checkbox"> Подтверждаю намеренное время раньше сохранённой опоры</label><button id="trust-confirm" type="button">Время верно — подтвердить</button></div>
@@ -157,10 +162,10 @@
 <p>Эти действия отключают автозвонки. Включение плана выполняется отдельно ниже. Если контроль отключён, защита от неверных часов не действует; «Без звука» и запрет повторного проигрывания сохраняются.</p>
 </section>
 <section class="details"><h2>Звонки и режим работы</h2>
-<label>Громкость колонок роутера<select id="router-volume" disabled>
+<label>Громкость колонок устройства<select id="router-volume" disabled>
 <option value="-36">Едва слышно (−36 дБ)</option><option value="-24">Очень тихо (−24 дБ)</option><option value="-12">Тихо (−12 дБ)</option><option value="-6">Средне (−6 дБ)</option><option value="0">Без ослабления (0 дБ)</option></select></label>
 <button type="button" id="volume-save" disabled>Применить громкость</button><p id="volume-status" role="status"></p>
-<p>Громкость применяется к следующему звонку на роутере: ручному, тестовому и автоматическому. Для немедленной остановки используйте Без звука. Звук браузера регулируется на вашем устройстве.</p>
+<p>Громкость применяется к следующему звонку на устройстве: ручному, тестовому и автоматическому. Для немедленной остановки используйте Без звука. Звук браузера регулируется на вашем устройстве.</p>
 <p>Мелодия ручного звонка применяется после сохранения. Автозвонки работают без открытого браузера по отдельно применённой копии плана.</p>
 <label>Мелодия ручного звонка<select id="manual-media" disabled></select></label>
 <label>Мелодия предзвонка<select id="pre-media" disabled></select></label>
@@ -170,8 +175,8 @@
 <p id="work-mode-hint">Без календарных планов: по расписанию, тихий день по умолчанию.</p>
 <button id="settings-save" type="button" disabled>Сохранить настройки и черновик</button><p id="settings-result" role="status"></p>
 <div class="automatic-controls"><button id="automatic-enable" type="button" disabled>Применить сохранённый черновик и включить</button> <button id="automatic-disable" type="button">Отключить автозвонки</button><p id="automatic-status" role="status"></p>
-<p>Проверьте дату и время роутера перед включением. После перезагрузки или изменения часового пояса включите снова. Пропущенные звонки не повторяются; при занятом проигрывателе новый звонок пропускается. Совпадающие времена звонков недопустимы.</p></div>
-<p>Без звука действует сразу на звук schoolbell через роутер, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Без звука пропущенные звонки не повторяются.</p></section>
+<p>Проверьте дату и время устройства перед включением. После перезагрузки или изменения часового пояса включите снова. Пропущенные звонки не повторяются; при занятом проигрывателе новый звонок пропускается. Совпадающие времена звонков недопустимы.</p></div>
+<p>Без звука действует сразу на звук schoolbell через устройство, включая ручной звонок. Прослушивание в браузере не отключается. После снятия Без звука пропущенные звонки не повторяются.</p></section>
 <section class="details" id="backup-panel" data-url="<%=pcdata(backup_url)%>" data-token="<%=pcdata(token)%>"><h2>Резервная копия</h2>
 <p>Сохранённые настройки, расписания, календарные планы и восемь пользовательских мелодий — в одном файле. Несохранённые правки страницы в копию не входят. Сначала отключите автозвонки.</p>
 <p>Восстановление заменяет эти данные и оставляет автозвонки выключенными. Системные часы, NTP, сеть и часовой пояс не меняются. Для переноса выберите на другом устройстве тот же часовой пояс заранее.</p>
@@ -184,7 +189,7 @@
 
 </section>
 <section id="panel-journal" role="tabpanel" aria-labelledby="tab-journal" data-panel="journal" class="details" hidden>
-<h2>Журнал schoolbell</h2><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC роутера; порядок — по номеру, даже после коррекции часов.</p>
+<h2>Журнал schoolbell</h2><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC устройства; порядок — по номеру, даже после коррекции часов.</p>
 <p>Хранятся последние события — до 16 КиБ. При заполнении самые старые записи удаляются автоматически.</p>
 <button type="button" id="journal-reload">Обновить журнал</button><p id="journal-status" role="status"></p>
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>№ / Время UTC</th><th>Источник</th><th>Прослушивание</th><th>Событие</th></tr></thead><tbody id="journal-rows"></tbody></table></div>
@@ -199,5 +204,5 @@
 <p><a href="https://github.com/ViacheslavMezentsev/openwrt-modbus-core/issues/new?template=bug_report.yml" target="_blank" rel="noopener">Сообщить об ошибке</a> · <a href="https://github.com/ViacheslavMezentsev/openwrt-modbus-core/issues/new?template=feature_request.yml" target="_blank" rel="noopener">Предложить улучшение</a></p>
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
-<footer><a href="<%=url('admin')%>">← Управление роутером LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/session.js?v=5102"></script><script src="/schoolbell-test/backup.js?v=5102"></script><script src="/schoolbell-test/media.js?v=5102"></script><script src="/schoolbell-test/clock-trust.js?v=5105"></script><script src="/schoolbell-test/automatic.js?v=5105"></script><script src="/schoolbell-test/controls.js?v=5102"></script><script src="/schoolbell-test/app.js?v=5102"></script><script src="/schoolbell-test/ranges.js?v=5102"></script><script src="/schoolbell-test/schedules.js?v=5102"></script><script src="/schoolbell-test/dashboard.js?v=5102"></script></body></html>
+<footer><a href="<%=url('admin')%>">← Управление устройством LuCI</a> · Расписания сохраняются без активации</footer>
+</main><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/automatic.js?v=5106"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5106"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script></body></html>

@@ -63,7 +63,7 @@ function fixture(storage={},initialRevision="r1"){
  h.active={ok:true,state:'disabled',enabled:false,generation:3,revision:'applied'};await h.poll();assert.equal(h.get('quick-automatic-status').textContent,'Выключены');assert(!h.get('automatic-status').textContent.includes('Ожидаем подтверждения'));
  h.active={ok:true,state:'muted',enabled:true,generation:3,revision:'applied'};await h.poll();assert.equal(h.get('quick-automatic-status').dataset.tone,'warning');
  h.active.state='clock_untrusted';await h.poll();assert.equal(h.get('quick-automatic-status').dataset.tone,'danger');assert(!h.get('quick-automatic').disabled);
- h.active.state='waiting';await h.poll();assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').textContent,'Нет связи');
+ h.active.state='waiting';await h.poll();assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').textContent,'Нет свежих данных');
  h.window.schoolbellSessionBlocked=true;h.window.dispatchEvent({type:'schoolbell-session-lost'});assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').textContent,'Войдите');
  h=fixture();await h.tick();h.active={ok:true,state:'disabled',enabled:false,generation:0};await h.poll();await h.get('quick-automatic').click();assert.equal(h.posts.length,0);assert(h.get('automatic-status').textContent.includes('Сначала примените'));
  h.active={ok:true,state:'disabled',enabled:false,generation:1,revision:'applied'};h.reject=true;await h.poll();await h.get('quick-automatic').click();await h.tick();assert.equal(h.posts.length,1);await h.poll();assert.equal(h.posts.length,1);

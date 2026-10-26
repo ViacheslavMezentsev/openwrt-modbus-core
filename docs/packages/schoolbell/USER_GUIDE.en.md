@@ -1,5 +1,11 @@
 # Schoolbell user guide
 
+## When a problem occurs
+
+Use Resolve problem in the header. The panel explains the latest confirmed state. Read status again never repeats commands or replaces edits. Suggested actions open the relevant section; time confirmation, saving and enabling remain separate actions. An expired session offers sign-in.
+
+No fresh data means no current module response, not a confirmed Wi-Fi failure. Technical details contain draft and applied-copy identifiers for version comparison; these are not error codes. For recurring problems, open the journal and feedback. Time protection and locks are never automatically cleared.
+
 Calendar months run consecutively across year boundaries. Longer plans use pages of 12 months with previous/next buttons. Navigation does not require saving.
 
 

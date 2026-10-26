@@ -47,7 +47,7 @@ for name in ["test","0","1","2","3","4"]:
 for element in ['draft-compare','draft-comparison','draft-local-json','draft-router-json','draft-keep-local','draft-use-router']:
  assert 'id="'+element+'"' in html,element
 assert 'Сверить с локальной моделью' in html
-expected=source.read_text().replace('на устройстве','в демо').replace('на роутере','в демо').replace('на роутер','в демо').replace('с роутера','из браузера').replace('с роутером','с локальной моделью').replace('Проверьте вход в LuCI, сеть','Проверьте файл').replace('вход LuCI','демо')
+expected=source.read_text().replace('на устройстве','в демо').replace('на устройство','в демо').replace('с устройства','из браузера').replace('с устройством','с локальной моделью').replace('на роутере','в демо').replace('на роутер','в демо').replace('с роутера','из браузера').replace('с роутером','с локальной моделью').replace('Проверьте вход в LuCI, сеть','Проверьте файл').replace('вход LuCI','демо')
 assert (out/'schoolbell/assets/schedules.js').read_text()==expected
 subprocess.run(['node',str(root/'scripts/test-schoolbell-routes.js')],cwd=root,env=dict(os.environ,SCHOOLBELL_UI_DIR=str(out/'schoolbell/assets')),check=True)
 print('PASS Pages shares editor/reconciliation and runs the same no-hardware journey regressions')

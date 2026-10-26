@@ -110,6 +110,7 @@ site:
 check-site: site
 	python3 scripts/test-site.py
 	node scripts/test-site-demo.js
+	node scripts/test-schoolbell-diagnostics.js
 	node scripts/test-schoolbell-ranges.js
 	node scripts/test-schoolbell-session-ui.js
 	node scripts/test-schoolbell-routes.js

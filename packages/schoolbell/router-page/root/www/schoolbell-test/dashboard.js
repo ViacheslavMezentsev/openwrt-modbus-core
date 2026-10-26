@@ -32,9 +32,9 @@
   document.querySelectorAll('[data-open-settings]').forEach(function(b){b.addEventListener('click',function(){selectTab('sound');document.getElementById('panel-sound').scrollIntoView({block:'start'});});});
   document.getElementById('timezone-reload').addEventListener('click',loadZones);
   zoneBrowser.addEventListener('click',function(){var name=Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if(zoneState.zones.includes(name)){zoneSelect.value=name;zoneMessage.textContent='Выбран '+name+'. Проверьте место установки и нажмите «Применить».';}else zoneMessage.textContent='Зона браузера '+name+' отсутствует в базе роутера. Выберите город вручную.';});
+    if(zoneState.zones.includes(name)){zoneSelect.value=name;zoneMessage.textContent='Выбран '+name+'. Проверьте место установки и нажмите «Применить».';}else zoneMessage.textContent='Зона браузера '+name+' отсутствует в базе устройства. Выберите город вручную.';});
   zoneSave.addEventListener('click',async function(){
-    if(!zoneState || zoneBusy || !window.confirm('Применить '+zoneSelect.value+' на роутере? Это изменит местное время всех его приложений, но не сами часы.'))return;
+    if(!zoneState || zoneBusy || !window.confirm('Применить '+zoneSelect.value+' на устройстве? Это изменит местное время всех его приложений, но не сами часы.'))return;
     zoneBusy=true;zoneControls();zoneMessage.textContent='Сохраняем часовой пояс…';
     try{var value=await zoneRequest({method:'POST',body:new URLSearchParams({token:root.dataset.token,zone:zoneSelect.value,revision:zoneState.revision})});
       var errors={conflict:'Настройки изменены в другом окне. Обновите данные перед повтором.',pending_changes:'Есть несохранённые системные настройки. Запись не выполнена.',invalid_zone:'Выберите пояс из списка.',apply_failed:'Пояс сохранён, но применение не подтверждено. Обновите данные и повторите применение.',save_uncertain:'Результат сохранения неизвестен. Обновите данные перед повтором.',unavailable:'Настройка недоступна. Проверьте связь и повторите чтение.'};
@@ -43,7 +43,7 @@
     finally{zoneBusy=false;zoneControls();await loadZones();sample=null;poll();}
   });
   var journalBusy=false;
-  var actions={clock_confirmed:'Время подтверждено вручную; автозвонки выключены',clock_control_on:'Контроль времени включён; требуется подтверждение часов',clock_control_off:'Контроль времени отключён пользователем',clock_control_failed:'Действие контроля времени не подтверждено',restore_ok:'Резервная копия восстановлена; автозвонки выключены',restore_failed:'Восстановление копии не подтверждено',media_ok:'Мелодия заменена',media_failed:'Замена мелодии отклонена',volume_ok:'Громкость роутера сохранена',volume_failed:'Ошибка сохранения громкости',auto_enabled:'Сохранённый план включён',auto_disabled:'Автозвонки отключены',auto_requested:'Автоматический звонок рассмотрен',auto_ok:'Автоматический проигрыватель завершился',auto_skipped:'Автоматический звонок пропущен или остановлен',auto_blocked:'Исполнитель заблокирован: проверьте плашку состояния',mute_on:"Без звука включён",mute_off:"Без звука выключен",mute_failed:"Ошибка изменения Без звука",manual_requested:"Запрошен ручной звонок",timezone_ok:'Часовой пояс применён',timezone_failed:'Не удалось применить часовой пояс',save_ok:'Черновик сохранён',save_failed:'Сохранение отклонено',preview_ok:'Запрошен предпросмотр',preview_failed:'Предпросмотр отклонён',play_requested:'Запрошен звук на роутере',play_ok:'Проигрыватель завершился успешно',play_failed:'Ошибка проигрывателя',sample_requested:'Передан файл для браузера (не подтверждение звука)',storage_error:'Ошибка хранилища',installed:'Установлен интерфейс schoolbell'};
+  var actions={clock_confirmed:'Время подтверждено вручную; автозвонки выключены',clock_control_on:'Контроль времени включён; требуется подтверждение часов',clock_control_off:'Контроль времени отключён пользователем',clock_control_failed:'Действие контроля времени не подтверждено',restore_ok:'Резервная копия восстановлена; автозвонки выключены',restore_failed:'Восстановление копии не подтверждено',media_ok:'Мелодия заменена',media_failed:'Замена мелодии отклонена',volume_ok:'Громкость устройства сохранена',volume_failed:'Ошибка сохранения громкости',auto_enabled:'Сохранённый план включён',auto_disabled:'Автозвонки отключены',auto_requested:'Автоматический звонок рассмотрен',auto_ok:'Автоматический проигрыватель завершился',auto_skipped:'Автоматический звонок пропущен или остановлен',auto_blocked:'Исполнитель заблокирован: проверьте плашку состояния',mute_on:"Без звука включён",mute_off:"Без звука выключен",mute_failed:"Ошибка изменения Без звука",manual_requested:"Запрошен ручной звонок",timezone_ok:'Часовой пояс применён',timezone_failed:'Не удалось применить часовой пояс',save_ok:'Черновик сохранён',save_failed:'Сохранение отклонено',preview_ok:'Запрошен предпросмотр',preview_failed:'Предпросмотр отклонён',play_requested:'Запрошен звук на устройстве',play_ok:'Проигрыватель завершился успешно',play_failed:'Ошибка проигрывателя',sample_requested:'Передан файл для браузера (не подтверждение звука)',storage_error:'Ошибка хранилища',installed:'Установлен интерфейс schoolbell'};
   async function loadJournal(){
     if(journalBusy)return;journalBusy=true;
     var button=document.getElementById('journal-reload'),status=document.getElementById('journal-status');button.disabled=true;
@@ -84,13 +84,13 @@
     document.getElementById('browser-clock').textContent=browser.toLocaleString('ru-RU',format);
     document.getElementById('browser-zone').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone+' · '+zone(-browser.getTimezoneOffset());
     var status=document.getElementById('clock-status'),sync=document.getElementById('clock-sync');sync.hidden=true;document.getElementById('timezone-hint').hidden=true;
-    if(!sample || elapsed>90000){document.getElementById('router-clock').textContent='Время недоступно';status.textContent='Нет свежего ответа роутера. Сравнение часов отключено.';return;}
+    if(!sample || elapsed>90000){document.getElementById('router-clock').textContent='Время недоступно';status.textContent='Нет свежего ответа устройства. Сравнение часов отключено.';return;}
     document.getElementById('router-clock').textContent=new Date(sample.wall+elapsed).toLocaleString('ru-RU',Object.assign({},format,{timeZone:'UTC'}));
     document.getElementById('router-zone').textContent=(sample.name?sample.name+' · ':'')+zone(sample.offset)+' · получено '+Math.floor(elapsed/1000)+' с назад';
     document.getElementById('timezone-hint').hidden=sample.offset===-browser.getTimezoneOffset();
     var delta=(browser.getTime()-(sample.epoch+elapsed))/1000;
-    if(sample.rtt>2000){status.textContent='Медленный ответ роутера: сравнение неточно. Ожидаем следующий опрос.';return;}
-    if(Math.abs(delta)>5){status.textContent='Часы роутера '+(delta>0?'отстают':'спешат')+' примерно на '+Math.round(Math.abs(delta))+' с относительно браузера.';sync.hidden=false;}
+    if(sample.rtt>2000){status.textContent='Медленный ответ устройства: сравнение неточно. Ожидаем следующий опрос.';return;}
+    if(Math.abs(delta)>5){status.textContent='Часы устройства '+(delta>0?'отстают':'спешат')+' примерно на '+Math.round(Math.abs(delta))+' с относительно браузера.';sync.hidden=false;}
     else status.textContent='Часы совпадают в пределах 5 с.';
     if(sample.offset!==-browser.getTimezoneOffset())status.textContent+=' Часовые пояса различаются; синхронизация времени не меняет пояс.';
   }

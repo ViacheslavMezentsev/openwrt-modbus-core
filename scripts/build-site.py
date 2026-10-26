@@ -28,7 +28,7 @@ demo=out/'schoolbell';assets=demo/'assets';assets.mkdir(parents=True,exist_ok=Tr
 for p in (source/'www/schoolbell-test').iterdir():
  text=p.read_text()
  if p.suffix=='.js':
-  text=text.replace('на устройстве','в демо').replace('на роутере','в демо').replace('на роутер','в демо').replace('с роутера','из браузера').replace('с роутером','с локальной моделью').replace('Проверьте вход в LuCI, сеть','Проверьте файл').replace('вход LuCI','демо')
+  text=text.replace('на устройстве','в демо').replace('на устройство','в демо').replace('с устройства','из браузера').replace('с устройством','с локальной моделью').replace('на роутере','в демо').replace('на роутер','в демо').replace('с роутера','из браузера').replace('с роутером','с локальной моделью').replace('Проверьте вход в LuCI, сеть','Проверьте файл').replace('вход LuCI','демо')
  (assets/p.name).write_text(text)
 shutil.copyfile(root/'site/demo.js',assets/'demo.js')
 for name in ['test','0','1','2','3','4']:
@@ -39,6 +39,7 @@ values={'session_url':'./demo-api/session','login_url':'./','auth_user':'Дем�
 for key,value in values.items():text=text.replace('<%=pcdata('+key+')%>',html.escape(value,quote=True))
 text=text.replace("<%=url('admin')%>",'../').replace('← Управление роутером LuCI','← О проекте')
 text=text.replace('/schoolbell-test/','./assets/')
+text=text.replace('Сверить с устройством','Сверить с локальной моделью').replace('Копия устройства','Сохранённая копия демо').replace('Взять копию устройства','Взять сохранённую копию демо')
 text=text.replace('Сверить с роутером','Сверить с локальной моделью').replace('Копия роутера','Сохранённая копия демо').replace('Взять копию роутера','Взять сохранённую копию демо')
 text=text.replace('<p class="intro">','<aside class="notice"><strong>ДЕМО · оборудование не подключено.</strong> Календарные планы можно редактировать без устройства. Расписания и часовой пояс изменяются только в этом браузере. Автозвонков нет. <span id="demo-storage">Данные демо сохраняются локально.</span> <button id="demo-reset" type="button">Сбросить демо</button></aside><p class="intro">',1)
 text=text.replace('Сохранить черновик на устройстве','Сохранить черновик в демо')

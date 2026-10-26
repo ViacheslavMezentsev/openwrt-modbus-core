@@ -16,7 +16,7 @@
   window.addEventListener('schoolbell-session-lost',function(){button.disabled=true;result.textContent='Войдите для управления звуком.';});
   var messages={
     muted:'Звук отключён кнопкой Без звука.',
-    completed:'Проигрыватель завершился успешно. Было слышно через колонки роутера?',
+    completed:'Проигрыватель завершился успешно. Было слышно через колонки устройства?',
     busy:'Тест уже выполняется или заблокирован после сбоя. Повторно не запускаем.',
     unavailable:'Нет проигрывателя, аудиовыхода или тестовой мелодии.',
     spawn_failed:'Не удалось запустить процесс. Можно повторить.',
@@ -26,7 +26,7 @@
     cleanup_required:'Процесс завершён, но блокировка не снята. Нужна проверка по SSH.'
   };
   form.addEventListener('submit',async function (event) {
-    event.preventDefault(); if(window.schoolbellSessionBlocked)return;button.disabled=true; result.textContent='Звонок на роутере… ожидаем завершения.';
+    event.preventDefault(); if(window.schoolbellSessionBlocked)return;button.disabled=true; result.textContent='Звонок на устройстве… ожидаем завершения.';
     try {
       var response=await fetch(form.action,{method:'POST',credentials:'same-origin',body:new URLSearchParams(new FormData(form)),redirect:'error'});
       if(!response.ok) throw new Error('HTTP '+response.status);

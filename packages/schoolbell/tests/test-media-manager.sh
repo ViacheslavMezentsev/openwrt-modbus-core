@@ -72,3 +72,5 @@ python3 packages/schoolbell/tests/test_clock_system.py "$ROOT"
 python3 packages/schoolbell/tests/test_package_lifecycle.py
 
 lua5.1 packages/schoolbell/tests/test_package_mailbox.lua
+
+node scripts/test-schoolbell-diagnostics.js

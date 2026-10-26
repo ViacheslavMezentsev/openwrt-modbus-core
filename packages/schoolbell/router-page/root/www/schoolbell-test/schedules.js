@@ -162,14 +162,14 @@
   function state() {
     var locked=busy || activationLock;
     document.getElementById('plan-apply').disabled=locked || !formPending;document.getElementById('plan-cancel').disabled=locked || !formPending;
-    document.getElementById('workflow-draft').textContent='Черновик: '+(formPending?'название и даты ещё не применены':reconcile?'нужно сверить сохранение':!draft?'ещё не загружен':dirty?'есть несохранённые изменения':revision==='empty'?'ещё не сохранён':'сохранён · '+revision.slice(0,10));
+    document.getElementById('workflow-draft').textContent='Черновик: '+(formPending?'название и даты ещё не применены':reconcile?'нужно сверить сохранение':!draft?'ещё не загружен':dirty?'есть несохранённые изменения':revision==='empty'?'ещё не сохранён':'сохранён');
     document.getElementById('workflow-save').disabled=locked || !draft || !dirty || reconcile || formPending;
     ['manual-media','pre-media','pre-minutes','work-mode','fixed-schedule'].forEach(function(id){document.getElementById(id).disabled=locked || !draft || (id==='fixed-schedule' && draft.mode!=='fixed');});
 
-    document.getElementById('duty-state').textContent=busy?'Обмен с роутером…':reconcile?'Требуется сверка данных':!draft?'Данные недоступны':dirty?'Черновик изменён · не сохранён':revision==='empty'?'План ещё не сохранён':'Черновик сохранён';
+    document.getElementById('duty-state').textContent=busy?'Обмен с устройством…':reconcile?'Требуется сверка данных':!draft?'Данные недоступны':dirty?'Черновик изменён · не сохранён':revision==='empty'?'План ещё не сохранён':'Черновик сохранён';
 
     root.setAttribute('aria-busy',String(locked));
-    save.textContent=busy?'Обмен с роутером…':formPending?'Сначала примените название и даты':reconcile?'Сначала сверьте сохранённое':dirty?'Сохранить черновик на устройстве':'Нет изменений для сохранения';
+    save.textContent=busy?'Обмен с устройством…':formPending?'Сначала примените название и даты':reconcile?'Сначала сверьте сохранённое':dirty?'Сохранить черновик на устройстве':'Нет изменений для сохранения';
     fields.disabled=locked || !draft;
     save.disabled=locked || !draft || !dirty || reconcile || formPending;
     reload.disabled=locked;
@@ -179,7 +179,7 @@
     document.getElementById('settings-save').disabled=locked || !dirty || reconcile || formPending;
     document.getElementById('settings-result').textContent=result.textContent;
     document.getElementById('preview-day').disabled=locked || formPending;
-    badge.textContent=formPending?'Есть неприменённый ввод':busy?'Обмен с роутером…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Черновик сохранён';
+    badge.textContent=formPending?'Есть неприменённый ввод':busy?'Обмен с устройством…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Черновик сохранён';
     badge.dataset.dirty=dirty?'true':'false';
     window.dispatchEvent(new CustomEvent('schoolbell-editor-state'));
   }
@@ -234,13 +234,13 @@
     state();
   }
   var errors={
-    conflict:'Расписания изменены в другой вкладке. Ваши правки сохранены в браузере. Сверьте их, затем загрузите данные роутера; автоматической перезаписи нет.',
+    conflict:'Расписания изменены в другой вкладке. Ваши правки сохранены в браузере. Сверьте их, затем загрузите данные устройства; автоматической перезаписи нет.',
     invalid:'Не удалось сохранить: проверьте время, название, флажки и лимиты.',
     space:'Недостаточно свободного места с защитным запасом. Черновик в браузере сохранён.',
     recovery_required:'Сохранённые данные повреждены или неполны. Они не заменены. Нужна проверка по SSH.',
     storage_unavailable:'Хранилище занято или недоступно. Изменения в браузере сохранены.',
-    storage_uncertain:'Результат записи не подтверждён. Не повторяем сохранение: нажмите «Сверить с роутером».',
-    revision:'Неизвестная ревизия. Загрузите данные роутера.',size:'Превышен размер черновика: 12 КиБ.'
+    storage_uncertain:'Результат записи не подтверждён. Не повторяем сохранение: нажмите «Сверить с устройством».',
+    revision:'Неизвестная ревизия. Загрузите данные устройства.',size:'Превышен размер черновика: 12 КиБ.'
   };
   async function request(url,options) {
     var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},15000);
@@ -274,13 +274,13 @@
   }
   async function load() {
     if(busy || activationLock)return;
-    if((dirty || formPending) && !window.confirm('Заменить несохранённые изменения данными с роутера?')) return;
+    if((dirty || formPending) && !window.confirm('Заменить несохранённые изменения данными с устройства?')) return;
     busy=true; state();
     try {
       var value=await request(root.dataset.load);
       if(!value.ok) { result.textContent=errors[value.code] || 'Ошибка чтения.'; reconcile=true; return; }
       document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=normalize(value.data);if(!draft.plans.some(function(p){return p.id===planId;}))planId=draft.plans[0]?.id || null;fillPlan(); revision=value.revision; dirty=false; reconcile=false; compared=null;document.getElementById('draft-comparison').hidden=true; brush='view'; render();
-      result.textContent=revision==='empty'?'Сохранённых расписаний ещё нет. Создайте первое.':'Черновик прочитан с роутера. Состояние автозвонков указано в верхней плашке.';
+      result.textContent=revision==='empty'?'Сохранённых расписаний ещё нет. Создайте первое.':'Черновик прочитан с устройства. Состояние автозвонков указано в верхней плашке.';
       if(restoreNavigation()){render();result.textContent=reconcile?'Правки восстановлены. Сохранённый план изменился: сверьте копии перед записью.':'Несохранённые правки восстановлены после входа. Автозвонки не включались.';}
     } catch (_) { result.textContent='Не удалось загрузить данные. Проверьте соединение и вход LuCI.'; }
     finally { busy=false; state(); }
@@ -315,7 +315,7 @@
       document.getElementById('draft-router-summary').textContent='Сохранено: '+describe(remote);
       document.getElementById('draft-local-json').textContent=JSON.stringify(draft,null,2);
       document.getElementById('draft-router-json').textContent=JSON.stringify(remote,null,2);
-      document.getElementById('draft-comparison-status').textContent=(canonical(draft)===canonical(remote)?'Данные совпадают.':'Данные различаются.')+' На роутере: '+value.revision+'. Выберите, какую копию оставить в редакторе. Это не сохранение и не включение звонков.';
+      document.getElementById('draft-comparison-status').textContent=(canonical(draft)===canonical(remote)?'Данные совпадают.':'Данные различаются.')+' На устройстве: '+value.revision+'. Выберите, какую копию оставить в редакторе. Это не сохранение и не включение звонков.';
       document.getElementById('draft-comparison').hidden=false;
       result.textContent='Сверка прочитана. Локальные правки сохранены; выберите копию ниже.';
     } catch(_){reconcile=true;result.textContent='Сверка недоступна. Локальные правки сохранены. Проверьте соединение и вход LuCI, затем повторите чтение.';}
@@ -323,7 +323,7 @@
   }
   function chooseCompared(local) {
     if(busy || activationLock || !compared || formPending)return;
-    if(!window.confirm(local?'Оставить локальную копию для следующего явного сохранения поверх проверенной версии роутера? Изменения другого редактора могут быть заменены.':'Заменить правки в браузере проверенной копией роутера?'))return;
+    if(!window.confirm(local?'Оставить локальную копию для следующего явного сохранения поверх проверенной версии устройства? Изменения другого редактора могут быть заменены.':'Заменить правки в браузере проверенной копией устройства?'))return;
     var same=canonical(draft)===canonical(compared.data);
     if(!local){draft=compared.data;if(!draft.plans.some(function(p){return p.id===planId;}))planId=draft.plans[0]?.id || null;fillPlan();}
     revision=compared.revision;dirty=local && !same;reconcile=false;compared=null;
@@ -381,8 +381,8 @@
         return;
       }
       document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=normalize(value.data);if(!draft.plans.some(function(p){return p.id===planId;}))planId=draft.plans[0]?.id || null;fillPlan(); revision=value.revision; dirty=false; reconcile=false; render();
-      result.textContent='Сохранено на роутере. Активный план не меняется до отдельного применения.'+(value.journal_warning?' Внимание: событие не удалось записать в журнал.':'');
-    } catch (_) { reconcile=true; result.textContent='Ответ потерян: запись могла завершиться. Правки остались в браузере. Нажмите «Сверить с роутером».'; }
+      result.textContent='Сохранено на устройстве. Активный план не меняется до отдельного применения.'+(value.journal_warning?' Внимание: событие не удалось записать в журнал.':'');
+    } catch (_) { reconcile=true; result.textContent='Ответ потерян: запись могла завершиться. Правки остались в браузере. Нажмите «Сверить с устройством».'; }
     finally { busy=false; state(); }
   });
   ['name','start','end'].forEach(function(k){document.getElementById('plan-'+k).addEventListener('input',function(){formPending=true;handoffReady=false;state();formStatus('Примените название и даты к черновику или отмените ввод.');});});
@@ -392,7 +392,7 @@
     var suggested=routerDate && performance.now()-routerDate.at<45000 && trust && trust.state==='confirmed'?R.suggest(routerDate.date,true):null;
     document.getElementById('plan-name').value=suggested?suggested.name:'Новый план';
     document.getElementById('plan-start').value=suggested?suggested.start:'';document.getElementById('plan-end').value=suggested?suggested.end:'';
-    formStatus(suggested?'Проверьте предложенный учебный год.':'Нет свежей подтверждённой даты роутера. Укажите диапазон вручную.');render();
+    formStatus(suggested?'Проверьте предложенный учебный год.':'Нет свежей подтверждённой даты устройства. Укажите диапазон вручную.');render();
   });
   document.getElementById('plan-copy').addEventListener('click',function(){if(!plan() || !leaveForm())return;var p=JSON.parse(JSON.stringify(plan()));planId=null;fillPlan();copyPlan=p;newPlan=true;formPending=true;document.getElementById('plan-name').value=p.name+' — копия';document.getElementById('plan-start').value=p.start;document.getElementById('plan-end').value=p.end;formStatus('Задайте непересекающиеся даты. Назначения будут перенесены по порядку дней, не по дням недели.');render();});
   document.getElementById('plan-cancel').addEventListener('click',function(){if(leaveForm()){if(!plan())planId=draft.plans[0]?.id || null;fillPlan();render();formStatus('Ввод отменён.');}});
@@ -453,7 +453,7 @@
   window.addEventListener('beforeunload',function (e) { if((dirty || formPending) && !handoffReady) { e.preventDefault(); e.returnValue=''; } });
   window.addEventListener('schoolbell-session-lost',function(){
     reconcile=true;compared=null;document.getElementById('draft-comparison').hidden=true;
-    result.textContent='Сеанс недоступен. Правки остаются в этой вкладке; после входа нажмите «Сверить с роутером».';state();
+    result.textContent='Сеанс недоступен. Правки остаются в этой вкладке; после входа нажмите «Сверить с устройством».';state();
   });
   load();
 }());

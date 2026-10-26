@@ -11,7 +11,8 @@
 - [x] Shkolnik 5.1.3 host implementation: compact header Auto bells button, confirmed colored status, retained applied copy and revision/generation-checked resume. Draft remains separate; shared Pages simulation, quick guide and specification 1.56 updated.
 - [x] Install 5.1.3 after backup; owner confirmed header button and yellow no-applied-plan status with automatic bells off.
 - [x] 5.1.5 installed after verified backup/rollback: automatic status below the full header button group, left-aligned text-sized background, shared Pages layout.
-- [ ] Add a “Resolve problem” route: read-only diagnosis, clear cause and explicit recovery actions; no automatic enabling, clock changes, bypassing time control or lock deletion.
+- [x] 5.1.6 host: “Resolve problem” explains state and provides read-only refresh/safe navigation; no automatic enabling, clock changes, bypassing time control or lock deletion. Neutral device wording and technical copy IDs kept out of primary status; Pages synchronized.
+- [ ] Accept 5.1.6 diagnostic routes on device after separate installation approval, including expired sessions, stale state and preserving unsaved edits.
 - [x] Owner accepted 5.1.5 header resume/stop of the retained applied plan: green running and yellow disabled; four running samples over 12 seconds retained confirmed clock trust. Final auto off, applied copy retained, backup byte-identical and system/NTP guard unchanged.
 - [ ] Extend acceptance beyond the short quiet-day test: large plans, sustained load, repeated transitions and audible scheduled bells. The 5.1.4 observation-gap failure motivated bounded SHA caching/cooperative observation; the short 5.1.5 check is not a long-run guarantee.
 - [ ] Next application feature: portable plan export/import with dependency closure and compatibility preview. Pages first stage uses bundled melodies only. Archive not implemented.
