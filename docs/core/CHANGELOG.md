@@ -8,6 +8,8 @@
 
 ## [Unreleased]
 
+- ТЗ ядра 1.36: изолированная модель manifest/discovery с подменяемыми сетью, часами, verifier и opkg comparator; 32 host-теста. Запуск `make test-release-discovery`. Runtime/IPK и роутер не изменены.
+
 - Изолированные Linux C I/O-примитивы: одиночные вызовы, raw 8N1, TCP, poll/eventfd и cleanup; отдельная сборка и host/fault-тесты TC-142/143. ТЗ 1.33. Без Lua binding, target ABI/IPK, modbusd и изменений роутера.
 
 - ТЗ 1.32: бюджет 4 syscall/endpoint и нативная зависимость; изолированный Lua I/O API с 20 группами тестов. Host-пробы механизмов и аудит nixio; native backend, композиция и target ещё не проверены.

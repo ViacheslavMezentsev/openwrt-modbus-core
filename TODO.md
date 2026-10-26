@@ -6,7 +6,9 @@
 - [x] Range model shared by Lua storage/preview/executor, backup and Pages; legacy checksums preserved on read. Target installation backed up and payload/data checked. This does not close full power-loss or security acceptance.
 - [x] Release discovery/update requirements: core 1.34 / schoolbell 1.54, stable package identity and dependencies, simple notification UI and separate administrator installation. Documentation only; current IPK has no updater.
 - [x] Signed manifest/API requirements: core 1.35 / schoolbell 1.55, exact-byte Ed25519, bounded discovery, independent modules, shared dependencies and platform-specific builds. Documentation only.
-- [ ] Next: isolated strict manifest codec/discovery state model with fake network/clock/verifier and boundary/error tests. Before system integration settle verifier/key delivery, HTTPS/redirects, wire/ACL, memory/cache/backoff and recovery (core 9.2.31). No automatic installation.
+- [x] Isolated strict manifest/discovery host model: 32 tests with fake network/clock/verifier/opkg comparator, deadline and input bounds, dependency/reissue conflicts and partial results. Core specification 1.36; no real crypto/HTTP or updater.
+- [ ] Next update stage: select verifier/key delivery and HTTPS/redirect/Link protections, real opkg comparator, wire/ACL, memory/cache/backoff and recovery (core 9.2.31); then integrate isolated adapters. No automatic installation.
+- [ ] Agree a header Auto bells on/off control with confirmed running/off/blocked/unknown status. Resume the previously applied plan without silently applying a newer draft; initial activation remains explicit. Synchronize Pages. This is a proposed separate UI stage, not implemented.
 - [ ] Next application feature: portable plan export/import with dependency closure and compatibility preview. Pages first stage uses bundled melodies only. Archive not implemented.
 - [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.2 includes the later logout fix.
 
@@ -63,7 +65,7 @@ This file lists remaining work; research stays local and push/land belong to the
 
 ## Core and schoolbell development sequence
 
-User-facing scope follows core draft 1.35 and schoolbell draft 1.55.
+User-facing scope follows core draft 1.36 and schoolbell draft 1.55.
 The engineering application is packaged and installed as 5.1.2 with an offline
 OpenWrt 19.07.9 bundle. Core event API and production player integration remain separate.
 

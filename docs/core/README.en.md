@@ -1,5 +1,7 @@
 # Core
 
+Core specification 1.36: isolated manifest/discovery model with fake network, clock, signature verifier and opkg comparator; 32 host tests. Run `make test-release-discovery`. No runtime/IPK/router changes.
+
 Specification 1.35: [signed manifest and discovery API](SIGNED_RELEASES.en.md), multiple components/platforms and compatible application versions. Requirements only; no updater or router changes.
 
 [Release checks and updates — requirements](RELEASE_UPDATES.en.md). Not implemented yet.

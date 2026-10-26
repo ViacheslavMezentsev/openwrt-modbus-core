@@ -2,7 +2,7 @@
 
 [Русский](SIGNED_RELEASES.md) · [General contract](RELEASE_UPDATES.en.md)
 
-26 October 2026. Requirements for core specification 1.35 section 6.12 and schoolbell specification 1.55 section 4.8. No implementation, keys, network or router changes.
+26 October 2026. Contract: core specification 1.35 section 6.12 and schoolbell specification 1.55 section 4.8. The isolated host model is described below (core 1.36); real keys, cryptography, network and installation are not integrated.
 
 ## Assets, components and platform profiles
 
@@ -127,3 +127,15 @@ Core TC-150–157 are planned: signature vectors/tampering, schema limits, multi
 No installer, key generation, rotation/revocation, anti-replay, persistent cache or wire transport is implemented. Verifier/HTTPS, ACL, RAM/tmpfs/flash budgets, redirect/backoff, exact opkg comparator and restart recovery remain open before system deployment.
 
 Sources: [GitHub Releases](https://docs.github.com/en/rest/releases/releases), [REST practices](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api), [RFC 8032](https://www.rfc-editor.org/rfc/rfc8032).
+
+## Isolated host model (specification 1.36)
+
+Run `make test-release-discovery` (Python standard library only). It also runs in the core/all test runner. `scripts/release_manifest.py` validates exact bytes, signature envelope and schema, scopes a supplied trusted key, compares declared versions and resolves the selected dependency closure including installed reverse dependencies. `scripts/release_discovery.py` exposes check/status/configure plus cooperative step and trusted replace_context. All returned snapshots are copies.
+
+Construct Discovery with registry, local snapshot, keys, fetch, monotonic millisecond clock, verifier and opkg comparator. The local snapshot includes platform, installed packages with complete dependencies, supported core_apis and explicitly approved migration tuples. This is trusted caller data, not browser input. The verifier takes public-key bytes, exact manifest bytes and signature bytes and must return exactly True. The opkg comparator returns -1/0/1; tests use synthetic numeric versions, not Debian/opkg semantics.
+
+Fetch receives a Request(repository, kind, page/tag/asset, byte limit, absolute deadline); it returns Response(body bytes, status, next_page, encoding, error, retry_after_ms). Kind is list or asset; no IPK requests are issued. List bodies are GitHub-shaped JSON records; next_page is a normalized same-source pagination result. The model does not accept raw download URLs. A future transport must validate actual URLs/redirects/Link headers, enforce limits while streaming and meet the deadline. Checking a callback after return cannot interrupt a blocking real transport. Each step performs at most one supplied fetch; check and status perform none.
+
+Missing profile pairs conservatively make the scan incomplete but do not stop older-release search. No HTTP cache is implemented: bare 304 never proves up-to-date. Network failures stop the attempt; schema/signature failures in individual pairs allow remaining search. A previously verified candidate can survive partial search with scan_complete=false; a conflicting reissue invalidates it. A signature verification completed after the deadline cannot publish a candidate. Backoff is repository-wide; simulated rate limits without a header use a 60-second model fallback, not an approved production backoff policy. Background scheduling is an explicit background check call, not a resident scheduler.
+
+32 tests cover schema, signatures through a fake oracle, dependency conflicts, API state and scan boundaries. The fake signature is deliberately NOT Ed25519. No real cryptography, TLS, GitHub, system authentication, raw IPK inspection, installation or target memory bounds are certified. Authorization booleans model an already-checked caller; they are not an authentication implementation. State/cache is not persisted; constructing a new model starts idle. replace_context cancels pending work and invalidates candidates on package/platform/key changes. Persistent anti-replay and recovery remain open.

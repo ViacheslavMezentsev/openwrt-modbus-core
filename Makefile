@@ -115,3 +115,7 @@ check-site: site
 	node scripts/test-schoolbell-routes.js
 	node scripts/test-schoolbell-backup-ui.js
 	node scripts/test-schoolbell-media-ui.js
+
+.PHONY: test-release-discovery
+test-release-discovery:
+	python3 scripts/test_release_discovery.py

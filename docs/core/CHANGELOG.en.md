@@ -8,6 +8,8 @@ Specification 1.34: GitHub release discovery and administrator-directed extensio
 
 ## [Unreleased]
 
+- Core specification 1.36: isolated manifest/discovery model with fake network, clock, signature verifier and opkg comparator; 32 host tests. Run `make test-release-discovery`. No runtime/IPK/router changes.
+
 - Isolated Linux C I/O primitives: single calls, raw 8N1, TCP, poll/eventfd and cleanup; separate build and host/fault tests TC-142/143. Specification 1.33. No Lua binding, target ABI/IPK, modbusd or router changes.
 
 - Specification 1.32: four-call endpoint budget and native dependency; isolated Lua I/O API with 20 test groups. Host mechanism probes and nixio audit; native backend, composition and target remain unverified.

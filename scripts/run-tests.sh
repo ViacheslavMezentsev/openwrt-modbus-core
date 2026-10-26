@@ -14,6 +14,7 @@ if [ "$scope" = all ]; then sh "$PROJECT_ROOT/scripts/test-schoolbell.sh"; fi
 
 if [ "$scope" != demo ]; then
     sh "$PROJECT_ROOT/scripts/test-native-io.sh"
+    python3 "$PROJECT_ROOT/scripts/test_release_discovery.py"
     python3 "$PROJECT_ROOT/scripts/test_rounds_model.py"
     python3 "$PROJECT_ROOT/scripts/test_transport_states.py"
     python3 "$PROJECT_ROOT/scripts/test_transport_scheduler.py"
