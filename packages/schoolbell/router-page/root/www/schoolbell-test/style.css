@@ -76,3 +76,5 @@ html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27
 #workflow-draft{font-weight:600}
 .page-tabs{margin:16px 0 12px}
 @media(max-width:580px){.header-status-row{flex-wrap:wrap}.header-status-row #quick-status{flex-basis:100%}.header-status-row #problem-open{margin-left:auto}}
+
+#journal-errors[aria-pressed=true]{background:#a40e26;color:#fff;border-color:#a40e26}

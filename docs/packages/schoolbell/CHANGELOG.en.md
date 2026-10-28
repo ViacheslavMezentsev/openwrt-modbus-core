@@ -62,6 +62,7 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ### Added
 
+- 5.1.15 (host only, not installed): compact mute label; journal pages of 20 rows, error filter, full loaded-history clipboard copy (including HTTP fallback), device-local timestamps. The 16 KiB bound remains; entries older than 7 days are hidden on reads and atomically pruned on append without resetting sequence numbers. Future records survive clock rollback. Pages synchronized; demo retains at most 80 events.
 - 5.1.14: Journal → Statistics → HTTP requests now includes an API-method table (for example, GET automatic and POST test). Each row shows starts, completions, HTTP/network errors, pending responses and mean/maximum latency to response headers. The same twelve 5-second start-time bins apply; requests pending beyond that window remain visible. URL parameters, tokens and bodies are not retained; different arguments to the same POST method are grouped. HTTP 200 with an operation refusal is not an HTTP error; melody duration and command execution are not separately measured. Collection is passive across module tabs, without additional requests or device writes. Pages shares the code over its local model; no device installation.
 
 ### Changed

@@ -112,6 +112,7 @@ check-site: site
 	node scripts/test-site-demo.js
 	node scripts/test-schoolbell-cpu.js
 	node scripts/test-schoolbell-traffic.js
+	node scripts/test-schoolbell-journal-ui.js
 	node scripts/test-schoolbell-diagnostics.js
 	node scripts/test-schoolbell-ranges.js
 	node scripts/test-schoolbell-session-ui.js

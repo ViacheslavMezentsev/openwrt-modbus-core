@@ -42,23 +42,53 @@
     }catch(_){zoneMessage.textContent='Ответ потерян. Пояс мог сохраниться; проверьте состояние перед повтором.';}
     finally{zoneBusy=false;zoneControls();await loadZones();sample=null;poll();}
   });
-  var journalBusy=false;
+  var journalBusy=false,journalEntries=[],journalPage=0,journalErrors=false,journalPageSize=20;
   var actions={clock_confirmed:'Время подтверждено вручную; автозвонки выключены',clock_control_on:'Контроль времени включён; требуется подтверждение часов',clock_control_off:'Контроль времени отключён пользователем',clock_control_failed:'Действие контроля времени не подтверждено',restore_ok:'Резервная копия восстановлена; автозвонки выключены',restore_failed:'Восстановление копии не подтверждено',media_ok:'Мелодия заменена',media_failed:'Замена мелодии отклонена',volume_ok:'Громкость устройства сохранена',volume_failed:'Ошибка сохранения громкости',auto_enabled:'Сохранённый план включён',auto_disabled:'Автозвонки отключены',auto_requested:'Автоматический звонок рассмотрен',auto_ok:'Автоматический проигрыватель завершился',auto_skipped:'Автоматический звонок пропущен или остановлен',auto_blocked:'Исполнитель заблокирован: проверьте плашку состояния',mute_on:"Без звука включён",mute_off:"Без звука выключен",mute_failed:"Ошибка изменения Без звука",manual_requested:"Запрошен ручной звонок",timezone_ok:'Часовой пояс применён',timezone_failed:'Не удалось применить часовой пояс',save_ok:'Черновик сохранён',save_failed:'Сохранение отклонено',preview_ok:'Запрошен предпросмотр',preview_failed:'Предпросмотр отклонён',play_requested:'Запрошен звук на устройстве',play_ok:'Проигрыватель завершился успешно',play_failed:'Ошибка проигрывателя',sample_requested:'Передан файл для браузера (не подтверждение звука)',storage_error:'Ошибка хранилища',installed:'Установлен интерфейс schoolbell'};
+  function journalTime(e){return e.local_time || new Date(e.time*1000).toISOString().replace('T',' ').replace('.000Z',' UTC');}
+  function journalSource(e){return {user:'Пользователь',module:'Модуль',system:'Система'}[e.source] || e.source;}
+  function journalText(){return journalEntries.map(function(e){return '#'+e.seq+' · '+journalTime(e)+' | '+journalSource(e)+' | '+e.level+' | '+(actions[e.action] || e.action);}).join('\n');}
+  function renderJournal(){
+    var selected=journalEntries.filter(function(e){return !journalErrors || e.level==='error';});
+    var pages=Math.max(1,Math.ceil(selected.length/journalPageSize));journalPage=Math.max(0,Math.min(journalPage,pages-1));
+    var rows=document.getElementById('journal-rows');rows.replaceChildren();
+    selected.slice(journalPage*journalPageSize,(journalPage+1)*journalPageSize).forEach(function(e){
+      var tr=document.createElement('tr');tr.className='journal-'+e.level;
+      ['#'+e.seq+' · '+journalTime(e),journalSource(e),actions[e.action] || e.action].forEach(function(text){var td=document.createElement('td');td.textContent=text;tr.appendChild(td);});rows.appendChild(tr);
+    });
+    document.getElementById('journal-page').textContent='Страница '+(journalPage+1)+' из '+pages+' · Записей: '+selected.length+(journalErrors?' с ошибками':'');
+    document.getElementById('journal-prev').disabled=journalPage===0;
+    document.getElementById('journal-next').disabled=journalPage>=pages-1;
+    document.getElementById('journal-errors').setAttribute('aria-pressed',String(journalErrors));
+    document.getElementById('journal-copy').disabled=!journalEntries.length;
+  }
   async function loadJournal(){
     if(journalBusy)return;journalBusy=true;
     var button=document.getElementById('journal-reload'),status=document.getElementById('journal-status');button.disabled=true;
     var abort=new AbortController(),timer=setTimeout(function(){abort.abort();},10000);
     try{
       var response=await fetch(root.dataset.journal,{credentials:'same-origin',cache:'no-store',redirect:'error',signal:abort.signal});
-      if(!response.ok)throw new Error('http');var value=await response.json();if(!value.ok)throw new Error('journal');
-      var rows=document.getElementById('journal-rows');rows.replaceChildren();
-      value.entries.slice().reverse().forEach(function(e){var tr=document.createElement('tr');tr.className='journal-'+e.level;
-        ['#'+e.seq+' · '+new Date(e.time*1000).toISOString().replace('T',' ').replace('.000Z',' UTC'),{user:'Пользователь',module:'Модуль',system:'Система'}[e.source],actions[e.action] || e.action].forEach(function(text){var td=document.createElement('td');td.textContent=text;tr.appendChild(td);});rows.appendChild(tr);});
-      status.textContent=value.entries.length?'Показано '+value.entries.length+' записей.':'Журнал пока пуст.';
-    }catch(_){status.textContent='Не удалось прочитать журнал. Предыдущие строки могут быть устаревшими; проверьте связь и хранилище.';}
+      if(!response.ok)throw new Error('http');var value=await response.json();if(!value.ok || !Array.isArray(value.entries))throw new Error('journal');
+      journalEntries=value.entries.slice().reverse();journalPage=0;renderJournal();
+      status.textContent=journalEntries.length?'Журнал обновлён. Новые записи сверху.':'Журнал пока пуст.';
+    }catch(_){status.textContent='Не удалось прочитать журнал. Предыдущие строки могут быть устаревшими; повторите чтение.';}
     finally{clearTimeout(timer);button.disabled=false;journalBusy=false;}
   }
   document.getElementById('journal-reload').addEventListener('click',loadJournal);
+  document.getElementById('journal-errors').addEventListener('click',function(){journalErrors=!journalErrors;journalPage=0;renderJournal();});
+  document.getElementById('journal-prev').addEventListener('click',function(){journalPage--;renderJournal();});
+  document.getElementById('journal-next').addEventListener('click',function(){journalPage++;renderJournal();});
+  document.getElementById('journal-copy').addEventListener('click',async function(){
+    var text=journalText(),status=document.getElementById('journal-status');if(!text)return;
+    try{
+      if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(text);}
+      else{
+        var field=document.createElement('textarea'),previous=document.activeElement;field.value=text;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);
+        try{field.select();if(!document.execCommand('copy'))throw new Error('copy');}finally{field.remove();if(previous && previous.focus)previous.focus();}
+      }
+      status.textContent='Скопирована вся загруженная история: '+journalEntries.length+' записей (без ограничения страницей и фильтром).';
+    }catch(_){status.textContent='Браузер не разрешил копирование. Попробуйте ещё раз.';}
+  });
+  renderJournal();
   tabs.forEach(function(b,index){
     b.addEventListener('click',function(){selectTab(b.dataset.tab);});
     b.addEventListener('keydown',function(e){

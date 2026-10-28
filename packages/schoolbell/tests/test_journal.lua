@@ -39,3 +39,39 @@ print('PASS journal: recovery after every rotation write/sync/rename interruptio
 local low,lowfiles=fixture();low.space=function()return 65536 end
 assert(not pcall(M.append,low,'save_ok',1700000000));assert(not lowfiles['journal-current.jsonl'])
 print('PASS journal: free-space reserve, no forced writes')
+
+-- Retention boundary, future timestamps after rollback and sequence preservation.
+local epoch=1800000000
+local f,storage=fixture()
+M.append(f,'save_ok',epoch-M.retention_seconds-1)
+M.append(f,'save_ok',epoch-M.retention_seconds)
+storage['journal-current.jsonl']=storage['journal-current.jsonl']..require('schoolbell.media_codec').encode({seq=3,time=epoch+100,source='user',level='info',action='save_ok'})..'\n'
+local visible=M.read(f,epoch);assert(#visible==2 and visible[1].seq==2)
+M.append(f,'installed',epoch)
+local all,seq=M.read(f);assert(#all==3 and all[1].seq==2 and seq==4)
+assert(all[2].time==epoch+100,'rollback must preserve future evidence')
+M.append(f,'save_ok',epoch+M.retention_seconds+101)
+all,seq=M.read(f);assert(#all==1 and seq==5,'expired history pruned, sequence retained')
+print('PASS journal: seven-day boundary, future evidence, monotonic sequence after pruning all old rows')
+-- Interrupted pruning of both segments leaves valid bounded evidence; retry recovers.
+local old,oldfiles=fixture()
+for i=1,180 do M.append(old,'save_ok',epoch-M.retention_seconds-100)end
+assert(oldfiles['journal-previous.jsonl'])
+for fail=1,16 do
+ local io,files=fixture(oldfiles,fail);pcall(M.append,io,'installed',epoch)
+ local nextio=fixture(files);local _,before=M.read(nextio)
+ M.append(nextio,'save_ok',epoch+1);local kept,after=M.read(nextio)
+ assert(after==before+1 and #kept>=1)
+ for _,row in ipairs(kept)do assert(row.time>=epoch-M.retention_seconds)end
+ for _,name in ipairs({'journal-current.jsonl','journal-previous.jsonl'})do assert(#(files[name] or '')<=8192)end
+end
+print('PASS journal: prune write/sync/rename failure recovery and segment bounds')
+
+local localfs=fixture();M.append(localfs,'installed',epoch);localfs.close=function()return true end
+local original_fs=package.loaded['schoolbell.media_fs'];local original_time=os.time
+package.loaded['schoolbell.media_fs']={new=function()return localfs end};os.time=function()return epoch end
+local response=M.request('/synthetic');os.time=original_time;package.loaded['schoolbell.media_fs']=original_fs
+assert(response.ok and response.retention_seconds==604800)
+assert(response.entries[1].local_time==os.date('%d.%m.%Y %H:%M:%S %z',epoch))
+assert(response.entries[1].time==epoch,'stored UTC epoch unchanged')
+print('PASS journal: response has device-local time and offset without altering stored UTC')
