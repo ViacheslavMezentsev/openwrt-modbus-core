@@ -11,14 +11,14 @@ Readiness: engineering pilot candidate, not certified unattended service. First 
 
 ### Recommended next branches (scope each before implementation)
 
-1. **Portable calendar-plan bundle — proposed next stage.** First agree a compact versioned archive contract and dependency/conflict preview, then implement export/import of selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and media. Pages uses bundled melodies only; device export must include referenced user melodies. This is distinct from a full .sbb backup. Import only as a draft, automatic bells disabled; no credentials, hardware/network/NTP settings or system timezone changes.
+1. **Portable calendar-plan bundle — policy accepted, not implemented.** See docs/packages/schoolbell/PORTABLE_PLAN.md and specification1.66 (4.10, TC-168–174). Next agree exact wire/API, bounds and commit/recovery (8.2.15), then implement export/import of selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and media. Pages uses bundled melodies only; device export must include referenced user melodies. This is distinct from a full .sbb backup. Import only as a draft, automatic bells disabled; no credentials, hardware/network/NTP settings or system timezone changes.
 2. **Complete remaining operator journeys.** Active-plan preview distinct from draft; rename/delete user melodies with reference checks; bounded undo and archive summary/onboarding. Browser clock setting needs a separate contract and explicit permission for any real clock change.
 3. **Product acceptance.** Finish LuCI access/session/CSRF/concurrency checks and agree quantitative timing/endurance criteria. Cold boot, offline first boot and power-loss tests require separate authorization. Successful short UI tests are not unattended-operation certification.
 
-### Next-stage scope to agree: portable plans
+### Portable plans: agreed policy and remaining work
 
-- [ ] Archive identity/version, compatible module versions, selected plan boundaries and transitive dependency closure; do not introduce a second calendar model.
-- [ ] Conflict preview for overlapping dates, plan/schedule IDs and names, melody slots and bundled-media versions. No silent overwrite, date shift or melody substitution; exact choices and replacement scope remain to be agreed.
+- [x] Policy: schoolbell-plan/1, existing range model, complete dependency closure including disabled rows and pre-bell; bundled-only Pages, user audio included in device export. No implementation.
+- [x] Add-only import policy: reject overlaps/timezone/pre-bell conflicts, remap imported IDs, explicitly rename conflicting plan/schedule names, free media slots only, no replacement/activation. Preview then revision recheck; exact wire/API still open.
 - [ ] Bounded parsing/unpacking, checksums, RAM/flash budget, staging and atomic publication/rollback using existing backup/media mechanisms. No partial draft or referenced-media replacement after a failure.
 - [ ] Offline host/Pages round-trip first: September–May, cross-year dates, colors, pre-bells and matching preview; malformed/incompatible archives, missing media, overlap, quota/write interruption and unchanged current data on rejection. Pages must clearly reject unsupported user-media imports rather than drop files.
 - [ ] Then separately authorize device installation and transfer acceptance after backup, without sound or enabling bells. Design the full dependency contract now; bundled-only Pages is not acceptance of a device exporter that omits user melodies.
