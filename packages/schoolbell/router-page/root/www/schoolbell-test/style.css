@@ -50,9 +50,8 @@ html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27
 .problem-panel{margin:20px 0}.problem-panel pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}.problem-panel [role=status]{font:inherit;min-height:0}
 
 /* Collapsed draft notice stays in flow and never covers the active tab. */
-.plan-workflow{padding:10px 14px;background:#fff8c5;border-color:#d4a72c;color:#4d3b00}
+.plan-workflow{padding:10px 14px;background:var(--soft);border-color:var(--border);border-left:5px solid #bf8700;color:var(--text)}
 .plan-workflow summary{cursor:pointer;font-weight:600;overflow-wrap:anywhere}.workflow-hint{font-weight:400}.plan-workflow[open] summary{margin-bottom:12px}
-html[data-theme=dark] .plan-workflow{background:#493a12;border-color:#9e6a03;color:#f0d98a}
 .plan-workflow #workflow-difference{color:inherit}
 
 .traffic-panel{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px}.traffic-panel p{font-size:.9em}.traffic-panel svg{width:100%;height:150px;display:block;border-bottom:1px solid var(--border)}.traffic-axis{display:flex;justify-content:space-between;font-size:.85em}.traffic-reads{color:#218bff;stroke:#218bff;fill:#218bff}.traffic-commands{color:#bf8700;stroke:#bf8700;fill:#bf8700}.traffic-panel polyline{fill:none}

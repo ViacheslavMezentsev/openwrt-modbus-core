@@ -1,5 +1,7 @@
 # Schoolbell user guide
 
+5.1.9: the collapsed draft panel matches the upper status panel: theme background and a yellow left border. The heading reads “Музыкальный настраиваемый звонок”. The 5.1.8 traffic chart is retained; Pages shares the UI.
+
 5.1.8 (host only): Journal shows passive, tab-local module API traffic in twelve 5-second bins, split into reads/commands, with HTTP/network failures, pending requests and mean/maximum time to HTTP headers. This does not measure internal worker exchanges, bytes or command execution latency. Memory only, no additional requests or device writes; Pages measures its local model. Not installed.
 
 The Draft panel starts collapsed. Click its summary to see the active-plan comparison and save/apply controls. Yellow reminds you that saving does not enable bells. Browser playback uses the viewing computer/phone; Shkolnik speaker playback uses the speakers connected to Shkolnik.
