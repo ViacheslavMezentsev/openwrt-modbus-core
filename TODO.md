@@ -2,6 +2,9 @@
 
 ## Current state and next steps
 
+- [x] 5.1.8 host: passive tab-local API traffic chart, 12 x 5s bins, latency-to-headers/error/pending metrics, shared Pages and controlled-clock tests.
+- [ ] Accept the chart on device; use observed HTTP timings to guide investigation before changing polling/worker exchange. Internal executor timings are not measured.
+
 - [x] 5.1.7 host: explicit browser/Shkolnik audio routes and a collapsed warning-colored draft panel; shared Pages UI.
 - [ ] Accept 5.1.7 layout on device after separate installation approval.
 

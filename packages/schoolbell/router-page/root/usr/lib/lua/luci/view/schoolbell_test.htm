@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьник · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5107">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5108">
 <script src="/schoolbell-test/theme.js?v=5106"></script></head>
 <body><main><header><div><p class="eyebrow">ШКОЛЬНИК / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьник</h1></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="problem-open" type="button" aria-controls="problem-panel" aria-expanded="false">Решить проблему</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
@@ -190,7 +190,16 @@
 
 </section>
 <section id="panel-journal" role="tabpanel" aria-labelledby="tab-journal" data-panel="journal" class="details" hidden>
-<h2>Журнал schoolbell</h2><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC устройства; порядок — по номеру, даже после коррекции часов.</p>
+<h2>Журнал schoolbell</h2>
+<section class="traffic-panel" aria-label="Обращения интерфейса">
+<h3>Обращения за последнюю минуту</h3>
+<p id="traffic-mode">Обращения всего интерфейса в этом окне браузера к API модуля через LuCI, а не внутренние обмены исполнителя. Сбор идёт во всех разделах, включая фоновые проверки. Другие окна браузера и пользователи не учитываются.</p>
+<p class="traffic-legend"><span class="traffic-reads">● Чтение</span> · <span class="traffic-commands">● Команды</span> · 12 интервалов по 5 секунд</p>
+<svg id="traffic-chart" viewBox="0 0 700 125" preserveAspectRatio="none" role="img" aria-label="Количество начатых запросов по интервалам" aria-describedby="traffic-stats traffic-scale"></svg>
+<div class="traffic-axis"><span>Около минуты назад</span><span>Сейчас</span></div>
+<p id="traffic-scale"></p><p id="traffic-stats"></p>
+<p>Измерение пассивное, начинается при открытии страницы и сбрасывается при её перезагрузке. Задержка — до заголовков HTTP, без загрузки тела и выполнения команды службой; HTTP 200 с отказом операции не считается ошибкой HTTP. Это не объём данных в байтах и не оценка загрузки исполнителя.</p>
+</section><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC устройства; порядок — по номеру, даже после коррекции часов.</p>
 <p>Хранятся последние события — до 16 КиБ. При заполнении самые старые записи удаляются автоматически.</p>
 <button type="button" id="journal-reload">Обновить журнал</button><p id="journal-status" role="status"></p>
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>№ / Время UTC</th><th>Источник</th><th>Прослушивание</th><th>Событие</th></tr></thead><tbody id="journal-rows"></tbody></table></div>
@@ -206,4 +215,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление устройством LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/automatic.js?v=5106"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5106"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script></body></html>
+</main><script src="/schoolbell-test/traffic.js?v=5108"></script><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/automatic.js?v=5106"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5106"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script></body></html>

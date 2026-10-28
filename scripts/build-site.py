@@ -46,7 +46,7 @@ text=text.replace('Сохранить черновик на устройстве
 text=text.replace('Подготовьте расписания и сохраните их на роутере.','Попробуйте расписания и календарь на тестовых данных.')
 text=text.replace('Инженерная установка','Демонстрация интерфейса').replace('На роутере · оценка между опросами','Демо-часы · выбранная зона').replace('Сохраняется на роутере','Сохраняется в браузере').replace('Настройка сохраняется на роутере и действует для всех его приложений.','Настройка меняет только часовой пояс этого демо, не устройства или компьютера.')
 text=text.replace('id="router-play" type="submit"','id="router-play" type="submit" disabled').replace('▶ Позвонить на роутере','Недоступно в демо · нет роутера').replace('Колонки должны быть включены и подключены к аудиовыходу.','В демо нет подключения к роутеру. Доступен только звук браузера.')
-text=re.sub(r'(?=<script src="\./assets/clock-trust\.js(?:\?[^"]*)?">)', '<script src="./assets/ranges.js"></script><script src="./assets/demo.js"></script>', text, count=1)
+text=re.sub(r'(?=<script src="\./assets/traffic\.js(?:\?[^"]*)?">)', '<script src="./assets/ranges.js"></script><script src="./assets/demo.js"></script>', text, count=1)
 assert '<%=' not in text,'unresolved template'
 text=text.replace('</footer>',provenance+'</footer>')
 (demo/'index.html').write_text(text)

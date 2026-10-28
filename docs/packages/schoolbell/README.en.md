@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.8 (host only): Journal shows passive, tab-local module API traffic in twelve 5-second bins, split into reads/commands, with HTTP/network failures, pending requests and mean/maximum time to HTTP headers. This does not measure internal worker exchanges, bytes or command execution latency. Memory only, no additional requests or device writes; Pages measures its local model. Not installed.
+
 5.1.7 (host only): audio routes explicitly distinguish browser playback on a computer/phone from Shkolnik speakers. The draft panel starts collapsed with a warning background; status stays visible, save/apply actions are available when expanded. Expanding does not change the plan. Pages synchronized; not installed.
 
 5.1.6 (host verification, not installed): Resolve problem explains status and offers safe reading/navigation to settings, sign-in, media or journal. It never enables bells, bypasses protection, changes clocks or replays commands. No fresh data does not claim a network failure. UI wording uses device; copy identifiers are in technical details. Pages shares the interface.
