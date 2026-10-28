@@ -117,16 +117,10 @@ function automatic()
   -- Never echo the private snapshot or internal storage error to the browser.
   respond({ok=result.ok,code=result.code,generation=result.ok and result.state.generation or nil});return
  end
- editor();local m=require('schoolbell.automatic_store');local codec=require('schoolbell.media_codec')
+ editor();local m=require('schoolbell.automatic_store')
  local ok,result=pcall(function()
-  local active=m.decode(m.raw());local f=io.open('/tmp/schoolbell-auto-status.json','rb')
-  local status
-  if f then local raw=f:read(8193);f:close();if raw and #raw<=8192 then status=codec.decode(raw)end end
-  local up=assert(io.open('/proc/uptime','r'));local now=tonumber(up:read(64):match('^[%d.]+'));up:close()
-  if not status or type(status.uptime)~='number' or now-status.uptime<0 or now-status.uptime>40 or status.generation~=active.generation then
-   return {ok=true,state='waiting',enabled=active.enabled,revision=active.revision,generation=active.generation}
-  end
-  status.enabled=active.enabled;return status
+  assert(not require('nixio.fs').lstat(m.root..'/package.pending'),'package_pending')
+  return require('schoolbell.automatic_status').read(m.raw())
  end)
  if ok then local measured,metrics=pcall(function()return require('schoolbell.queue_metrics').read()end);result.queue=measured and metrics or {available=false};local cpu_ok,cpu=pcall(function()return require('schoolbell.system_metrics').read()end);result.cpu=cpu_ok and cpu or {available=false}end
  respond(ok and result or {ok=false,state='unavailable'})

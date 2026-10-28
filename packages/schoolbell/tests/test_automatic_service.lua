@@ -1,5 +1,7 @@
 -- Execute the actual infinite worker with injected host clock/storage/player I/O.
 package.loaded['schoolbell.clock_mailbox']={system=function()return {process=function()end}end}
+local witness,invalidations
+package.loaded['schoolbell.automatic_status']={invalidate=function()witness=nil;invalidations=invalidations+1 end,publish=function(raw,status,boot)assert(type(raw)=='string' and type(status)=='table' and type(boot)=='string');witness={raw=raw,status=status,boot=boot}end}
 local C=require('schoolbell.media_codec');local Store=require('schoolbell.automatic_store')
 local Sound=dofile('packages/schoolbell/router-page/root/usr/lib/lua/schoolbell/sound_test.lua')
 local Gate=require('schoolbell.clock_gate');local Reference=require('schoolbell.clock_reference')
@@ -7,6 +9,7 @@ local realopen,realtime=io.open,os.time
 local native=os.getenv('SCHOOLBELL_CHILD')=='1' and require('nixio') or nil
 local t=assert(os.time({year=2026,month=10,day=25,hour=8,min=0,sec=0}))
 local function scenario(name,opts)
+ witness=nil;invalidations=0
  local now,up=opts.initial_utc or t-1,100;local plays,claims,checkpoints=0,0,0;local raw,status,last;local active={enabled=true,generation=1,watermark=t-1,boot='boot',zone='UTC',revision='r',plan={}}
  local saved,clock_reads,waits,kills=nil,0,0,0
  if opts.disabled then active.enabled=false end
@@ -53,6 +56,8 @@ local function scenario(name,opts)
  local ok,err=pcall(dofile,'packages/schoolbell/router-page/root/usr/sbin/schoolbell-auto')
  assert(not ok and tostring(err):find('finished fixture'),tostring(err))
  io.open=realopen;os.time=realtime;require('schoolbell.automatic').events=originalEvents
+ assert(invalidations==1,'startup invalidation')
+ if opts.package_pending then assert(witness==nil,'unvalidated startup published')else assert(witness and witness.raw==raw and C.encode(witness.status)==C.encode(last),'witness not bound to checked bytes');assert(witness.boot==(opts.reboot and 'newboot' or 'boot'))end
  assert(plays==(opts.expected or 0),name..' plays '..plays)
  assert(claims==(opts.claims or ((opts.package_pending or opts.reboot or opts.idle or (opts.enforced and not opts.confirmed and not opts.late_confirm)) and 0 or 1)),name..' claims '..claims)
  if opts.idle then assert(checkpoints==(opts.jump and 2 or 1),name..' repeated flash writes '..checkpoints)end

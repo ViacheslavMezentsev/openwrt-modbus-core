@@ -49,6 +49,10 @@ local function commands()
   return value
  end)
 end
+local Status=require('schoolbell.automatic_status')
+Status.invalidate()
+local cached,active,engine,key,events,calendar_error,previous_state
+local started=Store.environment()
 local last_result
 local function status(v)
  v.last_result=last_result
@@ -60,9 +64,11 @@ local function status(v)
  v.updated=os.time();v.uptime=math.floor(mono())
  local f=assert(io.open('/tmp/schoolbell-auto-status.next','wb'));assert(f:write(C.encode(v)));assert(f:close())
  assert(fs.rename('/tmp/schoolbell-auto-status.next','/tmp/schoolbell-auto-status.json'))
+ if active then
+  local published=pcall(Status.publish,cached,v,started.boot)
+  if not published then pcall(Status.invalidate)end
+ end
 end
-local cached,active,engine,key,events,calendar_error,previous_state
-local started=Store.environment()
 local function tick()
  assert(not fs.lstat(Store.root..'/package.pending'),'package operation pending')
  commands();Clock.observe()
