@@ -2,7 +2,7 @@
 
 ## Current state and next steps
 
-Reviewed 2026-10-28: installed Shkolnik **5.1.15**, owner acceptance completed.
+Reviewed 2026-10-28: installed Shkolnik **5.1.18**, owner acceptance completed.
 Automatic bells remain disabled. No clock/NTP changes are authorized by this plan.
 Pages sources are synchronized; publishing the new main remains the owner's action.
 Checked historical stage bullets describe their original scope, not remaining work.
@@ -11,10 +11,17 @@ Readiness: engineering pilot candidate, not certified unattended service. First 
 
 ### Recommended next branches (scope each before implementation)
 
-1. **Draft read recovery implemented in 5.1.16, host only.** Explicit busy GET retries, manual retry/reconciliation, retained edits/session guards and journal first/last navigation; Pages synchronized. 5.1.16 installed: backup/export/payload/system guards and isolated cross-process lock recovery passed; owner confirmed calendar and journal. 5.1.17 aligns the entire pager with journal actions in one row, host/Pages only; 5.1.17 installed and layout accepted. 5.1.18 enlarges pager arrows and makes the Pages demo notice a collapsed information panel below other notices; host only.
-2. **Portable calendar-plan bundle.** Agree the exact versioned format and dependency/conflict preview, then implement export/import of selected named date ranges, referenced schedules/colors, pre-bell settings and media. Pages first stage uses bundled melodies only. Import as a draft, automatic bells off; no credentials, hardware/network/NTP settings. This is distinct from a full .sbb device backup.
-3. **Complete remaining operator journeys.** Active-plan preview distinct from draft; rename/delete user melodies with reference checks; bounded undo and archive summary/onboarding. Browser clock setting needs a separate contract and explicit permission for any real clock change.
-4. **Product acceptance.** Finish LuCI access/session/CSRF/concurrency checks and agree quantitative timing/endurance criteria. Cold boot, offline first boot and power-loss tests require separate authorization. Successful short UI tests are not unattended-operation certification.
+1. **Portable calendar-plan bundle — proposed next stage.** First agree a compact versioned archive contract and dependency/conflict preview, then implement export/import of selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and media. Pages uses bundled melodies only; device export must include referenced user melodies. This is distinct from a full .sbb backup. Import only as a draft, automatic bells disabled; no credentials, hardware/network/NTP settings or system timezone changes.
+2. **Complete remaining operator journeys.** Active-plan preview distinct from draft; rename/delete user melodies with reference checks; bounded undo and archive summary/onboarding. Browser clock setting needs a separate contract and explicit permission for any real clock change.
+3. **Product acceptance.** Finish LuCI access/session/CSRF/concurrency checks and agree quantitative timing/endurance criteria. Cold boot, offline first boot and power-loss tests require separate authorization. Successful short UI tests are not unattended-operation certification.
+
+### Next-stage scope to agree: portable plans
+
+- [ ] Archive identity/version, compatible module versions, selected plan boundaries and transitive dependency closure; do not introduce a second calendar model.
+- [ ] Conflict preview for overlapping dates, plan/schedule IDs and names, melody slots and bundled-media versions. No silent overwrite, date shift or melody substitution; exact choices and replacement scope remain to be agreed.
+- [ ] Bounded parsing/unpacking, checksums, RAM/flash budget, staging and atomic publication/rollback using existing backup/media mechanisms. No partial draft or referenced-media replacement after a failure.
+- [ ] Offline host/Pages round-trip first: September–May, cross-year dates, colors, pre-bells and matching preview; malformed/incompatible archives, missing media, overlap, quota/write interruption and unchanged current data on rejection. Pages must clearly reject unsupported user-media imports rather than drop files.
+- [ ] Then separately authorize device installation and transfer acceptance after backup, without sound or enabling bells. Design the full dependency contract now; bundled-only Pages is not acceptance of a device exporter that omits user melodies.
 
 Broad exchange/architecture refactoring is not a prerequisite: current measurements identify CGI startup costs, not a proven command-queue bottleneck. End-to-end audible startup measurement is optional if the owner observes a practical delay.
 
@@ -25,6 +32,10 @@ Broad exchange/architecture refactoring is not a prerequisite: current measureme
 - [ ] Validate separately powered RTC board and controlled cold-boot/power-loss scenarios after authorization. Battery/UPS alternative documented, capacity and clock accuracy are separate concerns.
 
 ### Completed checks and remaining acceptance
+
+- [x] 5.1.16 installed after fresh backup and exact rollback preparation: payload/export/system guards passed; actual cross-process lock contention and subsequent read recovery verified in an isolated target directory. Installed UI host regressions cover bounded GET retries, exhausted retries, session loss and retained edits; owner confirmed calendar and journal. This is not fault injection into the live draft or a power-loss test.
+- [x] 5.1.17 installed with unchanged export and system guard; owner confirmed the complete pager on the right of the same row as journal actions.
+- [x] 5.1.18 installed with fresh backup/rollback5.1.17, all56 payload hashes and unchanged export/system guard; owner accepted larger journal arrows. Automatic bells remained disabled; clocks/NTP unchanged. Shared Pages sources include the collapsed blue demo notice below other notices; local browser rendering checked, public publication remains owner action.
 
 
 - [x] 5.1.15 host: compact mute label; paginated/error-filtered journal, full-history clipboard copy, device-local time and seven-day retention with bounded crash-safe segments. Pages synchronized.
@@ -47,7 +58,7 @@ Broad exchange/architecture refactoring is not a prerequisite: current measureme
 - [x] HTTP chart accepted on device; subsequent queue telemetry and per-method HTTP statistics were also accepted. Read-only CGI/network comparison and an attenuated MP3 probe distinguish measurement scopes; no broad refactor is scheduled on these results alone.
 
 - [x] 5.1.7 host: explicit browser/Shkolnik audio routes and a collapsed warning-colored draft panel; shared Pages UI.
-- [x] Shared compact draft/status layout was subsequently installed and accepted through 5.1.13; current 5.1.15 includes the browser/Shkolnik audio labels. This does not certify every audio route or device.
+- [x] Shared compact draft/status layout was subsequently installed and accepted through 5.1.13; current 5.1.18 includes the browser/Shkolnik audio labels. This does not certify every audio route or device.
 
 - [x] Calendar acceptance through Shkolnik 5.1.2: named non-overlapping calendar ranges, consecutive month pages, synchronized top/bottom navigation and device-neutral save label. Owner confirmed cross-year viewing, paging, painting persistence, save/reload and both navigation panels. Automatic bells remain off. Pages publication is a separate owner action; local demo is synchronized with the current sources.
 - [x] Range model shared by Lua storage/preview/executor, backup and Pages; legacy checksums preserved on read. Target installation backed up and payload/data checked. This does not close full power-loss or security acceptance.
@@ -63,8 +74,8 @@ Broad exchange/architecture refactoring is not a prerequisite: current measureme
 - [ ] Extend diagnostic acceptance to expired sessions, stale/unknown states and unsaved edits; basic panel acceptance does not close this matrix.
 - [x] Owner accepted 5.1.5 header resume/stop of the retained applied plan: green running and yellow disabled; four running samples over 12 seconds retained confirmed clock trust. Final auto off, applied copy retained, backup byte-identical and system/NTP guard unchanged.
 - [ ] Extend acceptance beyond the short quiet-day test: large plans, sustained load, repeated transitions and audible scheduled bells. The 5.1.4 observation-gap failure motivated bounded SHA caching/cooperative observation; the short 5.1.5 check is not a long-run guarantee.
-- [ ] Portable plan export/import remains unimplemented; see recommended branch 2 and dependency scope below.
-- [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.15 includes the later logout fix.
+- [ ] Portable plan export/import remains unimplemented; see recommended branch 1 and dependency scope below.
+- [ ] Verify real LuCI expiry/logout/CSRF/unauthenticated endpoints, concurrent tabs and suspended browsers. Owner accepted compact login and 5.0.36 styling; that does not certify the full security matrix. Current installed 5.1.18 includes the later logout fix.
 
 - [ ] Next schoolbell feature accepted by owner: portable annual/academic-plan bundle with selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and all referenced media. September–May spans two calendar years. Reuse backup/media mechanisms; preview dependency closure and conflicts before import, validate plan timezone without applying system timezone, import only as draft with automatic bells disabled. Exclude credentials, network, NTP/clock and hardware-specific settings; specify bundled-media compatibility and atomic rollback before implementation.
 

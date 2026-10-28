@@ -60,6 +60,8 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ## [Unreleased]
 
+Status on 2026-10-28: 5.1.18 installed and accepted by the owner. Draft read recovery after busy (isolated directory), toolbar placement and enlarged journal arrows have been checked; data and system settings retained. Automatic bells off, clock/NTP unchanged. TODO reconciled; proposed next stage is the complete portable calendar-plan dependency contract, followed by Pages/device export and import. This does not certify unattended recovery after power loss.
+
 5.1.18: journal navigation arrows use 28 px glyphs in compact buttons. The Pages demo notice is collapsed, with a blue information border and Details, after other notices and before tabs; expand it for explanations and reset. No device installation.
 
 5.1.17: the complete journal pager (page indicator and four buttons) sits on the right of the same toolbar as refresh, filter and copy on the left. Groups wrap on narrow screens. Shared Pages UI synchronized; no device installation.
