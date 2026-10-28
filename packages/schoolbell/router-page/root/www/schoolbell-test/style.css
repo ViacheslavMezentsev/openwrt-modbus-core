@@ -59,3 +59,9 @@ html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27
 .traffic-panel polyline.traffic-commands{stroke-dasharray:5 4}
 
 .traffic-hint{padding:8px 12px;background:var(--soft);border-left:3px solid var(--accent);border-radius:6px;min-height:2.5em}.traffic-selection{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}#traffic-chart:focus-visible{outline:2px solid var(--accent)}
+
+.problem-above-status{display:flex;justify-content:flex-end;margin-top:16px}.problem-above-status+.duty-box{margin-top:8px}.traffic-panel summary{cursor:pointer;font-weight:600}.traffic-panel[open] summary{margin-bottom:16px}.traffic-panel select{max-width:360px}.traffic-panel:not([open])>:not(summary){display:none!important}
+
+.cpu-monitor{max-width:400px;margin:8px 0 12px;font-size:12px;color:var(--muted)}#cpu-line{height:4px;background:var(--border);margin-top:6px;border-radius:3px}#cpu-line i{display:block;width:var(--cpu-fill,0%);height:100%;background:#238636;border-radius:3px}#cpu-line[data-tone=warning] i{background:#bf8700}#cpu-line[data-tone=danger] i{background:#da3633}#cpu-line[data-tone=unknown]{opacity:.5}.cpu-ticks{position:relative;height:18px;font-size:10px}.cpu-ticks span{position:absolute;top:2px}.cpu-ticks span:nth-child(2){left:75%;transform:translateX(-50%)}.cpu-ticks span:nth-child(3){left:90%;transform:translateX(-50%)}.cpu-ticks span:last-child{right:0;transform:translateX(50%)}
+
+.traffic-running{stroke:#238636;fill:#238636}.traffic-panel polyline.traffic-running{fill:none}

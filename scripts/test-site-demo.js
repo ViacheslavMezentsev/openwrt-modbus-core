@@ -1,11 +1,15 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const elements=new Map(),storage=new Map();
 const document={getElementById(id){if(!elements.has(id))elements.set(id,{addEventListener(){},textContent:''});return elements.get(id);}};
-const context={window:{},document,TextEncoder,Intl,Date,Math,Number,JSON,Array,String,URL,URLSearchParams,Response:class{constructor(body){this.body=body;this.ok=true;}json(){return Promise.resolve(JSON.parse(this.body));}},location:{href:'https://example.test/openwrt-modbus-core/schoolbell/',origin:'https://example.test'},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}};
+let demoNow=0;
+const context={performance:{now:()=>demoNow},window:{},document,TextEncoder,Intl,Date,Math,Number,JSON,Array,String,URL,URLSearchParams,Response:class{constructor(body){this.body=body;this.ok=true;}json(){return Promise.resolve(JSON.parse(this.body));}},location:{href:'https://example.test/openwrt-modbus-core/schoolbell/',origin:'https://example.test'},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}};
 vm.runInNewContext(fs.readFileSync('packages/schoolbell/router-page/root/www/schoolbell-test/ranges.js','utf8'),context);
 vm.runInNewContext(fs.readFileSync(require('path').join(__dirname,'../site/demo.js'),'utf8'),context);
 async function api(name,data){return (await context.window.fetch('./demo-api/'+name,data?{method:'POST',body:new URLSearchParams(data)}:undefined)).json();}
 (async()=>{
+ let q=(await api('automatic')).queue;assert(q.available&&q.simulated&&q.bins.length===0);
+ await api('clock-trust',{action:'prepare'});q=(await api('automatic')).queue;assert(q.bins[0].processed===1&&q.bins[0].wait_sum===0);
+ demoNow=61000;assert((await api('automatic')).queue.bins.length===0);
  let first=await api('load');assert(first.ok && first.data.schedules.length===3);
  first.data.schedules[0].name='Changed';first.data.schedules[0].color=16;
  let saved=await api('save',{revision:first.revision,draft:JSON.stringify(first.data)});assert(saved.ok);

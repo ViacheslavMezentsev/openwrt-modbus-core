@@ -19,7 +19,7 @@ C.set_observer(function()
  if now-observed>=0.5 then observed=now;Clock.observe(false)end
 end)
 local function audit(action)require('schoolbell.journal').request(Store.root,action)end
-local mailbox=require('schoolbell.clock_mailbox').system()
+local mailbox=require('schoolbell.clock_mailbox').system('worker')
 local command=require('schoolbell.clock_commands').new(Clock,{
  enable=function(revision)
   local saved=require('schoolbell.schedule_store').request(Store.root,'load')

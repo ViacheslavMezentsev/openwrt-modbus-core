@@ -12,8 +12,13 @@ function M.valid(q)
  if q.action=='confirm'then return hex(q.challenge,32) and (q.ack=='true' or q.ack=='false') and q.enforced==nil end
  return q.action=='policy' and (q.enforced=='true' or q.enforced=='false') and q.challenge==nil and q.ack==nil
 end
-function M.new(open,now)
+function M.new(open,now,observer)
  local api={}
+ local function measure(fs,event,value)
+  if not observer then return end
+  local ok=pcall(observer,fs,event,value)
+  if not ok then pcall(function()if fs.stat('metrics.json')then fs.unlink('metrics.json')end end)end
+ end
  local function run(fn)
   local fs;local ok,result=pcall(function()fs=open();return fn(fs)end)
   if fs then local closed=pcall(fs.close);if not closed then return {ok=false,code='mailbox_storage'}end end
@@ -39,7 +44,9 @@ function M.new(open,now)
     end
    end
    if pending and now()-pending.at>=0 and now()-pending.at<=20 then return {ok=false,code='busy'}end
-   write(fs,'request.json',{request=q,at=math.floor(now())})
+   local t=now();write(fs,'request.json',{request=q,at=math.floor(t),subms=math.floor((t%1)*1000)})
+   if pending then measure(fs,'expired')end
+   measure(fs,'queued')
    return {ok=true,pending=true,id=q.id}
   end)
  end
@@ -55,15 +62,18 @@ function M.new(open,now)
  end
  function api.process(handle)
   return run(function(fs)
+   measure(fs,'tick')
    local q=read(fs,'request.json');if not q then return {ok=true}end
    local old=read(fs,'result.json');local result
    if old and old.request.id==q.request.id then result=old.result
-   elseif not M.valid(q.request) or now()-q.at<0 or now()-q.at>15 then result={ok=false,code='expired'}
+   elseif not M.valid(q.request) or now()-q.at<0 or now()-q.at>15 then result={ok=false,code='expired'};measure(fs,'expired')
    else
     -- Consume before side effects: interruption is an unknown outcome, never replay.
     write(fs,'result.json',{request=q.request,result={ok=false,code='outcome_unknown'}})
     fs.unlink('request.json')
+    measure(fs,'start',now()-q.at-(q.subms or 0)/1000)
     local ok,v=pcall(handle,q.request);result=ok and v or {ok=false,code='operation_failed'}
+    measure(fs,'finish',type(result)=='table' and result.ok==true)
    end
    write(fs,'result.json',{request=q.request,result=result})
    if fs.stat('request.json')then fs.unlink('request.json')end
@@ -72,7 +82,7 @@ function M.new(open,now)
  end
  return api
 end
-function M.system()
+function M.system(role)
  local root='/tmp/schoolbell-clock-control';local fs=require('nixio.fs')
  local function now()local f=assert(io.open('/proc/uptime','r'));local v=f:read(64);f:close();return assert(tonumber(v:match('^[%d.]+')))end
  return M.new(function()
@@ -83,6 +93,6 @@ function M.system()
   -- Close the race with preinst after lock acquisition, before any mailbox mutation.
   if fs.lstat(pending)then handle.close();error('package_maintenance')end
   return handle
- end,now)
+ end,now,require('schoolbell.queue_metrics').observer(now,role=='worker',tostring(math.floor(now()*1000))))
 end
 return M

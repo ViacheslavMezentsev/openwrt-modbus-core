@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.11 (host only, not installed): collapsed Statistics switches between executor mailbox and HTTP views. The real single-slot time/enable command mailbox reports waiting depth, running state, wait times and completions in twelve 5-second bins across clients, in /tmp only; telemetry faults cannot block commands. Stop, audio and HTTP reads bypass this mailbox. Pages models its own training commands with zero wait. A thin whole-device CPU line below the title uses existing polls (idle+iowait excluded; green through 75%, yellow above 75%, red above 90%, unknown grey). Resolve problem is above the status panel on the right. No extra HTTP polling.
+
 5.1.10: explicit chart hints show reads, commands and failures for the selected interval on hover, tap or keyboard arrows. Selection survives refresh until the interval leaves the minute window. Pages synchronized.
 
 5.1.9: the collapsed draft panel matches the upper status panel: theme background and a yellow left border. The heading reads “Музыкальный настраиваемый звонок”. The 5.1.8 traffic chart is retained; Pages shares the UI.

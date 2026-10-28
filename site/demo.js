@@ -1,6 +1,13 @@
 (function(){
 'use strict';
 var R=window.RangePlans;
+var queueBins=[];
+function queueDemo(record,ok){
+ var now=Math.floor(performance.now()/1000),key=Math.floor(now/5);
+ queueBins=queueBins.filter(function(b){return b.key>key-12;});
+ if(record){var b=queueBins.find(function(b){return b.key===key;});if(!b){b={key:key,depth:1,running:1,processed:0,failed:0,expired:0,wait_count:0,wait_sum:0,wait_max:0};queueBins.push(b);}b.processed++;b.wait_count++;if(!ok)b.failed++;}
+ return {available:true,simulated:true,epoch:'demo',now:now,at:now,depth:0,running:0,bins:queueBins};
+}
 var key='openwrt-schoolbell-public-demo-v1',memory=null;
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function iso(d){return d.toISOString().slice(0,10);}
@@ -48,7 +55,7 @@ window.fetch=async function(url,options){
  else if(name==='media')out={ok:true,demo:true,generation:0,storage:{total_kib:4096,free_kib:1536,used_kib:2560,reserve_kib:512,media_kib:0,media_limit_kib:2048},slots:['test','0','1','2','3','4','user1','user2','user3','user4','user5','user6','user7','user8'].map(function(id,i){return {id:id,name:i<6?id+'.mp3':'Свободная позиция',title:['Тестовый звонок','[Короткая] Время','Шутка Баха','Гостья из XXI','Князь Игорь','Усатый нянь'][i] || ('Пользовательская '+(i-5)),source:i<6?'bundled':'empty',size_bytes:[13104,41273,63321,69904,68023,82368][i] || 0};})};
  else if(name==='automatic'){
  if(options && options.method==='POST' && body.get('enabled')==='false'){s.autoEnabled=false;s.autoGeneration=(s.autoGeneration || 0)+1;log(s,'auto_disabled');}
- out={ok:true,state:s.autoEnabled?(s.muted?'muted':'running'):'disabled',enabled:!!s.autoEnabled,generation:s.autoGeneration || 0,revision:s.applied && s.applied.revision,mode:s.applied && s.applied.data.mode,hardware:false,simulated:true,clock_trust:{enforced:s.clockEnforced!==false,state:s.clockConfirmed?'confirmed':s.clockEnforced===false?'unchecked':'unconfirmed',reason:'demo'}};}
+ out={ok:true,state:s.autoEnabled?(s.muted?'muted':'running'):'disabled',enabled:!!s.autoEnabled,generation:s.autoGeneration || 0,revision:s.applied && s.applied.revision,mode:s.applied && s.applied.data.mode,hardware:false,simulated:true,queue:queueDemo(false),clock_trust:{enforced:s.clockEnforced!==false,state:s.clockConfirmed?'confirmed':s.clockEnforced===false?'unchecked':'unconfirmed',reason:'demo'}};}
  else if(name==='clock-trust'){
  if(options && options.method==='POST'){
  var action=body.get('action');out={ok:true};
@@ -76,6 +83,7 @@ window.fetch=async function(url,options){
    else{s.zone=zone;log(s,'timezone_ok');out={ok:true,zone:zone};}
   }else out={ok:true,zone:s.zone,revision:s.zone,zones:zones(),pending:false,runtime_ok:true};
  }else out={ok:false,state:'unavailable',code:'demo_only'};
+ if(name==='clock-trust'&&options&&options.method==='POST')queueDemo(true,out.ok);
  return new Response(JSON.stringify(out),{status:200,headers:{'Content-Type':'application/json'}});
 };
 document.getElementById('demo-reset').addEventListener('click',function(){if(confirm('Сбросить только данные этого демо в вашем браузере?')){write(seed());location.reload();}});

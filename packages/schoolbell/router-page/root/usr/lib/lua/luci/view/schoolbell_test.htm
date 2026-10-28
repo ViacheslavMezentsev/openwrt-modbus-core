@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьник · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5110">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5111">
 <script src="/schoolbell-test/theme.js?v=5106"></script></head>
 <body><main><header><div><p class="eyebrow">Музыкальный настраиваемый звонок</p>
-<h1>Школьник</h1></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="problem-open" type="button" aria-controls="problem-panel" aria-expanded="false">Решить проблему</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
+<h1>Школьник</h1><div class="cpu-monitor"><span id="cpu-value">CPU · нет измерения</span><div id="cpu-line" role="progressbar" aria-label="Загрузка CPU всего устройства между опросами" aria-valuemin="0" aria-valuemax="100"><i></i></div><div class="cpu-ticks"><span>0</span><span>75%</span><span>90%</span><span>100%</span></div></div></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
 <section id="problem-panel" class="details problem-panel" hidden aria-labelledby="problem-heading">
 <h2 id="problem-heading">Диагностика</h2><p id="problem-summary" role="status" aria-live="polite">Ожидаем данные состояния.</p>
 <p id="problem-explanation"></p><p>Проверка не включает звонки, не меняет часы, настройки или ваши правки. Действия, меняющие состояние, выполняются отдельно в соответствующем разделе.</p>
 <div class="editor-toolbar"><button type="button" id="problem-refresh">Повторить чтение состояния</button><button type="button" id="problem-action">Открыть настройки</button><button type="button" id="problem-journal">Открыть журнал</button><button type="button" id="problem-close">Закрыть</button></div>
 <details><summary>Технические подробности</summary><p>Идентификатор копии помогает сравнивать версии плана; это не номер ошибки.</p><pre id="problem-details"></pre></details></section>
-<details id="duty-panel" class="duty-box" open>
+<div class="problem-above-status"><button id="problem-open" type="button" aria-controls="problem-panel" aria-expanded="false">Решить проблему</button></div><details id="duty-panel" class="duty-box" open>
 <summary><strong>Школьник <%=pcdata(module_version)%></strong> · <span id="duty-compact">Получаем состояние службы…</span> <span class="collapse-hint">Подробности ▾</span></summary>
 <div class="duty-panel" aria-label="Состояние для дежурного">
 <div><span>Состояние</span><strong id="duty-state">Читаем черновик…</strong></div>
@@ -191,16 +191,21 @@
 </section>
 <section id="panel-journal" role="tabpanel" aria-labelledby="tab-journal" data-panel="journal" class="details" hidden>
 <h2>Журнал schoolbell</h2>
-<section class="traffic-panel" aria-label="Обращения интерфейса">
-<h3>Обращения за последнюю минуту</h3>
+<details id="traffic-panel" class="traffic-panel">
+<summary>Статистика · <span id="traffic-kind-label">Очередь исполнителя</span></summary>
+<label>Вид статистики<select id="traffic-kind"><option value="queue">Очередь исполнителя</option><option value="http">HTTP-запросы интерфейса</option></select></label>
+<h3>Последняя минута · интервалы по 5 секунд</h3>
 <p id="traffic-mode">Обращения всего интерфейса в этом окне браузера к API модуля через LuCI, а не внутренние обмены исполнителя. Сбор идёт во всех разделах, включая фоновые проверки. Другие окна браузера и пользователи не учитываются.</p>
-<p class="traffic-legend"><span class="traffic-reads">● Чтение</span> · <span class="traffic-commands">● Команды</span> · 12 интервалов по 5 секунд</p>
+<div id="traffic-http-info"><p class="traffic-legend"><span class="traffic-reads">● Чтение</span> · <span class="traffic-commands">● Команды</span> · 12 интервалов по 5 секунд</p>
+</div>
+<p id="queue-explanation">Очередь команд проверки времени и включения плана: не более одной ожидающей команды; во время выполнения приём блокируется. Выключение, звук, медиатека и обычные HTTP-чтения сюда не входят. На устройстве учитываются все клиенты; Pages показывает только учебные команды с нулевым ожиданием. глубина — максимум за 5 с, обработано — число завершённых обработчиков, включая отказ. Ошибки до приёма команды не считаются. История сбрасывается при запуске службы или потере метрик; более ранние интервалы не измерены.</p>
+<p id="queue-legend">Синяя — глубина ожидания (0–1); зелёная — выполнялась команда (0–1); пунктир — обработано за 5 с (отдельная шкала количества).</p>
 <svg id="traffic-chart" viewBox="0 0 700 125" preserveAspectRatio="none" tabindex="0" role="group" aria-label="График запросов. Выбор интервала стрелками влево и вправо" aria-describedby="traffic-hint traffic-stats traffic-scale"></svg>
 <p id="traffic-hint" class="traffic-hint" aria-live="polite"></p>
 <div class="traffic-axis"><span>Около минуты назад</span><span>Сейчас</span></div>
 <p id="traffic-scale"></p><p id="traffic-stats"></p>
-<p>Измерение пассивное, начинается при открытии страницы и сбрасывается при её перезагрузке. Задержка — до заголовков HTTP, без загрузки тела и выполнения команды службой; HTTP 200 с отказом операции не считается ошибкой HTTP. Это не объём данных в байтах и не оценка загрузки исполнителя.</p>
-</section><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC устройства; порядок — по номеру, даже после коррекции часов.</p>
+<p id="traffic-http-note">Измерение HTTP пассивное, начинается при открытии страницы и сбрасывается при её перезагрузке. Задержка — до заголовков HTTP, без загрузки тела и выполнения команды службой; HTTP 200 с отказом операции не считается ошибкой HTTP. Это не объём данных в байтах и не оценка загрузки исполнителя.</p>
+</details><p>Пользователь · Модуль · Система. События, наблюдаемые этим модулем; общий syslog не подключён. Время записи — UTC устройства; порядок — по номеру, даже после коррекции часов.</p>
 <p>Хранятся последние события — до 16 КиБ. При заполнении самые старые записи удаляются автоматически.</p>
 <button type="button" id="journal-reload">Обновить журнал</button><p id="journal-status" role="status"></p>
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>№ / Время UTC</th><th>Источник</th><th>Прослушивание</th><th>Событие</th></tr></thead><tbody id="journal-rows"></tbody></table></div>
@@ -216,4 +221,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление устройством LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/traffic.js?v=5110"></script><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/automatic.js?v=5106"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5106"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script></body></html>
+</main><script src="/schoolbell-test/traffic.js?v=5111"></script><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/cpu.js?v=5111"></script><script src="/schoolbell-test/automatic.js?v=5111"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5106"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script></body></html>

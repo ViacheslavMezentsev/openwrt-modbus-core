@@ -25,14 +25,14 @@ const {create,observe}=require('../packages/schoolbell/router-page/root/www/scho
  // Browser integration: all sections are observed even while Journal is hidden.
  const vm=require('node:vm');const fs=require('node:fs');let sent=0,tick;
  const elements={
-  'traffic-chart':{replaceChildren(){},appendChild(){},listeners:{},addEventListener(n,f){this.listeners[n]=f;},getBoundingClientRect(){return {left:0,width:700};}},'traffic-hint':{},
+  'traffic-kind':{value:'http',addEventListener(n,f){this.change=f;}},'traffic-kind-label':{},'traffic-http-info':{},'traffic-http-note':{},'queue-explanation':{},'queue-legend':{},'traffic-chart':{replaceChildren(){},appendChild(){},listeners:{},addEventListener(n,f){this.listeners[n]=f;},getBoundingClientRect(){return {left:0,width:700};}},'traffic-hint':{},
   'schedule-editor':{dataset:{load:'/api/load',save:'/api/save',sample:'/api/audio',token:'secret'}},
   'session-panel':{dataset:{session:'/api/session'}},
   'backup-panel':{dataset:{url:'/api/backup'}},
   'router-form':{action:'http://device/api/play'},
   'panel-journal':{hidden:true},'traffic-mode':{},'traffic-scale':{},'traffic-stats':{}
  };
- const window={fetch:async()=>{sent++;return reply;}};
+ const listeners={};const window={addEventListener(n,f){listeners[n]=f;},fetch:async()=>{sent++;return reply;}};
  const document={hidden:false,getElementById:id=>elements[id],createElementNS:()=>({setAttribute(){},appendChild(){}})};
  vm.runInNewContext(fs.readFileSync('packages/schoolbell/router-page/root/www/schoolbell-test/traffic.js','utf8'),{window,document,URL,Set,performance:{now:()=>now},location:{href:'http://device/page',origin:'http://device'},setInterval:f=>{tick=f;}});
  assert.equal(sent,0);
@@ -49,6 +49,10 @@ const {create,observe}=require('../packages/schoolbell/router-page/root/www/scho
  now+=60000;tick();assert.match(elements['traffic-hint'].textContent,/Наведите/);
  assert.equal(sent,5);
 
+ elements['traffic-kind'].value='queue';elements['traffic-kind'].change();assert.match(elements['traffic-hint'].textContent,/Нет свежих/);
+ listeners['schoolbell-queue-metrics']({detail:{available:true,now:100,depth:0,running:1,bins:[{key:20,depth:1,processed:2,failed:1,wait_count:2,wait_sum:1000,wait_max:700}]}});
+ assert.match(elements['traffic-stats'].textContent,/Обработано: 2/);assert.match(elements['traffic-stats'].textContent,/500 \/ 700 мс/);
+ now+=16000;tick();assert.match(elements['traffic-hint'].textContent,/Нет свежих/);assert.equal(sent,5);
 const html=fs.readFileSync('out/site/schoolbell/index.html','utf8');
  assert.ok(html.indexOf('assets/demo.js')<html.indexOf('assets/traffic.js'));
  assert.ok(html.indexOf('assets/traffic.js')<html.indexOf('assets/session.js'));

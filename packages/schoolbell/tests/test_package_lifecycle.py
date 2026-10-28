@@ -92,6 +92,8 @@ arg={action};dofile(root..'/usr/sbin/schoolbell-package.lua')
     mailbox=target/'tmp/schoolbell-clock-control';mailbox.mkdir(mode=0o700)
     (mailbox/'request.json').write_text('queued enable from old process')
     (mailbox/'result.json').write_text('old result')
+    (mailbox/'metrics.json').write_text('old metrics')
+    (mailbox/'metrics.next').write_text('unfinished metrics')
     # Upgrade and rollback with deliberately distinguishable code revisions.
     for label in ('fixture-upgrade','fixture-rollback'):
         hook('prerm');hook('preinst')
@@ -99,6 +101,7 @@ arg={action};dofile(root..'/usr/sbin/schoolbell-package.lua')
         unpack(files);helpers();(target/'usr/share/schoolbell-editor/VERSION').write_text(label)
         hook('postinst');lua('disabled');assert saved()==before
         assert not (mailbox/'request.json').exists() and not (mailbox/'result.json').exists()
+        assert not (mailbox/'metrics.json').exists() and not (mailbox/'metrics.next').exists()
         assert not pending.exists();assert not (target/'tmp/schoolbell-sound-test.lock').exists()
     print('PASS upgrade/rollback retain draft, melody and clock reference; auto-off')
     # Refuse foreign gates and private-root symlinks; do not clear somebody else's lock.

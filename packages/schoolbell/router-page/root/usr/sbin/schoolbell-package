@@ -33,7 +33,7 @@ local mailbox='/tmp/schoolbell-clock-control'
 if fs.lstat(mailbox)then
  local h=require('schoolbell.media_fs').new(mailbox)
  local ok,why=pcall(function()
-  for _,name in ipairs({'request.json','result.json','next'})do if h.stat(name)then h.unlink(name)end end
+  for _,name in ipairs({'request.json','result.json','next','metrics.json','metrics.next'})do if h.stat(name)then h.unlink(name)end end
   h.sync('')
  end)
  h.close();assert(ok,why)

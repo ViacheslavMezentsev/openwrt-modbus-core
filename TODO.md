@@ -2,6 +2,9 @@
 
 ## Current state and next steps
 
+- [x] 5.1.11 host: real single-slot mailbox telemetry, collapsed queue/HTTP selector, passive CPU indicator, diagnostics above status and shared Pages.
+- [ ] Accept 5.1.11 telemetry on device; compare queue waits separately from HTTP latency. Current mailbox covers time/enable commands only, not all module actions. No installation in this step.
+
 - [x] 5.1.8 host: passive tab-local API traffic chart, 12 x 5s bins, latency-to-headers/error/pending metrics, shared Pages and controlled-clock tests.
 - [x] 5.1.9 UI: matching yellow left border on collapsed draft panel and configurable musical bell heading; Pages synchronized.
 - [ ] Accept the chart on device; use observed HTTP timings to guide investigation before changing polling/worker exchange. Internal executor timings are not measured.

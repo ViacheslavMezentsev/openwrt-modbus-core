@@ -29,30 +29,45 @@
   global.fetch=observe(global.fetch.bind(global),model,function(input){try{var u=new URL(typeof input==='string'?input:input.url,location.href);return u.origin===location.origin&&endpoints.has(u.pathname);}catch(_){return false;}});
   var ns='http://www.w3.org/2000/svg';
   function svg(tag,attrs){var el=document.createElementNS(ns,tag);Object.keys(attrs).forEach(function(k){el.setAttribute(k,attrs[k]);});return el;}
-  var selectedKey=null;
+  var selectedKey=null,queue=null,queueAt=0;
+  var selector=document.getElementById('traffic-kind');
+  global.addEventListener('schoolbell-queue-metrics',function(event){var v=event.detail;if(queue&&v&&queue.epoch!==v.epoch)selectedKey=null;queue=v&&v.available&&Array.isArray(v.bins)&&v.bins.length<=12&&Number.isFinite(v.now)?v:{available:false};queueAt=performance.now();render();});
+  selector.addEventListener('change',function(){selectedKey=null;render();});
+  function queueItems(){var key=Math.floor(queue.now/5),items=[];for(var k=key-11;k<=key;k++){var b=queue.bins.find(function(b){return b.key===k;}) || {};items.push({key:k,reads:b.depth || 0,commands:b.processed || 0,errors:b.failed || 0,wait_count:b.wait_count || 0,wait_sum:b.wait_sum || 0,wait_max:b.wait_max || 0,expired:b.expired || 0,running:b.running || 0});}return items;}
+  function items(){return selector.value==='queue'&&queue&&queue.available?queueItems():model.snapshot().items;}
   var hint=document.getElementById('traffic-hint');
-  function choose(index){var s=model.snapshot();selectedKey=s.items[Math.max(0,Math.min(11,index))].key;render();}
+  function choose(index){var list=items();selectedKey=list[Math.max(0,Math.min(11,index))].key;render();}
   function point(event){var rect=chart.getBoundingClientRect();if(rect.width>0)choose(Math.round(((event.clientX-rect.left)*700/rect.width-20)/60));}
   chart.addEventListener('pointermove',point);chart.addEventListener('click',point);
   chart.addEventListener('focus',function(){if(selectedKey===null)choose(11);});
   chart.addEventListener('keydown',function(event){
     if(['ArrowLeft','ArrowRight','Home','End'].indexOf(event.key)<0)return;
-    event.preventDefault();var items=model.snapshot().items,index=items.findIndex(function(b){return b.key===selectedKey;});
+    event.preventDefault();var list=items(),index=list.findIndex(function(b){return b.key===selectedKey;});
     choose(event.key==='Home'?0:event.key==='End'?11:(index<0?11:index)+(event.key==='ArrowLeft'?-1:1));
   });
   function render(){
-    var s=model.snapshot(),sum={reads:0,commands:0,errors:0,finished:0,total:0,max:0},peak=1;
-    s.items.forEach(function(b){Object.keys(sum).forEach(function(k){if(k==='max')sum[k]=Math.max(sum[k],b[k]);else sum[k]+=b[k];});peak=Math.max(peak,b.reads,b.commands);});
+    var isQueue=selector.value==='queue';
+    document.getElementById('traffic-kind-label').textContent=isQueue?'Очередь исполнителя':'HTTP-запросы';
+    ['traffic-mode','traffic-http-info','traffic-http-note'].forEach(function(id){document.getElementById(id).hidden=isQueue;});
+    ['queue-explanation','queue-legend'].forEach(function(id){document.getElementById(id).hidden=!isQueue;});
+    if(isQueue&&(!queue||!queue.available||(queue.now-(queue.at===undefined?queue.now:queue.at))*1000+performance.now()-queueAt>15000||global.schoolbellSessionBlocked)){chart.replaceChildren();hint.textContent='Нет свежих измерений очереди. Отсутствие данных не означает пустую очередь.';document.getElementById('traffic-stats').textContent='Ожидаем штатный опрос состояния; дополнительных запросов нет.';document.getElementById('traffic-scale').textContent='';return;}
+    var s=isQueue?{items:queueItems(),pending:0}:model.snapshot(),sum={reads:0,commands:0,errors:0,finished:0,total:0,max:0},peak=1;
+    s.items.forEach(function(b){Object.keys(sum).forEach(function(k){if(k==='max')sum[k]=Math.max(sum[k],b[k] || 0);else sum[k]+=b[k] || 0;});peak=Math.max(peak,b.reads,b.commands);});
     chart.replaceChildren();
     var selected=s.items.find(function(b){return b.key===selectedKey;});
     if(selected){
-      var index=s.items.indexOf(selected),age=Math.max(0,Math.floor((performance.now()-selected.key*5000)/1000));
-      hint.textContent='Интервал '+Math.max(0,age-5)+'–'+age+' с назад'+(index===11?' (текущий)':'')+': всего '+(selected.reads+selected.commands)+' · чтение '+selected.reads+' · команды '+selected.commands+' · ошибки HTTP/сети '+selected.errors;
+      var index=s.items.indexOf(selected),age=Math.max(0,Math.floor(((isQueue?queue.now*1000:performance.now())-selected.key*5000)/1000));
+      hint.textContent=(isQueue?'Очередь · ':'HTTP · ')+'Интервал '+Math.max(0,age-5)+'–'+age+' с назад'+(index===11?' (текущий)':'')+(isQueue?': глубина '+selected.reads+' · обработано '+selected.commands+' · отказов '+selected.errors+' · ожидание, максимум '+selected.wait_max+' мс':': всего '+(selected.reads+selected.commands)+' · чтение '+selected.reads+' · команды '+selected.commands+' · ошибки HTTP/сети '+selected.errors);
       chart.appendChild(svg('line',{x1:20+index*60,x2:20+index*60,y1:5,y2:120,class:'traffic-selection'}));
     }else{selectedKey=null;hint.textContent='Наведите на точку или нажмите её. Клавиатура: ← / →, Home / End.';}
 
-    ['reads','commands'].forEach(function(kind){var points=[];s.items.forEach(function(b,i){points.push((20+i*60)+','+(110-b[kind]/peak*90));});chart.appendChild(svg('polyline',{points:points.join(' '),class:'traffic-'+kind,fill:'none','stroke-width':2}));
-      s.items.forEach(function(b,i){var dot=svg('circle',{cx:20+i*60,cy:110-b[kind]/peak*90,r:4,class:'traffic-'+kind});var title=svg('title',{});title.textContent=(kind==='reads'?'Чтение':'Команды')+': '+b[kind]+'; интервал '+(i+1)+' из 12';dot.appendChild(title);chart.appendChild(dot);});});
+    (isQueue?['reads','running','commands']:['reads','commands']).forEach(function(kind){var points=[];s.items.forEach(function(b,i){points.push((20+i*60)+','+(110-b[kind]/(isQueue&&kind!=='commands'?1:peak)*90));});chart.appendChild(svg('polyline',{points:points.join(' '),class:'traffic-'+kind,fill:'none','stroke-width':2}));
+      s.items.forEach(function(b,i){var dot=svg('circle',{cx:20+i*60,cy:110-b[kind]/(isQueue&&kind!=='commands'?1:peak)*90,r:4,class:'traffic-'+kind});var title=svg('title',{});title.textContent=(isQueue?(kind==='reads'?'Глубина':kind==='running'?'Выполнялось':'Обработано'):(kind==='reads'?'Чтение':'Команды'))+': '+b[kind]+'; интервал '+(i+1)+' из 12';dot.appendChild(title);chart.appendChild(dot);});});
+    if(isQueue){
+      var count=0,total=0,max=0,expired=0;s.items.forEach(function(b){count+=b.wait_count;total+=b.wait_sum;max=Math.max(max,b.wait_max);expired+=b.expired;});
+      document.getElementById('traffic-scale').textContent='Глубина: 0–1 · обработано: 0–'+peak+' за 5 с · последний интервал неполный';
+      document.getElementById('traffic-stats').textContent=(queue.simulated?'Демо · ':'')+'Ожидает: '+queue.depth+' · Выполняется: '+queue.running+' · Обработано: '+sum.commands+' · Отказов: '+sum.errors+' · Истекло: '+expired+' · Ожидание до начала, среднее / максимум: '+(count?Math.round(total/count)+' / '+max+' мс':'нет обработанных ожиданий')+' · Возраст снимка: '+Math.floor(queue.now-(queue.at===undefined?queue.now:queue.at)+(performance.now()-queueAt)/1000)+' с';return;
+    }
     document.getElementById('traffic-scale').textContent='Шкала: 0–'+peak+' запросов за 5 с · последний интервал ещё заполняется';
     document.getElementById('traffic-stats').textContent='Чтение: '+sum.reads+' · Команды: '+sum.commands+' · Ошибки HTTP/сети: '+sum.errors+' · Ожидают HTTP: '+s.pending+' · До заголовков HTTP, среднее / максимум: '+(sum.finished?Math.round(sum.total/sum.finished)+' / '+Math.round(sum.max)+' мс':'нет завершённых запросов');
   }

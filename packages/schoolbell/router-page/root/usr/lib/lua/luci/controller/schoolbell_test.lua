@@ -128,6 +128,7 @@ function automatic()
   end
   status.enabled=active.enabled;return status
  end)
+ if ok then local measured,metrics=pcall(function()return require('schoolbell.queue_metrics').read()end);result.queue=measured and metrics or {available=false};local cpu_ok,cpu=pcall(function()return require('schoolbell.system_metrics').read()end);result.cpu=cpu_ok and cpu or {available=false}end
  respond(ok and result or {ok=false,state='unavailable'})
 end
 function controls()
