@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьник · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5106">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5107">
 <script src="/schoolbell-test/theme.js?v=5106"></script></head>
 <body><main><header><div><p class="eyebrow">ШКОЛЬНИК / РАСПИСАНИЯ И ЗВУК</p>
 <h1>Школьник</h1></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="problem-open" type="button" aria-controls="problem-panel" aria-expanded="false">Решить проблему</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
@@ -67,12 +67,13 @@
 <p>Если действие не подтвердилось, не повторяйте его вслепую: обновите состояние. Подробности — во вкладке «Журнал»; порядок обращения — в «Обратной связи».</p>
 </section>
 
+<details id="draft-workflow" class="plan-workflow" aria-label="Черновик и активный план">
+<summary><span id="workflow-draft" role="status">Черновик: загружается…</span><span class="workflow-hint"> · Сохранение и применение</span></summary>
 <p class="intro">Подготовьте расписания и сохраните их на устройстве.</p>
-<p class="notice">Сохранение записывает черновик. Для автозвонков сохраните изменения и отдельно примените их во вкладке «Настройки».</p>
-<section class="plan-workflow" aria-label="Черновик и активный план">
-<p id="workflow-draft" role="status">Черновик: загружается…</p><p id="workflow-active" role="status">Активный план: состояние неизвестно</p><p id="workflow-difference">Сохранение и применение — отдельные действия.</p>
+<p>Сохранение записывает черновик. Для автозвонков сохраните изменения и отдельно примените их во вкладке «Настройки».</p>
+<p id="workflow-active" role="status">Активный план: состояние неизвестно</p><p id="workflow-difference">Сохранение и применение — отдельные действия.</p>
 <button id="workflow-save" type="button" disabled>Сохранить черновик</button> <button id="workflow-apply" type="button">К применению плана</button>
-</section>
+</details>
 <section id="schedule-editor" class="details" hidden data-media="<%=pcdata(media_url)%>" data-sample="<%=pcdata(sample_url)%>" data-trust="<%=pcdata(trust_url)%>" data-automatic="<%=pcdata(automatic_url)%>" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
 <div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
 <p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с устройства…</p>
@@ -126,18 +127,18 @@
 <audio id="media-audio" controls preload="none"></audio><p id="media-status" role="status">Загрузите список мелодий.</p>
 </section>
 <h2 class="sound-heading">Ручная проверка звука</h2><p>Эти две кнопки воспроизводят штатную тестовую мелодию сразу, независимо от черновика.</p>
-<section class="routes"><article><span class="badge">1 · РЯДОМ С ВАМИ</span><h2>На этом устройстве</h2>
+<section class="routes"><article><span class="badge">1 · РЯДОМ С ВАМИ</span><h2>В браузере — на компьютере или телефоне</h2>
 <p>Звук из динамика телефона, планшета или компьютера, на котором открыта страница.</p>
-<div class="diagram"><div>▣<br><strong>Ваш браузер</strong></div><b>→</b><div>♫<br><strong>Динамик устройства</strong></div></div>
+<div class="diagram"><div>▣<br><strong>Ваш браузер</strong></div><b>→</b><div>♫<br><strong>Динамики компьютера / телефона</strong></div></div>
 <audio id="browser-audio" preload="none" src="<%=pcdata(sample_url)%>"></audio>
-<button id="browser-play" type="button" class="primary">▶ Послушать здесь</button>
-<p id="browser-result" role="status">Устройство передаст файл. Его колонки будут молчать.</p></article>
-<article><span class="badge">2 · ТАМ, ГДЕ РОУТЕР</span><h2>Через колонки устройства</h2>
+<button id="browser-play" type="button" class="primary">▶ Послушать в браузере</button>
+<p id="browser-result" role="status">Школьник передаст файл в браузер. Колонки Школьника будут молчать.</p></article>
+<article><span class="badge">2 · КОЛОНКИ ШКОЛЬНИКА</span><h2>Через колонки Школьника</h2>
 <p>Браузер отправит команду. Звук пойдёт через USB-аудиокарту к подключённым колонкам.</p>
-<div class="diagram"><div>▣<br><strong>Браузер</strong></div><b>→</b><div>⌘<br><strong>Устройство</strong></div><b>→</b><div>♫<br><strong>USB → колонки</strong></div></div>
+<div class="diagram"><div>▣<br><strong>Браузер</strong></div><b>→</b><div>⌘<br><strong>Школьник</strong></div><b>→</b><div>♫<br><strong>USB → колонки</strong></div></div>
 <form id="router-form" action="<%=pcdata(play_url)%>" method="post">
 <input type="hidden" name="token" value="<%=pcdata(token)%>">
-<button id="router-play" type="submit" class="primary">▶ Позвонить на устройстве</button></form>
+<button id="router-play" type="submit" class="primary">▶ Через колонки Школьника</button></form>
 <p id="router-result" role="status">Колонки должны быть включены и подключены к аудиовыходу.</p></article></section>
 <section class="details"><h2>Что будет воспроизведено</h2><p><strong>Штатная test.mp3</strong> · около 3,3 секунды · один раз.</p>
 <p>Устройство: madplay · выход /dev/dsp · 48 кГц · громкость — по сохранённой настройке. Громкость колонок регулируется на самих колонках.</p>

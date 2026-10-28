@@ -1,5 +1,7 @@
 # Schoolbell user guide
 
+The Draft panel starts collapsed. Click its summary to see the active-plan comparison and save/apply controls. Yellow reminds you that saving does not enable bells. Browser playback uses the viewing computer/phone; Shkolnik speaker playback uses the speakers connected to Shkolnik.
+
 ## When a problem occurs
 
 Use Resolve problem in the header. The panel explains the latest confirmed state. Read status again never repeats commands or replaces edits. Suggested actions open the relevant section; time confirmation, saving and enabling remain separate actions. An expired session offers sign-in.

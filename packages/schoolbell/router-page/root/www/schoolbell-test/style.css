@@ -48,3 +48,9 @@ html{--row-alt:#f6f8fa}html[data-theme=dark]{--row-alt:#1c222b}
 html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27;color:#7ee787}html[data-theme="dark"] .automatic-badge[data-tone="warning"]{background:#493a12;color:#e3b341}html[data-theme="dark"] .automatic-badge[data-tone="danger"]{background:#522326;color:#ffa198}
 
 .problem-panel{margin:20px 0}.problem-panel pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}.problem-panel [role=status]{font:inherit;min-height:0}
+
+/* Collapsed draft notice stays in flow and never covers the active tab. */
+.plan-workflow{padding:10px 14px;background:#fff8c5;border-color:#d4a72c;color:#4d3b00}
+.plan-workflow summary{cursor:pointer;font-weight:600;overflow-wrap:anywhere}.workflow-hint{font-weight:400}.plan-workflow[open] summary{margin-bottom:12px}
+html[data-theme=dark] .plan-workflow{background:#493a12;border-color:#9e6a03;color:#f0d98a}
+.plan-workflow #workflow-difference{color:inherit}

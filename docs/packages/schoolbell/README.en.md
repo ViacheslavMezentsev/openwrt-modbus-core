@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.7 (host only): audio routes explicitly distinguish browser playback on a computer/phone from Shkolnik speakers. The draft panel starts collapsed with a warning background; status stays visible, save/apply actions are available when expanded. Expanding does not change the plan. Pages synchronized; not installed.
+
 5.1.6 (host verification, not installed): Resolve problem explains status and offers safe reading/navigation to settings, sign-in, media or journal. It never enables bells, bypasses protection, changes clocks or replays commands. No fresh data does not claim a network failure. UI wording uses device; copy identifiers are in technical details. Pages shares the interface.
 
 5.1.5 installed and accepted by the owner in a short quiet-day test: the header button resumes the previously applied plan (green Running) and stops it (yellow Off). Four samples over 12 seconds confirmed operation and clock trust without recurring observation_gap. Final state: automatic bells off, applied copy retained, exported backup byte-identical, clock/NTP and system configuration unchanged. This does not validate audible bells, maximum-size plans or sustained operation. Pages is synchronized locally; publication remains a separate owner action.

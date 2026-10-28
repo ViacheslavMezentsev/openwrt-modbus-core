@@ -2,6 +2,9 @@
 
 ## Current state and next steps
 
+- [x] 5.1.7 host: explicit browser/Shkolnik audio routes and a collapsed warning-colored draft panel; shared Pages UI.
+- [ ] Accept 5.1.7 layout on device after separate installation approval.
+
 - [x] Calendar acceptance through Shkolnik 5.1.2: named non-overlapping calendar ranges, consecutive month pages, synchronized top/bottom navigation and device-neutral save label. Owner confirmed cross-year viewing, paging, painting persistence, save/reload and both navigation panels. Automatic bells remain off. Pages publication is a separate owner action; local demo is synchronized with the current sources.
 - [x] Range model shared by Lua storage/preview/executor, backup and Pages; legacy checksums preserved on read. Target installation backed up and payload/data checked. This does not close full power-loss or security acceptance.
 - [x] Release discovery/update requirements: core 1.34 / schoolbell 1.54, stable package identity and dependencies, simple notification UI and separate administrator installation. Documentation only; current IPK has no updater.
