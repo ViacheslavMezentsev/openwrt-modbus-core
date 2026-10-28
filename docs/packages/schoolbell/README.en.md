@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.17: the complete journal pager (page indicator and four buttons) sits on the right of the same toolbar as refresh, filter and copy on the left. Groups wrap on narrow screens. Shared Pages UI synchronized; no device installation.
+
 5.1.16: draft reads retry explicit busy only (up to three GETs, 0.5/1 s delays); storage errors are not disguised as contention. Retry remains available after failure; unsaved edits and session loss are protected against late responses. Right-aligned journal navigation adds first/last pages, icons and tooltips. Shared Pages UI synchronized; no device installation.
 
 2026-10-28: 5.1.15 installed after backup; the owner accepted journal pages, error filtering, full-history copy and the compact mute button. Settings, plans and melodies preserved; automatic bells disabled, clock/NTP unchanged. Recommended next steps: recover draft reads after temporary storage contention, then a portable calendar-plan bundle. This is a plan, not implementation or power-loss acceptance.

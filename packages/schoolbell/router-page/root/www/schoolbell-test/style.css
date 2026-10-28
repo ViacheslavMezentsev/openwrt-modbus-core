@@ -79,5 +79,7 @@ html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27
 
 #journal-errors[aria-pressed=true]{background:#a40e26;color:#fff;border-color:#a40e26}
 
-.journal-navigation { justify-content: flex-end; flex-wrap: wrap; }
+.journal-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+.journal-actions, .journal-navigation { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.journal-navigation { margin-left: auto; justify-content: flex-end; }
 .journal-navigation button { min-width: 2.75em; }
