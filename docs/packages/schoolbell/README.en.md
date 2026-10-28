@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.18: journal navigation arrows use 28 px glyphs in compact buttons. The Pages demo notice is collapsed, with a blue information border and Details, after other notices and before tabs; expand it for explanations and reset. No device installation.
+
 5.1.17: the complete journal pager (page indicator and four buttons) sits on the right of the same toolbar as refresh, filter and copy on the left. Groups wrap on narrow screens. Shared Pages UI synchronized; no device installation.
 
 5.1.16: draft reads retry explicit busy only (up to three GETs, 0.5/1 s delays); storage errors are not disguised as contention. Retry remains available after failure; unsaved edits and session loss are protected against late responses. Right-aligned journal navigation adds first/last pages, icons and tooltips. Shared Pages UI synchronized; no device installation.
