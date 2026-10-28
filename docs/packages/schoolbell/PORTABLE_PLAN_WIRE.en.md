@@ -2,8 +2,9 @@
 
 [Русский](PORTABLE_PLAN_WIRE.md) · [Accepted policy](PORTABLE_PLAN.en.md)
 
-Proposal for specification1.66 question8.2.15, 2026-10-28. **Pending agreement**,
-not implementation or an approved schema extension. Installed5.1.18 is unchanged.
+Accepted by the owner on2026-10-28, specification1.67 question8.2.15.
+Isolated byte codecs have TC-175 coverage; see [scope](PORTABLE_PLAN_CODEC.en.md).
+System import/API are not implemented. Installed5.1.18 is unchanged.
 
 ## Container and schema
 

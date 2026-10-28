@@ -1,10 +1,12 @@
 # Schoolbell package
 
-Proposed exact framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 remains open pending agreement; runtime unchanged.
+Isolated Lua/JS .sbp codecs and shared62-vector corpus: [coverage/API](PORTABLE_PLAN_CODEC.en.md). Specification1.67, TC-175; no IPK/UI/installation. Next: dependency model and preview.
 
-Accepted [.sbp contract](PORTABLE_PLAN.en.md): selected calendar plans with complete dependencies, bundled-only Pages, preview and additive non-overwriting import. Specification1.66; TC-168–174 planned. No implementation/installation; package remains5.1.18. Next: exact wire/API, bounds and recovery before the codec.
+Accepted framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 is closed by agreement; system import is not implemented.
 
-Status on 2026-10-28: 5.1.18 installed and accepted by the owner. Draft read recovery after busy (isolated directory), toolbar placement and enlarged journal arrows have been checked; data and system settings retained. Automatic bells off, clock/NTP unchanged. TODO reconciled; proposed next stage is the complete portable calendar-plan dependency contract, followed by Pages/device export and import. This does not certify unattended recovery after power loss.
+Accepted [.sbp contract](PORTABLE_PLAN.en.md): selected calendar plans with complete dependencies, bundled-only Pages, preview and additive non-overwriting import. Specification 1.67; full-import TC-168–174 remain planned. Byte codecs have separate TC-175 coverage; package remains 5.1.18.
+
+Status on 2026-10-28: 5.1.18 installed and accepted by the owner. Draft read recovery after busy (isolated directory), toolbar placement and enlarged journal arrows have been checked; data and system settings retained. Automatic bells off, clock/NTP unchanged. TODO reconciled; next stages are the dependency/preview model, followed by Pages/device export and import. This does not certify unattended recovery after power loss.
 
 5.1.18: journal navigation arrows use 28 px glyphs in compact buttons. The Pages demo notice is collapsed, with a blue information border and Details, after other notices and before tabs; expand it for explanations and reset. No device installation.
 

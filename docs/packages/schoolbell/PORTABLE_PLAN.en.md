@@ -1,10 +1,12 @@
 # Portable calendar plan .sbp
 
-Proposed exact framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 remains open pending agreement; runtime unchanged.
+Exact wire/API accepted in specification1.67: [contract](PORTABLE_PLAN_WIRE.en.md). Only the [isolated byte codec](PORTABLE_PLAN_CODEC.en.md) is implemented; system import remains future work.
+
+Accepted framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 is closed by agreement.
 
 [Русский](PORTABLE_PLAN.md)
 
-Accepted stage contract, 2026-10-28, schoolbell specification revision 1.66, section 4.10. Not implemented: installed 5.1.18 cannot import/export .sbp. This is neither a full .sbb backup nor an installation package. Exact wire layout and transaction API remain decisions before implementation.
+Accepted stage contract, 2026-10-28, schoolbell specification revision 1.66, section 4.10. System import is not implemented: installed 5.1.18 cannot import/export .sbp. This is neither a full .sbb backup nor an installation package. Exact wire layout and transaction API are accepted in PORTABLE_PLAN_WIRE.en.md.
 
 ## Contents and compatibility
 
@@ -12,7 +14,7 @@ One .sbp file contains a bounded manifest JSON block, calendar.json and referenc
 
 The calendar uses the existing named inclusive date ranges, date assignments, schedules/colors/rows and pre-bell parameters. Local user1–user8 slots are not destination addresses. The dependency closure includes disabled rows and the pre-bell melody. User audio is included, identical bytes once. Bundled audio may be omitted only with exact ID/size/hash references; missing or different bundled audio is an error, never an automatic substitution/download.
 
-Use a streaming container (short header, bounded known-length JSON manifest, known-length files), not ZIP or a new unpacker dependency. SHA-256 detects corruption, not authorship. Exact magic, length encoding, field schemas/order, container/manifest bounds and test vectors require a separate decision; do not silently copy the .sbb layout.
+Use a streaming container (short header, bounded known-length JSON manifest, known-length files), not ZIP or a new unpacker dependency. SHA-256 detects corruption, not authorship. Exact framing/fields/bounds are in PORTABLE_PLAN_WIRE.en.md; isolated implementation and vectors are described in PORTABLE_PLAN_CODEC.en.md.
 
 Export the current draft and selected plans, including unsaved edits with an explicit notice. Export never saves or activates it. Exclude the active plan/enable permission, daily mode, manual melody, volume/mute, time trust, system time/NTP/timezone settings, network, credentials, journal and hardware settings. Existing global settings are retained except explicitly admitted pre-bell parameters.
 
@@ -25,19 +27,19 @@ Calendar → Import plan → choose file → review contents → add to draft. P
 - Addition only. Overlaps within the archive or with existing inclusive ranges are rejected; repeated imports cannot duplicate a range.
 - Assign new IDs to imported plans/schedules/rows and rewrite their references. Existing objects are not modified or implicitly merged.
 - Conflicting plan/schedule names require an explicit new imported name. Matching melody titles do not prove identical content.
-- User media uses free slots only. No occupied slot/file/title is replaced. Insufficient slots reject import. Reuse of identical existing objects needs a separate precise policy; deduplication is not promised to free slots.
-- Different timezones reject import without shifting bell times or changing system timezone. Zone representation and equivalent-alias comparison remain open.
+- User media uses free slots only. No occupied slot/file/title is replaced. Insufficient slots reject import. Occupied slots are not reused even for matching hashes. Shared payload bytes are transferred once, but distinct user catalogue entries receive distinct free slots.
+- Different timezones reject import without shifting bell times or changing system timezone. Compare exact name/posix fields without automatic alias equivalence.
 - If any existing row has pre=true, including disabled rows, interval and actual pre-bell melody must match. Compare content, not slot number. Otherwise reject. If no existing pre-bell references exist, imported parameters may be accepted with explicit preview disclosure.
 
 Save and reread the combined inactive draft; bells stay disabled and the applied copy stays untouched. Applying the new draft is a separate user action. Recheck draft/media revisions and disabled automation before commit; concurrent changes invalidate preview. Confirmation binds the exact archive and dependency mapping.
 
 ## Integrity, resources and recovery
 
-Apply current limits to the combined result: 12 KiB draft, 8 plans, 16 schedules, 32 rows per schedule/128 total; 8 user slots, MP3 up to 512 KiB/60 seconds, 2 MiB library quota and max(512 KiB,10% partition) free reserve. Account for existing/staged/retained data, metadata and peak RAM/tmp, and recheck space. Maximal objects are not guaranteed to fit. Exact container/buffer bounds and peak budget remain open.
+Apply current limits to the combined result: 12 KiB draft, 8 plans, 16 schedules, 32 rows per schedule/128 total; 8 user slots, MP3 up to 512 KiB/60 seconds, 2 MiB library quota and max(512 KiB,10% partition) free reserve. Account for existing/staged/retained data, metadata and peak RAM/tmp, and recheck space. Maximal objects are not guaranteed to fit. Container/buffer/space bounds are specified in PORTABLE_PLAN_WIRE.en.md; target peak RSS remains unmeasured.
 
 Validate format, hashes, references and MP3 without sound before publication. Reject unsupported schemas, truncation, trailing bytes, duplicate names, unsafe paths and missing/corrupt dependencies. Never execute archive code or fetch dependencies. Device writes use normal LuCI authentication and POST/CSRF protection.
 
-Publish draft and new media coherently. Pre-commit failure leaves existing logical data unchanged. Interrupted publication yields the complete old state, complete new state, or explicit recovery blocking partial data and keeping bells disabled. Success requires verified durable publication. Commit/recovery protocol remains to be specified; the current resumable backup restore is not automatically an atomic import.
+Publish draft and new media coherently. Pre-commit failure leaves existing logical data unchanged. Interrupted publication yields the complete old state, complete new state, or explicit recovery blocking partial data and keeping bells disabled. Success requires verified durable publication. Durable intent and recovery are specified in PORTABLE_PLAN_WIRE.en.md; the current resumable backup restore is not automatically an atomic import.
 
 After a lost HTTP response query the same operation outcome; do not blindly replay POST. Repeated confirmation must not create duplicate plans or consume another slot.
 

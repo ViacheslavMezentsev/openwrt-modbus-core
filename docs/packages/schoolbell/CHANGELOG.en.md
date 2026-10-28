@@ -60,7 +60,9 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ## [Unreleased]
 
-- Proposed exact framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 remains open pending agreement; runtime unchanged.
+- Isolated Lua/JS .sbp codecs and shared62-vector corpus: [coverage/API](PORTABLE_PLAN_CODEC.en.md). Specification1.67, TC-175; no IPK/UI/installation. Next: dependency model and preview.
+
+- Accepted framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 is closed by agreement; system import is not implemented.
 
 Accepted [.sbp contract](PORTABLE_PLAN.en.md): selected calendar plans with complete dependencies, bundled-only Pages, preview and additive non-overwriting import. Specification1.66; TC-168–174 planned. No implementation/installation; package remains5.1.18. Next: exact wire/API, bounds and recovery before the codec.
 
