@@ -174,7 +174,10 @@ end
 function M.request(root,operation,text,expected,host)
     local FS=require("schoolbell.media_fs")
     local ok,fs=pcall(FS.new,root,host)
-    if not ok then return {ok=false,code="storage_unavailable"} end
+    if not ok then
+        local busy=type(fs)=="string" and (fs=="busy" or fs:match(": busy$"))
+        return {ok=false,code=busy and "busy" or "storage_unavailable"}
+    end
     local good,result=pcall(operation=="save" and M.save or M.load,fs,text,expected)
     local closed=pcall(fs.close)
     if not good or not closed then return {ok=false,code="storage_uncertain"} end

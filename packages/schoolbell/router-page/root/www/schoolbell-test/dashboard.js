@@ -56,6 +56,8 @@
       ['#'+e.seq+' · '+journalTime(e),journalSource(e),actions[e.action] || e.action].forEach(function(text){var td=document.createElement('td');td.textContent=text;tr.appendChild(td);});rows.appendChild(tr);
     });
     document.getElementById('journal-page').textContent='Страница '+(journalPage+1)+' из '+pages+' · Записей: '+selected.length+(journalErrors?' с ошибками':'');
+    document.getElementById('journal-first').disabled=journalPage===0;
+    document.getElementById('journal-last').disabled=journalPage>=pages-1;
     document.getElementById('journal-prev').disabled=journalPage===0;
     document.getElementById('journal-next').disabled=journalPage>=pages-1;
     document.getElementById('journal-errors').setAttribute('aria-pressed',String(journalErrors));
@@ -75,6 +77,8 @@
   }
   document.getElementById('journal-reload').addEventListener('click',loadJournal);
   document.getElementById('journal-errors').addEventListener('click',function(){journalErrors=!journalErrors;journalPage=0;renderJournal();});
+  document.getElementById('journal-first').addEventListener('click',function(){journalPage=0;renderJournal();});
+  document.getElementById('journal-last').addEventListener('click',function(){journalPage=Math.max(0,Math.ceil(journalEntries.filter(function(e){return !journalErrors || e.level==='error';}).length/journalPageSize)-1);renderJournal();});
   document.getElementById('journal-prev').addEventListener('click',function(){journalPage--;renderJournal();});
   document.getElementById('journal-next').addEventListener('click',function(){journalPage++;renderJournal();});
   document.getElementById('journal-copy').addEventListener('click',async function(){

@@ -11,12 +11,18 @@ Readiness: engineering pilot candidate, not certified unattended service. First 
 
 ### Recommended next branches (scope each before implementation)
 
-1. **Recover draft reads after temporary storage contention.** Distinguish busy from storage/I/O failure; bounded retries of GET only, explicit retry/reconciliation, preserve unsaved edits and restore controls. Initial read failure must not claim edits were saved. Do not replay POST, remove locks or enable bells. Cover initial load, exhausted retries, session loss and concurrent edits; synchronize Pages.
+1. **Draft read recovery implemented in 5.1.16, host only.** Explicit busy GET retries, manual retry/reconciliation, retained edits/session guards and journal first/last navigation; Pages synchronized. Next: separately authorized device installation and browser acceptance.
 2. **Portable calendar-plan bundle.** Agree the exact versioned format and dependency/conflict preview, then implement export/import of selected named date ranges, referenced schedules/colors, pre-bell settings and media. Pages first stage uses bundled melodies only. Import as a draft, automatic bells off; no credentials, hardware/network/NTP settings. This is distinct from a full .sbb device backup.
 3. **Complete remaining operator journeys.** Active-plan preview distinct from draft; rename/delete user melodies with reference checks; bounded undo and archive summary/onboarding. Browser clock setting needs a separate contract and explicit permission for any real clock change.
 4. **Product acceptance.** Finish LuCI access/session/CSRF/concurrency checks and agree quantitative timing/endurance criteria. Cold boot, offline first boot and power-loss tests require separate authorization. Successful short UI tests are not unattended-operation certification.
 
 Broad exchange/architecture refactoring is not a prerequisite: current measurements identify CGI startup costs, not a proven command-queue bottleneck. End-to-end audible startup measurement is optional if the owner observes a practical delay.
+
+### Proposed external RTC source (not implemented)
+
+- [ ] Agree core-owned discovery/read-only Modbus time-source profile: identity, UTC encoding, coherent sample, validity/oscillator/battery flags, freshness, accuracy and timeout. Presence alone never grants trust; transport validity alone does not establish correct time.
+- [ ] Agree an optional, default-off clock-recovery policy: explicit trusted-source selection, reject stale/invalid/out-of-range samples; one system owner sets time. Schoolbell may explicitly permit resuming only the previously applied plan after successful time validation. No replay of missed bells and no implicit enabling after install/update/import. Source loss, conflicting sources and fallback require a contract and tests before implementation.
+- [ ] Validate separately powered RTC board and controlled cold-boot/power-loss scenarios after authorization. Battery/UPS alternative documented, capacity and clock accuracy are separate concerns.
 
 ### Completed checks and remaining acceptance
 

@@ -60,6 +60,8 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ## [Unreleased]
 
+5.1.16: draft reads retry explicit busy only (up to three GETs, 0.5/1 s delays); storage errors are not disguised as contention. Retry remains available after failure; unsaved edits and session loss are protected against late responses. Right-aligned journal navigation adds first/last pages, icons and tooltips. Shared Pages UI synchronized; no device installation.
+
 ### Added
 
 - 5.1.15: compact mute label; journal pages of 20 rows, error filter, full loaded-history clipboard copy (including HTTP fallback), device-local timestamps. The 16 KiB bound remains; entries older than 7 days are hidden on reads and atomically pruned on append without resetting sequence numbers. Future records survive clock rollback. Pages synchronized; demo retains at most 80 events.

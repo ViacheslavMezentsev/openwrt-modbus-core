@@ -85,6 +85,15 @@ test("post-rename sync failure is uncertain not success",function()
  assert(out.code=="storage_uncertain" and not out.ok)
  assert(S.load(f).data.schedules[1].rows[1].time=="09:00")
 end)
+test("request distinguishes contention from missing/private/restore/I/O errors",function()
+ local function host(lock,restore,root)
+  return {stat=function(p)if p=="/test" then return root or {type="dir",mode=448} end;if restore and p=="/test/restore.pending" then return {type="reg"} end end,lock=lock}
+ end
+ assert(S.request("/test","load",nil,nil,host(function()return nil end)).code=="busy")
+ assert(S.request("/test","load",nil,nil,host(function()error("I/O")end)).code=="storage_unavailable")
+ assert(S.request("/test","load",nil,nil,host(function()error("must not lock")end,true)).code=="storage_unavailable")
+ assert(S.request("/test","load",nil,nil,host(function()error("must not lock")end,false,{type="dir",mode=511})).code=="storage_unavailable")
+end)
 -- No HTTP token decoding or disk access for oversized bodies; failed CSRF cannot save.
 local calls=0;local length="999999";local allowed=false;local status
 package.loaded["luci.http"]={getenv=function(k)if k=="CONTENT_LENGTH" then return length end;if k=="CONTENT_TYPE" then return "application/x-www-form-urlencoded" end;return "POST" end,status=function(c)status=c end}

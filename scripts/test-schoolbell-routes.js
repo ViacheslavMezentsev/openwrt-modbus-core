@@ -2,8 +2,8 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
 const root=path.resolve(__dirname,'..'),ui=process.env.SCHOOLBELL_UI_DIR || path.join(root,'packages/schoolbell/router-page/root/www/schoolbell-test');
 const clone=x=>JSON.parse(JSON.stringify(x));
-function fixture(storage={},initialRevision="r1"){
- const all=[],ids=new Map(),listeners={},intervals=[];
+function fixture(storage={},initialRevision="r1",loadCodes=[]){
+ const all=[],ids=new Map(),listeners={},intervals=[],delays=[];
  class Element{
   constructor(tag='div'){this.tag=tag;this.children=[];this.dataset={};this.style={};this.events={};this.disabled=false;this._value='';this.textContent='';this.files=[];all.push(this);}
   appendChild(e){this.children.push(e);e.parent=this;return e;}
@@ -29,21 +29,51 @@ function fixture(storage={},initialRevision="r1"){
  const x={get,window,confirms:0,confirm:true,confirmMessages:[],saves:[],posts:[],previews:[],rev:initialRevision,data:draft,active:{state:'disabled',enabled:false},clock:0};
  const fetch=async(url,options={})=>{
   const post=options.method==='POST',body=post?Object.fromEntries(options.body):{};let value;
-  if(url==='load'){if(x.pauseLoad)await new Promise(resolve=>x.releaseLoad=resolve);if(x.failLoad)throw Error('network');value={ok:true,data:clone(x.data),revision:x.rev};}
+  if(url==='load'){x.loads=(x.loads || 0)+1;if(x.pauseLoad)await new Promise(resolve=>x.releaseLoad=resolve);if(x.failLoad)throw Error('network');value=loadCodes.length?{ok:false,code:loadCodes.shift()}:{ok:true,data:clone(x.data),revision:x.rev};}
   else if(url==='save'){x.saves.push(body);if(body.revision!==x.rev)value={ok:false,code:'conflict'};else{x.data=JSON.parse(body.draft);x.rev='r2';if(x.loseSave)throw Error('lost response');value={ok:true,data:clone(x.data),revision:x.rev};}}
   else if(url==='preview'){x.previews.push(JSON.parse(body.draft));value={ok:true,date:body.date,selected_schedule:'s',events:[]};}
   else if(url==='auto'){if(post){x.posts.push(body);value=x.reject?{ok:false,code:'conflict'}:{ok:true,generation:x.commandGeneration || 2};}else value=x.active;}
   else throw Error('unexpected URL');return {ok:true,json:async()=>clone(value)};
  };
  window.schoolbellClockCommand=async body=>{assert(['enable','resume'].includes(body.action));x.posts.push(body);if(x.pauseCommand)await new Promise(resolve=>x.releaseCommand=resolve);if(x.reject)throw Error('clock_untrusted');return {ok:true,generation:x.commandGeneration || 2};};
- const ctx={sessionStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v,removeItem:k=>delete storage[k]},window,document,fetch,performance:{now:()=>x.clock},Date,Math,Number,String,Array,JSON,URLSearchParams,AbortController,TextEncoder,CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail;}},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f)};
+ const ctx={sessionStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v,removeItem:k=>delete storage[k]},window,document,fetch,performance:{now:()=>x.clock},Date,Math,Number,String,Array,JSON,URLSearchParams,AbortController,TextEncoder,CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail;}},setTimeout:(f,ms)=>{if(ms===500 || ms===1000)delays.push(f);return 1;},clearTimeout(){},setInterval:f=>intervals.push(f)};
  vm.createContext(ctx);for(const file of ['ranges.js','automatic.js','schedules.js'])vm.runInContext(fs.readFileSync(path.join(ui,file),'utf8'),ctx);
- x.tick=async()=>{for(let i=0;i<6;i++)await Promise.resolve();};x.poll=async()=>{for(const f of intervals)await f();await x.tick();};
+ x.tick=async()=>{for(let i=0;i<20;i++)await Promise.resolve();};x.poll=async()=>{for(const f of intervals)await f();await x.tick();};
+ x.retry=async()=>{assert(delays.length);delays.shift()();await x.tick();};
  x.day=()=>all.filter(e=>e.dataset.date==='2026-01-01' && !e.detached).at(-1);
  x.brush=name=>get('plan-legend').children.find(e=>e.textContent===name);
  return x;
 }
 (async()=>{
+ let b=fixture({},'r1',['busy','busy']);await b.tick();
+ assert.equal(b.loads,1);assert(!b.window.schoolbellEditor.snapshot().loaded);
+ await b.retry();assert.equal(b.loads,2);await b.retry();assert.equal(b.loads,3);
+ assert(b.window.schoolbellEditor.snapshot().loaded);assert(!b.get('schedule-fields').disabled);
+ assert.equal(b.saves.length,0);assert.equal(b.posts.length,0);
+ b=fixture({},'r1',['busy','busy','busy']);await b.tick();await b.retry();await b.retry();
+ assert(!b.window.schoolbellEditor.snapshot().busy);assert(!b.get('schedule-reload').disabled);
+ assert(b.get('schedule-result').textContent.includes('ещё не загружен'));
+ await b.get('schedule-reload').click();assert(b.window.schoolbellEditor.snapshot().loaded);
+ b=fixture({},'r1',['storage_unavailable']);await b.tick();assert.equal(b.loads,1);
+ assert(!b.window.schoolbellEditor.snapshot().loaded);
+ b=fixture({},'r1',['busy']);await b.tick();b.window.schoolbellSessionBlocked=true;
+ b.window.dispatchEvent({type:'schoolbell-session-lost'});await b.retry();assert.equal(b.loads,1);
+ assert(!b.window.schoolbellEditor.snapshot().loaded);
+ b=fixture();await b.tick();b.pauseLoad=true;let reading=b.get('schedule-reload').click();await b.tick();
+ b.get('schedule-name').value='Concurrent edit';await b.get('schedule-name').fire('input');
+ b.releaseLoad();await reading;assert.equal(b.get('schedule-name').value,'Concurrent edit');
+ assert(b.window.schoolbellEditor.snapshot().reconcile);assert.equal(b.saves.length,0);
+ b=fixture();await b.tick();b.pauseLoad=true;reading=b.get('schedule-reload').click();await b.tick();
+ b.window.dispatchEvent({type:'schoolbell-session-lost'});b.releaseLoad();await reading;
+ assert(b.window.schoolbellEditor.snapshot().reconcile);
+ const codes=[];b=fixture({},'r1',codes);await b.tick();
+ b.get('schedule-name').value='Keep after busy';await b.get('schedule-name').fire('input');
+ codes.push('busy','busy','busy');reading=b.get('draft-compare').click();await b.tick();await b.retry();await b.retry();await reading;
+ assert.equal(b.get('schedule-name').value,'Keep after busy');assert(b.window.schoolbellEditor.snapshot().dirty);
+ assert(!b.get('draft-compare').disabled);await b.get('draft-compare').click();
+ assert.equal(b.get('schedule-name').value,'Keep after busy');assert.equal(b.saves.length,0);
+ console.log('PASS draft recovery: bounded busy GET retry, explicit retry, storage failure, session loss, concurrent edits, no POST');
+
  let h=fixture();await h.tick();
  assert(h.get('quick-automatic').disabled);assert.equal(h.get('quick-automatic-status').dataset.tone,'danger');
  h.active={ok:true,state:'disabled',enabled:false,generation:1,revision:'applied'};await h.poll();

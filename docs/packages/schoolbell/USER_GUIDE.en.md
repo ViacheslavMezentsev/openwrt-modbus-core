@@ -244,3 +244,9 @@ The badge below the button is green for confirmed operation, yellow for off/mute
 
 
 The Journal shows 20 entries per page. Errors toggles red error records; Copy copies all loaded history regardless of filter or page. Timestamps use Shkolnik’s current timezone and UTC offset, not the phone’s timezone. History is bounded by 16 KiB and 7 days: old records are hidden on reads and physically pruned on append. This is not a guaranteed week-long archive: size rotation may remove records sooner. Incorrect clocks affect age calculation. The mute button keeps a compact label; color and icon indicate the enabled state.
+
+## Temporary contention and backup time
+
+Draft reads retry temporary contention a bounded number of times. After failure use Retry read; for an open draft use Compare with device to retain local edits. Saves never replay automatically. Do not remove locks manually.
+
+A separately powered Modbus RTC board is proposed for future post-reboot time recovery; it is not implemented. Discovery does not establish trust. Freshness/health checks, explicit trusted-source selection and separate permission to resume the previously applied plan are required. A backup battery/UPS can power the device and speakers, but has finite capacity; it neither verifies clock accuracy nor replaces an RTC after full power loss. Power compatibility and runtime need validation on the actual setup.

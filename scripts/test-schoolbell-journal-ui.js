@@ -21,6 +21,8 @@ vm.runInNewContext(fs.readFileSync(path.join(root,'packages/schoolbell/router-pa
  assert(get('journal-rows').children[0].children[0].textContent.includes('DEVICE 44 +0500'));
  assert(get('journal-prev').disabled);await get('journal-next').click();assert.equal(get('journal-rows').children.length,20);
  await get('journal-next').click();assert.equal(get('journal-rows').children.length,5);assert(get('journal-next').disabled);
+ await get('journal-first').click();assert(get('journal-first').disabled);assert.equal(get('journal-rows').children.length,20);
+ await get('journal-last').click();assert(get('journal-last').disabled);assert.equal(get('journal-rows').children.length,5);
  await get('journal-errors').click();assert.equal(get('journal-rows').children.length,15);assert(get('journal-rows').children.every(r=>r.className==='journal-error'));
  await get('journal-copy').click();assert.equal(copied.split('\n').length,45);assert(copied.includes('DEVICE 44 +0500'));
  assert.equal(calls,1,'pagination/filter/copy must not fetch');

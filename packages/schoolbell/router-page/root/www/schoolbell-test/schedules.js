@@ -10,7 +10,7 @@
   var name=document.getElementById('schedule-name');
   var rows=document.getElementById('schedule-rows');
   var draft=null, revision=null, selected=null, dirty=false, busy=false, reconcile=false, activationLock=false;
-  var compared=null, handoffReady=false;
+  var compared=null, handoffReady=false, sessionEpoch=0;
   var handoffKey="schoolbell-editor-handoff-v1";
   var mediaNames={test:'Тестовый звонок','0':'[Короткая] Время','1':'Шутка Баха','2':'Гостья из XXI','3':'Князь Игорь','4':'Усатый нянь'};
   function mediaLabel(id){return (mediaNames[id] || ('Пользовательская '+id.slice(4)))+' · '+id;}
@@ -160,7 +160,7 @@
   function current() { return draft && draft.schedules.find(function (s) { return s.id===selected; }); }
   function total() { return draft.schedules.reduce(function (n,s) { return n+s.rows.length; },0); }
   function state() {
-    var locked=busy || activationLock;
+    var locked=busy || activationLock || !!window.schoolbellSessionBlocked;
     document.getElementById('plan-apply').disabled=locked || !formPending;document.getElementById('plan-cancel').disabled=locked || !formPending;
     document.getElementById('workflow-draft').textContent='Черновик: '+(formPending?'название и даты ещё не применены':reconcile?'нужно сверить сохранение':!draft?'ещё не загружен':dirty?'есть несохранённые изменения':revision==='empty'?'ещё не сохранён':'сохранён');
     document.getElementById('workflow-save').disabled=locked || !draft || !dirty || reconcile || formPending;
@@ -173,13 +173,14 @@
     fields.disabled=locked || !draft;
     save.disabled=locked || !draft || !dirty || reconcile || formPending;
     reload.disabled=locked;
+    reload.textContent=draft?"Отменить правки / загрузить сохранённое":"Повторить чтение";
     document.getElementById('draft-compare').disabled=locked || !draft || formPending;
     document.getElementById('draft-keep-local').disabled=locked || !compared || formPending;
     document.getElementById('draft-use-router').disabled=locked || !compared || formPending;
     document.getElementById('settings-save').disabled=locked || !dirty || reconcile || formPending;
     document.getElementById('settings-result').textContent=result.textContent;
     document.getElementById('preview-day').disabled=locked || formPending;
-    badge.textContent=formPending?'Есть неприменённый ввод':busy?'Обмен с устройством…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Черновик сохранён';
+    badge.textContent=!draft?'Черновик ещё не загружен':formPending?'Есть неприменённый ввод':busy?'Обмен с устройством…':dirty?'Есть несохранённые изменения':revision==='empty'?'Пока не сохранено':'Черновик сохранён';
     badge.dataset.dirty=dirty?'true':'false';
     window.dispatchEvent(new CustomEvent('schoolbell-editor-state'));
   }
@@ -238,7 +239,8 @@
     invalid:'Не удалось сохранить: проверьте время, название, флажки и лимиты.',
     space:'Недостаточно свободного места с защитным запасом. Черновик в браузере сохранён.',
     recovery_required:'Сохранённые данные повреждены или неполны. Они не заменены. Нужна проверка по SSH.',
-    storage_unavailable:'Хранилище занято или недоступно. Изменения в браузере сохранены.',
+    busy:'Хранилище временно занято. Повторите чтение.',
+    storage_unavailable:'Хранилище недоступно. Автоматический повтор не выполняется.',
     storage_uncertain:'Результат записи не подтверждён. Не повторяем сохранение: нажмите «Сверить с устройством».',
     revision:'Неизвестная ревизия. Загрузите данные устройства.',size:'Превышен размер черновика: 12 КиБ.'
   };
@@ -251,6 +253,21 @@
     } finally {clearTimeout(timer);}
 
   }
+  // Only idempotent draft GETs retry explicit contention; POSTs never replay.
+  async function readDraft() {
+    var epoch=sessionEpoch;
+    for(var attempt=0;attempt<3;attempt++) {
+      if(window.schoolbellSessionBlocked || epoch!==sessionEpoch)throw Error('session');
+      var value=await request(root.dataset.load);
+      if(window.schoolbellSessionBlocked || epoch!==sessionEpoch)throw Error('session');
+      if(value.ok || value.code!=='busy' || attempt===2)return value;
+      result.textContent='Хранилище временно занято. Повторяем чтение…';state();
+      await new Promise(function(resolve){setTimeout(resolve,500*(attempt+1));});
+    }
+  }
+  function readGuard(){return JSON.stringify([draft,formPending,newPlan,copyPlan,
+    document.getElementById('plan-name').value,document.getElementById('plan-start').value,
+    document.getElementById('plan-end').value]);}
   function prepareNavigation(){
     try{
       if((dirty || formPending) && draft){
@@ -273,16 +290,18 @@
     }catch(_){return false;}
   }
   async function load() {
-    if(busy || activationLock)return;
+    if(busy || activationLock || window.schoolbellSessionBlocked)return;
     if((dirty || formPending) && !window.confirm('Заменить несохранённые изменения данными с устройства?')) return;
+    var guard=readGuard();
     busy=true; state();
     try {
-      var value=await request(root.dataset.load);
-      if(!value.ok) { result.textContent=errors[value.code] || 'Ошибка чтения.'; reconcile=true; return; }
+      var value=await readDraft();
+      if(guard!==readGuard()){reconcile=true;result.textContent="Во время чтения появились правки. Они сохранены в браузере; сверьте копии.";return;}
+      if(!value.ok) { result.textContent=(errors[value.code] || 'Ошибка чтения.')+(draft?' Правки в браузере не изменены.':' Черновик ещё не загружен.')+(draft?' Нажмите «Сверить с устройством».':' Нажмите «Повторить чтение».'); reconcile=!!draft; return; }
       document.getElementById('preview-events').replaceChildren(); document.getElementById('preview-status').textContent='Предпросмотр использует текущий черновик.'; draft=normalize(value.data);if(!draft.plans.some(function(p){return p.id===planId;}))planId=draft.plans[0]?.id || null;fillPlan(); revision=value.revision; dirty=false; reconcile=false; compared=null;document.getElementById('draft-comparison').hidden=true; brush='view'; render();
       result.textContent=revision==='empty'?'Сохранённых расписаний ещё нет. Создайте первое.':'Черновик прочитан с устройства. Состояние автозвонков указано в верхней плашке.';
       if(restoreNavigation()){render();result.textContent=reconcile?'Правки восстановлены. Сохранённый план изменился: сверьте копии перед записью.':'Несохранённые правки восстановлены после входа. Автозвонки не включались.';}
-    } catch (_) { result.textContent='Не удалось загрузить данные. Проверьте соединение и вход LuCI.'; }
+    } catch (_) { result.textContent='Не удалось загрузить данные. Проверьте вход и повторите чтение.'+(draft?' Правки в браузере не изменены.':' Черновик ещё не загружен.'); }
     finally { busy=false; state(); }
   }
   function canonical(value) {
@@ -307,7 +326,7 @@
     if(busy || activationLock || !draft || formPending)return;
     busy=true;compared=null;document.getElementById('draft-comparison').hidden=true;state();
     try {
-      var value=await request(root.dataset.load);
+      var value=await readDraft();
       if(!value.ok)throw Error('read');
       var remote=normalize(value.data);
       compared={data:remote,revision:value.revision};reconcile=true;
@@ -452,6 +471,7 @@
   reload.addEventListener('click',load);
   window.addEventListener('beforeunload',function (e) { if((dirty || formPending) && !handoffReady) { e.preventDefault(); e.returnValue=''; } });
   window.addEventListener('schoolbell-session-lost',function(){
+    sessionEpoch++;
     reconcile=true;compared=null;document.getElementById('draft-comparison').hidden=true;
     result.textContent='Сеанс недоступен. Правки остаются в этой вкладке; после входа нажмите «Сверить с устройством».';state();
   });
