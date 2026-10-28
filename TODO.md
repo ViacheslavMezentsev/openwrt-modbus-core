@@ -2,10 +2,12 @@
 
 ## Current state and next steps
 
-- [x] 5.1.13 shared UI: compact diagnostics row, grouped status/draft notices above tabs, Details hint, simplified CPU line and author credits. Pages synchronized; device acceptance pending.
+- [x] 5.1.13 installed after verified backup: compact UI accepted by owner; payload/export/system guard verified, automatic bells off. Installed warm automatic handler measured 70–163 ms (median80), browser aggregate701/1243 ms; these are different measurement scopes. Pages publication remains owner action.
 
 - [x] 5.1.12: exact-byte worker status witness in private RAM; unchanged plans skip full validation in GET. Host corruption/fault/TTL tests and isolated target comparison, no package installation.
-- [ ] Install/accept 5.1.12 separately and compare end-to-end browser latency/CPU under comparable load. If delays remain, measure LuCI dispatch, schedules and journal separately before broader refactoring; do not infer queue contention from HTTP latency alone.
+- [x] Fast automatic reads installed as part of 5.1.13; compare remaining delays by API method before broader refactoring.
+- [x] 5.1.14 host: passive bounded per-method HTTP statistics with GET/POST separation, completion/error/pending and header latency, shared Pages and controlled-clock tests.
+- [ ] Install/accept 5.1.14 separately; collect idle versus manual/test-bell method statistics only with sound separately authorized. Inspect schedules/journal/LuCI paths if still slow; aggregate HTTP maxima do not identify a method or prove queue contention.
 
 - [x] 5.1.11 host: real single-slot mailbox telemetry, collapsed queue/HTTP selector, passive CPU indicator, diagnostics above status and shared Pages.
 - [x] 5.1.11 installed: owner observed the CPU line, processed command and wait after time preparation, then an empty queue. Read-only handler profiling found repeated plan validation in GET automatic; this does not certify all load/conflict scenarios.
