@@ -17,10 +17,21 @@ Readiness: engineering pilot candidate, not certified unattended service. First 
 2. **Complete remaining operator journeys.** Active-plan preview distinct from draft; rename/delete user melodies with reference checks; bounded undo and archive summary/onboarding. Browser clock setting needs a separate contract and explicit permission for any real clock change.
 3. **Product acceptance.** Finish LuCI access/session/CSRF/concurrency checks and agree quantitative timing/endurance criteria. Cold boot, offline first boot and power-loss tests require separate authorization. Successful short UI tests are not unattended-operation certification.
 
+### Delivery order agreed with the owner
+
+Finish .sbp development and deployment first. Then prepare a separate acceptance
+record for a frozen artifact set on a new same-model router: OpenWrt installation,
+configuration, functional/recovery acceptance and a week or longer observed
+automatic run. The owner can keep the device online; schedule monitoring only when
+the run and access are ready. Networked observation is distinct from offline testing
+and audible confirmation. Flashing, clocks, power cuts and sound are not authorized
+by this roadmap alone.
+
 ### Portable plans: agreed policy and remaining work
 
 - [x] Policy: schoolbell-plan/1, existing range model, complete dependency closure including disabled rows and pre-bell; bundled-only Pages, user audio included in device export. No implementation.
 - [x] Add-only import policy: reject overlaps/timezone/pre-bell conflicts, remap imported IDs, explicitly rename conflicting plan/schedule names, free media slots only, no replacement/activation. Preview then revision recheck; exact wire/API still open.
+- [ ] Agree exact proposal in docs/packages/schoolbell/PORTABLE_PLAN_WIRE.md (question8.2.15 remains open), then pure JS/Lua codec and shared valid/error fixtures.
 - [ ] Bounded parsing/unpacking, checksums, RAM/flash budget, staging and atomic publication/rollback using existing backup/media mechanisms. No partial draft or referenced-media replacement after a failure.
 - [ ] Offline host/Pages round-trip first: September–May, cross-year dates, colors, pre-bells and matching preview; malformed/incompatible archives, missing media, overlap, quota/write interruption and unchanged current data on rejection. Pages must clearly reject unsupported user-media imports rather than drop files.
 - [ ] Then separately authorize device installation and transfer acceptance after backup, without sound or enabling bells. Design the full dependency contract now; bundled-only Pages is not acceptance of a device exporter that omits user melodies.

@@ -1,5 +1,7 @@
 # Portable calendar plan .sbp
 
+Proposed exact framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 remains open pending agreement; runtime unchanged.
+
 [Русский](PORTABLE_PLAN.md)
 
 Accepted stage contract, 2026-10-28, schoolbell specification revision 1.66, section 4.10. Not implemented: installed 5.1.18 cannot import/export .sbp. This is neither a full .sbb backup nor an installation package. Exact wire layout and transaction API remain decisions before implementation.

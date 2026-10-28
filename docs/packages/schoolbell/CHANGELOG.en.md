@@ -60,6 +60,8 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ## [Unreleased]
 
+- Proposed exact framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 remains open pending agreement; runtime unchanged.
+
 Accepted [.sbp contract](PORTABLE_PLAN.en.md): selected calendar plans with complete dependencies, bundled-only Pages, preview and additive non-overwriting import. Specification1.66; TC-168–174 planned. No implementation/installation; package remains5.1.18. Next: exact wire/API, bounds and recovery before the codec.
 
 Status on 2026-10-28: 5.1.18 installed and accepted by the owner. Draft read recovery after busy (isolated directory), toolbar placement and enlarged journal arrows have been checked; data and system settings retained. Automatic bells off, clock/NTP unchanged. TODO reconciled; proposed next stage is the complete portable calendar-plan dependency contract, followed by Pages/device export and import. This does not certify unattended recovery after power loss.
