@@ -57,3 +57,5 @@ html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27
 .traffic-panel{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px}.traffic-panel p{font-size:.9em}.traffic-panel svg{width:100%;height:150px;display:block;border-bottom:1px solid var(--border)}.traffic-axis{display:flex;justify-content:space-between;font-size:.85em}.traffic-reads{color:#218bff;stroke:#218bff;fill:#218bff}.traffic-commands{color:#bf8700;stroke:#bf8700;fill:#bf8700}.traffic-panel polyline{fill:none}
 
 .traffic-panel polyline.traffic-commands{stroke-dasharray:5 4}
+
+.traffic-hint{padding:8px 12px;background:var(--soft);border-left:3px solid var(--accent);border-radius:6px;min-height:2.5em}.traffic-selection{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}#traffic-chart:focus-visible{outline:2px solid var(--accent)}

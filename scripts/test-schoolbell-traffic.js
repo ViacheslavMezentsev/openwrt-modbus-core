@@ -25,7 +25,7 @@ const {create,observe}=require('../packages/schoolbell/router-page/root/www/scho
  // Browser integration: all sections are observed even while Journal is hidden.
  const vm=require('node:vm');const fs=require('node:fs');let sent=0,tick;
  const elements={
-  'traffic-chart':{replaceChildren(){},appendChild(){}},
+  'traffic-chart':{replaceChildren(){},appendChild(){},listeners:{},addEventListener(n,f){this.listeners[n]=f;},getBoundingClientRect(){return {left:0,width:700};}},'traffic-hint':{},
   'schedule-editor':{dataset:{load:'/api/load',save:'/api/save',sample:'/api/audio',token:'secret'}},
   'session-panel':{dataset:{session:'/api/session'}},
   'backup-panel':{dataset:{url:'/api/backup'}},
@@ -41,6 +41,14 @@ const {create,observe}=require('../packages/schoolbell/router-page/root/www/scho
  elements['panel-journal'].hidden=false;tick();
  assert.match(elements['traffic-stats'].textContent,/Чтение: 2 · Команды: 1/);
  assert.equal(sent,5);tick();assert.equal(sent,5);
+ const graph=elements['traffic-chart'];graph.listeners.pointermove({clientX:680});
+ assert.match(elements['traffic-hint'].textContent,/всего 3 · чтение 2 · команды 1/);
+ tick();assert.match(elements['traffic-hint'].textContent,/всего 3/);
+ graph.listeners.keydown({key:'Home',preventDefault(){}});assert.match(elements['traffic-hint'].textContent,/всего 0/);
+ graph.listeners.click({clientX:680});assert.match(elements['traffic-hint'].textContent,/всего 3/);
+ now+=60000;tick();assert.match(elements['traffic-hint'].textContent,/Наведите/);
+ assert.equal(sent,5);
+
 const html=fs.readFileSync('out/site/schoolbell/index.html','utf8');
  assert.ok(html.indexOf('assets/demo.js')<html.indexOf('assets/traffic.js'));
  assert.ok(html.indexOf('assets/traffic.js')<html.indexOf('assets/session.js'));

@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.10: explicit chart hints show reads, commands and failures for the selected interval on hover, tap or keyboard arrows. Selection survives refresh until the interval leaves the minute window. Pages synchronized.
+
 5.1.9: the collapsed draft panel matches the upper status panel: theme background and a yellow left border. The heading reads “Музыкальный настраиваемый звонок”. The 5.1.8 traffic chart is retained; Pages shares the UI.
 
 5.1.8 (host only): Journal shows passive, tab-local module API traffic in twelve 5-second bins, split into reads/commands, with HTTP/network failures, pending requests and mean/maximum time to HTTP headers. This does not measure internal worker exchanges, bytes or command execution latency. Memory only, no additional requests or device writes; Pages measures its local model. Not installed.
