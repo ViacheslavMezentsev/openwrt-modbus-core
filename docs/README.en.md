@@ -4,6 +4,7 @@
 
 | Document | Purpose |
 | --- | --- |
+| [Collaborative workflow](WORKFLOW.en.md) | Stage agreement, branches, checks, CI, backups and device acceptance |
 | [Technical specification](core/TECHNICAL_SPECIFICATION.md) | Current requirements, tests and open questions; Russian revision 1.8 remains a draft |
 | [Development](DEVELOPMENT.en.md) | Builds, checks, signed commits and push/land workflow |
 | [Validation and operation](VALIDATION.en.md) | Evidence limits, upgrade/rollback and diagnostics |

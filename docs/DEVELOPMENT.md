@@ -2,6 +2,8 @@
 
 [English](DEVELOPMENT.en.md)
 
+Подробный цикл владельца и Codex: [WORKFLOW.md](WORKFLOW.md).
+
 ## Этап
 
 1. Проверить статус Git и актуальный main; выбрать ветку `<агент>/<задача>`.

@@ -2,6 +2,8 @@
 
 ## Current state and next steps
 
+Working cycle: [WORKFLOW](docs/WORKFLOW.en.md) ([RU](docs/WORKFLOW.md)); stage boundaries, owner push/land and device acceptance.
+
 Reviewed 2026-10-28: installed Shkolnik **5.1.18**, owner acceptance completed.
 Automatic bells remain disabled. No clock/NTP changes are authorized by this plan.
 Pages sources are synchronized; publishing the new main remains the owner's action.

@@ -2,6 +2,8 @@
 
 [Русский](DEVELOPMENT.md)
 
+Detailed owner/Codex cycle: [WORKFLOW.en.md](WORKFLOW.en.md).
+
 ## Stage workflow
 
 1. Inspect Git status and current main; use `<agent>/<task>` (Codex: `codex/`).
