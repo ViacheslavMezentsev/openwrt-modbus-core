@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьник · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5111">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5113">
 <script src="/schoolbell-test/theme.js?v=5106"></script></head>
 <body><main><header><div><p class="eyebrow">Музыкальный настраиваемый звонок</p>
-<h1>Школьник</h1><div class="cpu-monitor"><span id="cpu-value">CPU · нет измерения</span><div id="cpu-line" role="progressbar" aria-label="Загрузка CPU всего устройства между опросами" aria-valuemin="0" aria-valuemax="100"><i></i></div><div class="cpu-ticks"><span>0</span><span>75%</span><span>90%</span><span>100%</span></div></div></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p>
+<h1>Школьник</h1><div class="cpu-monitor"><span id="cpu-value">CPU · нет измерения</span><div id="cpu-line" role="progressbar" aria-label="Загрузка CPU всего устройства между опросами" aria-valuemin="0" aria-valuemax="100"><i></i></div></div></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><div class="header-status-row"><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p><button id="problem-open" type="button" aria-controls="problem-panel" aria-expanded="false">Решить проблему</button></div>
 <section id="problem-panel" class="details problem-panel" hidden aria-labelledby="problem-heading">
 <h2 id="problem-heading">Диагностика</h2><p id="problem-summary" role="status" aria-live="polite">Ожидаем данные состояния.</p>
 <p id="problem-explanation"></p><p>Проверка не включает звонки, не меняет часы, настройки или ваши правки. Действия, меняющие состояние, выполняются отдельно в соответствующем разделе.</p>
 <div class="editor-toolbar"><button type="button" id="problem-refresh">Повторить чтение состояния</button><button type="button" id="problem-action">Открыть настройки</button><button type="button" id="problem-journal">Открыть журнал</button><button type="button" id="problem-close">Закрыть</button></div>
 <details><summary>Технические подробности</summary><p>Идентификатор копии помогает сравнивать версии плана; это не номер ошибки.</p><pre id="problem-details"></pre></details></section>
-<div class="problem-above-status"><button id="problem-open" type="button" aria-controls="problem-panel" aria-expanded="false">Решить проблему</button></div><details id="duty-panel" class="duty-box" open>
+<details id="duty-panel" class="duty-box" open>
 <summary><strong>Школьник <%=pcdata(module_version)%></strong> · <span id="duty-compact">Получаем состояние службы…</span> <span class="collapse-hint">Подробности ▾</span></summary>
 <div class="duty-panel" aria-label="Состояние для дежурного">
 <div><span>Состояние</span><strong id="duty-state">Читаем черновик…</strong></div>
@@ -22,6 +22,14 @@
 </div><p id="clock-status" role="status">Проверяем часы…</p>
 <p id="clock-sync" hidden>Проверьте, что время на вашем устройстве верно. <button type="button" class="inline-button" data-open-settings>Настройки времени</button>. Изменение часового пояса не синхронизирует часы.</p>
 <p id="timezone-hint" hidden>Местное время устройства отличается от браузера. <button type="button" class="inline-button" data-open-settings>Выбрать часовой пояс школы</button></p>
+</details>
+
+<details id="draft-workflow" class="plan-workflow" aria-label="Черновик и активный план">
+<summary><span id="workflow-draft" role="status">Черновик: загружается…</span><span class="collapse-hint">Подробности ▾</span></summary>
+<p class="intro">Подготовьте расписания и сохраните их на устройстве.</p>
+<p>Сохранение записывает черновик. Для автозвонков сохраните изменения и отдельно примените их во вкладке «Настройки».</p>
+<p id="workflow-active" role="status">Активный план: состояние неизвестно</p><p id="workflow-difference">Сохранение и применение — отдельные действия.</p>
+<button id="workflow-save" type="button" disabled>Сохранить черновик</button> <button id="workflow-apply" type="button">К применению плана</button>
 </details>
 
 <nav class="page-tabs" role="tablist" aria-label="Разделы schoolbell">
@@ -67,13 +75,7 @@
 <p>Если действие не подтвердилось, не повторяйте его вслепую: обновите состояние. Подробности — во вкладке «Журнал»; порядок обращения — в «Обратной связи».</p>
 </section>
 
-<details id="draft-workflow" class="plan-workflow" aria-label="Черновик и активный план">
-<summary><span id="workflow-draft" role="status">Черновик: загружается…</span><span class="workflow-hint"> · Сохранение и применение</span></summary>
-<p class="intro">Подготовьте расписания и сохраните их на устройстве.</p>
-<p>Сохранение записывает черновик. Для автозвонков сохраните изменения и отдельно примените их во вкладке «Настройки».</p>
-<p id="workflow-active" role="status">Активный план: состояние неизвестно</p><p id="workflow-difference">Сохранение и применение — отдельные действия.</p>
-<button id="workflow-save" type="button" disabled>Сохранить черновик</button> <button id="workflow-apply" type="button">К применению плана</button>
-</details>
+
 <section id="schedule-editor" class="details" hidden data-media="<%=pcdata(media_url)%>" data-sample="<%=pcdata(sample_url)%>" data-trust="<%=pcdata(trust_url)%>" data-automatic="<%=pcdata(automatic_url)%>" data-controls="<%=pcdata(controls_url)%>" data-manual="<%=pcdata(manual_url)%>" data-timezone="<%=pcdata(timezone_url)%>" data-journal="<%=pcdata(journal_url)%>" data-clock="<%=pcdata(clock_url)%>" data-preview="<%=pcdata(preview_url)%>" data-load="<%=pcdata(schedules_url)%>" data-save="<%=pcdata(save_url)%>" data-token="<%=pcdata(token)%>">
 <div class="editor-heading"><div><span class="badge">СОХРАНЁННЫЙ ЧЕРНОВИК ≠ АКТИВНОЕ РАСПИСАНИЕ</span><h2>Планы и расписания</h2></div><span id="draft-state" class="badge">Загрузка…</span></div>
 <p id="schedule-result" role="status" aria-live="polite">Читаем сохранённые данные с устройства…</p>
@@ -211,7 +213,7 @@
 <div class="table-scroll"><table class="schedule-table"><thead><tr><th>№ / Время UTC</th><th>Источник</th><th>Прослушивание</th><th>Событие</th></tr></thead><tbody id="journal-rows"></tbody></table></div>
 </section>
 <section id="panel-feedback" role="tabpanel" aria-labelledby="tab-feedback" data-panel="feedback" class="details" hidden>
-<h2>Обратная связь</h2><p>Нашли ошибку или хотите предложить улучшение? Обсуждение ведём в Issues репозитория openwrt-modbus-core. Нужны доступ в интернет и учётная запись GitHub.</p>
+<h2>Обратная связь</h2><p>Автор: Вячеслав Мезенцев<br>Соавтор: Codex (OpenAI), ИИ-помощник в разработке.</p><p>Нашли ошибку или хотите предложить улучшение? Обсуждение ведём в Issues репозитория openwrt-modbus-core. Нужны доступ в интернет и учётная запись GitHub.</p>
 <ol><li><a href="https://github.com/ViacheslavMezentsev/openwrt-modbus-core/issues" target="_blank" rel="noopener">Проверьте существующие Issues</a>, чтобы не создавать повтор.</li>
 <li>Выберите форму ошибки или предложения ниже и укажите компонент schoolbell.</li>
 <li>Для ошибки укажите версии, оборудование, шаги воспроизведения, ожидаемый и фактический результат. Версия этого модуля: <strong><%=pcdata(module_version)%></strong>; ядро: <strong><%=pcdata(core_version)%></strong>.</li>

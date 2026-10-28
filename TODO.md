@@ -2,6 +2,8 @@
 
 ## Current state and next steps
 
+- [x] 5.1.13 shared UI: compact diagnostics row, grouped status/draft notices above tabs, Details hint, simplified CPU line and author credits. Pages synchronized; device acceptance pending.
+
 - [x] 5.1.12: exact-byte worker status witness in private RAM; unchanged plans skip full validation in GET. Host corruption/fault/TTL tests and isolated target comparison, no package installation.
 - [ ] Install/accept 5.1.12 separately and compare end-to-end browser latency/CPU under comparable load. If delays remain, measure LuCI dispatch, schedules and journal separately before broader refactoring; do not infer queue contention from HTTP latency alone.
 

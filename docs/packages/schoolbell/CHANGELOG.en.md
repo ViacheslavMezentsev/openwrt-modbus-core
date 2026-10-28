@@ -62,6 +62,8 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ### Changed
 
+- 5.1.13: compact sound-status/diagnostics row removes the empty header gap. Status and draft notices are grouped above the tabs, both with a Details hint. Only lower CPU tick labels were removed; percentage and colors remain. Feedback credits author Vyacheslav Mezentsev and co-author Codex (OpenAI). Pages shares the layout; no device installation.
+
 - 5.1.12: automatic status reads no longer revalidate an unchanged plan. After full validation, the worker publishes a private RAM snapshot bound to the exact active-file bytes and current boot. GET compares bytes; a mismatch, age over 40 s, damaged snapshot or installation/restore operation cannot confirm readiness. Validation on changes/application and playback admission remains. No additional HTTP requests or flash writes. Pages keeps the shared interface and does not simulate hardware latency. This stage does not update the installed package.
 
 - 5.1.3 (host only): compact Auto bells button with a confirmed colored status. Stop retains the applied snapshot; resume checks its revision/generation, time and media, without reading or applying the draft. Pages simulates the same flow without automatic audio. No router installation.
