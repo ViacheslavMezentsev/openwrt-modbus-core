@@ -87,3 +87,6 @@ html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27
 .demo-notice summary strong { font-weight: 600; }
 
 .cpu-labels{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}#device-uptime{margin-left:auto;text-align:right}
+
+#plan-export-plans label{display:flex;flex-direction:row;align-items:center;gap:10px;margin:10px 0}
+#plan-export-plans input[type=checkbox]{width:auto;margin:0;flex:none}

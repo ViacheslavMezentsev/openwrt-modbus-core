@@ -1,5 +1,7 @@
 # Schoolbell package
 
+[Selected-plan device export](PORTABLE_PLAN_EXPORT_DEVICE.en.md): candidate5.1.21, host-tested, not installed.
+
 Candidate5.1.20: [add-only .sbp import](PORTABLE_PLAN_IMPORT.en.md), host transaction/HTTP/UI tests and synchronized Pages; no installation. Device remains5.1.19.
 
 Host build5.1.19 adds uptime above CPU and the revised heading. Installed5.1.18 was not updated.

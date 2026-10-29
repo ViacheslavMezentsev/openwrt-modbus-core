@@ -2,6 +2,7 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","plan-export"},call("plan_export")).leaf=true
     entry({"admin","schoolbell","plan-import"},call("plan_import")).leaf=true
     entry({"admin","schoolbell","session"},call("session")).leaf=true
     entry({"admin","schoolbell","backup"},call("backup")).leaf=true
@@ -223,6 +224,7 @@ function page()
         session_url=d.build_url('admin','schoolbell','session'),
         login_url=d.build_url('admin','schoolbell'),
         auth_user=d.context.authuser or '',
+        plan_export_url=d.build_url('admin','schoolbell','plan-export'),
         plan_import_url=d.build_url('admin','schoolbell','plan-import'),
         backup_url=d.build_url('admin','schoolbell','backup'),
         media_url=d.build_url('admin','schoolbell','media'),
@@ -346,4 +348,25 @@ function plan_import()
   h.status(status,'Import not completed')
  end
  respond(value)
+end
+
+function plan_export()
+ local h,d=require('luci.http'),require('luci.dispatcher')
+ if h.getenv('REQUEST_METHOD')~='POST'then h.status(405,'Method Not Allowed');return end
+ local token=(h.getenv('HTTP_AUTHORIZATION')or''):match('^Bearer ([^%s]+)$')
+ if not token or token==''or token~=d.context.authtoken then h.status(403,'Forbidden');return end
+ local size=tonumber(h.getenv('CONTENT_LENGTH'))
+ if not size or size%1~=0 or size<1 or size>4096 then h.status(413,'Too large');return end
+ if h.getenv('CONTENT_TYPE')~='application/json'then h.status(400,'JSON required');return end
+ editor();local C=require('schoolbell.media_codec');local ok,v=pcall(function()
+  local v=C.decode(h.content());C.fields(v,{'selected','revision'})
+  assert(C.hex(v.revision,64)and require('modbus.json_strict').kind(v.selected)=='array'and #v.selected>=1 and #v.selected<=8)
+  for _,id in ipairs(v.selected)do assert(type(id)=='string'and #id<=96)end;return v
+ end)
+ if not ok then h.status(400,'Invalid request');return end
+ local started=false
+ local result=require('schoolbell.plan_export_web').download(v.selected,v.revision,function(meta)
+  h.header('Content-Disposition','attachment; filename="schoolbell-plans.sbp"');h.header('Content-Length',tostring(meta.size));h.header('Cache-Control','no-store');h.prepare_content('application/octet-stream');started=true
+ end,function(chunk)h.write(chunk)end)
+ if not result.ok and not started then h.status(409,'Export unavailable');respond(result)end
 end

@@ -1,5 +1,7 @@
 # Changelog
 
+5.1.21 (host): selected-plan .sbp export with user audio/dependencies; complete file before HTTP, locks released before download. Pages synchronized; not installed.
+
 5.1.20: add-only .sbp import with preview, conflicts, free slots, durable intent/resume/receipts and host/HTTP/UI tests. Pages keeps read-only preview. No installation.
 
 5.1.11 (host only, not installed): collapsed Statistics switches between executor mailbox and HTTP views. The real single-slot time/enable command mailbox reports waiting depth, running state, wait times and completions in twelve 5-second bins across clients, in /tmp only; telemetry faults cannot block commands. Stop, audio and HTTP reads bypass this mailbox. Pages models its own training commands with zero wait. A thin whole-device CPU line below the title uses existing polls (idle+iowait excluded; green through 75%, yellow above 75%, red above 90%, unknown grey). Resolve problem is above the status panel on the right. No extra HTTP polling.

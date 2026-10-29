@@ -2,7 +2,7 @@
 
 | Реквизит | Значение |
 | --- | --- |
-| **Ревизия** | 1.71 (черновик для согласования) |
+| **Ревизия** | 1.72 (черновик для согласования) |
 | **Дата формирования** | 29.10.2026 |
 | **Метод формирования** | Согласованные границы пакета; изолированный календарь и очередь проигрывания, функциональный порт ещё не подключён |
 | **Платформа** | OpenWrt 19.07.9, MR3020 v3, Lua 5.1 |
@@ -121,6 +121,16 @@
 | 1.70 | 29.10.2026 | Pages: экспорт .sbp и preview без записи; uptime и заголовок5.1.19, без установки. |
 
 | 1.71 | 29.10.2026 | Кандидат системного импорта .sbp, транзакция и HTTP/UI; целевые проверки открыты. |
+
+| 1.72 | 29.10.2026 | Системный экспорт выбранных .sbp с пользовательскими мелодиями; host-перенос, без установки. |
+
+### Изменения ревизии 1.72
+
+Нормативные требования4.10 сохранены; обновлены реализация и проверки.
+
+| Пункты | Тип | Изменение |
+| --- | --- | --- |
+| 4.10, TC-181 | изм. | Экспорт на устройстве: готовый tmp-файл, HTTP/UI, полный host-перенос |
 
 ### Изменения ревизии 1.71
 
@@ -1712,6 +1722,7 @@ Host-проверки р.1.15: 10 групп в `test_queue_linux.lua` чере�
 | TC-178 | Pages: скачать→прочитать→preview; cross-year, SHA штатных MP3, конфликты/переименование, dirty, pending, user-media, повреждение/лимиты, гонки и неизменность | T: scripts/test-site-portable.js, test-site.py и Pages snapshot в test-schoolbell-routes.js; локальная браузерная проверка, без устройства (р.1.70) |
 | TC-179 | Uptime: границы минут/дней, неверное/отсутствующее, stale/logout/reboot, явно моделируемый возраст Pages | T: test_queue_metrics.lua, scripts/test-schoolbell-cpu.js; без устройства (р.1.70) |
 | TC-180 | Добавляющий импорт, MP3, conflicts/expiry/replay, прерывания стадий и файловых операций, авторизация HTTP, dirty/unknown outcome UI | T: test_plan_import.lua, test_plan_import_web.lua, test_plan_import_http.lua, scripts/test-schoolbell-plan-import.js; host, целевые RSS/таймауты/multipart не проверены (р.1.71) |
+| TC-181 | Экспорт выбранных планов с user-MP3 и полный host-перенос; сохранность, границы, сбои и освобождение замков перед HTTP | T: test_plan_export.lua, test_plan_export_http.lua, scripts/test-schoolbell-plan-export.js; без target-установки (р.1.72) |
 | TC-167 | busy→успех, предел повторов, отказ I/O, потеря сеанса, правки во время чтения, ручной повтор без POST | T: test_schedule_store.lua, test-schoolbell-routes.js; без устройства (р.1.65) |
 | TC-166 | Граница семи суток, откат/будущие записи, монотонность seq, аварии write/sync/rename и размер сегментов | T: test_journal.lua; без установки (р.1.64) |
 
@@ -1742,7 +1753,7 @@ Host-проверки р.1.15: 10 групп в `test_queue_linux.lua` чере�
 | 4.10.12 | packages/schoolbell/portable-plan/preview.lua, preview.js; не системный импорт | T: TC-176 |
 | 4.10.13 | packages/schoolbell/portable-plan/export.lua, export.js; без UI/системного адаптера | T: TC-177 |
 | 4.10.14 | site/portable-pages.js, portable-ui.js; scripts/build-site.py; только Pages | T: TC-178 |
-| 4.10.1–4.10.12 | plan_admission.lua, plan_import.lua, plan_import_web.lua, plan-import.js; кандидат5.1.20, целевая проверка открыта | T: TC-180 (host); не означает закрытия аппаратной приёмки |
+| 4.10.1–4.10.12 | plan_admission.lua, plan_import.lua, plan_import_web.lua, plan-import.js; plan_export_bundle.lua, plan_export_web.lua, plan-export.js; экспорт кандидат5.1.21 | T: TC-180, TC-181; малый Pages-импорт5.1.20 проверен на устройстве; экспорт только host, аппаратная приёмка не закрыта |
 | 4.6.53 | system_metrics.lua, cpu.js и общий шаблон; Pages demo.js | T: TC-179 |
 | 4.6.52 | schedule_store.lua, schedules.js, общие LuCI/Pages | T: TC-167 |
 | 4.6.51 | schoolbell.journal | T: TC-166 |

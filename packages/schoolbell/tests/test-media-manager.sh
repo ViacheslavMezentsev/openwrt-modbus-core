@@ -62,6 +62,10 @@ mkdir -m 700 "$build/plan-web"
 lua5.1 packages/schoolbell/tests/test_plan_import_web.lua "$build/plan-web"
 lua5.1 packages/schoolbell/tests/test_plan_import_http.lua
 node scripts/test-schoolbell-plan-import.js
+mkdir -m 700 "$build/plan-export"
+lua5.1 packages/schoolbell/tests/test_plan_export.lua "$build/plan-export"
+lua5.1 packages/schoolbell/tests/test_plan_export_http.lua
+node scripts/test-schoolbell-plan-export.js
 
 lua5.1 packages/schoolbell/tests/test_backup_http.lua
 

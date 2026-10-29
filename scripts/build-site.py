@@ -50,6 +50,8 @@ for name,title in zip(['test','0','1','2','3','4'],titles):
 config=dict(version=version,zones=json.loads((root/'site/portable-zones.json').read_text()),media=inventory)
 (assets/'portable-config.js').write_text('window.SchoolbellPortableConfig='+json.dumps(config,ensure_ascii=False)+';\n')
 text=(source/'usr/lib/lua/luci/view/schoolbell_test.htm').read_text()
+text=re.sub(r'<!-- device-plan-export:start -->.*?<!-- device-plan-export:end -->','',text,flags=re.S)
+text=re.sub(r'<script src="/schoolbell-test/plan-export.js[^"]*"></script>','',text)
 text=re.sub(r'<!-- device-plan-import:start -->.*?<!-- device-plan-import:end -->','',text,flags=re.S)
 text=re.sub(r'<script src="/schoolbell-test/plan-import.js[^"]*"></script>','',text)
 values={'session_url':'./demo-api/session','login_url':'./','auth_user':'Демо без входа','trust_url':'./demo-api/clock-trust','backup_url':'./demo-api/backup','media_url':'./demo-api/media','automatic_url':'./demo-api/automatic','controls_url':'./demo-api/controls','manual_url':'./demo-api/no-router','preview_url':'./demo-api/preview','schedules_url':'./demo-api/load','save_url':'./demo-api/save','clock_url':'./demo-api/clock','journal_url':'./demo-api/journal','timezone_url':'./demo-api/timezone','sample_url':'./assets/test.mp3','play_url':'./demo-api/no-router','module_version':version+' · DEMO','core_version':'не подключено','token':'demo'}

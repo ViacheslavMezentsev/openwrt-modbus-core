@@ -250,3 +250,7 @@ The Journal shows 20 entries per page. Errors toggles red error records; Copy co
 Draft reads retry temporary contention a bounded number of times. After failure use Retry read; for an open draft use Compare with device to retain local edits. Saves never replay automatically. Do not remove locks manually.
 
 A separately powered Modbus RTC board is proposed for future post-reboot time recovery; it is not implemented. Discovery does not establish trust. Freshness/health checks, explicit trusted-source selection and separate permission to resume the previously applied plan are required. A backup battery/UPS can power the device and speakers, but has finite capacity; it neither verifies clock accuracy nor replaces an RTC after full power loss. Power compatibility and runtime need validation on the actual setup.
+
+## Moving selected calendar plans
+
+5.1.21 adds [device .sbp export with all dependencies](PORTABLE_PLAN_EXPORT_DEVICE.en.md). On the destination, use [preview and add-only draft import](PORTABLE_PLAN_IMPORT.en.md). This does not replace a full .sbb backup or enable automatic bells.

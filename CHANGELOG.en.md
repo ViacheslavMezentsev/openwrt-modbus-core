@@ -1,5 +1,7 @@
 # Changelog
 
+5.1.21 (host): selected-plan .sbp export with user audio/dependencies; complete file before HTTP, locks released before download. Pages synchronized; not installed.
+
 5.1.20 (host): .sbp import adds plans/dependencies to a draft with preview and durable recovery; synchronized Pages, no installation.
 
 Schoolbell 5.0.34: session recovery without replay or replacing editor changes, CSRF-protected logout, configurable browser idle countdown, striped cheat-sheet routes and separate behavior notes. Host only; Pages synchronized.

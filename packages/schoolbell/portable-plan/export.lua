@@ -1,6 +1,6 @@
 -- Isolated assembly; no storage, player or clock calls. Streams are caller-owned.
 local J=require('modbus.json_strict');local C=require('schoolbell.media_codec')
-local Store=require('schoolbell.schedule_store');local Codec=dofile('packages/schoolbell/portable-plan/codec.lua')
+local Store=require('schoolbell.schedule_store');local ok,Codec=pcall(require,'schoolbell.plan_codec');if not ok then Codec=dofile('packages/schoolbell/portable-plan/codec.lua')end
 local M={}
 local function need(v,c)if not v then error(c,0)end end
 local function arr()return assert(J.decode('[]'))end

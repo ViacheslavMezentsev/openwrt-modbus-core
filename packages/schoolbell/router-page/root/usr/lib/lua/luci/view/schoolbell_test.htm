@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Школьник · расписания</title>
-<link rel="stylesheet" href="/schoolbell-test/style.css?v=5119">
+<link rel="stylesheet" href="/schoolbell-test/style.css?v=5121">
 <script src="/schoolbell-test/theme.js?v=5106"></script></head>
 <body><main><header><div><p class="eyebrow">Настраиваемый музыкальный звонок</p>
 <h1>Школьник</h1><div class="cpu-monitor"><div class="cpu-labels"><span id="cpu-value">CPU · нет измерения</span><span id="device-uptime" title="Время работы устройства с последней загрузки">В работе · нет данных</span></div><div id="cpu-line" role="progressbar" aria-label="Загрузка CPU всего устройства между опросами" aria-valuemin="0" aria-valuemax="100"><i></i></div></div></div><div class="header-controls"><div class="quick-controls"><button id="quick-automatic" type="button" aria-describedby="quick-automatic-status" disabled>▶ Автозвонки</button><button id="quick-mute" type="button" aria-pressed="false" disabled>Без звука · проверка…</button><button id="quick-bell" type="button" disabled>🔔 Подать звонок</button><button id="theme-toggle" type="button">Тема</button><div id="session-panel" class="session-controls" data-session="<%=pcdata(session_url)%>" data-user="<%=pcdata(auth_user)%>"><span id="session-warning" hidden></span><span id="session-countdown" hidden></span><a class="session-button" id="session-login" href="<%=pcdata(login_url)%>" hidden>Войти</a><button id="session-check" type="button" hidden>Проверить сеанс</button><button id="session-logout" type="button">Выйти</button></div></div><span id="quick-automatic-status" class="automatic-badge" data-tone="warning" role="status" aria-live="polite">Проверка…</span></div></header><p id="session-status" class="session-message" role="status" hidden></p><div class="header-status-row"><p id="quick-status" role="status" aria-live="polite">Получаем состояние звука…</p><button id="problem-open" type="button" aria-controls="problem-panel" aria-expanded="false">Решить проблему</button></div>
@@ -57,7 +57,7 @@
 <div class="guide-route"><dt>Добавить и послушать мелодию</dt><dd>«Мелодии» → выберите user1–user8 → название и MP3 → «Загрузить и заменить». «В браузере» воспроизводит звук на вашем устройстве; проверка через устройство — на его колонках. Штатные мелодии защищены.</dd></div>
 <div class="guide-route"><dt>Убрать расписание или назначения</dt><dd>Сначала снимите назначения в календаре и смените ежедневное расписание в «Настройках», если оно используется → «Расписания» → «Удалить». При очистке последнего года прочтите предупреждение о переходе в «Тихий день». Изменения относятся к черновику.</dd></div>
 <div class="guide-route"><dt>Отменить правки или разобраться после ошибки</dt><dd>В редакторе «Отменить правки / загрузить сохранённое» убирает несохранённые изменения. «Сверить с устройством» показывает две копии, сохраняя ваши правки: выберите локальную или сохранённую. Сверка ничего не записывает и не включает звонки.</dd></div>
-<div class="guide-route"><dt>Сохранить резервную копию</dt><dd>«Настройки» → «Резервная копия» → «Скачать резервную копию». Для возврата выберите файл .sbb и «Восстановить». После восстановления автозвонки выключены: проверьте план перед отдельным включением.</dd></div>
+<div class="guide-route"><dt>Перенести календарные планы</dt><dd>«Календарь» → экспорт .sbp → выберите сохранённые планы → скачайте файл. На другом устройстве: импорт .sbp → проверьте состав и названия → добавьте в черновик. Действующие данные не заменяются; звонки не включаются. Устройство включает пользовательские мелодии в файл, Pages работает только со штатными.</dd><dt>Сохранить резервную копию</dt><dd>«Настройки» → «Резервная копия» → «Скачать резервную копию». Для возврата выберите файл .sbb и «Восстановить». После восстановления автозвонки выключены: проверьте план перед отдельным включением.</dd></div>
 </dl>
 <details id="guide-important"><summary>Важно знать: неочевидные правила</summary>
 <ul>
@@ -92,6 +92,15 @@
 </section>
 <section id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" data-panel="calendar" class="annual-editor" hidden>
 <h2>Календарные планы</h2>
+<!-- device-plan-export:start -->
+<details id="plan-export-panel" class="plan-workflow" data-url="<%=pcdata(plan_export_url)%>" data-token="<%=pcdata(token)%>">
+<summary><strong>Экспорт календарных планов .sbp</strong><span class="collapse-hint">Подробности ▾</span></summary>
+<p>Выберите сохранённые планы. Файл включает связанные расписания и мелодии, в том числе пользовательские. Это перенос планов, а не полная резервная копия. Сначала сохраните правки и выключите автозвонки.</p>
+<div id="plan-export-plans"></div>
+<button id="plan-export-download" type="button" disabled>Скачать выбранные планы</button>
+<p id="plan-export-status" role="status">Выберите хотя бы один план. Скачивание не меняет данные и не включает звонки.</p>
+</details>
+<!-- device-plan-export:end -->
 <!-- device-plan-import:start -->
 <details id="plan-import-panel" class="plan-workflow" data-url="<%=pcdata(plan_import_url)%>" data-token="<%=pcdata(token)%>">
 <summary><strong>Импорт календарного плана .sbp</strong><span class="collapse-hint">Подробности ▾</span></summary>
@@ -245,4 +254,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление устройством LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/traffic.js?v=5114"></script><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/cpu.js?v=5119"></script><script src="/schoolbell-test/automatic.js?v=5111"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5120"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script><script src="/schoolbell-test/plan-import.js?v=5120"></script></body></html>
+</main><script src="/schoolbell-test/traffic.js?v=5114"></script><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/cpu.js?v=5119"></script><script src="/schoolbell-test/automatic.js?v=5111"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5121"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script><script src="/schoolbell-test/plan-import.js?v=5120"></script><script src="/schoolbell-test/plan-export.js?v=5121"></script></body></html>

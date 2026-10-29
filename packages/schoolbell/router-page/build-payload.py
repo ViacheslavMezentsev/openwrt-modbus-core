@@ -12,10 +12,10 @@ files = {str(p.relative_to(base / "root")): p
 files["usr/share/schoolbell-sound-test/test.mp3"] = base.parent / "media/test.mp3"
 for media in range(5):
     files["usr/share/schoolbell-sound-test/"+str(media)+".mp3"] = base.parent / ("media/"+str(media)+".mp3")
-for name in ("plan_import", "plan_admission", "automatic_status", "system_metrics", "queue_metrics", "clock_commands", "clock_mailbox", "clock_policy", "clock_gate", "clock_trust", "clock_reference", "clock_reference_store", "clock_system", "backup", "backup_codec", "mp3", "media_manager", "media_library", "calendar", "media_codec", "media_fs", "schedule_store", "journal", "timezone", "controls", "automatic", "automatic_store"):
+for name in ("plan_export_bundle", "plan_import", "plan_admission", "automatic_status", "system_metrics", "queue_metrics", "clock_commands", "clock_mailbox", "clock_policy", "clock_gate", "clock_trust", "clock_reference", "clock_reference_store", "clock_system", "backup", "backup_codec", "mp3", "media_manager", "media_library", "calendar", "media_codec", "media_fs", "schedule_store", "journal", "timezone", "controls", "automatic", "automatic_store"):
     files["usr/share/schoolbell-editor/lua/schoolbell/" + name + ".lua"] = (
         base.parent / "lua/schoolbell" / (name + ".lua"))
-for name in ('codec','preview'):
+for name in ('codec','preview','export'):
     files['usr/share/schoolbell-editor/lua/schoolbell/plan_'+name+'.lua'] = base.parent / ('portable-plan/'+name+'.lua')
 files["usr/share/schoolbell-editor/lua/modbus/json_strict.lua"] = (
     repo / "pkg/usr/lib/modbus/json_strict.lua")
