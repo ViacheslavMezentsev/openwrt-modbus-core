@@ -2,6 +2,7 @@ module("luci.controller.schoolbell_test", package.seeall)
 function index()
     local page=entry({"admin","schoolbell"},call("page"),"Schoolbell",70)
     page.dependent=false
+    entry({"admin","schoolbell","plan-import"},call("plan_import")).leaf=true
     entry({"admin","schoolbell","session"},call("session")).leaf=true
     entry({"admin","schoolbell","backup"},call("backup")).leaf=true
     entry({"admin","schoolbell","media"},call("media")).leaf=true
@@ -222,6 +223,7 @@ function page()
         session_url=d.build_url('admin','schoolbell','session'),
         login_url=d.build_url('admin','schoolbell'),
         auth_user=d.context.authuser or '',
+        plan_import_url=d.build_url('admin','schoolbell','plan-import'),
         backup_url=d.build_url('admin','schoolbell','backup'),
         media_url=d.build_url('admin','schoolbell','media'),
         trust_url=d.build_url('admin','schoolbell','clock-trust'),
@@ -298,4 +300,50 @@ function backup()
   h.write(chunk)
  end)
  if not result.ok and not started then h.status(409,'Backup unavailable');respond(result)end
+end
+
+-- Dedicated actions inherit the administrator route; Bearer carries LuCI CSRF token.
+function plan_import()
+ local h,d=require('luci.http'),require('luci.dispatcher')
+ local action=h.formvalue('action',true);local id=h.formvalue('operation_id',true)
+ local method=h.getenv('REQUEST_METHOD');editor()
+ local C=require('schoolbell.media_codec')
+ if not C.hex(id,32)then h.status(400,'Invalid operation');return end
+ if method=='GET'then
+  if action~='status'then h.status(405,'Method Not Allowed');return end
+  respond(require('schoolbell.plan_import_web').request(action,id));return
+ end
+ if method~='POST'then h.status(405,'Method Not Allowed');return end
+ local token=(h.getenv('HTTP_AUTHORIZATION')or''):match('^Bearer ([^%s]+)$')
+ if not token or token==''or token~=d.context.authtoken then h.status(403,'Forbidden');return end
+ local size=tonumber(h.getenv('CONTENT_LENGTH'));local content=h.getenv('CONTENT_TYPE')or''
+ local allowed={upload=true,preview=true,commit=true,cancel=true,resume=true}
+ if not allowed[action]then h.status(400,'Invalid action');return end
+ if not size or size%1~=0 or size<1 or size>(action=='upload'and 2134098 or 8192)then h.status(413,'Too large');return end
+ local args,pump
+ if action=='upload'then
+  if not content:match('^multipart/form%-data;')then h.status(400,'Multipart required');return end
+  pump=function(emit)
+   local seen,finished=false,false
+   h.setfilehandler(function(meta,chunk,eof)
+    assert(meta and meta.name=='file'and not finished,'format')
+    seen=true;if chunk then for at=1,#chunk,16384 do emit(chunk:sub(at,at+16383))end end
+    if eof then finished=true end
+   end)
+   h.formvalue('file');assert(seen and finished,'format')
+  end
+ else
+  if content~='application/json'then h.status(400,'JSON required');return end
+  local text=h.content();local ok,v=pcall(C.decode,text)
+  if not ok or type(v)~='table'or v.operation_id~=id then h.status(400,'Invalid request');return end
+  local expected=action=='preview'and {'operation_id','names'}or action=='commit'and {'operation_id','preview_token'}or {'operation_id'}
+  if not pcall(C.fields,v,expected)then h.status(400,'Invalid fields');return end
+  args=v
+ end
+ local value=require('schoolbell.plan_import_web').request(action,id,args,pump,size)
+ if not value.ok then
+  local code=value.code;local status=({busy=409,conflict=409,invalid_state=409,size=413,format=400,storage_unavailable=503,recovery_required=503})[code]or 422
+  h.status(status,'Import not completed')
+ end
+ respond(value)
 end

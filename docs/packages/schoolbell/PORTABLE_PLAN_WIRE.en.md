@@ -4,7 +4,7 @@
 
 Accepted by the owner on2026-10-28, specification1.67 question8.2.15.
 Isolated byte codecs have TC-175 coverage; see [scope](PORTABLE_PLAN_CODEC.en.md).
-System import/API are not implemented. Installed5.1.18 is unchanged.
+System import/API candidate5.1.20: [validation scope](PORTABLE_PLAN_IMPORT.en.md). Installed5.1.19 is unchanged.
 
 ## Container and schema
 

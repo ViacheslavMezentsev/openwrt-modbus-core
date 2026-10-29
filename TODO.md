@@ -4,7 +4,7 @@
 
 Working cycle: [WORKFLOW](docs/WORKFLOW.en.md) ([RU](docs/WORKFLOW.md)); stage boundaries, owner push/land and device acceptance.
 
-Reviewed 2026-10-28: installed Shkolnik **5.1.18**, owner acceptance completed.
+Reviewed 2026-10-29: installed Shkolnik **5.1.19**, owner acceptance completed.
 Automatic bells remain disabled. No clock/NTP changes are authorized by this plan.
 Pages sources are synchronized; publishing the new main remains the owner's action.
 Checked historical stage bullets describe their original scope, not remaining work.
@@ -13,7 +13,7 @@ Readiness: engineering pilot candidate, not certified unattended service. First 
 
 ### Recommended next branches (scope each before implementation)
 
-1. **Portable calendar-plan bundle — byte codecs implemented; import not implemented.** See docs/packages/schoolbell/PORTABLE_PLAN.md and specification1.70 (4.10, TC-168–178). Exact wire/API accepted (8.2.15); isolated byte codecs implemented (TC-175). Pure dependency/preview model implemented (TC-176). Isolated selected-plan export assembly implemented (TC-177). Pages export/read-only import preview implemented (TC-178). Next implement system import of selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and media. Pages uses bundled melodies only; device export must include referenced user melodies. This is distinct from a full .sbb backup. Import only as a draft, automatic bells disabled; no credentials, hardware/network/NTP settings or system timezone changes.
+1. **Portable calendar-plan bundle — system import candidate implemented, target validation pending.** See docs/packages/schoolbell/PORTABLE_PLAN.md and specification1.70 (4.10, TC-168–178). Exact wire/API accepted (8.2.15); isolated byte codecs implemented (TC-175). Pure dependency/preview model implemented (TC-176). Isolated selected-plan export assembly implemented (TC-177). Pages export/read-only import preview implemented (TC-178). Candidate5.1.20 implements system import of selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and media. Pages uses bundled melodies only; device export must include referenced user melodies. This is distinct from a full .sbb backup. Import only as a draft, automatic bells disabled; no credentials, hardware/network/NTP settings or system timezone changes.
 2. **Complete remaining operator journeys.** Active-plan preview distinct from draft; rename/delete user melodies with reference checks; bounded undo and archive summary/onboarding. Browser clock setting needs a separate contract and explicit permission for any real clock change.
 3. **Product acceptance.** Finish LuCI access/session/CSRF/concurrency checks and agree quantitative timing/endurance criteria. Cold boot, offline first boot and power-loss tests require separate authorization. Successful short UI tests are not unattended-operation certification.
 
@@ -34,9 +34,11 @@ by this roadmap alone.
 - [x] Exact wire/API accepted; isolated JS/Lua byte codecs with 62 shared vectors/175 stream cases each (TC-175). Not UI import, MP3 admission or storage recovery.
 - [x] Pure calendar/dependency validation and snapshot-based preview:45 shared Lua/JS cases (TC-176), no system admission/token/write. Existing data and missing-but-referenced slots preserved.
 - [x] Isolated selected-plan export assembly: complete dependencies, streamed/deduplicated user payloads, exact Lua/JS bytes against independent oracle; 35 host cases (TC-177). No UI or device integration.
-- [x] Pages selected-plan export and read-only import preview (TC-178): shared codecs, generated bundled hashes, explicit pinned timezone, rename/blockers, immutable draft and stale-result guards; host and local browser checks. No commit/import writes or device install; .sbp stays Pages-only.
-- [ ] System admission/commit and final import integration; keep .sbp target installation separately authorized.
-- [ ] Bounded parsing/unpacking, checksums, RAM/flash budget, staging and atomic publication/rollback using existing backup/media mechanisms. No partial draft or referenced-media replacement after a failure.
+- [x] Pages selected-plan export and read-only import preview (TC-178): shared codecs, generated bundled hashes, explicit pinned timezone, rename/blockers, immutable draft and stale-result guards; host and local browser checks. Pages preview does not write imports; device integration is tracked below.
+- [x] Candidate5.1.20: system admission/commit/resume/receipts and LuCI import UI, host tests; target installation is separately authorized.
+- [ ] Before installation validate actual LuCI multipart/deadlines, target peak RSS/tmp/flash and free-space admission. Then transfer a Pages plan and a user-MP3 bundle, backup first, auto off.
+- [ ] Connect device export with user melodies; retain Pages bundled-only/read-only import scope.
+- [x] Host: bounded parsing/checksums, space admission, staged durable import and recovery barrier; injected failures before/after57 storage mutations. Existing data preserved; target resource bounds and physical power loss remain unverified.
 - [ ] Offline host/Pages round-trip first: September–May, cross-year dates, colors, pre-bells and matching preview; malformed/incompatible archives, missing media, overlap, quota/write interruption and unchanged current data on rejection. Pages must clearly reject unsupported user-media imports rather than drop files.
 - [ ] Then separately authorize device installation and transfer acceptance after backup, without sound or enabling bells. Design the full dependency contract now; bundled-only Pages is not acceptance of a device exporter that omits user melodies.
 
@@ -50,7 +52,7 @@ Broad exchange/architecture refactoring is not a prerequisite: current measureme
 
 ### Completed checks and remaining acceptance
 
-- [x] 5.1.19 host: uptime above CPU from existing system-metrics polling, unknown/stale handling and explicit demo age; revised heading. Not installed.
+- [x] 5.1.19: uptime above CPU from existing system-metrics polling, unknown/stale handling and explicit demo age; revised heading. Installed in the previous stage; owner confirmed heading and uptime.
 
 - [x] 5.1.16 installed after fresh backup and exact rollback preparation: payload/export/system guards passed; actual cross-process lock contention and subsequent read recovery verified in an isolated target directory. Installed UI host regressions cover bounded GET retries, exhausted retries, session loss and retained edits; owner confirmed calendar and journal. This is not fault injection into the live draft or a power-loss test.
 - [x] 5.1.17 installed with unchanged export and system guard; owner confirmed the complete pager on the right of the same row as journal actions.

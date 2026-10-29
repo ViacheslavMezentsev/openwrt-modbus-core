@@ -14,6 +14,7 @@ function M.decode(raw)
  return v
 end
 function M.raw()
+ assert(not require('nixio.fs').lstat(M.root..'/import.pending'),'import_pending')
  assert(not require('nixio.fs').lstat(M.root..'/restore.pending'),'restore_pending')
  local path=M.root..'/'..M.name;local f=io.open(path,'rb')
  if not f then assert(not require('nixio.fs').lstat(path),'unreadable');return nil end

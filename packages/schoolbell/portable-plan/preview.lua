@@ -1,7 +1,7 @@
 -- Pure preview only. No storage/clock/token/activation; snapshots are copied.
 local J=require('modbus.json_strict');local C=require('schoolbell.media_codec')
 local Store=require('schoolbell.schedule_store')
-local Codec=dofile('packages/schoolbell/portable-plan/codec.lua')
+local found,Codec=pcall(require,'schoolbell.plan_codec');if not found then Codec=dofile('packages/schoolbell/portable-plan/codec.lua')end
 local M={}
 local function arr()return assert(J.decode('[]'))end
 local function clone(x)return assert(J.decode(C.encode(x)))end

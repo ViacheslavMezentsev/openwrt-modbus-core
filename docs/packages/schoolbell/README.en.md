@@ -1,5 +1,7 @@
 # Schoolbell package
 
+Candidate5.1.20: [add-only .sbp import](PORTABLE_PLAN_IMPORT.en.md), host transaction/HTTP/UI tests and synchronized Pages; no installation. Device remains5.1.19.
+
 Host build5.1.19 adds uptime above CPU and the revised heading. Installed5.1.18 was not updated.
 
 Pages: selected-plan .sbp export and read-only import preview. [Details](PORTABLE_PLAN_PAGES.en.md); IPK5.1.19 changes only heading/uptime; .sbp remains Pages-only.

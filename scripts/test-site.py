@@ -50,7 +50,7 @@ assert 'Сверить с локальной моделью' in html
 expected=source.read_text().replace('на устройстве','в демо').replace('на устройство','в демо').replace('с устройства','из браузера').replace('с устройством','с локальной моделью').replace('на роутере','в демо').replace('на роутер','в демо').replace('с роутера','из браузера').replace('с роутером','с локальной моделью').replace('Проверьте вход в LuCI, сеть','Проверьте файл').replace('вход LuCI','демо')
 expected=expected.replace('window.schoolbellEditor={','window.schoolbellEditor={portableSnapshot:function(){return {draft:draft?JSON.parse(JSON.stringify(draft)):null,dirty:dirty||formPending,formPending:formPending,busy:busy||activationLock,reconcile:reconcile,revision:revision};},',1)
 assert (out/'schoolbell/assets/schedules.js').read_text()==expected
-subprocess.run(['node',str(root/'scripts/test-schoolbell-routes.js')],cwd=root,env=dict(os.environ,SCHOOLBELL_UI_DIR=str(out/'schoolbell/assets')),check=True)
+subprocess.run(['node',str(root/'scripts/test-schoolbell-routes.js')],cwd=root,env=dict(os.environ,SCHOOLBELL_PAGES_TEST='1',SCHOOLBELL_UI_DIR=str(out/'schoolbell/assets')),check=True)
 print('PASS Pages shares editor/reconciliation and runs the same no-hardware journey regressions')
 
 # Quick reference is shared with the target template, with no action controls.

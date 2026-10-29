@@ -9,6 +9,7 @@ local function session(fn)
  local backend,library;local keep=false
  local ok,value=protect(function()
   local editor=require('schoolbell.automatic_store').root or '/etc/schoolbell-editor'
+  assert(not fs.lstat or not fs.lstat(editor..'/import.pending'),'import_pending')
   assert(not fs.lstat or not fs.lstat(editor..'/restore.pending'),'restore_pending')
   backend=require('schoolbell.media_fs').new(L.root)
   library=L.open(backend,L.root,function()return true end)
@@ -25,6 +26,7 @@ function M.lookup(op)
  return session(function(lib)local v=lib.lookup(op);v.ok=true;return v end)
 end
 function M.resolve(id)
+ assert(not require('nixio.fs').lstat or not require('nixio.fs').lstat((require('schoolbell.automatic_store').root or '/etc/schoolbell-editor')..'/import.pending'),'import_pending')
  -- Called by the player ONLY while it owns the shared gate.
  local fs=require('schoolbell.media_fs').new(L.root);local lib
  local ok,path,meta=pcall(function()lib=L.open(fs,L.root,function()return true end);return lib.resolve(id)end)
@@ -32,6 +34,7 @@ function M.resolve(id)
  assert(ok,path);return path,meta
 end
 function M.plan_ready(plan)
+ if require('nixio.fs').lstat and require('nixio.fs').lstat((require('schoolbell.automatic_store').root or '/etc/schoolbell-editor')..'/import.pending')then return false end
  local fs=require('schoolbell.media_fs').new(L.root);local lib
  local ok,ready=pcall(function()
   lib=L.open(fs,L.root,function()return true end);local available={}

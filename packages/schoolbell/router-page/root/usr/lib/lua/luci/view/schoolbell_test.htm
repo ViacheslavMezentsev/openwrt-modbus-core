@@ -92,6 +92,22 @@
 </section>
 <section id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" data-panel="calendar" class="annual-editor" hidden>
 <h2>Календарные планы</h2>
+<!-- device-plan-import:start -->
+<details id="plan-import-panel" class="plan-workflow" data-url="<%=pcdata(plan_import_url)%>" data-token="<%=pcdata(token)%>">
+<summary><strong>Импорт календарного плана .sbp</strong><span class="collapse-hint">Подробности ▾</span></summary>
+<p>Добавляет планы, расписания и мелодии в черновик. Существующие данные не заменяются. Сначала сохраните правки и выключите автозвонки. Часовой пояс должен совпадать; часы не меняются.</p>
+<label>Файл плана<input id="plan-import-file" type="file" accept=".sbp"></label>
+<button id="plan-import-upload" type="button">Загрузить для проверки</button>
+<div id="plan-import-names"></div>
+<button id="plan-import-preview" type="button" disabled>Проверить добавление</button>
+<ul id="plan-import-result"></ul>
+<button id="plan-import-commit" type="button" disabled>Добавить в черновик</button>
+<button id="plan-import-check" type="button" disabled>Проверить состояние</button>
+<button id="plan-import-cancel" type="button" disabled>Отменить импорт</button>
+<button id="plan-import-resume" type="button" hidden>Продолжить прерванный импорт</button>
+<p id="plan-import-status" role="status">Выберите .sbp, созданный совместимым редактором. Применение плана и включение звонков — отдельные действия.</p>
+</details>
+<!-- device-plan-import:end -->
 <label>План<select id="calendar-plan"></select></label><div class="editor-toolbar"><button id="plan-new" type="button">+ Создать план</button><button id="plan-copy" type="button">Копировать план…</button></div>
 <div class="editor-toolbar"><label>Название плана<input id="plan-name" maxlength="96"></label><label>Начало<input id="plan-start" type="date"></label><label>Окончание включительно<input id="plan-end" type="date"></label></div>
 <div class="editor-toolbar"><button id="plan-apply" type="button">Применить название и даты</button><button id="plan-cancel" type="button">Отменить ввод</button></div><p id="plan-form-status" role="status"></p>
@@ -229,4 +245,4 @@
 <p>Если формы ещё недоступны, они появятся после слияния соответствующей ветки в main.</p>
 </section>
 <footer><a href="<%=url('admin')%>">← Управление устройством LuCI</a> · Расписания сохраняются без активации</footer>
-</main><script src="/schoolbell-test/traffic.js?v=5114"></script><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/cpu.js?v=5119"></script><script src="/schoolbell-test/automatic.js?v=5111"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5106"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script></body></html>
+</main><script src="/schoolbell-test/traffic.js?v=5114"></script><script src="/schoolbell-test/session.js?v=5106"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/cpu.js?v=5119"></script><script src="/schoolbell-test/automatic.js?v=5111"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5120"></script><script src="/schoolbell-test/dashboard.js?v=5106"></script><script src="/schoolbell-test/plan-import.js?v=5120"></script></body></html>

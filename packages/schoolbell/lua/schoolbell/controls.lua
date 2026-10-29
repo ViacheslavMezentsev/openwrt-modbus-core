@@ -10,6 +10,7 @@ function M.decode(raw)
  return v
 end
 function M.read()
+ local imported=io.open(M.root..'/import.pending','rb');if imported then imported:close();error('import_pending')end
  local pending=io.open(M.root..'/restore.pending','rb');if pending then pending:close();error('restore_pending')end
  local f=io.open(M.root..'/sound-control.json','rb')
  if not f then

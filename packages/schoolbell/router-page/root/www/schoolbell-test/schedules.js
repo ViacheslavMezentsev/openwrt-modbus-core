@@ -466,7 +466,7 @@
   window.addEventListener('pointerup',function(){painting=false;});
   window.addEventListener('pointercancel',function(){painting=false;});
   window.addEventListener('blur',function(){painting=false;});
-  window.schoolbellEditor={prepareNavigation:prepareNavigation,snapshot:function(){return {loaded:!!draft,dirty:dirty || formPending,busy:busy || activationLock,reconcile:reconcile,revision:revision};},lock:function(){if(busy || activationLock || !draft || dirty || formPending || reconcile || revision==='empty')return false;activationLock=true;state();return true;},unlock:function(){activationLock=false;state();}};
+  window.schoolbellEditor={prepareNavigation:prepareNavigation,snapshot:function(){return {loaded:!!draft,dirty:dirty || formPending,busy:busy || activationLock,reconcile:reconcile,revision:revision};},lock:function(options){if(busy || activationLock || !draft || dirty || formPending || reconcile || (revision==='empty' && !(options && options.allowEmpty)))return false;activationLock=true;state();return true;},reloadImported:async function(){if(dirty||formPending)return false;activationLock=false;await load();return true;},unlock:function(){activationLock=false;state();}};
   document.getElementById('workflow-save').addEventListener('click',function(){save.click();});
   reload.addEventListener('click',load);
   window.addEventListener('beforeunload',function (e) { if((dirty || formPending) && !handoffReady) { e.preventDefault(); e.returnValue=''; } });

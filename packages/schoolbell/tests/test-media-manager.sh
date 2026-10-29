@@ -56,6 +56,13 @@ lua5.1 packages/schoolbell/tests/test_media_web.lua "$build/web-library"
 mkdir -m 700 "$build/backup"
 lua5.1 packages/schoolbell/tests/test_backup.lua "$build/backup"
 
+mkdir -m 700 "$build/plan-import"
+lua5.1 packages/schoolbell/tests/test_plan_import.lua "$build/plan-import"
+mkdir -m 700 "$build/plan-web"
+lua5.1 packages/schoolbell/tests/test_plan_import_web.lua "$build/plan-web"
+lua5.1 packages/schoolbell/tests/test_plan_import_http.lua
+node scripts/test-schoolbell-plan-import.js
+
 lua5.1 packages/schoolbell/tests/test_backup_http.lua
 
 lua5.1 packages/schoolbell/tests/test_clock_trust.lua

@@ -45,7 +45,7 @@ function fixture(storage={},initialRevision="r1",loadCodes=[]){
  return x;
 }
 (async()=>{
- if(process.env.SCHOOLBELL_UI_DIR){const p=fixture();await p.tick();const snap=p.window.schoolbellEditor.portableSnapshot();snap.draft.schedules[0].name='External mutation';assert.notEqual(p.window.schoolbellEditor.portableSnapshot().draft.schedules[0].name,'External mutation');p.get('plan-name').value='Pending';await p.get('plan-name').fire('input');assert(p.window.schoolbellEditor.portableSnapshot().formPending);assert(!p.saves.length&&!p.posts.length);console.log('PASS Pages-only read snapshot is cloned and identifies unapplied plan fields');}
+ if(process.env.SCHOOLBELL_PAGES_TEST){const p=fixture();await p.tick();const snap=p.window.schoolbellEditor.portableSnapshot();snap.draft.schedules[0].name='External mutation';assert.notEqual(p.window.schoolbellEditor.portableSnapshot().draft.schedules[0].name,'External mutation');p.get('plan-name').value='Pending';await p.get('plan-name').fire('input');assert(p.window.schoolbellEditor.portableSnapshot().formPending);assert(!p.saves.length&&!p.posts.length);console.log('PASS Pages-only read snapshot is cloned and identifies unapplied plan fields');}
  let b=fixture({},'r1',['busy','busy']);await b.tick();
  assert.equal(b.loads,1);assert(!b.window.schoolbellEditor.snapshot().loaded);
  await b.retry();assert.equal(b.loads,2);await b.retry();assert.equal(b.loads,3);

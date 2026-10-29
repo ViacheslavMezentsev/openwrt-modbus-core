@@ -14,8 +14,9 @@ function M.new(root,host,restore_owner)
    unlock=function(f)return f:close()end}
  end
  local s=assert(b.stat(root),'root absent');assert(s.type=='dir' and s.mode%64==0,'root must be private')
- assert(restore_owner or not b.stat(root..'/restore.pending'),'restore_pending')
- assert(not active[root],'busy');local lock=assert(b.lock(root..'/.lock'),'busy');if not restore_owner and b.stat(root..'/restore.pending')then b.unlock(lock);error('restore_pending')end;active[root]=true
+ assert(restore_owner==true or not b.stat(root..'/restore.pending'),'restore_pending')
+ assert(restore_owner=='import' or not b.stat(root..'/import.pending'),'import_pending')
+ assert(not active[root],'busy');local lock=assert(b.lock(root..'/.lock'),'busy');if (restore_owner~=true and b.stat(root..'/restore.pending'))or(restore_owner~='import' and b.stat(root..'/import.pending'))then b.unlock(lock);error('recovery_required')end;active[root]=true
  local self={}
  local function path(rel)
   assert(rel=='' or (rel:match('^[%w_./-]+$') and rel:sub(1,1)~='/' and not rel:find('..',1,true)),'relative path')

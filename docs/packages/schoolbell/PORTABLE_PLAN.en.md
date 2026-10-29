@@ -1,12 +1,12 @@
 # Portable calendar plan .sbp
 
-Exact wire/API accepted in specification1.67: [contract](PORTABLE_PLAN_WIRE.en.md). Only the [isolated byte codec](PORTABLE_PLAN_CODEC.en.md) is implemented; system import remains future work.
+Exact wire/API accepted in specification1.67: [contract](PORTABLE_PLAN_WIRE.en.md). Codecs, Pages export/preview and a [system import candidate5.1.20](PORTABLE_PLAN_IMPORT.en.md) are implemented; target checks remain open.
 
 Accepted framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 is closed by agreement.
 
 [Русский](PORTABLE_PLAN.md)
 
-Accepted stage contract, 2026-10-28, schoolbell specification revision 1.66, section 4.10. System import is not implemented: installed 5.1.18 cannot import/export .sbp. This is neither a full .sbb backup nor an installation package. Exact wire layout and transaction API are accepted in PORTABLE_PLAN_WIRE.en.md.
+Accepted stage contract, 2026-10-28, schoolbell specification revision 1.66, section 4.10. Installed5.1.19 cannot import/export .sbp; candidate5.1.20 provides import but has not been installed. This is neither a full .sbb backup nor an installation package. Exact wire layout and transaction API are accepted in PORTABLE_PLAN_WIRE.en.md.
 
 ## Contents and compatibility
 

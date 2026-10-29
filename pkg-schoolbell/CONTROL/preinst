@@ -14,6 +14,7 @@ assert(st.type=='dir' and (mode==448 or (path=='/etc/modbus-schoolbell' and mode
        'schoolbell: unsafe directory permissions')
 LUA
 done
+[ ! -e /etc/schoolbell-editor/import.pending ] || { echo "schoolbell: finish pending plan import before upgrade" >&2; exit 1; }
 # Disable startup before stopping; even a failed upgrade stays stopped after reboot.
 if [ -x /etc/init.d/schoolbell-auto ]; then
     /etc/init.d/schoolbell-auto disable
