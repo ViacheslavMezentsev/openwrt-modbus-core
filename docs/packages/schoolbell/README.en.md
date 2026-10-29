@@ -1,6 +1,8 @@
 # Schoolbell package
 
-Isolated Lua/JS .sbp codecs and shared62-vector corpus: [coverage/API](PORTABLE_PLAN_CODEC.en.md). Specification1.67, TC-175; no IPK/UI/installation. Next: dependency model and preview.
+Pure .sbp Lua/JS preview: calendar dependencies, conflicts and additive mapping;45 shared host scenarios, [API/scope](PORTABLE_PLAN_PREVIEW.en.md). Specification1.68, TC-176; no IPK/UI/installation.
+
+Isolated Lua/JS .sbp codecs and shared62-vector corpus: [coverage/API](PORTABLE_PLAN_CODEC.en.md). Specification1.67, TC-175; no IPK/UI/installation. Next: export assembly and then Pages integration.
 
 Accepted framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 is closed by agreement; system import is not implemented.
 

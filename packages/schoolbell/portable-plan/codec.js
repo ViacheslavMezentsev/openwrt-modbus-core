@@ -80,6 +80,6 @@
       need(await r.eof()===f.size_bytes,'size');need(await hash.finish()===f.sha256,'checksum');if(meta)json(meta,12288);
     }return parsed.bytes;
   }
-  const api=Object.freeze({manifest,encode,decode,maximum:MAXIMUM,chunk:CHUNK});
+  const api=Object.freeze({manifest,encode,decode,parseJSON:json,maximum:MAXIMUM,chunk:CHUNK});
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.SchoolbellPlanCodec=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

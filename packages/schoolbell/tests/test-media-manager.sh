@@ -12,6 +12,7 @@ export LUA_CPATH="$build/?.so;;"
 export LUA_PATH="$ROOT/packages/schoolbell/lua/?.lua;$ROOT/pkg/usr/lib/?.lua;;"
 export MEDIA_HOST=1
 python3 "$ROOT/packages/schoolbell/portable-plan/test.py"
+python3 "$ROOT/packages/schoolbell/portable-plan/test-preview.py"
 python3 "$ROOT/packages/schoolbell/tests/test_media_manager.py" "$ROOT" "$build"
 
 cd "$ROOT"

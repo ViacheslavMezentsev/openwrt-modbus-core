@@ -1,5 +1,7 @@
 # Изолированный кодек .sbp
 
+Календарная модель следующего слоя теперь реализована отдельно: [preview](PORTABLE_PLAN_PREVIEW.md). Сам кодек сохраняет прежнюю границу проверки.
+
 [English](PORTABLE_PLAN_CODEC.en.md) · [Принятый формат](PORTABLE_PLAN_WIRE.md)
 
 Этап ТЗ1.67, TC-175. Исходники находятся в `packages/schoolbell/portable-plan/`:

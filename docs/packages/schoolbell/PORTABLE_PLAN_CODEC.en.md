@@ -1,5 +1,7 @@
 # Isolated .sbp codec
 
+The next calendar/dependency layer is now implemented separately: [preview](PORTABLE_PLAN_PREVIEW.en.md). The byte codec boundary is unchanged.
+
 [Русский](PORTABLE_PLAN_CODEC.md) · [Accepted format](PORTABLE_PLAN_WIRE.en.md)
 
 Specification1.67, TC-175. Sources: packages/schoolbell/portable-plan/codec.lua and
