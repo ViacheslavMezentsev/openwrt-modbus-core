@@ -60,6 +60,10 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ## [Unreleased]
 
+- 5.1.19: device uptime above the CPU bar on the right, using existing polling; revised Russian heading. Pages labels its simulated page age explicitly. Host only, no installation.
+
+- Pages: selected-plan .sbp export with bundled dependencies, explicit timezone and read-only import preview; conflicts/renaming, SHA validation and host/UI TC-178. No installation or IPK5.1.18 changes.
+
 Lua/JS selected-plan .sbp assembly: complete dependencies, streamed user audio, 35 shared host cases; [API and scope](PORTABLE_PLAN_EXPORT.en.md). Specification 1.69, TC-177; no IPK/UI/device integration.
 
 - Pure .sbp Lua/JS preview: calendar dependencies, conflicts and additive mapping;45 shared host scenarios, [API/scope](PORTABLE_PLAN_PREVIEW.en.md). Specification1.68, TC-176; no IPK/UI/installation.

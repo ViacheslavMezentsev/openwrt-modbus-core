@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var R=window.RangePlans;
-var queueBins=[];
+var queueBins=[],demoStarted=performance.now();
 function queueDemo(record,ok){
  var now=Math.floor(performance.now()/1000),key=Math.floor(now/5);
  queueBins=queueBins.filter(function(b){return b.key>key-12;});
@@ -20,6 +20,7 @@ function seed(){var year=new Date().getFullYear(),date=year+'-01-01',days='';
  {id:'short',name:'Короткие уроки',color:2,rows:rows(['08:30','09:00','09:10','09:40'])},
  {id:'exam',name:'Экзамены',color:7,rows:rows(['09:00','12:00'])}],plans:[{id:'year-'+year,name:'Учебный пример '+year,start:year+'-01-01',end:year+'-12-31',schedule_ids:['normal','short','exam'],days:days}]}};}
 function read(){try{var value=JSON.parse(localStorage.getItem(key));if(value && value.format===1 && value.data && Array.isArray(value.log)){memory=value;return value;}}catch(_){}if(!memory)memory=seed();return memory;}
+window.schoolbellDemo={portableState:function(){return {automatic_enabled:!!read().autoEnabled};}};
 function write(v){memory=v;try{localStorage.setItem(key,JSON.stringify(v));}catch(_){document.getElementById('demo-storage').textContent='Хранилище браузера недоступно: изменения живут только в этой вкладке.';}}
 function log(s,action,source){s.log.push({seq:++s.seq,time:Math.floor(Date.now()/1000),source:source || 'user',level:'info',action:action});s.log=s.log.filter(function(e){return e.time>=Math.floor(Date.now()/1000)-604800;}).slice(-80);write(s);}
 function assigned(data,date){if(data.mode==='fixed')return data.fixed_schedule && data.fixed_schedule!=='quiet'?data.fixed_schedule:false;var plan=R.migrate(data.plans || []).find(function(p){return date>=p.start && date<=p.end;});if(!plan)return false;
@@ -55,7 +56,7 @@ window.fetch=async function(url,options){
  else if(name==='media')out={ok:true,demo:true,generation:0,storage:{total_kib:4096,free_kib:1536,used_kib:2560,reserve_kib:512,media_kib:0,media_limit_kib:2048},slots:['test','0','1','2','3','4','user1','user2','user3','user4','user5','user6','user7','user8'].map(function(id,i){return {id:id,name:i<6?id+'.mp3':'Свободная позиция',title:['Тестовый звонок','[Короткая] Время','Шутка Баха','Гостья из XXI','Князь Игорь','Усатый нянь'][i] || ('Пользовательская '+(i-5)),source:i<6?'bundled':'empty',size_bytes:[13104,41273,63321,69904,68023,82368][i] || 0};})};
  else if(name==='automatic'){
  if(options && options.method==='POST' && body.get('enabled')==='false'){s.autoEnabled=false;s.autoGeneration=(s.autoGeneration || 0)+1;log(s,'auto_disabled');}
- out={ok:true,state:s.autoEnabled?(s.muted?'muted':'running'):'disabled',enabled:!!s.autoEnabled,generation:s.autoGeneration || 0,revision:s.applied && s.applied.revision,mode:s.applied && s.applied.data.mode,hardware:false,simulated:true,queue:queueDemo(false),clock_trust:{enforced:s.clockEnforced!==false,state:s.clockConfirmed?'confirmed':s.clockEnforced===false?'unchecked':'unconfirmed',reason:'demo'}};}
+ out={ok:true,state:s.autoEnabled?(s.muted?'muted':'running'):'disabled',enabled:!!s.autoEnabled,generation:s.autoGeneration || 0,revision:s.applied && s.applied.revision,mode:s.applied && s.applied.data.mode,hardware:false,simulated:true,queue:queueDemo(false),cpu:{available:false,simulated:true,uptime_seconds:Math.max(0,Math.floor((performance.now()-demoStarted)/1000))},clock_trust:{enforced:s.clockEnforced!==false,state:s.clockConfirmed?'confirmed':s.clockEnforced===false?'unchecked':'unconfirmed',reason:'demo'}};}
  else if(name==='clock-trust'){
  if(options && options.method==='POST'){
  var action=body.get('action');out={ok:true};

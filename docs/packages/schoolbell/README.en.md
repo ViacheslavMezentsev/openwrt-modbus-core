@@ -1,5 +1,9 @@
 # Schoolbell package
 
+Host build5.1.19 adds uptime above CPU and the revised heading. Installed5.1.18 was not updated.
+
+Pages: selected-plan .sbp export and read-only import preview. [Details](PORTABLE_PLAN_PAGES.en.md); IPK5.1.19 changes only heading/uptime; .sbp remains Pages-only.
+
 Lua/JS selected-plan .sbp assembly: complete dependencies, streamed user audio, 35 shared host cases; [API and scope](PORTABLE_PLAN_EXPORT.en.md). Specification 1.69, TC-177; no IPK/UI/device integration.
 
 Pure .sbp Lua/JS preview: calendar dependencies, conflicts and additive mapping;45 shared host scenarios, [API/scope](PORTABLE_PLAN_PREVIEW.en.md). Specification1.68, TC-176; no IPK/UI/installation.

@@ -48,6 +48,7 @@ for element in ['draft-compare','draft-comparison','draft-local-json','draft-rou
  assert 'id="'+element+'"' in html,element
 assert 'Сверить с локальной моделью' in html
 expected=source.read_text().replace('на устройстве','в демо').replace('на устройство','в демо').replace('с устройства','из браузера').replace('с устройством','с локальной моделью').replace('на роутере','в демо').replace('на роутер','в демо').replace('с роутера','из браузера').replace('с роутером','с локальной моделью').replace('Проверьте вход в LuCI, сеть','Проверьте файл').replace('вход LuCI','демо')
+expected=expected.replace('window.schoolbellEditor={','window.schoolbellEditor={portableSnapshot:function(){return {draft:draft?JSON.parse(JSON.stringify(draft)):null,dirty:dirty||formPending,formPending:formPending,busy:busy||activationLock,reconcile:reconcile,revision:revision};},',1)
 assert (out/'schoolbell/assets/schedules.js').read_text()==expected
 subprocess.run(['node',str(root/'scripts/test-schoolbell-routes.js')],cwd=root,env=dict(os.environ,SCHOOLBELL_UI_DIR=str(out/'schoolbell/assets')),check=True)
 print('PASS Pages shares editor/reconciliation and runs the same no-hardware journey regressions')
@@ -85,3 +86,14 @@ assert calendar_html.index('id="plan-status"') < calendar_html.index('id="months
 
 assert 'Сохранить черновик в демо' in calendar_html
 assert 'Сохранить черновик на устройстве' not in calendar_html
+
+# Portable codecs are copied byte-for-byte, not forked or added to the IPK.
+for name in ['codec','export','preview']:
+ assert (out/('schoolbell/assets/portable-'+name+'.js')).read_bytes()==(root/('packages/schoolbell/portable-plan/'+name+'.js')).read_bytes()
+assert 'portableSnapshot' not in source.read_text()
+assert 'portable-panel' not in (root/'packages/schoolbell/router-page/root/usr/lib/lua/luci/view/schoolbell_test.htm').read_text()
+assert html.index('assets/schedules.js')<html.index('assets/portable-ui.js')
+assert 'импорт только проверяется' in html
+
+assert 'Настраиваемый музыкальный звонок' in html
+assert 'id="device-uptime"' in html and 'class="cpu-labels"' in html

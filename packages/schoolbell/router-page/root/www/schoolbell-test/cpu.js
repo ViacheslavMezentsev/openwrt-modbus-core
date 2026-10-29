@@ -7,9 +7,10 @@ function percent(a,b){
  return Math.round((total-idle)*1000/total)/10;
 }
 function tone(p){return p===null?'unknown':p>90?'danger':p>75?'warning':'success';}
-if(typeof module==='object'&&module.exports){module.exports={percent:percent,tone:tone};return;}
-var previous=null,value=null,at=0,bar=document.getElementById('cpu-line'),label=document.getElementById('cpu-value');
-function draw(){var p=performance.now()-at>15000||global.schoolbellSessionBlocked?null:value;bar.dataset.tone=tone(p);bar.style.setProperty('--cpu-fill',(p===null?0:p)+'%');label.textContent=p===null?'CPU · нет измерения':'CPU · '+p.toFixed(1)+'%';if(p===null)bar.removeAttribute('aria-valuenow');else bar.setAttribute('aria-valuenow',p);}
+function uptime(seconds){if(!Number.isSafeInteger(seconds)||seconds<0)return null;var minutes=Math.floor(seconds/60);return Math.floor(minutes/1440)+' дн '+String(Math.floor(minutes/60)%24).padStart(2,'0')+' ч '+String(minutes%60).padStart(2,'0')+' мин';}
+if(typeof module==='object'&&module.exports){module.exports={percent:percent,tone:tone,uptime:uptime};return;}
+var previous=null,value=null,at=0,bar=document.getElementById('cpu-line'),label=document.getElementById('cpu-value'),up=document.getElementById('device-uptime');
+function draw(){var stale=performance.now()-at>15000||global.schoolbellSessionBlocked,p=stale?null:value,u=stale?null:uptime(previous&&previous.uptime_seconds);up.textContent=u===null?'В работе · нет данных':(previous.simulated?'Демо · ':'')+u;bar.dataset.tone=tone(p);bar.style.setProperty('--cpu-fill',(p===null?0:p)+'%');label.textContent=p===null?'CPU · нет измерения':'CPU · '+p.toFixed(1)+'%';if(p===null)bar.removeAttribute('aria-valuenow');else bar.setAttribute('aria-valuenow',p);}
 global.addEventListener('schoolbell-system-metrics',function(e){value=percent(previous,e.detail);previous=e.detail;at=performance.now();draw();});
 draw();setInterval(draw,1000);
 })(typeof window==='object'?window:globalThis);

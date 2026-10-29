@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Static GitHub Pages, sharing the router UI sources; no network or device calls."""
 from pathlib import Path
-import html, re, shutil, sys, subprocess, datetime, json
+import html, re, shutil, sys, subprocess, datetime, json, hashlib
 root=Path(__file__).resolve().parent.parent
 out=Path(sys.argv[1]) if len(sys.argv)>1 else root/'out/site'
 out.mkdir(parents=True,exist_ok=True)
@@ -29,11 +29,26 @@ for p in (source/'www/schoolbell-test').iterdir():
  text=p.read_text()
  if p.suffix=='.js':
   text=text.replace('на устройстве','в демо').replace('на устройство','в демо').replace('с устройства','из браузера').replace('с устройством','с локальной моделью').replace('на роутере','в демо').replace('на роутер','в демо').replace('с роутера','из браузера').replace('с роутером','с локальной моделью').replace('Проверьте вход в LuCI, сеть','Проверьте файл').replace('вход LuCI','демо')
+ if p.name=='schedules.js':
+  marker='window.schoolbellEditor={'
+  assert text.count(marker)==1
+  text=text.replace(marker,marker+'portableSnapshot:function(){return {draft:draft?JSON.parse(JSON.stringify(draft)):null,dirty:dirty||formPending,formPending:formPending,busy:busy||activationLock,reconcile:reconcile,revision:revision};},',1)
  (assets/p.name).write_text(text)
 shutil.copyfile(root/'site/demo.js',assets/'demo.js')
 for name in ['test','0','1','2','3','4']:
  shutil.copyfile(root/('packages/schoolbell/media/'+name+'.mp3'),assets/(name+'.mp3'))
 shutil.copyfile(root/'pkg-schoolbell/usr/share/modbus-schoolbell/NOTICE',assets/'NOTICE.txt')
+for name in ['codec','export','preview']:
+ shutil.copyfile(root/('packages/schoolbell/portable-plan/'+name+'.js'),assets/('portable-'+name+'.js'))
+for name in ['portable-pages.js','portable-ui.js','portable.css','portable-zones.NOTICE','LUCI-LICENSE']:
+ shutil.copyfile(root/'site'/name,assets/name)
+titles=['Тестовый звонок','[Короткая] Время','Шутка Баха','Гостья из XXI','Князь Игорь','Усатый нянь']
+inventory=[]
+for name,title in zip(['test','0','1','2','3','4'],titles):
+ data=(assets/(name+'.mp3')).read_bytes()
+ inventory.append(dict(id=name,title=title,size_bytes=len(data),sha256=hashlib.sha256(data).hexdigest()))
+config=dict(version=version,zones=json.loads((root/'site/portable-zones.json').read_text()),media=inventory)
+(assets/'portable-config.js').write_text('window.SchoolbellPortableConfig='+json.dumps(config,ensure_ascii=False)+';\n')
 text=(source/'usr/lib/lua/luci/view/schoolbell_test.htm').read_text()
 values={'session_url':'./demo-api/session','login_url':'./','auth_user':'Демо без входа','trust_url':'./demo-api/clock-trust','backup_url':'./demo-api/backup','media_url':'./demo-api/media','automatic_url':'./demo-api/automatic','controls_url':'./demo-api/controls','manual_url':'./demo-api/no-router','preview_url':'./demo-api/preview','schedules_url':'./demo-api/load','save_url':'./demo-api/save','clock_url':'./demo-api/clock','journal_url':'./demo-api/journal','timezone_url':'./demo-api/timezone','sample_url':'./assets/test.mp3','play_url':'./demo-api/no-router','module_version':version+' · DEMO','core_version':'не подключено','token':'demo'}
 for key,value in values.items():text=text.replace('<%=pcdata('+key+')%>',html.escape(value,quote=True))
@@ -47,6 +62,12 @@ text=text.replace('Подготовьте расписания и сохрани
 text=text.replace('Инженерная установка','Демонстрация интерфейса').replace('На роутере · оценка между опросами','Демо-часы · выбранная зона').replace('Сохраняется на роутере','Сохраняется в браузере').replace('Настройка сохраняется на роутере и действует для всех его приложений.','Настройка меняет только часовой пояс этого демо, не устройства или компьютера.')
 text=text.replace('id="router-play" type="submit"','id="router-play" type="submit" disabled').replace('▶ Позвонить на роутере','Недоступно в демо · нет роутера').replace('Колонки должны быть включены и подключены к аудиовыходу.','В демо нет подключения к роутеру. Доступен только звук браузера.')
 text=re.sub(r'(?=<script src="\./assets/traffic\.js(?:\?[^"]*)?">)', '<script src="./assets/ranges.js"></script><script src="./assets/demo.js"></script>', text, count=1)
+marker='<h2>Календарные планы</h2>'
+assert text.count(marker)==1
+text=text.replace(marker,marker+(root/'site/portable-panel.html').read_text(),1)
+text=text.replace('</head>','<link rel="stylesheet" href="./assets/portable.css"></head>')
+scripts=''.join('<script src="./assets/'+name+'.js"></script>' for name in ['portable-codec','portable-export','portable-preview','portable-config','portable-pages','portable-ui'])
+text=text.replace('</body>',scripts+'</body>')
 assert '<%=' not in text,'unresolved template'
 text=text.replace('</footer>',provenance+'</footer>')
 (demo/'index.html').write_text(text)

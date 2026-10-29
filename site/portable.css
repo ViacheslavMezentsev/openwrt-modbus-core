@@ -1,0 +1,9 @@
+/* Pages-only transfer panel; the device payload is unchanged. */
+#portable-panel { margin: 1rem 0; }
+#portable-panel fieldset { margin: 1rem 0; border: 1px solid var(--border); border-radius: .5rem; }
+#portable-panel input[type=checkbox] { width: auto; margin-right: .5rem; }
+#portable-names label { display: grid !important; grid-template-columns: minmax(12rem,1fr) minmax(12rem,1fr); align-items: center; gap: .75rem; margin: .5rem 0; }
+#portable-names input { width: 100%; min-width: 0; }
+#portable-panel select, #portable-file { max-width: 100%; }
+#portable-result { overflow-wrap: anywhere; }
+@media(max-width:640px) { #portable-names label { grid-template-columns: 1fr; } }

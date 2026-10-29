@@ -24,3 +24,14 @@ print('PASS queue metrics: actual mailbox depth/wait/completions, dedupe, expiry
 local CPU=require('schoolbell.system_metrics');local c=CPU.parse('cpu 100 20 30 400 50 6 7 8 999 999');assert(c.total=='621' and c.idle=='450');assert(not CPU.parse('intr 100').available)
 
 q.id=string.rep('e',32);assert(m.submit(q).ok);t=t+21;q.id=string.rep('f',32);assert(m.submit(q).ok);v=C.decode(files['metrics.json']);assert(v.depth==1 and v.bins[#v.bins].expired==1)
+
+assert(CPU.uptime('886200.99 100.00\n')==886200)
+assert(CPU.uptime('0.00 0.00\n')==0)
+assert(CPU.uptime('-1.0 0\n')==nil and CPU.uptime('bad')==nil and CPU.uptime(nil)==nil)
+local open=io.open
+io.open=function(path)
+ if path=='/proc/uptime' then return nil end
+ return {read=function()return path=='/proc/stat' and 'cpu 1 2 3 4 5 6 7 8' or 'boot' end,close=function()end}
+end
+local sampled=CPU.read();io.open=open;assert(sampled.available and sampled.uptime_seconds==nil)
+print('PASS uptime parser and absent uptime does not hide CPU counters')

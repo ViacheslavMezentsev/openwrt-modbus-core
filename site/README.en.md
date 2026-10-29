@@ -1,5 +1,7 @@
 # Project website and Schoolbell demo
 
+Selected-plan .sbp export and read-only import preview are available in Calendar. [Workflow and limits](../docs/packages/schoolbell/PORTABLE_PLAN_PAGES.en.md).
+
 [Русский](README.md)
 
 RU/EN landing sources live in site/. build-site.py renders the demo from packages/schoolbell/router-page/root and injects site/demo.js. The MP3 and NOTICE are copied from the pinned repository assets. No separate UI fork or backend is needed.

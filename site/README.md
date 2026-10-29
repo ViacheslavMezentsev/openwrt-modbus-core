@@ -1,5 +1,7 @@
 # Сайт проекта и демо schoolbell
 
+Экспорт .sbp выбранных планов и предварительный импорт без записи доступны в «Календаре». [Маршрут и ограничения](../docs/packages/schoolbell/PORTABLE_PLAN_PAGES.md).
+
 [English](README.en.md)
 
 Исходники: landing RU/EN в site/, интерфейс демо строится из packages/schoolbell/router-page/root. Никаких отдельных копий макета: build-site.py подставляет demo endpoints и локальную модель site/demo.js. Тестовая мелодия копируется вместе с NOTICE; авторство и исходные SHA256 сохраняются в packages/schoolbell/media.

@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Shkolnik: Pages exports selected .sbp plans and previews additive import without writes. Host build5.1.19 adds uptime above CPU and a revised heading; no device update.
+
 - Added paired WORKFLOW guides covering stage agreement, signed branches, CI/land, backups, authorized device acceptance and Pages synchronization.
 
 - Schoolbell 5.0.32: deleting a fixed selection requires explicit replacement; clearing the last year explains fixed/quiet. Reconciliation retains local edits, reads both copies and never repeats writes/activation; subsequent save retains CAS. Pages shares UI and regressions. Host only, no installation or publication.
