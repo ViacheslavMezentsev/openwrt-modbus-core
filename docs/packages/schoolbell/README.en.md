@@ -1,5 +1,7 @@
 # Schoolbell package
 
+Lua/JS selected-plan .sbp assembly: complete dependencies, streamed user audio, 35 shared host cases; [API and scope](PORTABLE_PLAN_EXPORT.en.md). Specification 1.69, TC-177; no IPK/UI/device integration.
+
 Pure .sbp Lua/JS preview: calendar dependencies, conflicts and additive mapping;45 shared host scenarios, [API/scope](PORTABLE_PLAN_PREVIEW.en.md). Specification1.68, TC-176; no IPK/UI/installation.
 
 Isolated Lua/JS .sbp codecs and shared62-vector corpus: [coverage/API](PORTABLE_PLAN_CODEC.en.md). Specification1.67, TC-175; no IPK/UI/installation. Next: export assembly and then Pages integration.
