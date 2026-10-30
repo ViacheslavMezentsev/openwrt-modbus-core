@@ -303,6 +303,15 @@ The current USB RTU register map is a bench prototype, not a commitment to the g
 - [ ] Investigate simple router-assisted firmware updates after laptop flashing is stable.
 - [ ] Select a bootloader/update transport, image verification and recovery procedure.
 
+- [ ] Evaluate OpenBLT on a spare STM32 board: XCP over Modbus RTU (custom function 109), application-to-bootloader transition, board-specific flash layout and application build, UART/RS-485 versus direct USB CDC reachability, and DE/RE handling. STM32 family support is not proof of a ready BluePill/BlackPill port.
+- [ ] Prefer a Lua 5.1 updater backend: bounded streaming image reader, XCP/Modbus framing, state machine, configurable deadlines/retries, progress and errors over the common core I/O mechanisms. BootCommander/LibOpenBLT may serve as reference tools, not a mandatory runtime dependency. First prove protocol interoperability, memory/throughput and timeout behavior on the host; any additional native dependency requires a measured limitation and separate agreement. MCU bootloader firmware remains native code; this preference concerns the device-management backend.
+- [ ] Define a maintenance lease with the core as transport owner: drain/pause affected polling, reject conflicting commands, enter safe output state, identify target board/revision/version, verify image authenticity/compatibility and application bounds, update one node, confirm the running version, then resume polling. Never open a second serial client concurrently. TCP/IP support does not imply Modbus TCP or RNDIS support; verify gateway forwarding of function 109 separately.
+- [ ] Bench-test interruption/retry, invalid image, wrong board, failed application startup and recovery without rewriting the bootloader. Distinguish repeatable recovery from an old-image rollback; neither power-loss tolerance nor autonomous recovery is assumed. Measure bootloader flash/RAM and Lua updater budgets, review licensing, retain a programmer recovery path. Hardware writes, reset/power tests and output behavior need a separately authorized stage.
+- [ ] Start with an administrator-triggered automatic update procedure; unattended update policy is a later contract. Keep this research separate from Schoolbell acceptance and the current runtime implementation.
+
+References: [OpenBLT](https://github.com/feaser/openblt), [Modbus RTU integration and function 109](https://www.feaser.com/en/blog/2024/01/openblt-1-17-0-release-notes/), [transport configuration](https://www.feaser.com/openblt/doku.php?id=manual:modbus_rtu_demo).
+
+
 ## Router boot and recovery
 
 - [x] Document MR3020 v3 versus v3.30 evidence, UART diagnostics and Windows TFTP workflow in paired public guides; provide an offline SHA-256 staging helper.

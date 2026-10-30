@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Plan OpenBLT evaluation for attached STM32 firmware updates, preferring a Lua backend over common core I/O without mandatory BootCommander/LibOpenBLT dependencies. Compatibility, recovery and resource checks are planned; no implementation or hardware changes.
+
 - Shkolnik: Pages exports selected .sbp plans and previews additive import without writes. Host build5.1.19 adds uptime above CPU and a revised heading; no device update.
 
 - Added paired WORKFLOW guides covering stage agreement, signed branches, CI/land, backups, authorized device acceptance and Pages synchronization.
