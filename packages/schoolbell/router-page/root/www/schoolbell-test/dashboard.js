@@ -117,6 +117,7 @@
     var browser=new Date(),elapsed=sample?performance.now()-sample.received:Infinity;
     document.getElementById('browser-clock').textContent=browser.toLocaleString('ru-RU',format);
     document.getElementById('browser-zone').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone+' · '+zone(-browser.getTimezoneOffset());
+    if(window.schoolbellDisplayClock)window.schoolbellDisplayClock(sample&&elapsed<=90000?sample.wall+elapsed:null);
     var status=document.getElementById('clock-status'),sync=document.getElementById('clock-sync');sync.hidden=true;document.getElementById('timezone-hint').hidden=true;
     if(!sample || elapsed>90000){document.getElementById('router-clock').textContent='Время недоступно';status.textContent='Нет свежего ответа устройства. Сравнение часов отключено.';return;}
     document.getElementById('router-clock').textContent=new Date(sample.wall+elapsed).toLocaleString('ru-RU',Object.assign({},format,{timeZone:'UTC'}));

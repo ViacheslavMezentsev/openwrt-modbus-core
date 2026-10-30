@@ -4,7 +4,7 @@
 
 Working cycle: [WORKFLOW](docs/WORKFLOW.en.md) ([RU](docs/WORKFLOW.md)); stage boundaries, owner push/land and device acceptance.
 
-Reviewed 2026-10-29: installed Shkolnik **5.1.19**, owner acceptance completed.
+Reviewed 2026-10-30: installed Shkolnik **5.1.21**; 5.1.22 UI candidate remains host-only.
 Automatic bells remain disabled. No clock/NTP changes are authorized by this plan.
 Pages sources are synchronized; publishing the new main remains the owner's action.
 Checked historical stage bullets describe their original scope, not remaining work.
@@ -26,6 +26,9 @@ automatic run. The owner can keep the device online; schedule monitoring only wh
 the run and access are ready. Networked observation is distinct from offline testing
 and audible confirmation. Flashing, clocks, power cuts and sound are not authorized
 by this roadmap alone.
+
+- [x] Device 5.1.21: user-MP3 .sbp export and isolated import verified via installed Lua API; hashes matched, working data unchanged, automatic bells stayed off. HTTP/browser roundtrip with user media remains a separate acceptance check. Local evidence: research 74 (not committed).
+- [ ] Install and visually accept 5.1.22 header clock/uptime, spacing, delete icon and default idle interval after separate authorization.
 
 ### Portable plans: agreed policy and remaining work
 

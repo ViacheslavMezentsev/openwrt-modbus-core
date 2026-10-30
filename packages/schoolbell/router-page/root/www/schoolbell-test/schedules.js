@@ -223,7 +223,7 @@
           box.setAttribute('aria-label',(key==='enabled'?'Включить звонок ':'Предзвонок ')+(index+1));
           box.addEventListener('change',function () { row[key]=box.checked; changed(); }); cell(box);
         });
-        var del=document.createElement('button'); del.type='button'; del.textContent='×'; del.setAttribute('aria-label','Удалить звонок '+(index+1));
+        var del=document.createElement('button'); del.type='button'; del.textContent='×'; del.className='icon-delete'; del.title='Удалить звонок '+(index+1); del.setAttribute('aria-label','Удалить звонок '+(index+1));
         del.addEventListener('click',function () { s.rows.splice(index,1); changed(); render(); }); cell(del); rows.appendChild(tr);
       });
       document.getElementById('empty-rows').hidden=s.rows.length!==0;

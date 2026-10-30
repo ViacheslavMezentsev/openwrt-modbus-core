@@ -1,5 +1,7 @@
 # Schoolbell user guide
 
+5.1.22 (host): device local time HH:MM is right-aligned above the CPU bar; uptime is below (page age in Pages). Reuses existing clock polling and hides stale time. Default idle logout is 30 minutes; existing choices are preserved. Major section gaps are aligned and the bell-delete cross enlarged. Pages synchronized; this version is not installed on the device.
+
 5.1.14: Journal → Statistics → HTTP requests now includes an API-method table (for example, GET automatic and POST test). Each row shows starts, completions, HTTP/network errors, pending responses and mean/maximum latency to response headers. The same twelve 5-second start-time bins apply; requests pending beyond that window remain visible. URL parameters, tokens and bodies are not retained; different arguments to the same POST method are grouped. HTTP 200 with an operation refusal is not an HTTP error; melody duration and command execution are not separately measured. Collection is passive across module tabs, without additional requests or device writes. Pages shares the code over its local model; no device installation.
 
 5.1.13: compact sound-status/diagnostics row removes the empty header gap. Status and draft notices are grouped above the tabs, both with a Details hint. Only lower CPU tick labels were removed; percentage and colors remain. Feedback credits author Vyacheslav Mezentsev and co-author Codex (OpenAI). Pages shares the layout; no device installation.

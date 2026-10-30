@@ -14,7 +14,7 @@
     countdown.textContent='Демо: сеанс устройства не используется.';return;
   }
   var rawFetch=window.fetch.bind(window),user=panel.dataset.user,token=root.dataset.token;
-  var blocked=false,checking=false,leaving=false,epoch=0,controllers=new Set(),minutes=15;
+  var blocked=false,checking=false,leaving=false,epoch=0,controllers=new Set(),minutes=30;
   try{var saved=Number(localStorage.getItem('schoolbell-idle-minutes'));if([1,5,15,30,60,120].includes(saved))minutes=saved;}catch(_){}
   duration.value=String(minutes);
   var lastMono=performance.now(),lastWall=Date.now();

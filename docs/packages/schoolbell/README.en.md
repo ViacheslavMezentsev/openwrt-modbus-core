@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.22 (host): device local time HH:MM is right-aligned above the CPU bar; uptime is below (page age in Pages). Reuses existing clock polling and hides stale time. Default idle logout is 30 minutes; existing choices are preserved. Major section gaps are aligned and the bell-delete cross enlarged. Pages synchronized; this version is not installed on the device.
+
 [Selected-plan device export](PORTABLE_PLAN_EXPORT_DEVICE.en.md): candidate5.1.21, host-tested, not installed.
 
 Candidate5.1.20: [add-only .sbp import](PORTABLE_PLAN_IMPORT.en.md), host transaction/HTTP/UI tests and synchronized Pages; no installation. Device remains5.1.19.

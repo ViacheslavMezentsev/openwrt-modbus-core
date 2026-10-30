@@ -86,7 +86,17 @@ html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27
 .demo-notice { border-left-color: var(--accent); }
 .demo-notice summary strong { font-weight: 600; }
 
-.cpu-labels{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}#device-uptime{margin-left:auto;text-align:right}
+.cpu-labels{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}#device-clock{margin-left:auto;text-align:right;font-variant-numeric:tabular-nums}#device-uptime{margin-top:6px;text-align:right}
 
 #plan-export-plans label{display:flex;flex-direction:row;align-items:center;gap:10px;margin:10px 0}
 #plan-export-plans input[type=checkbox]{width:auto;margin:0;flex:none}
+
+/* One rhythm for large content blocks, shared with the tab-to-content gap. */
+:root{--section-gap:12px}
+.page-tabs{margin-bottom:var(--section-gap)}
+#panel-sound,#panel-media{display:flex;flex-direction:column;gap:var(--section-gap)}
+#panel-sound>.details,#panel-media>.details{margin:0}
+[data-panel]>.plan-workflow,[data-panel]>.traffic-panel,[data-panel]>.calendar-tools{margin-top:var(--section-gap);margin-bottom:var(--section-gap)}
+[data-panel] .routes{margin-top:var(--section-gap);margin-bottom:var(--section-gap);gap:var(--section-gap)}
+[data-panel] .storage-status{margin-top:var(--section-gap);margin-bottom:var(--section-gap)}
+.schedule-table td button.icon-delete{width:44px;min-width:44px;height:48px;padding:0;font-size:28px;line-height:1;font-weight:700}

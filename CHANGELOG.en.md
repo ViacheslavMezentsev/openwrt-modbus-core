@@ -1,5 +1,7 @@
 # Changelog
 
+5.1.22 (host): device local time HH:MM is right-aligned above the CPU bar; uptime is below (page age in Pages). Reuses existing clock polling and hides stale time. Default idle logout is 30 minutes; existing choices are preserved. Major section gaps are aligned and the bell-delete cross enlarged. Pages synchronized; this version is not installed on the device.
+
 5.1.21 (host): selected-plan .sbp export with user audio/dependencies; complete file before HTTP, locks released before download. Pages synchronized; not installed.
 
 5.1.20 (host): .sbp import adds plans/dependencies to a draft with preview and durable recovery; synchronized Pages, no installation.
