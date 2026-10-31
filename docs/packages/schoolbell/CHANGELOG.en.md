@@ -80,6 +80,9 @@ Installed 5.0.27 with native clock1.0.0: real mailbox contention and browser con
 
 ## [Unreleased]
 
+Specification 1.75: replace schedule/plan/media quotas with shared file admission and resource checks; retain journal rotation, integrity and add-only import. Migration and TC-184–187 remain pending; no code, package or device changes.
+
+
 - Shkolnik 5.1.23: outlined automatic status, theme-aware colors and aligned Pages Guide. Schedule rows offer red deletion and selected melody previews in browser/device speakers (hardware disabled in Pages). Host checks only; not deployed.
 
 - 5.1.19: device uptime above the CPU bar on the right, using existing polling; revised Russian heading. Pages labels its simulated page age explicitly. Host only, no installation.

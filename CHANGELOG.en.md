@@ -38,6 +38,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+Specification 1.75: replace schedule/plan/media quotas with shared file admission and resource checks; retain journal rotation, integrity and add-only import. Migration and TC-184–187 remain pending; no code, package or device changes.
+
+
 - Pages: device catalog, RU/EN MR3020 EU v3.30 TFTP reference and OEM Build250625 artifact record; recovery remains untested.
 - Updated TODO and end-to-end acceptance plan after owner acceptance of 5.1.23 on the existing bench. Next is new-device S0; no flashing or automatic bells.
 

@@ -1,5 +1,8 @@
 # Portable calendar plan .sbp
 
+> Target policy updated in specification 1.75, section 5.3: object/slot quotas are removed from requirements in favour of shared file admission budgets. Numbers and slot rules below describe the existing format/implementation only. They remain enforced in 5.1.26 until compatible encoding, migration and tests are implemented; this is not a silent change to SBPLAN1. Existing data must never be truncated.
+
+
 Exact wire/API accepted in specification1.67: [contract](PORTABLE_PLAN_WIRE.en.md). Codecs, Pages export/preview and a [system import candidate5.1.20](PORTABLE_PLAN_IMPORT.en.md) are implemented; target checks remain open.
 
 Accepted framing, fields, bounds and API: [PORTABLE_PLAN_WIRE.en.md](PORTABLE_PLAN_WIRE.en.md). Question8.2.15 is closed by agreement.

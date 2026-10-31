@@ -1,5 +1,8 @@
 # .sbp wire format and import operation
 
+> Target policy updated in specification 1.75, section 5.3: object/slot quotas are removed from requirements in favour of shared file admission budgets. Numbers and slot rules below describe the existing format/implementation only. They remain enforced in 5.1.26 until compatible encoding, migration and tests are implemented; this is not a silent change to SBPLAN1. Existing data must never be truncated.
+
+
 [Русский](PORTABLE_PLAN_WIRE.md) · [Accepted policy](PORTABLE_PLAN.en.md)
 
 Accepted by the owner on2026-10-28, specification1.67 question8.2.15.
