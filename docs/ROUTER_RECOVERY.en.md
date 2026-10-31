@@ -1,5 +1,7 @@
 # TL-MR3020 v3.30: boot diagnostics and recovery
 
+Current preparation for the first EU v3.30 OEM TFTP experiment: [Pages artifact record and reference](../site/devices/tl-mr3020-eu-v3.30.en.html). Original Build250625 preserved; bootloader acceptance remains untested. A separate OEM recovery release is not required; whether the original BIN needs transformation remains unresolved.
+
 [Русский](ROUTER_RECOVERY.md) · [Documentation](README.en.md)
 
 Sources checked: 2026-10-12. This is an operations guide, not a change to the core's

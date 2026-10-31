@@ -93,3 +93,6 @@ for lang,name in [('ru','guide.html'),('en','guide.en.html')]:
   page=page.replace(marker,(root/'site/diagrams'/(diagram+'.'+lang+'.svg')).read_text())
  footer=provenance if lang=='ru' else provenance.replace('Сборка:','Build:').replace('локальные изменения','local changes')
  (demo/name).write_text(page.replace('</footer>',footer+'</footer>'))
+
+# Device references are static, bilingual, and outside the hardware demo.
+shutil.copytree(root/"site/devices",out/"devices",dirs_exist_ok=True)

@@ -1,5 +1,6 @@
 # Changelog
 
+
 Pages: separate RU/EN draft guide, Guide links in demo notice/module card, conceptual bench/audio SVGs. No package or device changes.
 
 2026-10-31: Shkolnik 5.1.22 UI and isolated browser .sbp roundtrip accepted; TODO updated, artifact-frozen end-to-end acceptance and dedicated USB–Ethernet bench plan added. No device changes.
@@ -29,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Pages: device catalog, RU/EN MR3020 EU v3.30 TFTP reference and OEM Build250625 artifact record; recovery remains untested.
 - Updated TODO and end-to-end acceptance plan after owner acceptance of 5.1.23 on the existing bench. Next is new-device S0; no flashing or automatic bells.
 
 - Shkolnik 5.1.23: outlined automatic status, theme-aware colors and aligned Pages Guide. Schedule rows offer red deletion and selected melody previews in browser/device speakers (hardware disabled in Pages). Host checks only; not deployed.

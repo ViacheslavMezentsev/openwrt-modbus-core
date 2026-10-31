@@ -15,7 +15,9 @@ class Links(HTMLParser):
    if p.is_dir():p=p/'index.html'
    assert p.is_file(),str(p)
 for p in out.rglob('*.html'):
- t=p.read_text();assert '<%=' not in t and '/cgi-bin/' not in t and '192.168.' not in t
+ t=p.read_text();assert '<%=' not in t and '/cgi-bin/' not in t
+ if p.parent!=out/'devices':assert '192.168.' not in t
+ else:assert not re.search(r'(?:href|src)=[\"\'][^\"\']*192\.168\.',t)
  parser=Links();parser.base=p.parent;parser.feed(t)
 source=root/'packages/schoolbell/router-page/root/www/schoolbell-test/schedules.js'
 colors=ast.literal_eval(re.search(r'var colors=(\[[^;]+\]);',source.read_text())[1])
@@ -120,3 +122,12 @@ feedback=html.split('id="panel-feedback"',1)[1].split('</section>',1)[0]
 assert 'id="feedback-build"' in feedback and info['commit'] in feedback and info['built_at_utc'] in feedback
 assert ('Собрано с локальными изменениями.' in feedback)==info['dirty']
 print('PASS standalone guide button and exact build provenance beside feedback authors')
+
+# Documentation may describe private recovery addresses, but must never link to hardware.
+for name in ['index.html','index.en.html','tl-mr3020-eu-v3.30.html','tl-mr3020-eu-v3.30.en.html']:
+ assert (out/'devices'/name).is_file()
+assert not list((out/'devices').rglob('*.bin'))
+m=json.loads((out/'devices/tl-mr3020-eu-v3.30-firmware.json').read_text())
+assert m['bootloader_recovery_status']=='not-tested' and m['transformation']=='none'
+assert re.fullmatch('[0-9a-f]{64}',m['image_sha256'])
+print('PASS device references: RU/EN links, artifact record, no firmware or device URL')
