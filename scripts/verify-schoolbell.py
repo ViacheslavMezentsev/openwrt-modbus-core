@@ -2,6 +2,7 @@
 """Verify pinned media and complete and historical preview schoolbell IPKs (no extraction)."""
 import hashlib
 import json
+import re
 from pathlib import Path
 import sys
 
@@ -27,6 +28,17 @@ for package in packages:
         assert tuple(map(int,meta['Version'].split('.'))) < (5,0,28), 'current package cannot be preview'
     else:
         check_directories(package)
+        # Check literal runtime dependencies from the actual archive, not source files.
+        for path, (body, mode) in data.items():
+            if not (path.endswith('.lua') or path.startswith('usr/sbin/')):
+                continue
+            for module in re.findall(rb"require\s*\(\s*['\"](schoolbell\.[a-z_]+)['\"]", body):
+                name=module.decode().replace('.', '/')
+                if name=='schoolbell/clock_linux':
+                    assert 'modbus-schoolbell-clock (= 1.0.0)' in meta['Depends']
+                    continue
+                assert any(base+name+'.lua' in data for base in ('usr/lib/lua/', 'usr/share/schoolbell-editor/lua/')), (path, 'missing runtime module', name)
+
         assert set(control)=={'control','preinst','postinst','prerm'}
         assert 'modbus-schoolbell-clock (= 1.0.0)' in meta['Depends']
         assert data['usr/share/schoolbell-editor/VERSION'][0].decode().strip()==meta['Version']

@@ -1,5 +1,9 @@
 # Changelog
 
+5.1.26: include clock_set.lua in the IPK. Archive verification now checks literal schoolbell runtime dependencies. The 5.1.25 packaging omission was discovered after deployment; source-tree tests did not detect it.
+
+Development bench verification: installed 5.1.26 adapter loads and passes a fake-setter test; data retained, auto-off, clocks/NTP unchanged. Acceptance device restored to 5.1.23; actual clock setting remains unaccepted.
+
 5.1.25 (host): unified Date and time settings combine timezone, readings, confirmed browser-time setting and trust controls. The Lua system adapter disables automatic bells, sets UTC with stock date and verifies readback; NTP, timezone and services are unchanged. Pages simulates the command. Device deployment and acceptance remain pending.
 
 5.1.24: removed schedule row-count caps across storage, backup, portable plans and Pages. Byte budgets remain; larger plans require a compatible import target. Host checks only; not installed.
