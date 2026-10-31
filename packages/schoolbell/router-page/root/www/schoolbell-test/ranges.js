@@ -16,7 +16,7 @@ function title(s){return typeof s==='string'&&s.trim()&&new TextEncoder().encode
 function validateDraft(d,bundledOnly){
  fields(d,['schedules','pre_minutes','pre_media','plans','mode','fixed_schedule','manual_media'],['schedules','pre_minutes','pre_media']);
  if(new TextEncoder().encode(JSON.stringify(d)).length>12288)throw Error('Черновик превышает 12 КиБ');
- const media=['test','0','1','2','3','4'];if(!bundledOnly)for(let i=1;i<=8;i++)media.push('user'+i);
+ const media={includes:v=>typeof v==='string'&&v.length<=64&&(['test','0','1','2','3','4'].includes(v)||(!bundledOnly&&/^user(?:[1-9][0-9]*|_[0-9a-f]+)$/.test(v)))};
  if(!Number.isInteger(d.pre_minutes)||d.pre_minutes<1||d.pre_minutes>10||!media.includes(d.pre_media)||d.manual_media!==undefined&&!media.includes(d.manual_media))throw Error('Параметры мелодий');
  if(d.mode!==undefined&&!['annual','fixed'].includes(d.mode))throw Error('Режим');
  if(!Array.isArray(d.schedules)||d.schedules.length>16)throw Error('Расписания');

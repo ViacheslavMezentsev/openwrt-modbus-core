@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.27: dynamic user MP3 collection replaces eight fixed positions; existing IDs/references and six protected bundled tracks remain. MP3 up to 64 KB (64000 bytes) is a recommendation, not a rejection threshold. Current file admission remains 512 KiB/60 s, metadata 16 KiB and archive 2 MiB. The separate 2 MiB media-library quota is removed; actual free space, staging and system reserve are checked. Journal: two 16 KiB segments, 32 KiB total, seven-day retention. A Flash bar below CPU shows free MiB/percent alongside uptime; used space above 75% is yellow and above 90% red. Pages synchronized.
+
 5.1.25 (host): unified Date and time settings combine timezone, readings, confirmed browser-time setting and trust controls. The Lua system adapter disables automatic bells, sets UTC with stock date and verifies readback; NTP, timezone and services are unchanged. Pages simulates the command. Device deployment and acceptance remain pending.
 
 2026-10-31: 5.1.22 installed and owner UI acceptance completed; Pages published. Isolated browser .sbp user-MP3 roundtrip accepted within its documented scope. [New-device acceptance plan](ACCEPTANCE_RUN.en.md) prepared; artifacts still need freezing, no flashing/run authorized.

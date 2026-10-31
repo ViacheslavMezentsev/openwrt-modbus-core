@@ -30,7 +30,7 @@ case('timezone',lambda m,c,x:x['timezone'].update(posix='UTC1'),False,'timezone'
 case('automatic',lambda m,c,x:x.update(automatic_enabled=True),False,'automatic_enabled')
 case('dirty',lambda m,c,x:x.update(dirty=True),False,'dirty')
 case('pages-user',lambda m,c,x:(user(m,c,x),x.update(target='pages')),False,'unsupported_media')
-case('slots-full',lambda m,c,x:(user(m,c,x),x['media'].extend(dict(id='user'+str(i),size_bytes=3,sha256=m['media'][0]['sha256'])for i in range(1,9))),False,'slots')
+case('dynamic-after-eight',lambda m,c,x:(user(m,c,x),x['media'].extend(dict(id='user'+str(i),size_bytes=3,sha256=m['media'][0]['sha256'])for i in range(1,9))))
 case('bundled-missing',lambda m,c,x:x.update(media=[]),False,'dependency')
 case('bundled-changed',lambda m,c,x:x['media'][0].update(sha256='0'*64),False,'dependency')
 case('missing-ref',lambda m,c,x:c['schedules'][0]['rows'][0].update(media='absent'),False,'dependency')

@@ -4,7 +4,7 @@ var root=document.getElementById('schedule-editor'),audio=document.getElementByI
 var demo=root.dataset.load.indexOf('demo-api')>=0;
 function stop(){audio.pause();audio.removeAttribute('src');audio.load();audio.hidden=true;}
 window.schoolbellRowPreview=async function(id,hardware){
- if(!/^(test|[0-4]|user[1-8])$/.test(id))return;
+ if(!/^(test|[0-4]|user(?:[1-9][0-9]*|_[0-9a-f]+))$/.test(id))return;
  if(window.schoolbellSessionBlocked){status.textContent='Войдите для прослушивания.';return;}
  if(hardware && demo){status.textContent='Через Школьника недоступно: демо без оборудования.';return;}
  if(pending){status.textContent='Дождитесь завершения предыдущего запроса. Повторно не запускаем.';return;}

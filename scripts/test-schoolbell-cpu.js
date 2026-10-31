@@ -4,8 +4,8 @@ assert.equal(percent(a,b),75);assert.equal(tone(75),'success');assert.equal(tone
 assert.equal(percent(null,b),null);assert.equal(percent(a,{...b,boot:'b'}),null);assert.equal(percent(a,a),null);assert.equal(percent(a,{...b,idle:'900'}),null);assert.equal(percent(b,a),null);
 console.log('PASS CPU delta, boot change, invalid counters and exact 75/90 thresholds');
 
-const fs=require('node:fs'),vm=require('node:vm');let now=0,tick,listener;const attrs={};const bar={dataset:{},style:{setProperty(k,v){attrs[k]=v;}},setAttribute(k,v){attrs[k]=v;},removeAttribute(k){delete attrs[k];}},label={},up={},clock={};const win={addEventListener(n,f){listener=f;}};
-vm.runInNewContext(fs.readFileSync('packages/schoolbell/router-page/root/www/schoolbell-test/cpu.js','utf8'),{window:win,document:{getElementById:id=>id==='cpu-line'?bar:id==='device-uptime'?up:id==='device-clock'?clock:label},performance:{now:()=>now},setInterval:f=>{tick=f;}});
+const fs=require('node:fs'),vm=require('node:vm');let now=0,tick,listener;const attrs={};const bar={dataset:{},style:{setProperty(k,v){attrs[k]=v;}},setAttribute(k,v){attrs[k]=v;},removeAttribute(k){delete attrs[k];}},label={},up={},clock={},flash={dataset:{},style:{setProperty(){}},setAttribute(){},removeAttribute(){}},free={};const win={addEventListener(n,f){listener=f;}};
+vm.runInNewContext(fs.readFileSync('packages/schoolbell/router-page/root/www/schoolbell-test/cpu.js','utf8'),{window:win,document:{getElementById:id=>id==='flash-line'?flash:id==='flash-value'?free:id==='cpu-line'?bar:id==='device-uptime'?up:id==='device-clock'?clock:label},performance:{now:()=>now},setInterval:f=>{tick=f;}});
 assert.equal(bar.dataset.tone,'unknown');listener({detail:a});assert.equal(bar.dataset.tone,'unknown');listener({detail:b});assert.equal(bar.dataset.tone,'success');assert.equal(attrs['aria-valuenow'],75);now=15001;tick();assert.equal(bar.dataset.tone,'unknown');assert.equal(attrs['aria-valuenow'],undefined);listener({detail:{...b,total:'1300',idle:'555'}});assert.equal(bar.dataset.tone,'danger');win.schoolbellSessionBlocked=true;tick();assert.equal(bar.dataset.tone,'unknown');
 console.log('PASS CPU UI: first sample, stale age, invalid state and logout cannot show false zero');
 
@@ -18,3 +18,11 @@ win.schoolbellDisplayClock(Date.UTC(2026,9,31,0,0,0));assert.equal(clock.textCon
 for(const v of [null,undefined,NaN,Infinity,'20:54']){win.schoolbellDisplayClock(v);assert.equal(clock.textContent,'—:—');}
 win.schoolbellDisplayClock(Date.UTC(2026,9,30,20,54));win.schoolbellSessionBlocked=true;tick();assert.equal(clock.textContent,'—:—');
 console.log('PASS header clock: device wall time, 24h/midnight, unavailable and blocked session');
+
+win.schoolbellSessionBlocked=false;now=0;
+listener({detail:{...b,storage:{total_kib:4096,free_kib:1024}}});assert.equal(flash.dataset.tone,'success');assert.match(free.textContent,/1.00 МиБ \(25%\)/);
+listener({detail:{...b,storage:{total_kib:4096,free_kib:400}}});assert.equal(flash.dataset.tone,'danger');
+listener({detail:{...b,storage:{total_kib:4096,free_kib:800}}});assert.equal(flash.dataset.tone,'warning');
+listener({detail:{...b,storage:{total_kib:0,free_kib:0}}});assert.equal(flash.dataset.tone,'unknown');
+listener({detail:{...b,storage:{total_kib:4096,free_kib:5000}}});assert.equal(free.textContent,'Flash · нет данных');
+console.log('PASS Flash: free MiB/percent, thresholds, invalid filesystem data');

@@ -1,5 +1,8 @@
 # Schoolbell user guide
 
+In 5.1.27, Media → Add melody creates an entry; selecting an existing entry replaces its file while preserving references. MP3 up to 64 KB is recommended. Free space appears in the header and Media. Journal retention is 32 KiB/seven days.
+
+
 5.1.22 (host): device local time HH:MM is right-aligned above the CPU bar; uptime is below (page age in Pages). Reuses existing clock polling and hides stale time. Default idle logout is 30 minutes; existing choices are preserved. Major section gaps are aligned and the bell-delete cross enlarged. Pages synchronized; this version is not installed on the device.
 
 5.1.14: Journal → Statistics → HTTP requests now includes an API-method table (for example, GET automatic and POST test). Each row shows starts, completions, HTTP/network errors, pending responses and mean/maximum latency to response headers. The same twelve 5-second start-time bins apply; requests pending beyond that window remain visible. URL parameters, tokens and bodies are not retained; different arguments to the same POST method are grouped. HTTP 200 with an operation refusal is not an HTTP error; melody duration and command execution are not separately measured. Collection is passive across module tabs, without additional requests or device writes. Pages shares the code over its local model; no device installation.

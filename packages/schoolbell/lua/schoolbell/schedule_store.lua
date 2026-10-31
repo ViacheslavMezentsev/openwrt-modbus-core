@@ -2,6 +2,7 @@
 local J=require("modbus.json_strict")
 local C=require("schoolbell.media_codec")
 local Calendar=require("schoolbell.calendar")
+local Media=require("schoolbell.media_ids")
 local M={max_bytes=12288, file_bytes=16384}
 local function array(n) return assert(J.decode(n or "[]")) end
 local function fail(code,path) error({code=code,path=path},0) end
@@ -64,9 +65,9 @@ function M.validate(text)
     local ok,why=pcall(function()
         object(d,{schedules=true,pre_minutes=true,pre_media=true,plans=false,mode=false,fixed_schedule=false,manual_media=false},"draft")
         if J.kind(d.schedules)~="array" or #d.schedules>16 then fail("limit","schedules") end
-        if not ({user1=true,user2=true,user3=true,user4=true,user5=true,user6=true,user7=true,user8=true,test=true,["0"]=true,["1"]=true,["2"]=true,["3"]=true,["4"]=true})[d.pre_media] then fail("media_reference","pre_media") end
+        if not Media.valid(d.pre_media) then fail("media_reference","pre_media") end
         if d.mode~=nil and d.mode~='fixed' and d.mode~='annual' then fail('mode','mode')end
-        if d.manual_media~=nil and not ({user1=true,user2=true,user3=true,user4=true,user5=true,user6=true,user7=true,user8=true,test=true,['0']=true,['1']=true,['2']=true,['3']=true,['4']=true})[d.manual_media]then fail('media_reference','manual_media')end
+        if d.manual_media~=nil and not Media.valid(d.manual_media)then fail('media_reference','manual_media')end
         local schedules={}
         for i,s in ipairs(d.schedules) do
             local path="schedules."..i
@@ -81,7 +82,7 @@ function M.validate(text)
             schedules[i]={id=s.id,rows=s.rows}
         end
         local valid,err=Calendar.validate({revision="editor",mode=d.mode or "annual",fixed_schedule=d.fixed_schedule or "quiet",timezone="UTC",
-            pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test","0","1","2","3","4","user1","user2","user3","user4","user5","user6","user7","user8"},
+            pre_minutes=d.pre_minutes,pre_media=d.pre_media,media=Media.references(d),
             schedules=schedules,plans=expand_plans(d)})
         if not valid then fail(err.code,err.path) end
     end)
@@ -98,7 +99,7 @@ function M.preview(text,date)
     local mode=d.mode or 'annual'
     local fixed=d.fixed_schedule or 'quiet'
     local model,err=Calendar.compile({revision="preview",mode=mode,fixed_schedule=fixed,timezone="civil",
-        pre_minutes=d.pre_minutes,pre_media=d.pre_media,media={"test","0","1","2","3","4","user1","user2","user3","user4","user5","user6","user7","user8"},
+        pre_minutes=d.pre_minutes,pre_media=d.pre_media,media=Media.references(d),
         schedules=schedules,plans=expand_plans(d)})
     if not model then return {ok=false,code="invalid",detail=err} end
     -- Offset zero is an arithmetic coordinate for wall times, not UTC or a router zone.

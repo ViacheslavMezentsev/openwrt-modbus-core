@@ -33,7 +33,7 @@ with tempfile.TemporaryDirectory(prefix='sbp-codec-') as tmp:
  add('invalid-utf8',manifest.replace('Синтетический'.encode(),b'\xff'))
  add('lone-surrogate',manifest.replace('Синтетический'.encode(),b'\ud800'))
  for name,change in [
-  ('unknown',lambda m:m.update(extra=1)),('version',lambda m:m.update(format='schoolbell-plan/2')),
+  ('unknown',lambda m:m.update(extra=1)),('version',lambda m:m.update(format='schoolbell-plan/3')),
   ('null-exporter',lambda m:m.update(exporter=None)),('array-timezone',lambda m:m.update(timezone=[])),
   ('leading-zero',lambda m:m['exporter'].update(version='05.1.1')),
   ('path',lambda m:m['files'][0].update(name='../calendar.json')),

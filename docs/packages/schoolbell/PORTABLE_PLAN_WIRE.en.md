@@ -1,5 +1,15 @@
 # .sbp wire format and import operation
 
+## Dynamic media compatibility — 5.1.27
+
+Stable IDs are `user_<hex>` for uploads or `userN` for imports, at most 64 ASCII characters. Legacy `user1`–`user8` remain valid; bundled `test`, `0`–`4` remain protected. Display row numbers are not IDs.
+
+Framing remains `SBBACKUP1` for .sbb and `SBPLAN1` for .sbp. The manifest selects `schoolbell-backup/2` for extended IDs or more than eight user tracks; `schoolbell-plan/2` for more than eight user dependencies. Readers accept versions 1 and 2; older readers reject an unknown version explicitly. Small compatible exports retain version 1. Version 2 removes media/file count quotas while preserving reference, integrity, manifest-byte and archive-byte checks. Pages exports bundled tracks only; imported user audio can be inspected without uploading it to GitHub.
+
+This is a partial file-policy implementation: A–P assignment encoding, schedule/range counts and internal calculation budgets still need a separate migration.
+
+The following sections describe the earlier stage; the compatibility note above takes precedence.
+
 > Target policy updated in specification 1.75, section 5.3: object/slot quotas are removed from requirements in favour of shared file admission budgets. Numbers and slot rules below describe the existing format/implementation only. They remain enforced in 5.1.26 until compatible encoding, migration and tests are implemented; this is not a silent change to SBPLAN1. Existing data must never be truncated.
 
 

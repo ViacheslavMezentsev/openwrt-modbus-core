@@ -35,3 +35,11 @@ io.open=function(path)
 end
 local sampled=CPU.read();io.open=open;assert(sampled.available and sampled.uptime_seconds==nil)
 print('PASS uptime parser and absent uptime does not hide CPU counters')
+
+local oldfs=package.loaded['nixio.fs'];io.open=function(path)return {read=function()return path=='/proc/stat' and 'cpu 1 2 3 4 5 6 7 8' or path=='/proc/uptime' and '5.0 1.0' or 'boot' end,close=function()end}end
+package.loaded['nixio.fs']={statvfs=function(path)assert(path=='/overlay');return {blocks=1024,bavail=256,frsize=4096}end}
+local flash=CPU.read();assert(flash.available and flash.storage.total_kib==4096 and flash.storage.free_kib==1024)
+for _,space in ipairs({{}, {blocks=1024,bavail=-1,frsize=4096}, {blocks=0,bavail=0,frsize=4096}})do package.loaded['nixio.fs'].statvfs=function()return space end;local v=CPU.read();assert(v.available and v.storage==nil)end
+package.loaded['nixio.fs'].statvfs=function()error('unavailable')end;assert(CPU.read().available)
+io.open=open;package.loaded['nixio.fs']=oldfs
+print('PASS Flash statvfs capacity/free and unavailable disk never hides CPU')

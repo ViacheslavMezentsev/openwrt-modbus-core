@@ -62,11 +62,17 @@ function M.decode(path,retain)
  assert(result.ok,'decoder failed')
 end
 function M.upload(args,source)
- if (args.title~=nil and (type(args.title)~='string' or #args.title<1 or #args.title>96 or args.title:find('[%c]'))) or not L.editable(args.id) or type(args.name)~='string' or #args.name<1 or #args.name>96 or args.name:find('[%c]')
+ if (args.title~=nil and (type(args.title)~='string' or #args.title<1 or #args.title>96 or args.title:find('[%c]'))) or not (args.id=='new' or L.editable(args.id)) or type(args.name)~='string' or #args.name<1 or #args.name>96 or args.name:find('[%c]')
   or not C.integer(args.generation,0,2147483646) or not C.hex(args.operation,32) or not C.integer(args.size,1,524288)then return {ok=false,code='invalid'}end
  return session(function(lib,fs,retain)
   local A=require('schoolbell.automatic_store');if A.decode(A.raw()).enabled then return {ok=false,code='automatic_enabled'}end
-  local listing=lib.list();if listing.generation~=args.generation then return {ok=false,code='conflict'}end
+  local listing=lib.list();if args.id=='new'then
+   args.id='user_'..args.operation
+   for _,v in ipairs(listing.slots)do if v.id==args.id then return {ok=false,code='conflict'}end end
+   local S=require('schoolbell.schedule_store');local d=S.request(A.root or '/etc/schoolbell-editor','load');if not d.ok then return {ok=false,code='busy'}end
+   for _,id in ipairs(require('schoolbell.media_ids').references(d.data))do if id==args.id then return {ok=false,code='conflict'}end end
+  end
+  if listing.generation~=args.generation then return {ok=false,code='conflict'}end
   local free,capacity=fs.space();if free<2*args.size+65536+math.max(524288,math.ceil(capacity/10))then return {ok=false,code='space'}end
   -- An earlier failed request cannot still own this gate. Remove only its staging file.
   if fs.stat('upload.part')then fs.unlink('upload.part');fs.sync('')end
@@ -82,7 +88,7 @@ function M.upload(args,source)
    local audio=require('schoolbell.mp3').inspect(path);M.decode(path,function()uncertain=true;retain()end)
    assert(not A.decode(A.raw()).enabled,'automatic changed')
    local value=lib.replace(args.id,args.name,args.generation,args.operation,path,audio,args.title)
-   return {ok=value.status=='saved',code=value.status,generation=value.generation,operation_id=value.operation_id,revision=value.revision,cleanup=value.cleanup}
+   return {ok=value.status=='saved',code=value.status,generation=value.generation,operation_id=value.operation_id,revision=value.revision,cleanup=value.cleanup,media_id=args.id}
   end)
   if file then file:close()end
   -- Preserve evidence when outcome of a decoder process is uncertain.

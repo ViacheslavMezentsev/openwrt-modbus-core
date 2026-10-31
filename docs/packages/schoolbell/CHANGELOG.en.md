@@ -1,5 +1,9 @@
 # Changelog
 
+5.1.27: dynamic user MP3 collection replaces eight fixed positions; existing IDs/references and six protected bundled tracks remain. MP3 up to 64 KB (64000 bytes) is a recommendation, not a rejection threshold. Current file admission remains 512 KiB/60 s, metadata 16 KiB and archive 2 MiB. The separate 2 MiB media-library quota is removed; actual free space, staging and system reserve are checked. Journal: two 16 KiB segments, 32 KiB total, seven-day retention. A Flash bar below CPU shows free MiB/percent alongside uptime; used space above 75% is yellow and above 90% red. Pages synchronized.
+
+Development bench updated after a verified backup: before/after .sbb is byte-identical, auto-off and system/NTP guards retained. Acceptance device untouched. Visual acceptance is pending.
+
 5.1.26: include clock_set.lua in the IPK. Archive verification now checks literal schoolbell runtime dependencies. The 5.1.25 packaging omission was discovered after deployment; source-tree tests did not detect it.
 
 Development bench verification: installed 5.1.26 adapter loads and passes a fake-setter test; data retained, auto-off, clocks/NTP unchanged. Acceptance device restored to 5.1.23; actual clock setting remains unaccepted.

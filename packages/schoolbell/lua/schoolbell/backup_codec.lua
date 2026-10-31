@@ -5,8 +5,8 @@ local fixed={['draft.json']=true,['controls.json']=true,['catalog.json']=true}
 function M.safe_name(name)return fixed[name] or (type(name)=='string' and #name==68 and C.hex(name:sub(1,64),64) and name:sub(65)=='.mp3')end
 function M.manifest(raw)
  local m=C.decode(raw);C.fields(m,{'format','timezone','files'})
- assert(m.format=='schoolbell-backup/1' and type(m.timezone)=='string' and #m.timezone<=256,'format/timezone')
- assert(J.kind(m.files)=='array' and #m.files>=3 and #m.files<=11,'files')
+ assert((m.format=='schoolbell-backup/1' or m.format=='schoolbell-backup/2') and type(m.timezone)=='string' and #m.timezone<=256,'format/timezone')
+ assert(J.kind(m.files)=='array' and #m.files>=3 and (m.format~='schoolbell-backup/1' or #m.files<=11),'files')
  local total,seen=0,{}
  for i,v in ipairs(m.files)do
   C.fields(v,{'name','size_bytes','sha256'});assert(M.safe_name(v.name) and not seen[v.name],'file name');seen[v.name]=true
@@ -17,7 +17,7 @@ function M.manifest(raw)
  assert(total<=2097152,'media quota');return m,total
 end
 function M.catalog(raw)
- local cat=C.decode(raw);C.fields(cat,{'melodies'});assert(J.kind(cat.melodies)=='array' and #cat.melodies<=8,'catalog')
+ local cat=C.decode(raw);C.fields(cat,{'melodies'});assert(J.kind(cat.melodies)=='array','catalog')
  local ids,objects={},{}
  for _,m in ipairs(cat.melodies)do
   C.fields(m,m.title~=nil and {'id','name','title','revisions'} or {'id','name','revisions'})

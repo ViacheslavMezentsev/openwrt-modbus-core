@@ -10,7 +10,7 @@
  const fields=(v,k)=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===k.length&&k.every(x=>Object.hasOwnProperty.call(v,x));
  const id=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,64}$/.test(v);
  const title=v=>typeof v==='string'&&enc.encode(v).length>=1&&enc.encode(v).length<=96&&!/[\x00-\x1f\x7f]/.test(v)&&/[^ \t\r\n\v\f]/.test(v);
- const slot=v=>['test','0','1','2','3','4',...Array.from({length:8},(_,i)=>'user'+(i+1))].includes(v);
+ const slot=v=>typeof v==='string'&&v.length<=64&&(['test','0','1','2','3','4'].includes(v)||/^user(?:[1-9][0-9]*|_[0-9a-f]+)$/.test(v));
  function preview(manifestRaw,calendarRaw,input){
   const blockers=[];let truncated=false;
   const add=(code,path)=>{if(blockers.length<64)blockers.push({code,path});else truncated=true;};
@@ -18,14 +18,14 @@
   const result=()=>({ok:false,admitted:false,blockers,blockers_truncated:truncated});
   let m,c,ctx;
   try{m=Codec.manifest(manifestRaw).manifest;c=Codec.parseJSON(calendarRaw,12288);ctx=clone(input);}catch(_){return fail('format','archive');}
-  if(!fields(ctx,['draft','timezone','media','operation_id','automatic_enabled','dirty','target','names'])||!fields(ctx.timezone,['name','posix'])||typeof ctx.timezone.name!=='string'||typeof ctx.timezone.posix!=='string'||typeof ctx.operation_id!=='string'||!/^[0-9a-f]{32}$/.test(ctx.operation_id)||typeof ctx.automatic_enabled!=='boolean'||typeof ctx.dirty!=='boolean'||!['device','pages'].includes(ctx.target)||!Array.isArray(ctx.media)||ctx.media.length>14||!fields(ctx.names,['plans','schedules']))return fail('format','context');
+  if(!fields(ctx,['draft','timezone','media','operation_id','automatic_enabled','dirty','target','names'])||!fields(ctx.timezone,['name','posix'])||typeof ctx.timezone.name!=='string'||typeof ctx.timezone.posix!=='string'||typeof ctx.operation_id!=='string'||!/^[0-9a-f]{32}$/.test(ctx.operation_id)||typeof ctx.automatic_enabled!=='boolean'||typeof ctx.dirty!=='boolean'||!['device','pages'].includes(ctx.target)||!Array.isArray(ctx.media)||!fields(ctx.names,['plans','schedules']))return fail('format','context');
   for(const k of ['plans','schedules'])if(!ctx.names[k]||typeof ctx.names[k]!=='object'||Array.isArray(ctx.names[k]))return fail('format','names');
   if(enc.encode(canonical(ctx.names)).length>4096)return fail('size','names');
   try{Ranges.validateDraft(ctx.draft,false);if(enc.encode(canonical(ctx.draft)).length>12288)throw Error();}catch(_){return fail('format','draft');}
   const inventory=new Map();for(const v of ctx.media){if(!fields(v,['id','size_bytes','sha256'])||!slot(v.id)||inventory.has(v.id)||!Number.isInteger(v.size_bytes)||v.size_bytes<1||v.size_bytes>524288||typeof v.sha256!=='string'||!/^[0-9a-f]{64}$/.test(v.sha256))return fail('format','inventory');inventory.set(v.id,v);}
   if(!fields(c,['plans','schedules','pre_minutes','pre_media'])||!Array.isArray(c.plans)||c.plans.length<1||c.plans.length>8||!Array.isArray(c.schedules)||c.schedules.length>16)return fail('format','calendar');
   const media=new Map(m.media.map(x=>[x.id,x])),used=new Set(),scIds=new Set(),needed=new Set(),planIds=new Set();let user=0;const temporary=new Map();
-  for(const v of m.media){const t=v.source==='bundled'?v.bundled_id:'user'+(++user);temporary.set(v.id,t);}if(user>8)return fail('slots','media');
+  for(const v of m.media){const t=v.source==='bundled'?v.bundled_id:'user'+(++user);temporary.set(v.id,t);}
   const ref=(key,path)=>{if(!media.has(key))add('dependency',path);else used.add(key);};
   ref(c.pre_media,'pre_media');
   for(let i=0;i<c.schedules.length;i++){const s=c.schedules[i];if(!fields(s,['id','name','color','rows'])||!id(s.id)||scIds.has(s.id)||!title(s.name)||!Number.isInteger(s.color)||s.color<1||s.color>16||!Array.isArray(s.rows))return fail('format','schedules');scIds.add(s.id);
@@ -42,9 +42,9 @@
   const currentPlans=Ranges.migrate(ctx.draft.plans||[]);
   for(const p of c.plans)for(const old of currentPlans)if(p.start<=old.end&&p.end>=old.start)add('overlap','plans.'+p.id);
   const mapping={plans:[],schedules:[],media:[],rows:[]},mediaMap=new Map(),scheduleMap=new Map();
-  const reserved=new Set();for(const s of ctx.draft.schedules)for(const row of s.rows)if(/^user[1-8]$/.test(row.media))reserved.add(row.media);
-  for(const key of ['pre_media','manual_media'])if(/^user[1-8]$/.test(ctx.draft[key]))reserved.add(ctx.draft[key]);
-  const free=Array.from({length:8},(_,i)=>'user'+(i+1)).filter(x=>!inventory.has(x)&&!reserved.has(x));let next=0;
+  const reserved=new Set();for(const s of ctx.draft.schedules)for(const row of s.rows)if(/^user(?:[1-9][0-9]*|_[0-9a-f]+)$/.test(row.media))reserved.add(row.media);
+  for(const key of ['pre_media','manual_media'])if(/^user(?:[1-9][0-9]*|_[0-9a-f]+)$/.test(ctx.draft[key]))reserved.add(ctx.draft[key]);
+  const free=[];for(let i=1;free.length<user;i++){const id='user'+i;if(!inventory.has(id)&&!reserved.has(id))free.push(id);}let next=0;
   for(const v of m.media){let target;
    if(v.source==='bundled'){target=v.bundled_id;const have=inventory.get(target);if(!have||have.sha256!==v.sha256||have.size_bytes!==v.size_bytes)add('dependency','media.'+v.id);}
    else {if(ctx.target==='pages')add('unsupported_media','media.'+v.id);target=free[next++];if(!target)add('slots','media.'+v.id);}

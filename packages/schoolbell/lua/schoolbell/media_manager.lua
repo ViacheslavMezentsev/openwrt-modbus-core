@@ -11,7 +11,7 @@ function M.new(fs,options)
  for _,d in ipairs({'objects','snapshots','staging'})do fs.mkdir(d)end
  fs.sync('');local api={}
  local function catalog(raw)
-  local t=C.decode(raw);C.fields(t,{'melodies'});check(J.kind(t.melodies)=='array' and #t.melodies<=32,'melodies')
+  local t=C.decode(raw);C.fields(t,{'melodies'});check(J.kind(t.melodies)=='array','melodies')
   local ids,refs,count={},{},0
   for _,m in ipairs(t.melodies)do
    C.fields(m,m.title~=nil and {'id','name','title','revisions'} or {'id','name','revisions'});if m.title~=nil then check(type(m.title)=='string' and #m.title>0 and #m.title<=96 and not m.title:find('[%c]'),'title')end;check(id(m.id) and not ids[m.id] and type(m.name)=='string' and #m.name<=256,'melody');ids[m.id]=true
@@ -23,7 +23,7 @@ function M.new(fs,options)
     check(v.source=='user' and C.integer(v.size_bytes,1,524288),'prepared user media')
     local a=v.audio;check(a.format=='mp3' and C.integer(a.duration_ms,1,60000) and C.integer(a.sample_rate_hz,8000,48000) and C.integer(a.channels,1,2),'audio')
     if refs[v.revision]then check(refs[v.revision].size_bytes==v.size_bytes,'conflicting size')end
-    refs[v.revision]=v;count=count+1;check(count<=64,'revision quota')
+    refs[v.revision]=v;count=count+1
    end
   end
   return refs
@@ -93,7 +93,7 @@ function M.new(fs,options)
    if state.state=='ready' and expected~=state.generation then result={status='conflict'};return end
    check(not fs.stat('snapshots/'..op),'operation exists');local refs,total=documents(docs);imports=imports or {}
    local incoming=0;for h,v in pairs(refs)do if not fs.stat('objects/'..h)then check(type(imports[h])=='string','missing import');incoming=incoming+v.size_bytes end end
-   check(object_bytes()+incoming<=2097152,'media quota');local free,capacity=fs.space()
+   local free,capacity=fs.space()
    check(free>=incoming+total+8192+math.max(524288,math.ceil(capacity/10)),'space reserve')
    point('validated')
    for h,v in pairs(refs)do

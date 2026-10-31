@@ -1,8 +1,8 @@
 local C=require('schoolbell.media_codec')
 local Manager=require('schoolbell.media_manager')
-local M={root='/etc/modbus-schoolbell/data',slots={'test','0','1','2','3','4','user1','user2','user3','user4','user5','user6','user7','user8'},sizes={test=13104,['0']=41273,['1']=63321,['2']=69904,['3']=68023,['4']=82368}}
+local M={root='/etc/modbus-schoolbell/data',slots={'test','0','1','2','3','4'},sizes={test=13104,['0']=41273,['1']=63321,['2']=69904,['3']=68023,['4']=82368}}
 M.titles={test='Тестовый звонок',['0']='[Короткая] Время',['1']='Шутка Баха',['2']='Гостья из XXI',['3']='Князь Игорь',['4']='Усатый нянь'}
-function M.editable(id)return type(id)=='string' and id:match('^user[1-8]$')~=nil end
+M.editable=require('schoolbell.media_ids').user
 function M.valid(id)return type(id)=='string' and (M.sizes[id]~=nil or M.editable(id))end
 function M.open(fs,root,owned)
  local manager=Manager.new(fs,{ownership_safe=owned});local api={}
@@ -13,7 +13,9 @@ function M.open(fs,root,owned)
  end
  function api.list()
   local state,cat=read();local slots={}
-  for _,id in ipairs(M.slots)do
+  local ids={};for _,id in ipairs(M.slots)do ids[#ids+1]=id end
+  for _,m in ipairs(cat.melodies)do assert(M.editable(m.id),'bundled override prohibited');ids[#ids+1]=m.id end
+  for _,id in ipairs(ids)do
    local v={id=id,name=M.editable(id) and 'Свободная позиция' or id..'.mp3',title=M.titles[id] or ('Пользовательская '..id:sub(5)),source=M.editable(id) and 'empty' or 'bundled',size_bytes=M.sizes[id] or 0}
    for _,m in ipairs(cat.melodies)do if m.id==id then assert(M.editable(id),'bundled override prohibited');local rev=m.revisions[1];v={id=id,name=m.name,title=m.title or m.name,source='user',size_bytes=rev.size_bytes,revision=rev.revision,audio=rev.audio}end end
    slots[#slots+1]=v
@@ -23,7 +25,7 @@ function M.open(fs,root,owned)
   local staging=fs.stat('upload.part');if staging then bytes=bytes+staging.size end
   for _,name in ipairs(fs.list('staging'))do if name:sub(-5)=='.part'then bytes=bytes+assert(fs.stat('staging/'..name)).size end end
   return {ok=true,generation=state.generation or 0,operation_id=state.operation_id,slots=slots,
-   storage={total_kib=math.floor(capacity/1024),free_kib=math.floor(free/1024),used_kib=math.ceil(math.max(0,capacity-free)/1024),reserve_kib=math.ceil(math.max(524288,capacity/10)/1024),media_kib=math.ceil(bytes/1024),media_limit_kib=2048}}
+   storage={total_kib=math.floor(capacity/1024),free_kib=math.floor(free/1024),used_kib=math.ceil(math.max(0,capacity-free)/1024),reserve_kib=math.ceil(math.max(524288,capacity/10)/1024),media_kib=math.ceil(bytes/1024)}}
  end
  function api.resolve(id)
   assert(M.valid(id),'slot');local list=api.list()
@@ -44,8 +46,6 @@ function M.open(fs,root,owned)
   local docs={['catalog.json']=C.encode(cat),['settings.json']='{"scope":"engineering-media-overrides"}',
    ['schedules.json']='{"references":[]}',['plans.json']='{"references":[]}'}
   local free,capacity=fs.space();assert(free>=st.size+65536+math.max(524288,math.ceil(capacity/10)),'space reserve')
-  local total=st.size;for _,h in ipairs(fs.list('objects'))do total=total+assert(fs.stat('objects/'..h)).size end
-  if not fs.stat('objects/'..hash)then total=total+st.size end;assert(total<=2097152,'media quota')
   local result=manager.commit(op,expected,docs,{[hash]=source},state.state=='empty')
   if result.status=='saved' then result.revision=hash;result.cleanup=manager.cleanup().status end
   return result

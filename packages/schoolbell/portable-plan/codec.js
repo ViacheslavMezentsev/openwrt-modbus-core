@@ -36,10 +36,10 @@
   const hex=v=>typeof v==='string'&&/^[0-9a-f]{64}$/.test(v);
   const integer=(v,a,b)=>Number.isInteger(v)&&v>=a&&v<=b;
   function manifest(raw){
-    const m=json(raw,16384);fields(m,['format','exporter','timezone','files','media']);need(m.format==='schoolbell-plan/1','format');
+    const m=json(raw,16384);fields(m,['format','exporter','timezone','files','media']);need(['schoolbell-plan/1','schoolbell-plan/2'].includes(m.format),'format');
     fields(m.exporter,['name','version']);need(['schoolbell-device','schoolbell-pages'].includes(m.exporter.name)&&ascii(m.exporter.version,32)&&/^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/.test(m.exporter.version),'format');
     fields(m.timezone,['name','posix']);need(ascii(m.timezone.name,64)&&ascii(m.timezone.posix,256),'format');
-    need(Array.isArray(m.files)&&m.files.length>=1&&m.files.length<=9&&Array.isArray(m.media)&&m.media.length>=1&&m.media.length<=14,'format');
+    need(Array.isArray(m.files)&&m.files.length>=1&&(m.format!=='schoolbell-plan/1'||m.files.length<=9)&&Array.isArray(m.media)&&m.media.length>=1&&(m.format!=='schoolbell-plan/1'||m.media.length<=14),'format');
     const files=new Map();let total=82+raw.length,audio=0,prior='';
     m.files.forEach((f,i)=>{fields(f,['name','size_bytes','sha256']);need(integer(f.size_bytes,1,i===0?12288:524288),'size');need(hex(f.sha256),'format');
       if(i===0)need(f.name==='calendar.json','format');else{need(f.name==='media/'+f.sha256+'.mp3'&&f.sha256>prior,'format');prior=f.sha256;audio+=f.size_bytes;}

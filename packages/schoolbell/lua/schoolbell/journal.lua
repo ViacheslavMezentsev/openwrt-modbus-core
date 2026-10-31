@@ -1,7 +1,7 @@
 -- Bounded package audit log, independent of the core journal and scheduler.
 local C=require('schoolbell.media_codec')
 local J=require('modbus.json_strict')
-local M={segment_bytes=8192,record_bytes=320,retention_seconds=7*86400}
+local M={segment_bytes=16384,record_bytes=320,retention_seconds=7*86400}
 local names={'journal-previous.jsonl','journal-current.jsonl'}
 local actions={clock_set_ok={'user','warning'},clock_set_failed={'system','error'},clock_confirmed={'user','info'},clock_control_on={'user','info'},clock_control_off={'user','warning'},clock_control_failed={'system','error'},restore_ok={'user','info'},restore_failed={'user','error'},media_ok={'user','info'},media_failed={'user','error'},volume_ok={'user','info'},volume_failed={'system','error'},auto_enabled={'user','info'},auto_disabled={'user','info'},auto_requested={'module','info'},auto_ok={'module','info'},auto_skipped={'module','warning'},auto_blocked={'system','error'},mute_on={"user","info"},mute_off={"user","info"},mute_failed={"system","error"},manual_requested={"user","info"},timezone_ok={'user','info'},timezone_failed={'system','error'},save_ok={'user','info'},save_failed={'user','error'},preview_ok={'user','info'},
  preview_failed={'user','warning'},play_requested={'user','info'},play_ok={'module','info'},
@@ -74,7 +74,7 @@ function M.request(root,action,host)
   if action then M.append(fs,action,os.time());return {ok=true}end
   local rows=M.read(fs,os.time())
   for _,row in ipairs(rows)do row.local_time=os.date('%d.%m.%Y %H:%M:%S %z',row.time) end
-  return {ok=true,entries=rows,limit_bytes=16384,peak_bytes=24576,retention_seconds=M.retention_seconds}
+  return {ok=true,entries=rows,limit_bytes=2*M.segment_bytes,peak_bytes=3*M.segment_bytes,retention_seconds=M.retention_seconds}
  end)
  local closed=pcall(fs.close)
  if not success or not closed then return {ok=false,code='journal_unavailable'}end

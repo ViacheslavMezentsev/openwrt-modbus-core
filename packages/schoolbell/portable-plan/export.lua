@@ -16,8 +16,9 @@ function M.prepare(input)
  need(Store.validate(C.encode(x.draft)),'format')
  need(J.kind(x.selected)=='array'and #x.selected>=1 and #x.selected<=8,'selection')
  local selected={};for _,id in ipairs(x.selected)do need(type(id)=='string'and not selected[id],'selection');selected[id]=true end
- need(J.kind(x.media)=='array'and #x.media<=14,'format')
- local valid={};for _,id in ipairs(slots)do valid[id]=true end
+ need(J.kind(x.media)=='array','format')
+ local valid=setmetatable({},{__index=function(_,id)return require('schoolbell.media_ids').valid(id)end})
+ local slots={};for _,v in ipairs(x.media)do slots[#slots+1]=v.id end;local order={test=1,['0']=2,['1']=3,['2']=4,['3']=5,['4']=6};for i=1,8 do order['user'..i]=6+i end;table.sort(slots,function(a,b)if order[a]or order[b]then return (order[a]or 99)<(order[b]or 99)end;return a<b end)
  local inventory={};for _,v in ipairs(x.media)do need(fields(v,{'id','title','size_bytes','sha256'})and valid[v.id]and not inventory[v.id],'format');inventory[v.id]=v end
  local plans,wanted=arr(),{}
  for _,p in ipairs(x.draft.plans or {})do
@@ -48,7 +49,8 @@ function M.prepare(input)
  local sources=arr();for _,v in pairs(payloads)do sources[#sources+1]=v end;table.sort(sources,function(a,b)return a.name<b.name end)
  local files=arr();files[1]={name='calendar.json',size_bytes=#calendar_raw,sha256=C.sha(calendar_raw)}
  for _,v in ipairs(sources)do files[#files+1]={name=v.name,size_bytes=v.size_bytes,sha256=v.sha256}end
- local manifest={format='schoolbell-plan/1',exporter=x.exporter,timezone=x.timezone,files=files,media=media}
+ local users=0;for _,v in ipairs(media)do if v.source=='user'then users=users+1 end end
+ local manifest={format=(users>8) and 'schoolbell-plan/2' or 'schoolbell-plan/1',exporter=x.exporter,timezone=x.timezone,files=files,media=media}
  local manifest_raw=C.encode(manifest);Codec.manifest(manifest_raw)
  return {manifest=manifest_raw,calendar=calendar_raw,sources=sources}
 end

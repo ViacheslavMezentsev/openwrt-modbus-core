@@ -12,7 +12,7 @@ local function fields(v,keys)
 end
 local function id(v)return type(v)=='string'and #v>0 and #v<=64 and v:match('^[A-Za-z0-9_-]+$')end
 local function title(v)return type(v)=='string'and #v>0 and #v<=96 and not v:find('[%z\1-\31\127]')and v:find('%S')end
-local function slot(v)return v=='test'or v=='0'or v=='1'or v=='2'or v=='3'or v=='4'or(type(v)=='string'and v:match('^user[1-8]$'))end
+local function slot(v)return v=='test'or v=='0'or v=='1'or v=='2'or v=='3'or v=='4'or(type(v)=='string'and require('schoolbell.media_ids').user(v))end
 local function fail(code,path)return {ok=false,admitted=false,blockers={{code=code,path=path}},blockers_truncated=false}end
 local function list(v,n)return J.kind(v)=='array'and (not n or #v<=n) end
 local function preview(manifest_raw,calendar_raw,input)
@@ -21,7 +21,7 @@ local function preview(manifest_raw,calendar_raw,input)
  local blockers=arr();local truncated=false
  local function add(code,path)if #blockers<64 then blockers[#blockers+1]={code=code,path=path}else truncated=true end end
  local function result()return {ok=false,admitted=false,blockers=blockers,blockers_truncated=truncated}end
- if not fields(ctx,{'draft','timezone','media','operation_id','automatic_enabled','dirty','target','names'})or not fields(ctx.timezone,{'name','posix'})or type(ctx.timezone.name)~='string'or type(ctx.timezone.posix)~='string'or not C.hex(ctx.operation_id,32)or type(ctx.automatic_enabled)~='boolean'or type(ctx.dirty)~='boolean'or(ctx.target~='device'and ctx.target~='pages')or not list(ctx.media,14)or not fields(ctx.names,{'plans','schedules'})then return fail('format','context')end
+ if not fields(ctx,{'draft','timezone','media','operation_id','automatic_enabled','dirty','target','names'})or not fields(ctx.timezone,{'name','posix'})or type(ctx.timezone.name)~='string'or type(ctx.timezone.posix)~='string'or not C.hex(ctx.operation_id,32)or type(ctx.automatic_enabled)~='boolean'or type(ctx.dirty)~='boolean'or(ctx.target~='device'and ctx.target~='pages')or not list(ctx.media)or not fields(ctx.names,{'plans','schedules'})then return fail('format','context')end
  for _,k in ipairs({'plans','schedules'})do if J.kind(ctx.names[k])~='object'then return fail('format','names')end end
  if #C.encode(ctx.names)>4096 then return fail('size','names')end
  if not Store.validate(C.encode(ctx.draft))then return fail('format','draft')end
@@ -29,7 +29,6 @@ local function preview(manifest_raw,calendar_raw,input)
  if not fields(c,{'plans','schedules','pre_minutes','pre_media'})or not list(c.plans,8)or #c.plans<1 or not list(c.schedules,16)then return fail('format','calendar')end
  local media,used,scids,needed,planids,temp={},{},{},{},{},{};local users=0
  for _,v in ipairs(m.media)do media[v.id]=v;if v.source=='bundled'then temp[v.id]=v.bundled_id else users=users+1;temp[v.id]='user'..users end end
- if users>8 then return fail('slots','media')end
  local function ref(key,path)if type(key)~='string'or not media[key]then add('dependency',path)else used[key]=true end end
  ref(c.pre_media,'pre_media')
  for i,s in ipairs(c.schedules)do if not fields(s,{'id','name','color','rows'})or not id(s.id)or scids[s.id]or not title(s.name)or not C.integer(s.color,1,16)or not list(s.rows)then return fail('format','schedules')end;scids[s.id]=true
@@ -50,9 +49,9 @@ local function preview(manifest_raw,calendar_raw,input)
  for i,p in ipairs(current)do if p.year then current[i]={id='year-'..p.year,name='План '..p.year,start=string.format('%04d-01-01',p.year),['end']=string.format('%04d-12-31',p.year),schedule_ids=p.schedule_ids,days=p.days}end end
  for _,p in ipairs(c.plans)do for _,old in ipairs(current)do if p.start<=old['end']and p['end']>=old.start then add('overlap','plans.'..p.id)end end end
  local mapping={plans=arr(),schedules=arr(),media=arr(),rows=arr()};local mediamap,schedulemap,reserved={},{},{}
- for _,s in ipairs(ctx.draft.schedules)do for _,row in ipairs(s.rows)do if row.media:match('^user[1-8]$')then reserved[row.media]=true end end end
- for _,key in ipairs({'pre_media','manual_media'})do local v=ctx.draft[key];if v and v:match('^user[1-8]$')then reserved[v]=true end end
- local free={};for i=1,8 do local key='user'..i;if not inventory[key]and not reserved[key]then free[#free+1]=key end end;local nextslot=0
+ for _,s in ipairs(ctx.draft.schedules)do for _,row in ipairs(s.rows)do if require('schoolbell.media_ids').user(row.media)then reserved[row.media]=true end end end
+ for _,key in ipairs({'pre_media','manual_media'})do local v=ctx.draft[key];if v and require('schoolbell.media_ids').user(v)then reserved[v]=true end end
+ local free={};local i=0;while #free<users do i=i+1;local key='user'..i;if not inventory[key]and not reserved[key]then free[#free+1]=key end end;local nextslot=0
  for _,v in ipairs(m.media)do local target
   if v.source=='bundled'then target=v.bundled_id;local have=inventory[target];if not have or have.sha256~=v.sha256 or have.size_bytes~=v.size_bytes then add('dependency','media.'..v.id)end
   else if ctx.target=='pages'then add('unsupported_media','media.'..v.id)end;nextslot=nextslot+1;target=free[nextslot];if not target then add('slots','media.'..v.id)end end

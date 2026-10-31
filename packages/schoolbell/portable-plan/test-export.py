@@ -25,6 +25,7 @@ case('pages',lambda x,p:x['exporter'].update(name='schoolbell-pages'))
 case('user',user)
 case('disabled-user',lambda x,p:(user(x,p),x['draft']['schedules'][0]['rows'][0].update(enabled=False)))
 case('dedup',lambda x,p:(user(x,p),user(x,p,2)))
+case('dynamic-twelve',lambda x,p:[user(x,p,i)for i in range(1,13)])
 case('pre-only-user',lambda x,p:(user(x,p,row=False),x['draft'].update(pre_media='user1')))
 case('subset',second)
 case('selected-order',lambda x,p:(second(x,p),x.update(selected=['next','school'])))
@@ -68,14 +69,15 @@ def expected(x,p):
    v=copy.deepcopy(s);v.setdefault('color',i%16+1);schedules.append(v)
  c=dict(plans=plans,schedules=schedules,pre_minutes=d['pre_minutes'],pre_media=d['pre_media']);craw=raw(c)
  used={d['pre_media']}|{r['media']for s in schedules for r in s['rows']};media=[];payload={}
- for slot in ['test','0','1','2','3','4']+['user'+str(i)for i in range(1,9)]:
+ legacy=['test','0','1','2','3','4']+['user'+str(i)for i in range(1,9)]
+ for slot in legacy+sorted(used-set(legacy)):
   if slot not in used:continue
   v=copy.deepcopy(next(v for v in x['media']if v['id']==slot));v['source']='user'if slot.startswith('user')else'bundled'
   if v['source']=='user':v['file']='media/'+v['sha256']+'.mp3';payload[v['file']]=p[slot]
   else:v['bundled_id']=slot
   media.append(v)
  files=[dict(name='calendar.json',size_bytes=len(craw),sha256=sha(craw))]+[dict(name=k,size_bytes=len(payload[k]),sha256=sha(payload[k]))for k in sorted(payload)]
- m=raw(dict(format='schoolbell-plan/1',exporter=x['exporter'],timezone=x['timezone'],files=files,media=media))
+ m=raw(dict(format='schoolbell-plan/2' if sum(v['source']=='user' for v in media)>8 else 'schoolbell-plan/1',exporter=x['exporter'],timezone=x['timezone'],files=files,media=media))
  return b'SBPLAN1\n'+f'{len(m):08}\n'.encode()+sha(m).encode()+b'\n'+m+craw+b''.join(payload[k]for k in sorted(payload))
 with tempfile.TemporaryDirectory(prefix='sbp-export-')as tmp:
  d=pathlib.Path(tmp)

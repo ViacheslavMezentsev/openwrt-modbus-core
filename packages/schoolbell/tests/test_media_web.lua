@@ -49,3 +49,14 @@ local forbidden=W.upload({id='0',name='no.mp3',size=#bytes,generation=8,operatio
 local S=require('schoolbell.schedule_store');local draft=S.empty();draft.schedules={{id='u',name='User',rows={{id='r',time='08:00',media='user5',enabled=true,pre=false}}}};assert(S.validate(C.encode(draft)))
 assert(host.mkdir(L.root..'/gate'));assert(W.list().code=='busy');assert(host.rmdir(L.root..'/gate'))
 print('PASS media gateway: disabled-auto, stream failure/bounds, invalid MP3, decoder refusal, CAS before read, lookup, preview, gate')
+
+local realrequest=S.request
+S.request=function()return {ok=true,data=draft}end
+local op=string.rep('e',32);local at=1
+local created=W.upload({id='new',name='dynamic.mp3',title='Новая',size=#bytes,generation=8,operation=op},function()if at>#bytes then return nil end;local b=bytes:sub(at,at+4095);at=at+#b;return b end)
+assert(created.ok and created.media_id=='user_'..op and #W.list().slots==15)
+assert(W.upload({id='new',name='dynamic.mp3',size=#bytes,generation=9,operation=op},function()error('no duplicate read')end).code=='conflict')
+draft.manual_media=created.media_id;draft.pre_media=created.media_id;draft.schedules[1].rows[1].media=created.media_id
+assert(S.validate(C.encode(draft)))
+S.request=realrequest
+print('PASS dynamic upload: ninth entry, stable generated ID, duplicate blocked, references accepted')

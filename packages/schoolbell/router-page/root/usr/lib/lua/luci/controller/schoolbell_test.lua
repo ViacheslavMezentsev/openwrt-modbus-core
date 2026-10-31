@@ -270,7 +270,7 @@ function play()
     local h=require("luci.http")
     if not require("luci.dispatcher").test_post_security() then return end
     local id=h.formvalue('id') or 'test'
-    if type(id)~='string' or not (id=='test' or id:match('^[0-4]$') or id:match('^user[1-8]$')) then respond({ok=false,state='invalid'});return end
+    if type(id)~='string' or not require('schoolbell.media_ids').valid(id) then respond({ok=false,state='invalid'});return end
     editor();local m=require("schoolbell.sound_test")
     audit('play_requested')
     local ok,result=pcall(function()return m.run(m.system(id))end)

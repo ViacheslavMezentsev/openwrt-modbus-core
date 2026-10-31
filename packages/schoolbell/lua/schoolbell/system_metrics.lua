@@ -18,6 +18,13 @@ function M.read()
   local f=assert(io.open('/proc/stat','r'));local line=f:read('*l');f:close();local s=M.parse(line)
   local f=assert(io.open('/proc/sys/kernel/random/boot_id','r'));s.boot=f:read(64);f:close()
   local f=io.open('/proc/uptime','r');if f then s.uptime_seconds=M.uptime(f:read(128));f:close()end
+  local good,storage=pcall(function()
+   local space=require('nixio.fs').statvfs('/overlay')
+   if type(space)~='table' or type(space.blocks)~='number' or type(space.bavail)~='number' or type(space.frsize)~='number' then return nil end
+   if space.blocks<=0 or space.bavail<0 or space.bavail>space.blocks or space.frsize<=0 then return nil end
+   return {total_kib=math.floor(space.blocks*space.frsize/1024),free_kib=math.floor(space.bavail*space.frsize/1024)}
+  end)
+  if good then s.storage=storage end
   return s
  end)
  return ok and v or {available=false}

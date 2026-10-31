@@ -15,8 +15,8 @@
   need(fields(x,['draft','selected','timezone','media','exporter']),'format');
   Ranges.validateDraft(x.draft,false);need(raw(x.draft).length<=12288,'size');
   need(Array.isArray(x.selected)&&x.selected.length>=1&&x.selected.length<=8&&x.selected.every(v=>typeof v==='string')&&new Set(x.selected).size===x.selected.length,'selection');
-  need(Array.isArray(x.media)&&x.media.length<=14,'format');
-  const inventory=new Map();for(const v of x.media){need(fields(v,['id','title','size_bytes','sha256'])&&slots.includes(v.id)&&!inventory.has(v.id),'format');inventory.set(v.id,v);}
+  need(Array.isArray(x.media),'format');
+  const inventory=new Map();for(const v of x.media){need(fields(v,['id','title','size_bytes','sha256'])&&(slots.includes(v.id)||/^user(?:[1-9][0-9]*|_[0-9a-f]+)$/.test(v.id))&&!inventory.has(v.id),'format');inventory.set(v.id,v);}
   const all=Ranges.migrate(x.draft.plans||[]),selected=new Set(x.selected),plans=all.filter(p=>selected.has(p.id));need(plans.length===selected.size,'selection');
   const wanted=new Set(plans.flatMap(p=>p.schedule_ids)),used=new Set([x.draft.pre_media]),schedules=[];
   x.draft.schedules.forEach((s,i)=>{if(wanted.has(s.id)){if(s.color===undefined)s.color=i%16+1;schedules.push(s);for(const row of s.rows)used.add(row.media);}});
@@ -25,14 +25,14 @@
   const calendarRaw=raw(calendar);need(calendarRaw.length<=12288,'size');
   const hash=hashFactory();need(await hash.update(calendarRaw)!==false,'io');const sha=await hash.finish();
   const media=[],payloads=new Map();
-  for(const id of slots){if(!used.has(id))continue;const v=inventory.get(id);need(v,'dependency');const entry={id,title:v.title,size_bytes:v.size_bytes,sha256:v.sha256,source:id.startsWith('user')?'user':'bundled'};
+  for(const id of [...inventory.keys()].sort((a,b)=>{const x=slots.indexOf(a),y=slots.indexOf(b);return x>=0||y>=0?(x>=0?x:99)-(y>=0?y:99):a<b?-1:a>b?1:0;})){if(!used.has(id))continue;const v=inventory.get(id);need(v,'dependency');const entry={id,title:v.title,size_bytes:v.size_bytes,sha256:v.sha256,source:id.startsWith('user')?'user':'bundled'};
    if(entry.source==='bundled')entry.bundled_id=id;
    else {need(x.exporter&&x.exporter.name!=='schoolbell-pages','unsupported_media');entry.file='media/'+v.sha256+'.mp3';const old=payloads.get(entry.file);need(!old||old.size_bytes===v.size_bytes,'dependency');if(!old)payloads.set(entry.file,{name:entry.file,slot:id,size_bytes:v.size_bytes,sha256:v.sha256});}
    media.push(entry);
   }
   need(media.length===used.size,'dependency');
   const sources=[...payloads.values()].sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);
-  const manifest={format:'schoolbell-plan/1',exporter:x.exporter,timezone:x.timezone,files:[{name:'calendar.json',size_bytes:calendarRaw.length,sha256:sha},...sources.map(({name,size_bytes,sha256})=>({name,size_bytes,sha256}))],media};
+  const manifest={format:media.filter(v=>v.source==='user').length>8?'schoolbell-plan/2':'schoolbell-plan/1',exporter:x.exporter,timezone:x.timezone,files:[{name:'calendar.json',size_bytes:calendarRaw.length,sha256:sha},...sources.map(({name,size_bytes,sha256})=>({name,size_bytes,sha256}))],media};
   const manifestRaw=raw(manifest);Codec.manifest(manifestRaw);
   return {manifest:manifestRaw,calendar:calendarRaw,sources};
  }

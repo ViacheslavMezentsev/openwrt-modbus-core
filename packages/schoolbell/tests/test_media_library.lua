@@ -1,7 +1,7 @@
 local L=require('schoolbell.media_library');local F=require('schoolbell.media_fs');local C=require('schoolbell.media_codec')
 local root=assert(arg[1]);local host=os.getenv('MEDIA_HOST') and require('schoolbell.media_fs_host') or nil
 local fs=F.new(root,host);local lib=L.open(fs,root,function()return true end)
-local initial=lib.list();assert(initial.generation==0 and #initial.slots==14);assert(initial.storage.total_kib>0 and initial.storage.free_kib>=0 and initial.storage.media_kib==0 and initial.storage.media_limit_kib==2048)
+local initial=lib.list();assert(initial.generation==0 and #initial.slots==6);assert(initial.storage.total_kib>0 and initial.storage.free_kib>=0 and initial.storage.media_kib==0 and initial.storage.media_limit_kib==nil)
 assert(lib.resolve('test')=='/usr/share/schoolbell-sound-test/test.mp3')
 local function upload(source,id,op,gen)
  if fs.stat('upload.part')then fs.unlink('upload.part')end
@@ -21,6 +21,8 @@ assert(not pcall(upload,source,'user1',string.rep('d',32),3));fs.space=real_spac
 assert(not pcall(upload,source,'../test',string.rep('e',32),3))
 fs.unlink('upload.part');lib.close()
 fs=F.new(root,host);lib=L.open(fs,root,function()return true end);assert(lib.list().generation==3)
+for i=9,18 do local result=upload(source,'user'..i,string.format('%032x',i),i-6);assert(result.status=='saved')end
+assert(#lib.list().slots==18);local p=lib.resolve('user18');assert(p and p:find('/objects/'));assert(lib.resolve('user1'));assert(lib.resolve('user2'))
 -- Corruption pauses the whole library instead of silently switching to bundled audio.
 fs.write('broken','{}');fs.rename('broken','current.json');assert(not pcall(lib.resolve,'0'));lib.close()
 print('PASS media library: native persistence, replace/CAS, previous/GC, quota, traversal, reopen, corruption')

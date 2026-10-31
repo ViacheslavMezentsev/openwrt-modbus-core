@@ -19,7 +19,8 @@ function M.new(editor,media,root,env)
   local function ref(id)assert(not L.editable(id) or ids[id],'missing melody reference')end
   ref(draft.data.pre_media);ref(draft.data.manual_media or 'test');for _,s in ipairs(draft.data.schedules)do for _,row in ipairs(s.rows)do ref(row.media)end end
   local docs={['draft.json']=C.encode(draft.data),['controls.json']=C.encode({muted=controls.muted,volume_db=controls.volume_db}),['catalog.json']=C.encode(cat)}
-  local manifest={format='schoolbell-backup/1',timezone=env.timezone,files={}}
+  local extended=#cat.melodies>8;for _,m in ipairs(cat.melodies)do if not m.id:match('^user[1-8]$')then extended=true end end
+  local manifest={format=extended and 'schoolbell-backup/2' or 'schoolbell-backup/1',timezone=env.timezone,files={}}
   for _,name in ipairs({'draft.json','controls.json','catalog.json'})do local raw=docs[name];assert(#raw<=16384);manifest.files[#manifest.files+1]={name=name,size_bytes=#raw,sha256=C.sha(raw)}end
   local hashes={};for hash in pairs(objects)do hashes[#hashes+1]=hash end;table.sort(hashes)
   for _,hash in ipairs(hashes)do manifest.files[#manifest.files+1]={name=hash..'.mp3',size_bytes=objects[hash].size_bytes,sha256=hash}end
@@ -65,7 +66,7 @@ function M.new(editor,media,root,env)
    local _,state=lib.catalog();local incoming=0;local objectbytes=0;local stagedbytes=0
    for hash,m in pairs(v.objects)do stagedbytes=stagedbytes+m.size_bytes;if not media.stat('objects/'..hash)then incoming=incoming+m.size_bytes end end
    for _,hash in ipairs(media.list('objects'))do objectbytes=objectbytes+assert(media.stat('objects/'..hash)).size end
-   assert(objectbytes+stagedbytes+incoming<=2097152,'media peak quota')
+   -- Physical free-space admission below includes staged and incoming files.
    free,total=media.space();assert(free>=incoming+131072+math.max(524288,math.ceil(total/10)),'space peak')
    local oldraw=editor.read('current.json',16384);local oldhash=C.null
    if oldraw then media.write(Codec.stage..'/rollback-draft.json',oldraw);media.sync(Codec.stage..'/rollback-draft.json');media.sync(Codec.stage);oldhash=C.sha(oldraw)end

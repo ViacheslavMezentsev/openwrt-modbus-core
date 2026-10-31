@@ -1,7 +1,7 @@
 -- Pure Gregorian/calendar calculation for schoolbell. No clock, filesystem or core I/O.
 local M = {}
 local floor = math.floor
-local LIMIT = {schedules=16, years=8, media=64,
+local LIMIT = {schedules=16, years=8, media=nil,
                window_days=31, events=512}
 local function bad(code, path) error({code=code, path=path}, 0) end
 local function integer(n, lo, hi)

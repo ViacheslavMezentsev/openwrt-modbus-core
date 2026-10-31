@@ -19,13 +19,13 @@ local function json(raw,max)
 end
 function M.manifest(raw)
  local m=json(raw,16384);object(m,{'format','exporter','timezone','files','media'})
- need(m.format=='schoolbell-plan/1','format')
+ need((m.format=='schoolbell-plan/1' or m.format=='schoolbell-plan/2'),'format')
  object(m.exporter,{'name','version'})
  need(m.exporter.name=='schoolbell-device' or m.exporter.name=='schoolbell-pages','format')
  local v=m.exporter.version;need(ascii(v,32),'format')
  local a,b,c=v:match('^(%d+)%.(%d+)%.(%d+)$');need(a and (#a==1 or a:sub(1,1)~='0') and (#b==1 or b:sub(1,1)~='0') and (#c==1 or c:sub(1,1)~='0'),'format')
  object(m.timezone,{'name','posix'});need(ascii(m.timezone.name,64) and ascii(m.timezone.posix,256),'format')
- arr(m.files,1,9);arr(m.media,1,14)
+ arr(m.files,1,m.format=='schoolbell-plan/1' and 9 or math.huge);arr(m.media,1,m.format=='schoolbell-plan/1' and 14 or math.huge)
  local files,total,audio,prior={},82+#raw,0,''
  for i,f in ipairs(m.files)do
   object(f,{'name','size_bytes','sha256'})

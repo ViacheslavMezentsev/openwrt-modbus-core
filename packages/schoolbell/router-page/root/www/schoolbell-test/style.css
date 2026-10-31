@@ -104,3 +104,5 @@ html[data-theme="dark"] .automatic-badge[data-tone="success"]{background:#143b27
 .automatic-badge{border:1px solid currentColor}
 .schedule-table td button.icon-delete{color:var(--danger)}
 .row-listen{display:flex;gap:6px;white-space:nowrap}.row-listen button{min-width:44px;min-height:44px;font-size:20px}
+
+.flash-labels{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:8px;flex-wrap:wrap}.flash-labels #device-uptime{margin:0 0 0 auto}#flash-line{height:4px;background:var(--border);border-radius:3px;margin-top:6px}#flash-line i{display:block;height:100%;width:var(--cpu-fill,0%);background:#238636;border-radius:3px}#flash-line[data-tone=warning] i{background:#bf8700}#flash-line[data-tone=danger] i{background:#da3633}#flash-line[data-tone=unknown]{opacity:.5}

@@ -49,7 +49,7 @@ function M.new(editor,media,root,env)
   local required=2*bytes+65536+16*32768+131072
   assert(free>=required+reserve,'space')
   local existing=0;for _,name in ipairs(media.list('objects'))do existing=existing+assert(media.stat('objects/'..name)).size end
-  assert(existing+2*bytes<=2097152,'space')
+  -- No separate library quota; free space and archive bounds are checked below.
   return {required=required,free=math.min(free,2147483647),reserve=math.min(reserve,2147483647),capped=free>2147483647 or reserve>2147483647}
  end
  function api.status(id)
