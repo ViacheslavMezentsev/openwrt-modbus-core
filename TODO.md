@@ -4,7 +4,7 @@
 
 Working cycle: [WORKFLOW](docs/WORKFLOW.en.md) ([RU](docs/WORKFLOW.md)); stage boundaries, owner push/land and device acceptance.
 
-Reviewed 2026-10-30: installed Shkolnik **5.1.21**; 5.1.22 UI candidate remains host-only.
+Reviewed 2026-10-31: Shkolnik **5.1.22** installed and owner UI acceptance completed on the existing bench; Pages published. New-device acceptance has not started.
 Automatic bells remain disabled. No clock/NTP changes are authorized by this plan.
 Pages sources are synchronized; publishing the new main remains the owner's action.
 Checked historical stage bullets describe their original scope, not remaining work.
@@ -13,7 +13,7 @@ Readiness: engineering pilot candidate, not certified unattended service. First 
 
 ### Recommended next branches (scope each before implementation)
 
-1. **Portable calendar-plan bundle — system import accepted for a small Pages bundle; device export candidate implemented.** See docs/packages/schoolbell/PORTABLE_PLAN.md and specification1.70 (4.10, TC-168–178). Exact wire/API accepted (8.2.15); isolated byte codecs implemented (TC-175). Pure dependency/preview model implemented (TC-176). Isolated selected-plan export assembly implemented (TC-177). Pages export/read-only import preview implemented (TC-178). Candidate5.1.20 implements system import of selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and media. Pages uses bundled melodies only; device export must include referenced user melodies. This is distinct from a full .sbb backup. Import only as a draft, automatic bells disabled; no credentials, hardware/network/NTP settings or system timezone changes.
+1. **Portable calendar-plan bundle — small Pages import and isolated user-audio browser roundtrip accepted.** See docs/packages/schoolbell/PORTABLE_PLAN.md and specification1.70 (4.10, TC-168–178). Exact wire/API accepted (8.2.15); isolated byte codecs implemented (TC-175). Pure dependency/preview model implemented (TC-176). Isolated selected-plan export assembly implemented (TC-177). Pages export/read-only import preview implemented (TC-178). Candidate5.1.20 implements system import of selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and media. Pages uses bundled melodies only; device export must include referenced user melodies. This is distinct from a full .sbb backup. Import only as a draft, automatic bells disabled; no credentials, hardware/network/NTP settings or system timezone changes.
 2. **Complete remaining operator journeys.** Active-plan preview distinct from draft; rename/delete user melodies with reference checks; bounded undo and archive summary/onboarding. Browser clock setting needs a separate contract and explicit permission for any real clock change.
 3. **Product acceptance.** Finish LuCI access/session/CSRF/concurrency checks and agree quantitative timing/endurance criteria. Cold boot, offline first boot and power-loss tests require separate authorization. Successful short UI tests are not unattended-operation certification.
 
@@ -27,8 +27,9 @@ the run and access are ready. Networked observation is distinct from offline tes
 and audible confirmation. Flashing, clocks, power cuts and sound are not authorized
 by this roadmap alone.
 
-- [x] Device 5.1.21: user-MP3 .sbp export and isolated import verified via installed Lua API; hashes matched, working data unchanged, automatic bells stayed off. HTTP/browser roundtrip with user media remains a separate acceptance check. Local evidence: research 74 (not committed).
-- [ ] Install and visually accept 5.1.22 header clock/uptime, spacing, delete icon and default idle interval after separate authorization.
+- [x] Device 5.1.21: user-MP3 .sbp export and isolated import verified via installed Lua API; hashes matched, working data unchanged, automatic bells stayed off. Browser export/upload/preview/commit/readback also passed through installed JS/controller/CGI parser on an isolated localhost/SSH bench; production LuCI login/routing were not included.
+- [x] Install 5.1.22 after verified backup; owner accepted header/layout. Working data preserved, auto-off, clock/NTP unchanged. The new 30-minute default preserves existing choices.
+- [ ] Execute [new-device acceptance plan](docs/packages/schoolbell/ACCEPTANCE_RUN.en.md) ([RU](docs/packages/schoolbell/ACCEPTANCE_RUN.md)): first agree Q1–Q5 and freeze artifacts; dedicated USB–Ethernet bench, no flashing or network changes authorized yet.
 
 ### Portable plans: agreed policy and remaining work
 
@@ -39,12 +40,13 @@ by this roadmap alone.
 - [x] Isolated selected-plan export assembly: complete dependencies, streamed/deduplicated user payloads, exact Lua/JS bytes against independent oracle; 35 host cases (TC-177). No UI or device integration.
 - [x] Pages selected-plan export and read-only import preview (TC-178): shared codecs, generated bundled hashes, explicit pinned timezone, rename/blockers, immutable draft and stale-result guards; host and local browser checks. Pages preview does not write imports; device integration is tracked below.
 - [x] Candidate5.1.20: system admission/commit/resume/receipts and LuCI import UI, host tests; target installation is separately authorized.
-- [ ] Before installation validate actual LuCI multipart/deadlines, target peak RSS/tmp/flash and free-space admission. Then transfer a Pages plan and a user-MP3 bundle, backup first, auto off.
+- [x] Small Pages bundle imported through the installed device route; user MP3 exported/imported through isolated browser/controller path with verified SHA and no working-data changes.
+- [ ] New-device S4: real LuCI session/routing end-to-end, multipart deadlines, peak RSS/tmp/flash, slow clients and free-space limits; backup first, auto-off.
 - [x] Candidate5.1.21: device selected-plan export with user audio, temporary completed file, download UI and host export→import tests. Pages retains bundled-only/read-only import scope.
-- [ ] Install5.1.21 after backup and validate user-audio export and isolated transfer on the target; large files/RSS/slow clients remain open.
+- [x] 5.1.21 export installed and isolated user-audio target transfer accepted; repeated browser path on 5.1.22. Large files/RSS/slow clients remain open.
 - [x] Host: bounded parsing/checksums, space admission, staged durable import and recovery barrier; injected failures before/after57 storage mutations. Existing data preserved; target resource bounds and physical power loss remain unverified.
 - [ ] Offline host/Pages round-trip first: September–May, cross-year dates, colors, pre-bells and matching preview; malformed/incompatible archives, missing media, overlap, quota/write interruption and unchanged current data on rejection. Pages must clearly reject unsupported user-media imports rather than drop files.
-- [ ] Then separately authorize device installation and transfer acceptance after backup, without sound or enabling bells. Design the full dependency contract now; bundled-only Pages is not acceptance of a device exporter that omits user melodies.
+- [ ] Repeat full transfer acceptance on the new device under the frozen artifact passport, after backup and separate installation permission. Bundled-only Pages does not replace device user-media coverage.
 
 Broad exchange/architecture refactoring is not a prerequisite: current measurements identify CGI startup costs, not a proven command-queue bottleneck. End-to-end audible startup measurement is optional if the owner observes a practical delay.
 
