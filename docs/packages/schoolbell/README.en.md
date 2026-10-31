@@ -220,3 +220,5 @@ Specification 1.32 defines the reference format and observation budgets; isolate
 [System clock/reference adapter](CLOCK_SYSTEM.en.md): isolated host ports, no router deployment.
 
 Storage bar: normal through 75%, yellow above 75%, red above 90%. Usage refers to the displayed filesystem, not just the media quota. Reserve and upload admission limits are unchanged.
+
+Since 5.1.24 there is no separate row-count cap. The 12288-byte draft and event calculation budgets remain; capacity depends on data. Older versions may reject larger plans: use compatible device and Pages versions.

@@ -16,7 +16,9 @@ Readiness: engineering pilot candidate, not certified unattended service. First 
 - [x] 5.1.23 source: theme fixes and schedule-row browser/device melody preview; Pages hardware guard.
 - [x] 5.1.23 installed after verified backup/rollback; payload hashes and unchanged backup confirmed. Owner accepted themes, status border, schedule actions and browser/speaker playback. Quiet speaker test at -18 dB; original volume restored; automatic bells disabled, clock/NTP unchanged.
 - [ ] Next: S0 new-device preparation — identify dedicated USB–Ethernet adapter, verify exact firmware/recovery files and hashes, agree Q1–Q5/profile, freeze core/module/dependency artifacts. No flashing or network changes yet.
-- [ ] Before acceptance, confirm required school schedule capacity against current software limits (16 schedules, 32 rows each, 128 total; specification 4.4.2). These are not measured hardware capacity; any change needs consistent validator/UI/import tests.
+- [x] 5.1.24: removed row-count limits (4.4.2); retained 12 KiB draft and 16 schedules. Host regression covers storage, backup, portable plans and Pages.
+- [ ] Device acceptance of larger schedules and package5.1.24; byte/event budgets still apply.
+- [ ] Implement agreed browser-time synchronization via standalone system adapter; separate authorization for real clock changes.
 
 ### Recommended next branches (scope each before implementation)
 

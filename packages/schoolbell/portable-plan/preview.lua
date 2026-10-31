@@ -14,7 +14,7 @@ local function id(v)return type(v)=='string'and #v>0 and #v<=64 and v:match('^[A
 local function title(v)return type(v)=='string'and #v>0 and #v<=96 and not v:find('[%z\1-\31\127]')and v:find('%S')end
 local function slot(v)return v=='test'or v=='0'or v=='1'or v=='2'or v=='3'or v=='4'or(type(v)=='string'and v:match('^user[1-8]$'))end
 local function fail(code,path)return {ok=false,admitted=false,blockers={{code=code,path=path}},blockers_truncated=false}end
-local function list(v,n)return J.kind(v)=='array'and #v<=n end
+local function list(v,n)return J.kind(v)=='array'and (not n or #v<=n) end
 local function preview(manifest_raw,calendar_raw,input)
  local good,m=pcall(Codec.manifest,manifest_raw);local c=J.decode(calendar_raw,{bytes=12288})
  local ok,ctx=pcall(clone,input);if not good or not c or not ok then return fail('format','archive')end
@@ -32,7 +32,7 @@ local function preview(manifest_raw,calendar_raw,input)
  if users>8 then return fail('slots','media')end
  local function ref(key,path)if type(key)~='string'or not media[key]then add('dependency',path)else used[key]=true end end
  ref(c.pre_media,'pre_media')
- for i,s in ipairs(c.schedules)do if not fields(s,{'id','name','color','rows'})or not id(s.id)or scids[s.id]or not title(s.name)or not C.integer(s.color,1,16)or not list(s.rows,32)then return fail('format','schedules')end;scids[s.id]=true
+ for i,s in ipairs(c.schedules)do if not fields(s,{'id','name','color','rows'})or not id(s.id)or scids[s.id]or not title(s.name)or not C.integer(s.color,1,16)or not list(s.rows)then return fail('format','schedules')end;scids[s.id]=true
   for j,row in ipairs(s.rows)do if not fields(row,{'id','time','media','enabled','pre'})then return fail('format','rows')end;ref(row.media,'schedules.'..i..'.rows.'..j..'.media')end end
  for _,p in ipairs(c.plans)do if not fields(p,{'id','name','start','end','schedule_ids','days'})or not id(p.id)or planids[p.id]or not list(p.schedule_ids,16)then return fail('format','plans')end;planids[p.id]=true
   for _,key in ipairs(p.schedule_ids)do if type(key)~='string'or not scids[key]then add('dependency','plans.schedule_ids')else needed[key]=true end end end

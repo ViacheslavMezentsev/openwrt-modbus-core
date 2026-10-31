@@ -88,7 +88,7 @@ that range for OpenWrt time_t/scheduler. ABI/clock-quality integration remains p
 
 ## Bounds and verification
 
-Current guards: 16 schedules, 128 rows each/512 total, 8 distinct years, 64 media IDs,
+Current guards: 16 schedules, 8 distinct years, 64 media IDs,
 at most 366 assignments per year. A query covers at most 31 days/512 events.
 Overflow rejects the whole window; traverse a year using smaller windows such as
 one day at a time. These are algorithm guards, not measured router RAM/CPU budgets

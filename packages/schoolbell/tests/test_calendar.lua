@@ -87,10 +87,10 @@ test("explicit plan years and timezone; no invalid date normalization",function(
     c=base(); c.timezone="Zone; execute"; bad(c,"timezone")
 end)
 test("input quotas are bounded and limits are returned by copy",function()
-    local limits=cal.limits(); limits.rows=99999; assert(cal.limits().rows==128)
+    local limits=cal.limits(); limits.schedules=99999; assert(cal.limits().schedules==16)
     local c=base(); c.schedules[2].rows={}
-    for i=1,128 do c.schedules[2].rows[i]={id="x"..i,time="00:00",media="0",enabled=false,pre=false} end
-    assert(cal.validate(c)); c.schedules[2].rows[129]=copy(c.schedules[2].rows[1]); bad(c,"limit")
+    for i=1,600 do c.schedules[2].rows[i]={id="x"..i,time="00:00",media="0",enabled=false,pre=false} end
+    assert(cal.validate(c)); c.schedules[2].rows[601]=copy(c.schedules[2].rows[1]); bad(c,"duplicate")
     c=base(); c.plans={}
     for i=1,8 do c.plans[i]={year=2020+i,days={}} end
     assert(cal.validate(c)); c.plans[9]={year=2040,days={}}; bad(c,"limit")
@@ -265,14 +265,14 @@ test("exact output budget succeeds and budget plus one is not truncated",functio
     local m=compiled(c); assert(#calculate(m,"2026-01-01","2026-01-04")==512)
     rejected(function() return m.calculate("2026-01-01","2026-01-05",resolve) end,"limit")
 end)
-test("total row budget and reserved quiet identifier",function()
+test("no total row cap and reserved quiet identifier",function()
     local c=simple("08:00",false); c.schedules={}; c.fixed_schedule="s1"
     c.plans={}
     for i=1,4 do
         c.schedules[i]={id="s"..i,rows={}}
         for j=1,128 do c.schedules[i].rows[j]={id="r"..j,time="08:00",media="0",enabled=false,pre=false} end
     end
-    assert(cal.validate(c)); c.schedules[5]={id="overflow",rows={copy(c.schedules[1].rows[1])}}; bad(c,"limit")
+    assert(cal.validate(c)); c.schedules[5]={id="overflow",rows={copy(c.schedules[1].rows[1])}}; assert(cal.validate(c))
     c=simple("08:00",false); c.schedules[2].id="quiet"; bad(c,"duplicate")
 end)
 test("date domain edges do not invent a pre-bell outside the supported range",function()

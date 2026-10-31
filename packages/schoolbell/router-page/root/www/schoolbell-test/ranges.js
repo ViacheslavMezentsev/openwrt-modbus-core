@@ -20,10 +20,10 @@ function validateDraft(d,bundledOnly){
  if(!Number.isInteger(d.pre_minutes)||d.pre_minutes<1||d.pre_minutes>10||!media.includes(d.pre_media)||d.manual_media!==undefined&&!media.includes(d.manual_media))throw Error('Параметры мелодий');
  if(d.mode!==undefined&&!['annual','fixed'].includes(d.mode))throw Error('Режим');
  if(!Array.isArray(d.schedules)||d.schedules.length>16)throw Error('Расписания');
- const ids=new Set();let total=0;
+ const ids=new Set();
  for(const sc of d.schedules){fields(sc,['id','name','rows','color'],['id','name','rows']);if(!goodId(sc.id)||sc.id==='quiet'||ids.has(sc.id)||!title(sc.name))throw Error('Расписание');ids.add(sc.id);
  if(sc.color!==undefined&&(!Number.isInteger(sc.color)||sc.color<1||sc.color>16))throw Error('Цвет');
- if(!Array.isArray(sc.rows)||sc.rows.length>32||(total+=sc.rows.length)>128)throw Error('Строки');const rows=new Set();
+ if(!Array.isArray(sc.rows))throw Error('Строки');const rows=new Set();
  for(const row of sc.rows){fields(row,['id','time','media','enabled','pre'],['id','time','media','enabled','pre']);if(!goodId(row.id)||rows.has(row.id)||typeof row.time!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(row.time)||!media.includes(row.media)||typeof row.enabled!=='boolean'||typeof row.pre!=='boolean')throw Error('Строка звонка');rows.add(row.id);}}
  if(d.fixed_schedule!==undefined&&d.fixed_schedule!=='quiet'&&!ids.has(d.fixed_schedule))throw Error('Ежедневное расписание');
  const plans=migrate(d.plans===undefined?[]:d.plans);for(const p of plans){if(p.schedule_ids.some(id=>!ids.has(id)))throw Error('Ссылка расписания');}return true;

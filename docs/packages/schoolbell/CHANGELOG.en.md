@@ -1,5 +1,7 @@
 # Changelog
 
+5.1.24: removed schedule row-count caps across storage, backup, portable plans and Pages. Byte budgets remain; larger plans require a compatible import target. Host checks only; not installed.
+
 Pages: separate RU/EN draft guide, Guide links in demo notice/module card, conceptual bench/audio SVGs. No package or device changes.
 
 2026-10-31: 5.1.22 installed and owner UI acceptance completed; Pages published. Isolated browser .sbp user-MP3 roundtrip accepted within its documented scope. [New-device acceptance plan](ACCEPTANCE_RUN.en.md) prepared; artifacts still need freezing, no flashing/run authorized.

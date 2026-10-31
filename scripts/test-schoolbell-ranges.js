@@ -22,3 +22,9 @@ assert.equal(M.dates("2026-12-31","2028-01-01").length,367);assert(M.validate([p
 console.log("PASS user range 2026-12-31 to 2028-01-01: 367 inclusive days across three years");
 
 for(const plans of [false,0,'']) assert.throws(()=>M.validateDraft({schedules:[],pre_minutes:2,pre_media:'test',plans},true));
+
+const largeDraft={schedules:[{id:'school',name:'School',rows:Array.from({length:129},(_,i)=>({id:'r'+i,time:'09:00',media:'test',enabled:true,pre:false}))}],pre_minutes:2,pre_media:'test',plans:[]};
+assert(M.validateDraft(largeDraft,true));
+largeDraft.schedules[0].rows[128].id='r0';
+assert.throws(()=>M.validateDraft(largeDraft,true));
+console.log('PASS row counts above 32/128 accepted; duplicate IDs rejected');

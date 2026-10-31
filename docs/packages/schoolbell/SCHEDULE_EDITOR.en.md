@@ -14,7 +14,7 @@ by the editor.
 
 ## Values and limits
 
-Up to 16 schedules, 32 rows each and 128 total; canonical JSON <=12288 bytes.
+Up to 16 schedules, canonical JSON <=12288 bytes.
 All limits apply together: the row count does not guarantee the byte limit.
 Names contain 1–96 UTF-8 bytes, no control characters, and cannot be whitespace-only.
 Rows use unique local `id`, strict HH:MM `time`, `media`, and boolean
@@ -72,3 +72,5 @@ scheduling remain future work; full original schoolbell parity stays in TODO.
 The user confirmed on the installed LuCI page that schedule names, times and flags persist after saving and reloading. Automatic bells remained disabled.
 
 Annual assignments and preview are available in the next stage: [annual calendar](ANNUAL_CALENDAR.en.md). Storage rules remain unchanged; user data may additionally include plans.
+
+Since 5.1.24 there is no separate row-count cap. The 12288-byte draft and event calculation budgets remain; capacity depends on data. Older versions may reject larger plans: use compatible device and Pages versions.

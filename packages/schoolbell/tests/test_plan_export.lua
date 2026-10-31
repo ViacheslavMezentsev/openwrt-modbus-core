@@ -7,6 +7,7 @@ local function clone(v)return C.decode(C.encode(v))end
 local function dirs(name)local p=base..'/'..name;assert(host.mkdir(p));for _,n in ipairs({'editor','media','work'})do assert(host.mkdir(p..'/'..n))end;return p end
 local sample=cwd..'/packages/schoolbell/media/test.mp3';local f=assert(io.open(sample,'rb'));local audio=f:read('*a');f:close();local hash=C.sha(audio)
 local calendar={plans={{id='academic',name='Учебный',start='2027-09-01',['end']='2028-05-31',schedule_ids={'lessons'},days='A'..string.rep('.',273)}},schedules={{id='lessons',name='Уроки',color=4,rows={{id='bell',time='09:00',media='song',enabled=false,pre=true}}}},pre_minutes=2,pre_media='pre'}
+for i=2,100 do calendar.schedules[1].rows[i]={id='r'..i,time='09:00',media='song',enabled=false,pre=true}end
 local cal=C.encode(calendar)
 local manifest={format='schoolbell-plan/1',exporter={name='schoolbell-device',version='5.1.20'},timezone={name='UTC',posix='UTC'},files={{name='calendar.json',size_bytes=#cal,sha256=C.sha(cal)},{name='media/'..hash..'.mp3',size_bytes=#audio,sha256=hash}},media={{id='pre',title='Тест',source='bundled',bundled_id='test',size_bytes=#audio,sha256=hash},{id='song',title='Урок',source='user',file='media/'..hash..'.mp3',size_bytes=#audio,sha256=hash}}}
 local raw=C.encode(manifest);local bytes=Codec.magic..string.format('%08d\n',#raw)..C.sha(raw)..'\n'..raw..cal..audio

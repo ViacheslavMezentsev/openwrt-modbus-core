@@ -1,7 +1,7 @@
 -- Pure Gregorian/calendar calculation for schoolbell. No clock, filesystem or core I/O.
 local M = {}
 local floor = math.floor
-local LIMIT = {schedules=16, rows=128, total_rows=512, years=8, media=64,
+local LIMIT = {schedules=16, years=8, media=64,
                window_days=31, events=512}
 local function bad(code, path) error({code=code, path=path}, 0) end
 local function integer(n, lo, hi)
@@ -19,8 +19,8 @@ local function array(t, maximum, path)
     local n=0
     for k in pairs(t) do
         n=n+1
-        if n>maximum then bad("limit",path) end
-        if not integer(k,1,maximum) then bad("array",path) end
+        if maximum and n>maximum then bad("limit",path) end
+        if not integer(k,1,maximum or math.huge) then bad("array",path) end
     end
     for i=1,n do if rawget(t,i)==nil then bad("array",path) end end
     return n
@@ -124,7 +124,6 @@ local function snapshot(config)
         return value
     end
     c.pre_media=media(config.pre_media,"pre_media")
-    local total=0
     n=array(config.schedules,LIMIT.schedules,"schedules")
     for i=1,n do
         local source=config.schedules[i]
@@ -132,8 +131,7 @@ local function snapshot(config)
         local key=id(source.id,"schedule.id")
         if key=="quiet" or c.schedules[key] then bad("duplicate","schedule.id") end
         local target={rows={},audible=false}; c.schedules[key]=target
-        local count=array(source.rows,LIMIT.rows,"rows")
-        total=total+count; if total>LIMIT.total_rows then bad("limit","total_rows") end
+        local count=array(source.rows,nil,"rows")
         local seen={}
         for j=1,count do
             local row=source.rows[j]

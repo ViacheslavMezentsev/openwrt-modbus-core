@@ -67,16 +67,14 @@ function M.validate(text)
         if not ({user1=true,user2=true,user3=true,user4=true,user5=true,user6=true,user7=true,user8=true,test=true,["0"]=true,["1"]=true,["2"]=true,["3"]=true,["4"]=true})[d.pre_media] then fail("media_reference","pre_media") end
         if d.mode~=nil and d.mode~='fixed' and d.mode~='annual' then fail('mode','mode')end
         if d.manual_media~=nil and not ({user1=true,user2=true,user3=true,user4=true,user5=true,user6=true,user7=true,user8=true,test=true,['0']=true,['1']=true,['2']=true,['3']=true,['4']=true})[d.manual_media]then fail('media_reference','manual_media')end
-        local schedules,total={},0
+        local schedules={}
         for i,s in ipairs(d.schedules) do
             local path="schedules."..i
             object(s,{id=true,name=true,rows=true,color=false},path)
             if s.color~=nil and not C.integer(s.color,1,16) then fail("color",path..".color") end
             if type(s.name)~="string" or #s.name<1 or #s.name>96
                or s.name:find("[%z\1-\31\127]") or not s.name:find("%S") then fail("name",path..".name") end
-            if J.kind(s.rows)~="array" or #s.rows>32 then fail("limit",path..".rows") end
-            total=total+#s.rows
-            if total>128 then fail("limit","total_rows") end
+            if J.kind(s.rows)~="array" then fail("limit",path..".rows") end
             for j,row in ipairs(s.rows) do
                 object(row,{id=true,time=true,media=true,enabled=true,pre=true},path..".rows."..j)
             end

@@ -48,10 +48,10 @@ test("duplicates rejected including disabled rows",function()
  assert(not S.validate(C.encode(d)))
  d=assert(J.decode(sample));d.schedules[2]=d.schedules[1];assert(not S.validate(C.encode(d)))
 end)
-test("limits on schedules rows total and name",function()
+test("schedule and name bounds remain; 33 rows admitted",function()
  local d=assert(J.decode(sample))
  for i=2,33 do d.schedules[1].rows[i]={id="r"..i,time="08:00",media="test",enabled=true,pre=false} end
- assert(not S.validate(C.encode(d)))
+ assert(S.validate(C.encode(d)))
  d=assert(J.decode(sample));d.schedules[1].name=string.rep("x",97);assert(not S.validate(C.encode(d)))
  d=assert(J.decode(sample));for i=2,17 do d.schedules[i]={id="s"..i,name="S",rows=assert(J.decode("[]"))} end
  assert(not S.validate(C.encode(d)))
@@ -106,3 +106,13 @@ test("CSRF rejected before storage",function()
  length="100";luci.controller.schoolbell_test.save_schedules();assert(calls==1)
 end)
 print("schedule store: "..count.." groups passed")
+
+test("no row-count caps: 129 rows save and reload",function()
+ local d=assert(S.validate(sample));d.schedules[1].rows=assert(J.decode('[]'))
+ for i=1,129 do d.schedules[1].rows[i]={id='r'..i,time='09:00',media='test',enabled=true,pre=false} end
+ local raw=C.encode(d);assert(#raw<=S.max_bytes)
+ local f=fs();local result=S.save(f,raw,'empty');assert(result.ok,result.code)
+ assert(#S.load(f).data.schedules[1].rows==129)
+ d.schedules[1].rows[130]=d.schedules[1].rows[1]
+ assert(not S.validate(C.encode(d)))
+end)

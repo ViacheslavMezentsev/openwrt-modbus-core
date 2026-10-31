@@ -28,7 +28,7 @@
   for(const v of m.media){const t=v.source==='bundled'?v.bundled_id:'user'+(++user);temporary.set(v.id,t);}if(user>8)return fail('slots','media');
   const ref=(key,path)=>{if(!media.has(key))add('dependency',path);else used.add(key);};
   ref(c.pre_media,'pre_media');
-  for(let i=0;i<c.schedules.length;i++){const s=c.schedules[i];if(!fields(s,['id','name','color','rows'])||!id(s.id)||scIds.has(s.id)||!title(s.name)||!Number.isInteger(s.color)||s.color<1||s.color>16||!Array.isArray(s.rows)||s.rows.length>32)return fail('format','schedules');scIds.add(s.id);
+  for(let i=0;i<c.schedules.length;i++){const s=c.schedules[i];if(!fields(s,['id','name','color','rows'])||!id(s.id)||scIds.has(s.id)||!title(s.name)||!Number.isInteger(s.color)||s.color<1||s.color>16||!Array.isArray(s.rows))return fail('format','schedules');scIds.add(s.id);
    for(let j=0;j<s.rows.length;j++){const row=s.rows[j];if(!fields(row,['id','time','media','enabled','pre']))return fail('format','rows');ref(row.media,'schedules.'+(i+1)+'.rows.'+(j+1)+'.media');}}
   for(const p of c.plans){if(!fields(p,['id','name','start','end','schedule_ids','days'])||!id(p.id)||planIds.has(p.id)||!Array.isArray(p.schedule_ids))return fail('format','plans');planIds.add(p.id);for(const key of p.schedule_ids){if(!scIds.has(key))add('dependency','plans.schedule_ids');else needed.add(key);}}
   for(const s of c.schedules)if(!needed.has(s.id))add('dependency','schedules.'+s.id);

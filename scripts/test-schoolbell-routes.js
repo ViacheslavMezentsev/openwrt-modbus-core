@@ -199,4 +199,12 @@ function fixture(storage={},initialRevision="r1",loadCodes=[]){
  const actions=row.children[4].children[0].children;await actions[0].click();await actions[1].click();
  assert.deepEqual(listens,[['user3',false],['user3',true]]);assert(!x.saves.length && !x.posts.length);
  console.log('PASS row preview uses current unsaved selection without save or activation');
+ x=fixture();await x.tick();
+ for(let i=1;i<129;i++)await x.get('row-add').click();
+ assert.equal(x.get('schedule-rows').children.length,129);
+ assert.equal(x.get('row-count').textContent,'Звонков в расписании: 129');
+ assert(!x.get('row-add').disabled && !x.get('schedule-copy').disabled);
+ assert(!x.posts.length);
+ console.log('PASS real editor allows adding beyond 32/128, count has no quota and no activation');
+
 })().catch(e=>{console.error(e);process.exitCode=1;});

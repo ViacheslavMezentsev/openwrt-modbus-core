@@ -43,8 +43,8 @@ Calendar has exactly `{plans,schedules,pre_minutes,pre_media}`:
 - 1…8 plans `{id,name,start,end,schedule_ids,days}`; inclusive YYYY-MM-DD ranges,
   years0001…9999, no overlap. Up to16 unique schedule references. One days character
   per date: dot is quiet, A…P indexes schedule_ids.
-- 0…16 schedules `{id,name,color,rows}`, color required1…16; <=32 rows each and128
-  total. Rows `{id,time,media,enabled,pre}` use HH:MM, media catalogue ID and booleans.
+- 0…16 schedules `{id,name,color,rows}`, color required1…16; no separate row-count cap;
+  Rows `{id,time,media,enabled,pre}` use HH:MM, media catalogue ID and booleans.
 - pre_minutes integer1…10, pre_media always included even without pre rows.
   Disabled rows retain dependencies; all selected schedule_ids are exported even
   if not currently referenced by a days character.
@@ -181,3 +181,5 @@ Primitive vector (not a valid plan): UTF-8 `{}` is2 bytes, length00000002, SHA25
 `44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a`. Framing can accept these bytes, semantic validation must reject
 the manifest. Full valid fixtures are the first implementation stage, not a claim
 that this documentation example establishes implementation coverage.
+
+Since 5.1.24 there is no separate row-count cap. The 12288-byte draft and event calculation budgets remain; capacity depends on data. Older versions may reject larger plans: use compatible device and Pages versions.

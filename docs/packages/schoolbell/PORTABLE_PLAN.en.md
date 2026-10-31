@@ -35,7 +35,7 @@ Save and reread the combined inactive draft; bells stay disabled and the applied
 
 ## Integrity, resources and recovery
 
-Apply current limits to the combined result: 12 KiB draft, 8 plans, 16 schedules, 32 rows per schedule/128 total; 8 user slots, MP3 up to 512 KiB/60 seconds, 2 MiB library quota and max(512 KiB,10% partition) free reserve. Account for existing/staged/retained data, metadata and peak RAM/tmp, and recheck space. Maximal objects are not guaranteed to fit. Container/buffer/space bounds are specified in PORTABLE_PLAN_WIRE.en.md; target peak RSS remains unmeasured.
+Apply current limits to the combined result: 12 KiB draft, 8 plans, 16 schedules, 8 user slots, MP3 up to 512 KiB/60 seconds, 2 MiB library quota and max(512 KiB,10% partition) free reserve. Account for existing/staged/retained data, metadata and peak RAM/tmp, and recheck space. Maximal objects are not guaranteed to fit. Container/buffer/space bounds are specified in PORTABLE_PLAN_WIRE.en.md; target peak RSS remains unmeasured.
 
 Validate format, hashes, references and MP3 without sound before publication. Reject unsupported schemas, truncation, trailing bytes, duplicate names, unsafe paths and missing/corrupt dependencies. Never execute archive code or fetch dependencies. Device writes use normal LuCI authentication and POST/CSRF protection.
 

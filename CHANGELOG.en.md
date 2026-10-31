@@ -1,5 +1,7 @@
 # Changelog
 
+5.1.24: removed schedule row-count caps across storage, backup, portable plans and Pages. Byte budgets remain; larger plans require a compatible import target. Host checks only; not installed.
+
 Pages: separate RU/EN Training with step-by-step exercises, expected outcomes and preview-mode troubleshooting. Linked from demo, module card and guide; no package or device changes.
 
 

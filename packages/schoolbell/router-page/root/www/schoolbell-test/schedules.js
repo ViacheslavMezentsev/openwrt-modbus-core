@@ -158,7 +158,6 @@
   }
   function id(prefix) { return prefix+'_'+Date.now().toString(36)+'_'+(++counter); }
   function current() { return draft && draft.schedules.find(function (s) { return s.id===selected; }); }
-  function total() { return draft.schedules.reduce(function (n,s) { return n+s.rows.length; },0); }
   function state() {
     var locked=busy || activationLock || !!window.schoolbellSessionBlocked;
     document.getElementById('plan-apply').disabled=locked || !formPending;document.getElementById('plan-cancel').disabled=locked || !formPending;
@@ -196,7 +195,7 @@
     var s=current();
     document.getElementById('selected-schedule').hidden=!s;
     document.getElementById('schedule-add').disabled=draft.schedules.length>=16;
-    document.getElementById('schedule-copy').disabled=!s || draft.schedules.length>=16 || total()+(s?s.rows.length:0)>128;
+    document.getElementById('schedule-copy').disabled=!s || draft.schedules.length>=16;
     document.getElementById('schedule-delete').disabled=!s;
     document.getElementById('pre-minutes').value=draft.pre_minutes;
     ['manual-media','pre-media'].forEach(function(id){var box=document.getElementById(id);box.replaceChildren();mediaIds.forEach(function(m){box.appendChild(textOption(m,mediaLabel(m)));});box.value=id==='manual-media'?(draft.manual_media || 'test'):draft.pre_media;box.disabled=false;});
@@ -234,8 +233,8 @@
         del.addEventListener('click',function () { s.rows.splice(index,1); changed(); render(); }); cell(del); rows.appendChild(tr);
       });
       document.getElementById('empty-rows').hidden=s.rows.length!==0;
-      document.getElementById('row-count').textContent=s.rows.length+' / 32 строк · всего '+total()+' / 128';
-      document.getElementById('row-add').disabled=s.rows.length>=32 || total()>=128;
+      document.getElementById('row-count').textContent='Звонков в расписании: '+s.rows.length;
+      document.getElementById('row-add').disabled=false;
     }
     renderColors();
     renderAnnual();
@@ -373,7 +372,7 @@
     var s={id:id('schedule'),name:'Новое расписание',color:nextColor(),rows:[]}; draft.schedules.push(s); selected=s.id; changed(); render(); name.focus(); name.select();
   });
   document.getElementById('schedule-copy').addEventListener('click',function () {
-    if(!current() || draft.schedules.length>=16 || total()+current().rows.length>128) return;
+    if(!current() || draft.schedules.length>=16) return;
     var s=JSON.parse(JSON.stringify(current())); s.id=id('schedule'); s.color=nextColor(); s.name=Array.from(s.name).slice(0,20).join('')+' — копия';
     draft.schedules.push(s); selected=s.id; changed(); render();
   });
@@ -387,7 +386,7 @@
     draft.schedules=draft.schedules.filter(function (s) { return s.id!==selected; }); selected=null; changed(); render();
   });
   document.getElementById('row-add').addEventListener('click',function () {
-    var s=current(); if(!s || s.rows.length>=32 || total()>=128) return;
+    var s=current(); if(!s) return;
     s.rows.push({id:id('row'),time:'08:00',media:'test',enabled:true,pre:false}); changed(); render();
   });
   document.getElementById('rows-clear').addEventListener('click',function () {
