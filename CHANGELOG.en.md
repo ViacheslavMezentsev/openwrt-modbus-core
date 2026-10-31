@@ -29,6 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Updated TODO and end-to-end acceptance plan after owner acceptance of 5.1.23 on the existing bench. Next is new-device S0; no flashing or automatic bells.
+
 - Shkolnik 5.1.23: outlined automatic status, theme-aware colors and aligned Pages Guide. Schedule rows offer red deletion and selected melody previews in browser/device speakers (hardware disabled in Pages). Host checks only; not deployed.
 
 - Pages Guide is a standalone button to the right of the demo notice; Feedback shows the full Git commit and build date beside the authors. Device payload is unchanged.

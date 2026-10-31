@@ -150,3 +150,5 @@ passed isolated Lua and browser download/upload/preview/commit/readback with SHA
 matches. The browser test used installed JS/controller/CGI parser over a local SSH
 bridge, not production LuCI login/routing. This informs S4 but does not pass the
 new device. Large archives, slow clients, peak resources and power loss remain open.
+
+2026-10-31: the owner accepted 5.1.23 on the existing bench: both themes, status border, schedule columns and row playback in the browser/device speakers. Backup and exact rollback were verified before installation; payload hashes and unchanged .sbb afterwards. Quiet playback at -18 dB passed and original volume was restored. Automatic bells remain disabled; clock/NTP unchanged. This does not replace S0–S8 on the new device. Next is S0: dedicated USB–Ethernet, exact firmware/recovery files, profile/Q1–Q5 and artifact passport. Pages publication of 5.1.23 has not been independently verified.

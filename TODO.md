@@ -4,7 +4,7 @@
 
 Working cycle: [WORKFLOW](docs/WORKFLOW.en.md) ([RU](docs/WORKFLOW.md)); stage boundaries, owner push/land and device acceptance.
 
-Reviewed 2026-10-31: Shkolnik **5.1.22** installed and owner UI acceptance completed on the existing bench; Pages published. New-device acceptance has not started.
+Reviewed 2026-10-31: Shkolnik **5.1.23** installed on the existing bench; owner accepted light/dark themes and both schedule-row playback buttons. Pages publication of this version is not independently verified. New-device acceptance has not started.
 Automatic bells remain disabled. No clock/NTP changes are authorized by this plan.
 Pages sources are synchronized; publishing the new main remains the owner's action.
 Checked historical stage bullets describe their original scope, not remaining work.
@@ -12,7 +12,9 @@ Checked historical stage bullets describe their original scope, not remaining wo
 Readiness: engineering pilot candidate, not certified unattended service. First agree the attended-startup profile in ACCEPTANCE.md (Q5): staff verify time and enable the retained plan after power-up; subsequent bells require no open browser. Unattended recovery after power loss is a separate profile needing a trustworthy time source and explicit resume policy. Close AC-01–12 and Q1–Q4 for the chosen profile; portable-plan convenience and a universal core API must not silently become prerequisites or silently waived requirements.
 
 - [x] 5.1.23 source: theme fixes and schedule-row browser/device melody preview; Pages hardware guard.
-- [ ] Install and visually verify 5.1.23 after backup and separate permission; verify selected-row sound only when authorized.
+- [x] 5.1.23 installed after verified backup/rollback; payload hashes and unchanged backup confirmed. Owner accepted themes, status border, schedule actions and browser/speaker playback. Quiet speaker test at -18 dB; original volume restored; automatic bells disabled, clock/NTP unchanged.
+- [ ] Next: S0 new-device preparation — identify dedicated USB–Ethernet adapter, verify exact firmware/recovery files and hashes, agree Q1–Q5/profile, freeze core/module/dependency artifacts. No flashing or network changes yet.
+- [ ] Before acceptance, confirm required school schedule capacity against current software limits (16 schedules, 32 rows each, 128 total; specification 4.4.2). These are not measured hardware capacity; any change needs consistent validator/UI/import tests.
 
 ### Recommended next branches (scope each before implementation)
 
