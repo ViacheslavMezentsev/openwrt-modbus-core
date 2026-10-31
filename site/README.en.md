@@ -1,5 +1,7 @@
 # Project website and Schoolbell demo
 
+Pages: separate [guide](schoolbell-guide.en.html) for build, installation and first startup (draft), linked from demo notice/module card. Shared theme, return links, inline SVG diagrams from diagrams/. Verified commands/images follow new-bench acceptance; this page never flashes devices.
+
 Selected-plan .sbp export and read-only import preview are available in Calendar. [Workflow and limits](../docs/packages/schoolbell/PORTABLE_PLAN_PAGES.en.md).
 
 [Русский](README.md)

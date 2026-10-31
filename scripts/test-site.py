@@ -97,3 +97,18 @@ assert 'импорт только проверяется' in html
 
 assert 'Настраиваемый музыкальный звонок' in html
 assert 'id="device-uptime"' in html and 'class="cpu-labels"' in html
+
+# Pages guide is standalone and never enters the device payload.
+import xml.etree.ElementTree as ET
+for lang,name in [('ru','guide.html'),('en','guide.en.html')]:
+ page=(out/'schoolbell'/name).read_text()
+ assert '{{' not in page and page.count('<svg ')==2
+ assert 'href="./"' in page and 'theme-toggle' in page
+ assert info['commit'][:12] in page and info['built_at_utc'] in page
+ assert 'demo.js' not in page and 'fetch(' not in page
+ for diagram in ['bench','audio']:ET.parse(root/'site/diagrams'/(diagram+'.'+lang+'.svg'))
+assert 'class="demo-guide" href="./guide.html"' in html
+assert 'schoolbell/guide.html' in (out/'index.html').read_text()
+assert 'schoolbell/guide.en.html' in (out/'index.en.html').read_text()
+assert 'demo-guide' not in (root/'packages/schoolbell/router-page/root/usr/lib/lua/luci/view/schoolbell_test.htm').read_text()
+print('PASS guide: RU/EN routes, return links, SVG, provenance and Pages-only boundary')

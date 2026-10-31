@@ -1,5 +1,7 @@
 # Changelog
 
+Pages: separate RU/EN draft guide, Guide links in demo notice/module card, conceptual bench/audio SVGs. No package or device changes.
+
 2026-10-31: Shkolnik 5.1.22 UI and isolated browser .sbp roundtrip accepted; TODO updated, artifact-frozen end-to-end acceptance and dedicated USB–Ethernet bench plan added. No device changes.
 
 5.1.22 (host): device local time HH:MM is right-aligned above the CPU bar; uptime is below (page age in Pages). Reuses existing clock polling and hides stale time. Default idle logout is 30 minutes; existing choices are preserved. Major section gaps are aligned and the bell-delete cross enlarged. Pages synchronized; this version is not installed on the device.

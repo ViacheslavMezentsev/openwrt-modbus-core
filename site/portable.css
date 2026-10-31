@@ -7,3 +7,5 @@
 #portable-panel select, #portable-file { max-width: 100%; }
 #portable-result { overflow-wrap: anywhere; }
 @media(max-width:640px) { #portable-names label { grid-template-columns: 1fr; } }
+
+#demo-notice summary{flex-wrap:wrap;gap:10px}#demo-notice .demo-guide{margin-left:auto;padding:5px 12px;border:1px solid var(--border);border-radius:6px;color:var(--text);font-weight:600;text-decoration:none}#demo-notice .demo-guide:hover{text-decoration:underline}#demo-notice .demo-guide:focus-visible{outline:3px solid var(--accent);outline-offset:3px}

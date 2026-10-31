@@ -17,6 +17,9 @@ Readiness: engineering pilot candidate, not certified unattended service. First 
 2. **Complete remaining operator journeys.** Active-plan preview distinct from draft; rename/delete user melodies with reference checks; bounded undo and archive summary/onboarding. Browser clock setting needs a separate contract and explicit permission for any real clock change.
 3. **Product acceptance.** Finish LuCI access/session/CSRF/concurrency checks and agree quantitative timing/endurance criteria. Cold boot, offline first boot and power-loss tests require separate authorization. Successful short UI tests are not unattended-operation certification.
 
+- [x] Pages-only draft installation/build/startup guide with Guide links, shared theme, return navigation and conceptual SVGs.
+- [ ] Populate the guide with verified commands, firmware/bundle references, screenshots and recovery steps during new-device acceptance.
+
 ### Delivery order agreed with the owner
 
 Finish .sbp development and deployment first. Then prepare a separate acceptance

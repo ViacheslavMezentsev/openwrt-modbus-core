@@ -60,7 +60,7 @@ text=text.replace("<%=url('admin')%>",'../').replace('← Управление �
 text=text.replace('/schoolbell-test/','./assets/')
 text=text.replace('Сверить с устройством','Сверить с локальной моделью').replace('Копия устройства','Сохранённая копия демо').replace('Взять копию устройства','Взять сохранённую копию демо')
 text=text.replace('Сверить с роутером','Сверить с локальной моделью').replace('Копия роутера','Сохранённая копия демо').replace('Взять копию роутера','Взять сохранённую копию демо')
-text=text.replace('<nav class="page-tabs"', '<details id="demo-notice" class="plan-workflow demo-notice"><summary><strong>ДЕМО · оборудование не подключено.</strong><span class="collapse-hint">Подробности ▾</span></summary><p>Календарные планы можно редактировать без устройства. Расписания и часовой пояс изменяются только в этом браузере. Автозвонков нет.</p><p id="demo-storage">Данные демо сохраняются локально.</p><button id="demo-reset" type="button">Сбросить демо</button></details><nav class="page-tabs"',1)
+text=text.replace('<nav class="page-tabs"', '<details id="demo-notice" class="plan-workflow demo-notice"><summary><strong>ДЕМО · оборудование не подключено.</strong><a class="demo-guide" href="./guide.html">Руководство</a><span class="collapse-hint">Подробности ▾</span></summary><p>Календарные планы можно редактировать без устройства. Расписания и часовой пояс изменяются только в этом браузере. Автозвонков нет.</p><p id="demo-storage">Данные демо сохраняются локально.</p><button id="demo-reset" type="button">Сбросить демо</button></details><nav class="page-tabs"',1)
 text=text.replace('Сохранить черновик на устройстве','Сохранить черновик в демо')
 text=text.replace('Подготовьте расписания и сохраните их на роутере.','Попробуйте расписания и календарь на тестовых данных.')
 text=text.replace('Инженерная установка','Демонстрация интерфейса').replace('На роутере · оценка между опросами','Демо-часы · выбранная зона').replace('Сохраняется на роутере','Сохраняется в браузере').replace('Настройка сохраняется на роутере и действует для всех его приложений.','Настройка меняет только часовой пояс этого демо, не устройства или компьютера.')
@@ -79,3 +79,12 @@ print('Built static site:',out)
 
 # Retain old incoming links without maintaining a second calendar editor.
 (demo/'ranges.html').write_text('<!doctype html><html lang="ru"><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=./"><title>Календарные планы</title><a href="./">Открыть рабочий редактор календарных планов</a></html>')
+
+# Pages-only guide: no changes to the installed module or its package.
+shutil.copyfile(root/'site/guide.css',out/'guide.css')
+for lang,name in [('ru','guide.html'),('en','guide.en.html')]:
+ page=(root/'site'/('schoolbell-'+name)).read_text().replace('{{VERSION}}',html.escape(version))
+ for marker,diagram in [('{{BENCH}}','bench'),('{{AUDIO}}','audio')]:
+  page=page.replace(marker,(root/'site/diagrams'/(diagram+'.'+lang+'.svg')).read_text())
+ footer=provenance if lang=='ru' else provenance.replace('Сборка:','Build:').replace('локальные изменения','local changes')
+ (demo/name).write_text(page.replace('</footer>',footer+'</footer>'))

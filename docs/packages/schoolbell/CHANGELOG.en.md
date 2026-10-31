@@ -1,5 +1,7 @@
 # Changelog
 
+Pages: separate RU/EN draft guide, Guide links in demo notice/module card, conceptual bench/audio SVGs. No package or device changes.
+
 2026-10-31: 5.1.22 installed and owner UI acceptance completed; Pages published. Isolated browser .sbp user-MP3 roundtrip accepted within its documented scope. [New-device acceptance plan](ACCEPTANCE_RUN.en.md) prepared; artifacts still need freezing, no flashing/run authorized.
 
 Historical stages below (not current status):
