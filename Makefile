@@ -120,6 +120,7 @@ check-site: site
 	node scripts/test-schoolbell-routes.js
 	node scripts/test-schoolbell-backup-ui.js
 	node scripts/test-schoolbell-media-ui.js
+	node scripts/test-schoolbell-row-preview.js
 
 .PHONY: test-release-discovery
 test-release-discovery:

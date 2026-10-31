@@ -256,3 +256,5 @@ A separately powered Modbus RTC board is proposed for future post-reboot time re
 ## Moving selected calendar plans
 
 5.1.21 adds [device .sbp export with all dependencies](PORTABLE_PLAN_EXPORT_DEVICE.en.md). On the destination, use [preview and add-only draft import](PORTABLE_PLAN_IMPORT.en.md). This does not replace a full .sbb backup or enable automatic bells.
+
+In Schedules, Preview offers 🔊 browser playback and 🔔 Shkolnik speaker playback of the melody currently selected in that row, even before saving the draft. Speaker playback requires confirmation and respects mute; it does not enable automatic bells. Pages provides browser playback of bundled melodies only. The red × in Delete removes the draft row.

@@ -17,3 +17,5 @@ lua5.1 packages/schoolbell/tests/test_session_http.lua
 node scripts/test-schoolbell-session-ui.js
 
 python3 packages/schoolbell/tests/test_offline_bundle.py
+
+lua5.1 packages/schoolbell/tests/test_row_play_http.lua

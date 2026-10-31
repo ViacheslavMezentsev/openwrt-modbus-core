@@ -29,6 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Shkolnik 5.1.23: outlined automatic status, theme-aware colors and aligned Pages Guide. Schedule rows offer red deletion and selected melody previews in browser/device speakers (hardware disabled in Pages). Host checks only; not deployed.
+
 - Pages Guide is a standalone button to the right of the demo notice; Feedback shows the full Git commit and build date beside the authors. Device payload is unchanged.
 
 - Plan OpenBLT evaluation for attached STM32 firmware updates, preferring a Lua backend over common core I/O without mandatory BootCommander/LibOpenBLT dependencies. Compatibility, recovery and resource checks are planned; no implementation or hardware changes.

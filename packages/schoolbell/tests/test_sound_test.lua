@@ -96,7 +96,7 @@ end)
 -- Controller test: neither a rejected method nor CSRF may enter the backend.
 local allowed=false; local runs=0; local response
 package.loaded["luci.dispatcher"]={test_post_security=function() return allowed end}
-package.loaded["luci.http"]={header=function() end,prepare_content=function() end,write_json=function(v) response=v end}
+package.loaded["luci.http"]={formvalue=function()return nil end,header=function() end,prepare_content=function() end,write_json=function(v) response=v end}
 package.loaded["schoolbell.sound_test"]={system=function() return {} end,run=function() runs=runs+1; return {state="completed",ok=true} end}
 dofile("packages/schoolbell/router-page/root/usr/lib/lua/luci/controller/schoolbell_test.lua")
 check("rejected POST does not play",function()

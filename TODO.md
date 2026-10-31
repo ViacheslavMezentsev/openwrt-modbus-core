@@ -11,6 +11,9 @@ Checked historical stage bullets describe their original scope, not remaining wo
 
 Readiness: engineering pilot candidate, not certified unattended service. First agree the attended-startup profile in ACCEPTANCE.md (Q5): staff verify time and enable the retained plan after power-up; subsequent bells require no open browser. Unattended recovery after power loss is a separate profile needing a trustworthy time source and explicit resume policy. Close AC-01–12 and Q1–Q4 for the chosen profile; portable-plan convenience and a universal core API must not silently become prerequisites or silently waived requirements.
 
+- [x] 5.1.23 source: theme fixes and schedule-row browser/device melody preview; Pages hardware guard.
+- [ ] Install and visually verify 5.1.23 after backup and separate permission; verify selected-row sound only when authorized.
+
 ### Recommended next branches (scope each before implementation)
 
 1. **Portable calendar-plan bundle — small Pages import and isolated user-audio browser roundtrip accepted.** See docs/packages/schoolbell/PORTABLE_PLAN.md and specification1.70 (4.10, TC-168–178). Exact wire/API accepted (8.2.15); isolated byte codecs implemented (TC-175). Pure dependency/preview model implemented (TC-176). Isolated selected-plan export assembly implemented (TC-177). Pages export/read-only import preview implemented (TC-178). Candidate5.1.20 implements system import of selected named date ranges, date assignments, referenced schedules/colors, pre-bell parameters and media. Pages uses bundled melodies only; device export must include referenced user melodies. This is distinct from a full .sbb backup. Import only as a draft, automatic bells disabled; no credentials, hardware/network/NTP settings or system timezone changes.

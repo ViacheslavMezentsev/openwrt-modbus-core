@@ -223,6 +223,13 @@
           box.setAttribute('aria-label',(key==='enabled'?'Включить звонок ':'Предзвонок ')+(index+1));
           box.addEventListener('change',function () { row[key]=box.checked; changed(); }); cell(box);
         });
+        var listening=document.createElement('div');listening.className='row-listen';
+        [false,true].forEach(function(hardware){
+          var b=document.createElement('button');b.type='button';b.textContent=hardware?'🔔':'🔊';
+          b.title=hardware?'Проиграть через Школьника':'Проиграть в браузере';b.setAttribute('aria-label',b.title+' — звонок '+(index+1));
+          if(hardware && root.dataset.load.indexOf('demo-api')>=0){b.disabled=true;b.title='Через Школьника недоступно: демо без оборудования';}
+          b.addEventListener('click',function(){if(window.schoolbellRowPreview)window.schoolbellRowPreview(row.media,hardware);});listening.appendChild(b);
+        });cell(listening);
         var del=document.createElement('button'); del.type='button'; del.textContent='×'; del.className='icon-delete'; del.title='Удалить звонок '+(index+1); del.setAttribute('aria-label','Удалить звонок '+(index+1));
         del.addEventListener('click',function () { s.rows.splice(index,1); changed(); render(); }); cell(del); rows.appendChild(tr);
       });
