@@ -8,4 +8,12 @@
 #portable-result { overflow-wrap: anywhere; }
 @media(max-width:640px) { #portable-names label { grid-template-columns: 1fr; } }
 
-#demo-notice summary{flex-wrap:wrap;gap:10px}#demo-notice .demo-guide{margin-left:auto;padding:5px 12px;border:1px solid var(--border);border-radius:6px;color:var(--text);font-weight:600;text-decoration:none}#demo-notice .demo-guide:hover{text-decoration:underline}#demo-notice .demo-guide:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+/* Guide is a sibling button, outside the collapsible notice. */
+.demo-notice-row{display:flex;align-items:flex-start;gap:12px;margin:12px 0}
+.demo-notice-row #demo-notice{flex:1;min-width:0;margin:0}
+.demo-notice-row .demo-guide{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;padding:16px 24px;min-height:56px;box-sizing:border-box;border:1px solid var(--accent);border-radius:10px;background:var(--accent);color:#0d1117;font:inherit;font-weight:700;text-decoration:none}
+.demo-guide:hover{filter:brightness(1.1)}
+.demo-guide:focus-visible{outline:3px solid var(--text);outline-offset:3px}
+.feedback-build{margin:12px 0;padding:16px;border:1px solid var(--border);border-radius:10px}
+.feedback-build p{margin:8px 0}.feedback-build code{overflow-wrap:anywhere;user-select:all}
+@media(max-width:560px){.demo-notice-row{flex-wrap:wrap}.demo-notice-row #demo-notice{flex-basis:100%}.demo-notice-row .demo-guide{margin-left:auto}}

@@ -112,3 +112,11 @@ assert 'schoolbell/guide.html' in (out/'index.html').read_text()
 assert 'schoolbell/guide.en.html' in (out/'index.en.html').read_text()
 assert 'demo-guide' not in (root/'packages/schoolbell/router-page/root/usr/lib/lua/luci/view/schoolbell_test.htm').read_text()
 print('PASS guide: RU/EN routes, return links, SVG, provenance and Pages-only boundary')
+
+notice=html.split('id="demo-notice"',1)[1].split('</details>',1)[0]
+assert 'demo-guide' not in notice
+assert '</details><a class="demo-guide" href="./guide.html">Руководство</a></div>' in html
+feedback=html.split('id="panel-feedback"',1)[1].split('</section>',1)[0]
+assert 'id="feedback-build"' in feedback and info['commit'] in feedback and info['built_at_utc'] in feedback
+assert ('Собрано с локальными изменениями.' in feedback)==info['dirty']
+print('PASS standalone guide button and exact build provenance beside feedback authors')
