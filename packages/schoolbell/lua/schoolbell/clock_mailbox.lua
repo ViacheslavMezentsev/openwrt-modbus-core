@@ -3,7 +3,13 @@ local C=require('schoolbell.media_codec');local M={}
 local function hex(s,n)return type(s)=='string' and #s==n and s:match('^[0-9a-f]+$')end
 function M.valid(q)
  if type(q)~='table' or not hex(q.id,32) or not hex(q.owner,64)then return false end
- for k in pairs(q)do if not ({id=true,owner=true,action=true,challenge=true,ack=true,enforced=true,revision=true,generation=true})[k]then return false end end
+ for k in pairs(q)do if not ({id=true,owner=true,action=true,challenge=true,ack=true,enforced=true,revision=true,generation=true,epoch=true})[k]then return false end end
+ if q.action=='set_prepare' or q.action=='set_time'then
+  if not require('schoolbell.clock_set').epoch(q.epoch) or q.revision~=nil or q.generation~=nil or q.enforced~=nil then return false end
+  if q.action=='set_prepare'then return q.challenge==nil and q.ack==nil end
+  return hex(q.challenge,32) and q.ack=='true'
+ end
+ if q.epoch~=nil then return false end
  if q.action=='resume'then return hex(q.revision,64) and type(q.generation)=='string' and q.generation:match('^[1-9][0-9]*$') and #q.generation<=10 and tonumber(q.generation)<=2147483647 and q.enforced==nil and q.challenge==nil and q.ack==nil end
  if q.generation~=nil then return false end
  if q.action=='enable'then return hex(q.revision,64) and q.enforced==nil and q.challenge==nil and q.ack==nil end
@@ -72,7 +78,7 @@ function M.new(open,now,observer)
     write(fs,'result.json',{request=q.request,result={ok=false,code='outcome_unknown'}})
     fs.unlink('request.json')
     measure(fs,'start',now()-q.at-(q.subms or 0)/1000)
-    local ok,v=pcall(handle,q.request);result=ok and v or {ok=false,code='operation_failed'}
+    local ok,v=pcall(handle,q.request,{submitted_at=q.at+(q.subms or 0)/1000});result=ok and v or {ok=false,code='operation_failed'}
     measure(fs,'finish',type(result)=='table' and result.ok==true)
    end
    write(fs,'result.json',{request=q.request,result=result})

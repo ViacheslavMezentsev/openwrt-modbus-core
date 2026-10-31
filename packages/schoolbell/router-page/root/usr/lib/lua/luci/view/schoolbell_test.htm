@@ -174,16 +174,23 @@
 <p>Успешное завершение проигрывателя ещё не подтверждает, что звук был слышен.</p></section>
 </section>
 <section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" data-panel="sound" hidden>
-<section class="details time-settings"><h2>Часовой пояс школы</h2>
+<section id="time-settings" class="details time-settings"><h2>Дата и время</h2><h3>Часовой пояс школы</h3>
 <p>Выберите место, где установлен школьный звонок. Настройка сохраняется на устройстве и действует для всех его приложений. Сами часы и расписания не переводятся.</p>
 <p id="timezone-current" role="status">Настройки ещё не загружены.</p>
 <label>Город / часовой пояс<select id="timezone-select" disabled></select></label>
 <div class="editor-toolbar"><button id="timezone-browser" type="button" disabled>Выбрать как на этом устройстве</button><button id="timezone-save" type="button" disabled>Применить часовой пояс</button><button id="timezone-reload" type="button">Обновить</button></div>
 <p id="timezone-result" role="status"></p>
 <p>Если дата или минуты неверны, смена пояса этого не исправит. Автоматическая синхронизация часов здесь не выполняется.</p>
-<details><summary>Вход и автовыход</summary><label>Автовыход при бездействии<select id="session-duration"><option value="1">1 минута</option><option value="5">5 минут</option><option value="15">15 минут</option><option value="30" selected>30 минут</option><option value="60">1 час</option><option value="120">2 часа</option></select></label><p>Автовыход считает бездействие пользователя, а не фоновые обновления. Настройка действует в этом браузере при работающей странице; сервер LuCI может завершить сеанс раньше.</p></details>
-</section>
-<section class="details"><h2>Проверка времени</h2>
+
+
+<h3>Часы устройства и браузера</h3>
+<p id="time-device">На устройстве: ожидаем чтение…</p><p id="time-browser"></p>
+<p id="time-difference"></p>
+<div class="editor-toolbar"><button id="time-reload" type="button">Обновить показания</button><button id="time-prepare" type="button">Установить время из браузера</button></div>
+<p>Источник — часы вашего компьютера или телефона, не проверенный сетевой эталон. Перед установкой убедитесь, что они верны. Часовой пояс и NTP не меняются; работающий NTP может позже скорректировать часы.</p>
+<div id="time-review" hidden><p id="time-proposal"></p><p>Автозвонки будут выключены, прежнее подтверждение времени сброшено. Пропущенные звонки не проигрываются.</p><button id="time-confirm" type="button">Подтверждаю — установить время</button><button id="time-cancel" type="button">Отмена</button></div>
+<p id="time-result" role="status"></p>
+<h3>Проверка времени</h3>
 <p>Сверьте дату и время устройства с надёжными часами. Подтверждение не переводит часы и не меняет NTP. После перезапуска службы потребуется новая проверка.</p>
 <p id="trust-status" role="status">Ожидаем состояние исполнителя…</p>
 <div class="editor-toolbar"><button id="trust-prepare" type="button" disabled>Проверить и подтвердить время</button><button id="trust-policy" type="button" disabled>Изменить контроль времени</button></div>
@@ -191,6 +198,7 @@
 <p id="trust-result" role="status"></p>
 <p>Эти действия отключают автозвонки. Включение плана выполняется отдельно ниже. Если контроль отключён, защита от неверных часов не действует; «Без звука» и запрет повторного проигрывания сохраняются.</p>
 </section>
+<section class="details"><details><summary>Вход и автовыход</summary><label>Автовыход при бездействии<select id="session-duration"><option value="1">1 минута</option><option value="5">5 минут</option><option value="15">15 минут</option><option value="30" selected>30 минут</option><option value="60">1 час</option><option value="120">2 часа</option></select></label><p>Автовыход считает бездействие пользователя, а не фоновые обновления. Настройка действует в этом браузере при работающей странице; сервер LuCI может завершить сеанс раньше.</p></details></section>
 <section class="details"><h2>Звонки и режим работы</h2>
 <label>Громкость колонок устройства<select id="router-volume" disabled>
 <option value="-36">Едва слышно (−36 дБ)</option><option value="-24">Очень тихо (−24 дБ)</option><option value="-12">Тихо (−12 дБ)</option><option value="-6">Средне (−6 дБ)</option><option value="0">Без ослабления (0 дБ)</option></select></label>
@@ -255,4 +263,5 @@
 </section>
 <footer><a href="<%=url('admin')%>">← Управление устройством LuCI</a> · Расписания сохраняются без активации</footer>
 </main><script src="/schoolbell-test/traffic.js?v=5114"></script><script src="/schoolbell-test/session.js?v=5122"></script><script src="/schoolbell-test/backup.js?v=5106"></script><script src="/schoolbell-test/media.js?v=5106"></script><script src="/schoolbell-test/clock-trust.js?v=5106"></script><script src="/schoolbell-test/diagnostics.js?v=5106"></script><script src="/schoolbell-test/cpu.js?v=5122"></script><script src="/schoolbell-test/automatic.js?v=5111"></script><script src="/schoolbell-test/controls.js?v=5106"></script><script src="/schoolbell-test/app.js?v=5106"></script><script src="/schoolbell-test/ranges.js?v=5106"></script><script src="/schoolbell-test/schedules.js?v=5122"></script><script src="/schoolbell-test/dashboard.js?v=5122"></script><script src="/schoolbell-test/plan-import.js?v=5120"></script><script src="/schoolbell-test/plan-export.js?v=5121"></script><script src="/schoolbell-test/row-preview.js"></script>
+<script src="/schoolbell-test/time-settings.js"></script>
 </body></html>

@@ -19,6 +19,7 @@ function M.new(open,options)
   s.enforced=enforced;s.automatic_permitted=armed and (not enforced or (s.state=='confirmed' and s.enabled==true)) or false
   return s
  end
+ function api.invalidate()reset()end -- revoke pre-step trust even for sub-threshold corrections
  function api.status()return status()end
  function api.observe(checkpoint)
   if model then model.observe(checkpoint);if not model.status().enabled then armed=false end end

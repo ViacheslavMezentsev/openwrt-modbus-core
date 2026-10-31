@@ -81,7 +81,7 @@ function clock_trust()
  if type(session)~='string' or #session==0 then h.status(403,'Forbidden');return end
  local owner=C.sha(session);local m=require('schoolbell.clock_mailbox').system()
  if method=='GET'then respond(m.poll(h.formvalue('operation',true),owner));return end
- respond(m.submit({id=h.formvalue('operation'),owner=owner,action=h.formvalue('action'),challenge=h.formvalue('challenge'),ack=h.formvalue('ack'),enforced=h.formvalue('enforced'),revision=h.formvalue('revision'),generation=h.formvalue('generation')}))
+ respond(m.submit({id=h.formvalue('operation'),owner=owner,action=h.formvalue('action'),challenge=h.formvalue('challenge'),ack=h.formvalue('ack'),enforced=h.formvalue('enforced'),revision=h.formvalue('revision'),generation=h.formvalue('generation'),epoch=h.formvalue('epoch')}))
 end
 function timezone()
     local h=require('luci.http');local method=h.getenv('REQUEST_METHOD')

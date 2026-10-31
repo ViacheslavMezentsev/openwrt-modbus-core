@@ -40,11 +40,15 @@ local command=require('schoolbell.clock_commands').new(Clock,{
  zone=function()return Store.environment().zone end,
  stop=function()local v=Store.transaction(Store.change,false,nil,Store.environment());return v.ok end,
  policy=function(value)return require('schoolbell.clock_policy').save(Store.root,value)end})
+local set_clock=require("schoolbell.clock_set").system(Clock,
+ function()return Store.transaction(Store.change,false,nil,Store.environment()).ok end,
+ function()return Store.environment().zone end,mono)
 local function commands()
- mailbox.process(function(q)
-  local value=command(q)
-  if q.action~='prepare'then
-   pcall(audit,value.ok and ((q.action=='enable' or q.action=='resume') and 'auto_enabled' or q.action=='confirm' and 'clock_confirmed' or q.enforced=='true' and 'clock_control_on' or 'clock_control_off') or 'clock_control_failed')
+ mailbox.process(function(q,meta)
+  local setting=q.action=="set_time" or q.action=="set_prepare"
+  local value=setting and set_clock(q,meta) or command(q)
+  if q.action~='prepare' and q.action~='set_prepare'then
+   pcall(audit,q.action=='set_time' and (value.ok and 'clock_set_ok' or 'clock_set_failed') or value.ok and ((q.action=='enable' or q.action=='resume') and 'auto_enabled' or q.action=='confirm' and 'clock_confirmed' or q.enforced=='true' and 'clock_control_on' or 'clock_control_off') or 'clock_control_failed')
   end
   return value
  end)

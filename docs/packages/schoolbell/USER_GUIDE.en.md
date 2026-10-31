@@ -166,9 +166,9 @@ browser zone only when it matches the school's location. The setting affects all
 router applications, does not fix wrong date/minutes, and does not rewrite schedule
 HH:MM entries. Recheck/confirm time and apply the plan separately after changing zone.
 
-Confirming time does not set the clock. This page currently has no browser-to-router
-clock-setting command. If time is wrong, leave automatic bells off and ask the
-administrator. Any clock changes during a drift measurement need separate agreement.
+Trust confirmation does not set the clock. From 5.1.25, Settings → Date and time contains the complete workflow. Verify your computer/phone clock, choose Set time from browser, compare both dates and the difference, then confirm within one minute or cancel. The device reading in the confirmation is UTC to avoid mixing zones.
+
+Setting time disables automatic bells and revokes prior trust. After verified readback, check local readings and confirm trust separately; enabling the plan remains a separate action. Playback blocks setting: wait for completion or stop sound. After an uncertain outcome, refresh readings; commands are never automatically replayed. NTP, services and timezone are unchanged; running NTP may subsequently adjust time. Pages only simulates the operation. This is neither an accuracy guarantee nor a retained date after power loss. Clock changes during drift measurements need separate agreement. This version has only been tested on the host.
 
 Request verification, check the displayed date and confirm within 15 seconds; request
 again if expired. Acknowledging intentional time earlier than the saved reference

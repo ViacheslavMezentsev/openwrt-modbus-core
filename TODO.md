@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Школьник 5.1.25: установка времени из браузера через системный адаптер, подтверждение/отмена, auto-off, отзыв доверия, host-тесты и Pages-имитация.
+- [ ] Установить 5.1.25 отдельно после резервной копии; проверить установку неверной даты из браузера, отмену и повторную сверку, неизменность NTP/пояса и auto-off. Перевод часов требует отдельного разрешения; до него продолжить независящие от времени этапы приёмки.
+
 - [ ] S0: verify OEM bootloader recovery on new EU v3.30 before OpenWrt; empty-root request test, then separately authorized exact-image write. RU/EN device guide and OEM artifact manifest prepared; public OEM mirror not published.
 
 ## Current state and next steps

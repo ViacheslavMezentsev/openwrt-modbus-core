@@ -1,5 +1,7 @@
 # Schoolbell package
 
+5.1.25 (host): unified Date and time settings combine timezone, readings, confirmed browser-time setting and trust controls. The Lua system adapter disables automatic bells, sets UTC with stock date and verifies readback; NTP, timezone and services are unchanged. Pages simulates the command. Device deployment and acceptance remain pending.
+
 2026-10-31: 5.1.22 installed and owner UI acceptance completed; Pages published. Isolated browser .sbp user-MP3 roundtrip accepted within its documented scope. [New-device acceptance plan](ACCEPTANCE_RUN.en.md) prepared; artifacts still need freezing, no flashing/run authorized.
 
 Historical stages below (not current status):
@@ -222,3 +224,5 @@ Specification 1.32 defines the reference format and observation budgets; isolate
 Storage bar: normal through 75%, yellow above 75%, red above 90%. Usage refers to the displayed filesystem, not just the media quota. Reserve and upload admission limits are unchanged.
 
 Since 5.1.24 there is no separate row-count cap. The 12288-byte draft and event calculation budgets remain; capacity depends on data. Older versions may reject larger plans: use compatible device and Pages versions.
+
+System clock setting in 5.1.25: Lua clock_set formats a numeric UTC date for stock date and verifies exit/readback. The compatible mechanism is documented by [LuCI 19.07 setLocaltime](https://github.com/openwrt/luci/blob/openwrt-19.07/modules/luci-base/root/usr/libexec/rpcd/luci); this RPC is not invoked and sysfixtime is not restarted. No absolute accuracy or power-loss retention guarantee is made.

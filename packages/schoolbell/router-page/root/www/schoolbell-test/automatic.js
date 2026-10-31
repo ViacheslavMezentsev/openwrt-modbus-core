@@ -79,6 +79,7 @@ async function toggleApplied(){
  finally{busy=false;draw();refresh();}
 }
 quick.addEventListener('click',toggleApplied);
+window.addEventListener('schoolbell-time-changed',function(){generation++;sample=null;pending=null;draw();refresh();});
 window.addEventListener('schoolbell-session-lost' ,function(){generation++;sample=null;pending=null;draw();});
 window.addEventListener('schoolbell-session-restored',refresh);
 window.addEventListener('schoolbell-diagnostic-refresh',refresh);

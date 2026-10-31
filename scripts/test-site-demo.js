@@ -36,6 +36,12 @@ async function api(name,data){return (await context.window.fetch('./demo-api/'+n
  assert((await api('clock-trust',{action:'resume',revision:auto.revision,generation:String(auto.generation)})).code==='active_conflict');
  await api('automatic',{enabled:'false'});
 
+ let prep=await api('clock-trust',{action:'set_prepare',operation:'a'.repeat(32)});assert(prep.simulated && prep.ttl===60);
+ const timeData={action:'set_time',challenge:prep.challenge,epoch:String(Math.floor(Date.now()/1000)),ack:'true'};
+ assert((await api('clock-trust',timeData)).simulated);assert(!(await api('automatic')).enabled);
+ assert((await api('automatic')).clock_trust.state==='unconfirmed');
+ assert((await api('clock-trust',timeData)).code==='stale_confirmation');
+ prep=await api('clock-trust',{action:'set_prepare',operation:'b'.repeat(32)});demoNow+=60000;assert((await api('clock-trust',{...timeData,challenge:prep.challenge})).code==='stale_confirmation');
  let volume=await api('controls',{volume_db:'-12'});assert(volume.volume_db===-12);
  assert((await api('controls')).volume_db===-12);
  assert((await api('automatic',{enabled:'true'})).enabled===false);

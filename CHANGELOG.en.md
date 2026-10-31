@@ -1,5 +1,7 @@
 # Changelog
 
+5.1.25 (host): unified Date and time settings combine timezone, readings, confirmed browser-time setting and trust controls. The Lua system adapter disables automatic bells, sets UTC with stock date and verifies readback; NTP, timezone and services are unchanged. Pages simulates the command. Device deployment and acceptance remain pending.
+
 5.1.24: removed schedule row-count caps across storage, backup, portable plans and Pages. Byte budgets remain; larger plans require a compatible import target. Host checks only; not installed.
 
 Pages: separate RU/EN Training with step-by-step exercises, expected outcomes and preview-mode troubleshooting. Linked from demo, module card and guide; no package or device changes.

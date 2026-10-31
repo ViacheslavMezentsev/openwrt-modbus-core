@@ -13,5 +13,6 @@ security=true;size='1025';api();assert(code==413 and calls==1)
 size='100';content='application/octet-stream';api();assert(code==413 and calls==1)
 content='application/x-www-form-urlencoded';dispatcher.context.authsession=nil;api();assert(code==403 and calls==1)
 dispatcher.context.authsession='private-session';method='GET';api();assert(calls==2)
-method='DELETE';api();assert(code==405 and calls==2)
+method='POST';form.action='set_time';form.epoch='1790000000';form.ack='true';form.challenge=string.rep('b',32);mailbox.submit=function(q)assert(q.epoch==form.epoch and q.ack=='true' and q.challenge==form.challenge);calls=calls+1;return {ok=true}end;api();assert(calls==3);
+method='DELETE';api();assert(code==405 and calls==3)
 print('PASS clock HTTP: session ownership, form CSRF, size/type bounds, read-only GET')

@@ -42,6 +42,7 @@ function preview(data,date){
 }
 function valid(d){try{return R.validateDraft(d,true);}catch(_){return false;}}
 function zones(){var z=Intl.supportedValuesOf?Intl.supportedValuesOf('timeZone'):['Europe/Moscow','Asia/Yekaterinburg','Europe/Berlin','America/New_York'];return ['UTC'].concat(z);}
+var timeProposal=null;
 var prefix=new URL('./demo-api/',location.href).pathname;
 window.fetch=async function(url,options){
  var u=new URL(url,location.href);if(u.origin!==location.origin || !u.pathname.startsWith(prefix))throw new Error('The demo has no remote API');
@@ -60,7 +61,14 @@ window.fetch=async function(url,options){
  else if(name==='clock-trust'){
  if(options && options.method==='POST'){
  var action=body.get('action');out={ok:true};
- if(action==='prepare')out={ok:true,challenge:'demo',utc:Math.floor(Date.now()/1000),rollback:false,zone:s.zone || 'UTC'};
+ if(action==='set_prepare'){timeProposal={id:body.get('operation'),at:performance.now(),zone:s.zone};out={ok:true,simulated:true,challenge:timeProposal.id,utc:Math.floor(Date.now()/1000),zone:s.zone,ttl:60};}
+ else if(action==='set_time'){
+  var p=timeProposal;timeProposal=null;var epoch=Number(body.get('epoch'));
+  if(!p || p.id!==body.get('challenge') || performance.now()-p.at>=60000 || p.zone!==s.zone || body.get('ack')!=='true')out={ok:false,code:'stale_confirmation'};
+  else if(!Number.isInteger(epoch) || epoch<1577836800 || epoch>2145916799)out={ok:false,code:'calendar_range'};
+  else{s.autoEnabled=false;s.autoGeneration=(s.autoGeneration || 0)+1;s.clockConfirmed=false;log(s,'clock_set_ok');out={ok:true,simulated:true,utc:Math.floor(Date.now()/1000),automatic_enabled:false,confirmation_required:true};}
+ }
+ else if(action==='prepare')out={ok:true,challenge:'demo',utc:Math.floor(Date.now()/1000),rollback:false,zone:s.zone || 'UTC'};
  else if(action==='confirm'){s.autoEnabled=false;s.autoGeneration=(s.autoGeneration || 0)+1;s.clockConfirmed=true;log(s,'clock_confirmed');}
  else if(action==='policy'){s.autoEnabled=false;s.autoGeneration=(s.autoGeneration || 0)+1;s.clockEnforced=body.get('enforced')==='true';s.clockConfirmed=false;log(s,s.clockEnforced?'clock_control_on':'clock_control_off');}
  else if(action==='enable' || action==='resume'){

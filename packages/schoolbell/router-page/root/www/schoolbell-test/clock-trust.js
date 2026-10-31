@@ -18,6 +18,7 @@ async function command(body){
  return result;
 }
 window.schoolbellClockCommand=command;
+window.addEventListener('schoolbell-time-changed',function(){challenge=null;review.hidden=true;state=null;document.getElementById('trust-status').textContent='Ожидаем новое состояние времени от исполнителя';draw();});
 function draw(){prepare.disabled=busy || !state || !state.enforced;policy.disabled=busy || !state;policy.textContent=state && !state.enforced?'Включить контроль времени':'Отключить контроль времени';confirm.disabled=busy || !challenge || performance.now()>=deadline;}
 window.addEventListener('schoolbell-clock-state',function(e){state=e.detail;var names={confirmed:'Время подтверждено',unconfirmed:'Время ещё не подтверждено',rollback_detected:'Обнаружен откат часов',review_required:'Требуется проверка времени',unchecked:'Время не проверяется'};document.getElementById('trust-status').textContent=state?(!state.enforced?'Контроль отключён. ': '')+(names[state.state] || state.state)+(state.reason?' · '+({observation_gap:'Прервалось наблюдение часов',manual_confirmation:'Подтверждено пользователем',startup:'После запуска требуется подтверждение',clock_step:'Обнаружен скачок часов'}[state.reason] || state.reason):''):'Нет свежего состояния исполнителя';draw();});
 async function run(fn){if(busy)return;busy=true;message.textContent='Ожидаем ответ исполнителя…';draw();try{await fn();}catch(e){message.textContent=e.message || 'Связь прервана. Обновите состояние.';}finally{busy=false;draw();}}
