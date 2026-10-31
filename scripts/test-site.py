@@ -117,7 +117,7 @@ print('PASS guide: RU/EN routes, return links, SVG, provenance and Pages-only bo
 
 notice=html.split('id="demo-notice"',1)[1].split('</details>',1)[0]
 assert 'demo-guide' not in notice
-assert '</details><a class="demo-guide" href="./guide.html">Руководство</a></div>' in html
+assert '</details><a class="demo-guide" href="./guide.html">Руководство</a><a class="demo-guide" href="./training.html">Обучение</a></div>' in html
 feedback=html.split('id="panel-feedback"',1)[1].split('</section>',1)[0]
 assert 'id="feedback-build"' in feedback and info['commit'] in feedback and info['built_at_utc'] in feedback
 assert ('Собрано с локальными изменениями.' in feedback)==info['dirty']
@@ -131,3 +131,18 @@ m=json.loads((out/'devices/tl-mr3020-eu-v3.30-firmware.json').read_text())
 assert m['bootloader_recovery_status']=='not-tested' and m['transformation']=='none'
 assert re.fullmatch('[0-9a-f]{64}',m['image_sha256'])
 print('PASS device references: RU/EN links, artifact record, no firmware or device URL')
+
+
+# Training stays outside the installed module; all lessons have stable deep links.
+for suffix in ['', '.en']:
+ page=(out/('schoolbell/training'+suffix+'.html')).read_text()
+ for section in ['schedule','copy','calendar','preview','browser','portable','backup','finish']:
+  assert 'id="'+section+'"' in page
+  assert 'href="#'+section+'"' in page
+ assert '{{VERSION}}' not in page and info['commit'][:12] in page
+ assert 'href="./"' in page and 'href="guide'+suffix+'.html"' in page
+ assert 'schoolbell/training'+suffix+'.html' in (out/('index'+suffix+'.html')).read_text()
+ assert 'training'+suffix+'.html' in (out/('schoolbell/guide'+suffix+'.html')).read_text()
+ assert '<form' not in page and 'demo-api' not in page
+assert 'href="./training.html"' in html
+print('PASS training: RU/EN lessons, entry and return links, provenance, no device actions')

@@ -21,3 +21,5 @@
 .demo-notice-row:has(#demo-notice[open]){align-items:flex-start}
 .demo-notice-row #demo-notice:not([open]){display:flex;align-items:center}
 .demo-notice-row #demo-notice summary{width:100%}
+
+@media(max-width:900px){.demo-notice-row{flex-wrap:wrap}.demo-notice-row #demo-notice{flex-basis:100%}}

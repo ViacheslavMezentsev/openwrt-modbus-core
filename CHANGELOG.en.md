@@ -1,5 +1,7 @@
 # Changelog
 
+Pages: separate RU/EN Training with step-by-step exercises, expected outcomes and preview-mode troubleshooting. Linked from demo, module card and guide; no package or device changes.
+
 
 Pages: separate RU/EN draft guide, Guide links in demo notice/module card, conceptual bench/audio SVGs. No package or device changes.
 

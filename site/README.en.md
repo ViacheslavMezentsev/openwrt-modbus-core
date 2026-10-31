@@ -25,8 +25,10 @@ Page and demo footers show the UTC build time and short commit; build-info.json 
 
 The demo includes test.mp3 and five bundled melodies. Each populated row plays its own file in the browser; empty user slots cannot play. There is no autoplay or router command.
 
-Since 5.1.0 the demo shares the working named-range editor and payload checks. It supports device-free training/preparation with bundled melodies only. Portable bundle export is not implemented yet. A shared oracle checks civil preview parity with Lua; DST, clock trust and actual device resources are not emulated.
+Since 5.1.0 the demo shares the working named-range editor and payload checks. It supports device-free training/preparation with bundled melodies only. Portable .sbp export and read-only import preview are available. A shared oracle checks civil preview parity with Lua; DST, clock trust and actual device resources are not emulated.
 
 The Guide button sits to the right of the demo notice (below it on narrow screens). Feedback shows the full Git commit, UTC build date and dirty-build marker beside the authors. These identify the Pages build, not an installed IPK.
 
 Device references: `site/devices/` contains bilingual model-specific guides and artifact metadata. OEM binaries and source snapshots stay in local archives, outside Git/Pages; public mirror URLs remain unset until publication is authorized.
+
+Training is a separate training.en.html page with practical post-setup exercises, linked from the demo, module card and guide. It performs no device actions.

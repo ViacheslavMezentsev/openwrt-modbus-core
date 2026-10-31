@@ -60,7 +60,7 @@ text=text.replace("<%=url('admin')%>",'../').replace('← Управление �
 text=text.replace('/schoolbell-test/','./assets/')
 text=text.replace('Сверить с устройством','Сверить с локальной моделью').replace('Копия устройства','Сохранённая копия демо').replace('Взять копию устройства','Взять сохранённую копию демо')
 text=text.replace('Сверить с роутером','Сверить с локальной моделью').replace('Копия роутера','Сохранённая копия демо').replace('Взять копию роутера','Взять сохранённую копию демо')
-text=text.replace('<nav class="page-tabs"', '<div class="demo-notice-row"><details id="demo-notice" class="plan-workflow demo-notice"><summary><strong>ДЕМО · оборудование не подключено.</strong><span class="collapse-hint">Подробности ▾</span></summary><p>Календарные планы можно редактировать без устройства. Расписания и часовой пояс изменяются только в этом браузере. Автозвонков нет.</p><p id="demo-storage">Данные демо сохраняются локально.</p><button id="demo-reset" type="button">Сбросить демо</button></details><a class="demo-guide" href="./guide.html">Руководство</a></div><nav class="page-tabs"',1)
+text=text.replace('<nav class="page-tabs"', '<div class="demo-notice-row"><details id="demo-notice" class="plan-workflow demo-notice"><summary><strong>ДЕМО · оборудование не подключено.</strong><span class="collapse-hint">Подробности ▾</span></summary><p>Календарные планы можно редактировать без устройства. Расписания и часовой пояс изменяются только в этом браузере. Автозвонков нет.</p><p id="demo-storage">Данные демо сохраняются локально.</p><button id="demo-reset" type="button">Сбросить демо</button></details><a class="demo-guide" href="./guide.html">Руководство</a><a class="demo-guide" href="./training.html">Обучение</a></div><nav class="page-tabs"',1)
 text=text.replace('Сохранить черновик на устройстве','Сохранить черновик в демо')
 text=text.replace('Подготовьте расписания и сохраните их на роутере.','Попробуйте расписания и календарь на тестовых данных.')
 text=text.replace('Инженерная установка','Демонстрация интерфейса').replace('На роутере · оценка между опросами','Демо-часы · выбранная зона').replace('Сохраняется на роутере','Сохраняется в браузере').replace('Настройка сохраняется на роутере и действует для всех его приложений.','Настройка меняет только часовой пояс этого демо, не устройства или компьютера.')
@@ -96,3 +96,9 @@ for lang,name in [('ru','guide.html'),('en','guide.en.html')]:
 
 # Device references are static, bilingual, and outside the hardware demo.
 shutil.copytree(root/"site/devices",out/"devices",dirs_exist_ok=True)
+
+# Pages-only practical training, sharing guide theme and build provenance.
+for lang,name in [('ru','training.html'),('en','training.en.html')]:
+ page=(root/'site'/('schoolbell-'+name)).read_text().replace('{{VERSION}}',html.escape(version))
+ footer=provenance if lang=='ru' else provenance.replace('Сборка:','Build:').replace('локальные изменения','local changes')
+ (demo/name).write_text(page.replace('</footer>',footer+'</footer>'))
