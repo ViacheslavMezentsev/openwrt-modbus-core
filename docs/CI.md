@@ -12,15 +12,13 @@ HEAD; зелёного отдельного задания недостаточ�
 | Изменения | Задания помимо всегда выполняемых docs/ci-gate |
 | --- | --- |
 | README/CHANGELOG, обычные Markdown-памятки | Компоненты не нужны |
-| Код ядра, firmware, контракт ядра, AGENTS.md | core + demo + schoolbell |
+| Код ядра, firmware, контракт ядра, AGENTS.md | core + demo |
 | Код/тесты demo, его ТЗ и другие контрактные документы | demo |
-| Код/медиа/проверка schoolbell, его ТЗ и другие контрактные документы | schoolbell |
 | Makefile, общие скрипты, CI, зависимости, неизвестный путь | Все компоненты |
 
 README/CHANGELOG в каталогах компонентов — обзорные документы; остальные
 файлы `docs/core/` и `docs/packages/<пакет>/` консервативно считаются контрактными.
 Изменение ядра проверяет потребителей, но не подтверждает аппаратную совместимость.
-Schoolbell пока имеет media-only preview: его job проверяет MP3/manifest и состав
 пакета, а не работающий звонок. Demo использует текущие модули ядра в своих тестах.
 Firmware запускает доступные core-регрессии; компиляция Arduino остаётся отдельной
 задачей, как и аппаратные проверки.
@@ -38,12 +36,11 @@ Firmware запускает доступные core-регрессии; комп
   заголовков; строгая проверка всех трёх ТЗ; тесты фильтров и итогового статуса.
 - `core`: C++-тест кнопки, core Lua-тесты и синтаксис, сборка/проверка IPK.
 - `demo`: Lua-тест настоящего цикла demo, синтаксис, сборка/проверка его IPK.
-- `schoolbell`: сборка preview, закреплённые SHA256 медиа и точный состав IPK.
 - `ci-gate`: успех changes/docs и каждого назначенного компонента; failure,
   cancellation или неожиданный skipped дают отказ. Пропуск разрешён лишь заданию,
   которое фильтр явно не назначил; отсутствующие/неверные outputs тоже дают отказ.
 
-Компоненты публикуют отдельные artifacts `core-ipk`, `demo-ipk`, `schoolbell-ipk`
+Компоненты публикуют отдельные artifacts `core-ipk`, `demo-ipk`
 с IPK и checksums. При docs-only push новых IPK artifacts нет. Установок на роутер,
 звука, serial-доступа и аппаратных reboot в CI нет.
 
@@ -53,14 +50,13 @@ Firmware запускает доступные core-регрессии; комп
 make check-docs check-ci
 make ci-core
 make ci-demo
-make ci-schoolbell
 make all
 ```
 
 Нужны Python 3.8+, Lua 5.1/luac5.1, g++ и стандартные make/tar/sha256sum.
 Компонентные цели core/demo завершаются ошибкой при отсутствии обязательного Lua,
 а core — также C++-компилятора; пропущенный обязательный тест не является PASS.
-Выходные каталоги `out/ci-core`, `out/ci-demo`, `out/ci-schoolbell` раздельны.
+Выходные каталоги `out/ci-core`, `out/ci-demo` раздельны.
 `make all` сохраняет полный прежний прогон и дополнительно проверяет документы/CI.
 
 Валидатор ТЗ находится в `scripts/vendor/embedded-tech-spec/`: неизменённая
@@ -79,6 +75,5 @@ core.filemode=false в Windows может скрыть изменение execut
 
 Core host-тесты также собирают изолированные Linux C I/O-примитивы: требуются C99 compiler, Linux headers и coreutils timeout; отсутствие инструмента — ошибка. Нативная библиотека не включается в скриптовый IPK.
 
-Schoolbell CI теперь устанавливает Lua 5.1 и запускает make test-schoolbell: календарные тесты и независимый Python datetime oracle; media-only IPK проверяется отдельно. Изменения packages/schoolbell/ и scripts/test-schoolbell.sh выбирают schoolbell.
 
-Сайт проверяется в задании документации через `make check-site`: сборка, локальные ссылки, контраст подписей и модель демо (Python 3 и Node.js). Публикация GitHub Pages — отдельный ручной workflow только из main; см. [инструкцию сайта](../site/README.md).
+Сайт проверяется через `make check-site`: страницы ядра, ссылки переезда и отсутствие устаревших JS/MP3. Архив проверяется через `make check-docs`. Публикация Pages — отдельный ручной workflow из main.

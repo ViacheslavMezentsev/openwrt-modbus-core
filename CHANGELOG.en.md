@@ -1,132 +1,18 @@
 # Changelog
 
-5.1.26: include clock_set.lua in the IPK. Archive verification now checks literal schoolbell runtime dependencies. The 5.1.25 packaging omission was discovered after deployment; source-tree tests did not detect it.
-
-5.1.25 (host): unified Date and time settings combine timezone, readings, confirmed browser-time setting and trust controls. The Lua system adapter disables automatic bells, sets UTC with stock date and verifies readback; NTP, timezone and services are unchanged. Pages simulates the command. Device deployment and acceptance remain pending.
-
-5.1.24: removed schedule row-count caps across storage, backup, portable plans and Pages. Byte budgets remain; larger plans require a compatible import target. Host checks only; not installed.
-
-Pages: separate RU/EN Training with step-by-step exercises, expected outcomes and preview-mode troubleshooting. Linked from demo, module card and guide; no package or device changes.
-
-
-Pages: separate RU/EN draft guide, Guide links in demo notice/module card, conceptual bench/audio SVGs. No package or device changes.
-
-2026-10-31: Shkolnik 5.1.22 UI and isolated browser .sbp roundtrip accepted; TODO updated, artifact-frozen end-to-end acceptance and dedicated USB–Ethernet bench plan added. No device changes.
-
-5.1.22 (host): device local time HH:MM is right-aligned above the CPU bar; uptime is below (page age in Pages). Reuses existing clock polling and hides stale time. Default idle logout is 30 minutes; existing choices are preserved. Major section gaps are aligned and the bell-delete cross enlarged. Pages synchronized; this version is not installed on the device.
-
-5.1.21 (host): selected-plan .sbp export with user audio/dependencies; complete file before HTTP, locks released before download. Pages synchronized; not installed.
-
-5.1.20 (host): .sbp import adds plans/dependencies to a draft with preview and durable recovery; synchronized Pages, no installation.
-
-Schoolbell 5.0.34: session recovery without replay or replacing editor changes, CSRF-protected logout, configurable browser idle countdown, striped cheat-sheet routes and separate behavior notes. Host only; Pages synchronized.
-
-Schoolbell 5.0.33: first Cheat sheet tab with short operator journeys, shared by router UI and Pages demo.
-
-5.0.27: clock-result lock contention is pending, not failure; bounded GET waiting, no POST replay. Storage errors are distinct from busy.
-
-Schoolbell 5.0.26: host-only time confirmation/bypass UI and native dependency. Reusable [router clock-drift skill](skills/router-clock-drift/SKILL.md); no hardware logs committed.
-
-
-5.0.5 fixes mute status reads during concurrent saves/journal writes and distinguishes network, authentication and storage errors.
-
-Schoolbell 5.0.4: quick mute/manual bell, selectable pre/manual melodies and fixed/annual draft modes; automatic execution remains disabled.
-
-Fixed schoolbell 5.0.3 timezone persistence: commit no longer uses the no-commit -P option; the configuration file revision must change.
-All notable changes to this project are documented here ([Русский](CHANGELOG.md)).
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
 ## [Unreleased]
+
+- Schoolbell moved to its [own repository](https://github.com/ViacheslavMezentsev/schoolbell); sources, prototypes, tests and former integrations are retained in the [archive](docs/archive/schoolbell/README.en.md). Build and CI now produce core/demo only; Pages links to the related project.
+
 
 Specification 1.75: replace schedule/plan/media quotas with shared file admission and resource checks; retain journal rotation, integrity and add-only import. Migration and TC-184–187 remain pending; no code, package or device changes.
 
 
-- Pages: device catalog, RU/EN MR3020 EU v3.30 TFTP reference and OEM Build250625 artifact record; recovery remains untested.
-- Updated TODO and end-to-end acceptance plan after owner acceptance of 5.1.23 on the existing bench. Next is new-device S0; no flashing or automatic bells.
-
-- Shkolnik 5.1.23: outlined automatic status, theme-aware colors and aligned Pages Guide. Schedule rows offer red deletion and selected melody previews in browser/device speakers (hardware disabled in Pages). Host checks only; not deployed.
-
-- Pages Guide is a standalone button to the right of the demo notice; Feedback shows the full Git commit and build date beside the authors. Device payload is unchanged.
-
 - Plan OpenBLT evaluation for attached STM32 firmware updates, preferring a Lua backend over common core I/O without mandatory BootCommander/LibOpenBLT dependencies. Compatibility, recovery and resource checks are planned; no implementation or hardware changes.
-
-- Shkolnik: Pages exports selected .sbp plans and previews additive import without writes. Host build5.1.19 adds uptime above CPU and a revised heading; no device update.
 
 - Added paired WORKFLOW guides covering stage agreement, signed branches, CI/land, backups, authorized device acceptance and Pages synchronization.
 
-- Schoolbell 5.0.32: deleting a fixed selection requires explicit replacement; clearing the last year explains fixed/quiet. Reconciliation retains local edits, reads both copies and never repeats writes/activation; subsequent save retains CAS. Pages shares UI and regressions. Host only, no installation or publication.
-
-- Added a static schoolbell journey/completeness plan: deletion dependencies, undo/reconciliation, active preview, time/media and LuCI roles. Recorded HTTP/admin-login limitations; no implementation or router changes.
-
-- Added the schoolbell 5.0.31 Markdown user guide: startup, schedules/year plan, sound, media, time, backups and troubleshooting, including current UI limitations. No runtime or router changes.
-
-- Schoolbell host startup audit: 11 additional real-worker scenarios with injected boot/TZ/clocks/reference and an independent 15+6 oracle. Documented reboot versus same-boot restart with bypass; no runtime/IPK or router changes.
-
-- Added the draft schoolbell 5.x acceptance programme: 12 end-to-end scenarios, legacy parity, attended versus future unattended startup, release gates and open numerical budgets. No runtime, IPK or router changes.
-
-- Schoolbell 5.0.31: lifecycle uses declared Lua/nixio instead of missing BusyBox stat; IPKs explicitly include parent directories; owned LuCI bytecode is invalidated. Host regressions and target installation/recovery downgrade/upgrade passed with identical exported data and automatic bells disabled. Native clock archive receives directory records; its runtime and installed module are unchanged.
-
-- Schoolbell 5.0.28: full script IPK, safe auto-off lifecycle, pinned offline dependencies and joint core release manifest; host install/upgrade/rollback tests. No router installation.
-
-- Schoolbell 5.0.12: six protected bundled melodies plus five user slots; missing user media blocks plan activation.
-
-- Schoolbell 5.0.11: persistent-storage usage bar, free space, protected reserve and retained media usage.
-
-- Schoolbell 5.0.10: bounded melody uploads/replacement via the existing media manager, shared player gate, CAS and browser preview; no automatic activation.
-
-- Schoolbell 5.0.9: aligned settings fields and subtle alternating table rows in both themes.
-
-- Fixed in schoolbell 5.0.8: a normal polling delay no longer recursively writes the time watermark; reuse the verified serialized snapshot without repeating SHA before playback.
-
-- Schoolbell 5.0.7: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
-
-- Schoolbell 5.0.6: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
-
-- Schoolbell 5.0.2: distinct xterm256 colors with black/white text, an in-module time-zone selector with confirmation and conflict checks; a GitHub Pages landing page and browser-local demo sharing the router UI.
-
-- Schoolbell Feedback tab and bilingual GitHub Issue Forms for bugs and feature requests; submission remains a user action.
-
-- Schoolbell 5.0.1: persistent per-schedule colors from 16 muted shades, automatic assignment and manual selection, consistent across the list, calendar and preview. Journal text is left-aligned; time-zone settings are offered independently of clock synchronization.
-
-- Schoolbell 5.0.0: collapsible status, tabs preserving edits, router/browser clocks and a LuCI synchronization link; private rotating journal with up to 16 KiB of records (24 KiB during commit). Automatic bells remain disabled; the UI never changes system time automatically.
-
-- Schoolbell annual calendar: date/range assignments, shared draft persistence and civil-time main/preliminary bell preview. Legacy drafts remain unchanged on read; automatic execution stays disabled. Specification 1.22.
-
-- Schoolbell schedule editor: names, rows, copying, persistent inactive drafts, reload/save, conflict and storage-failure checks. Automatic bells and annual calendar remain disconnected; specification 1.21.
-
-- Working schoolbell manual LuCI sound page: browser and router USB audio routes for test.mp3, authentication/POST token and bounded diagnostic process. Both routes and audible sound confirmed by the user on MR3020; automatic scheduling is not integrated.
-
 - Isolated MR3020 checks passed in tmpfs and a separate persistent directory; fixtures removed, no reboot/power loss.
-
-- Schoolbell spec 1.19: isolated prepared-media manager, pointer checksums, fsync/rename, reconciliation and GC; 25 host process-crash checkpoints. No core/queue/sound; MP3 validation and full calendar schemas remain unconnected.
-
-- Schoolbell spec 1.18 accepts strict JSON/SHA-256 revisions, layout, protective MR3020 quotas and current/recovery commit order. TC-83–90 planned; exact metadata fields/crash transitions remain open. Documentation only; no implementation, sound or router changes.
-
-- Schoolbell specification 1.17 accepts persistent media, immutable replacement, consistent bundles and power-loss recovery. Fallback leaves automatic bells paused; TC-73–82 are planned. Requirements only; no implementation, sound or router/IPK changes.
-
-- Exact media revision retention at admission: bounded native catalog, private leases and nine TC-72 host groups. Schoolbell specification 1.16. Mockup settings show separate browser-device and router-speaker test routes; buttons only simulate selection, without sound/API/router changes. IPK unchanged.
-
-- Schoolbell spec 1.15: isolated bridge connects the Lua queue and Linux player; launching/finishing, signal outcomes and cleanup before the next start. Ten fixture-child host groups; no core, audio device, sound or router/IPK changes.
-
-- Schoolbell spec 1.14: isolated Lua 5.1 Linux player binding, userdata and eight host groups with a fixture process, GC/OOM and recoverable handles. No queue/core, audio device, sound or router/IPK changes.
-
-- Saved the accepted standalone schoolbell UI mockup: annual calendar, schedules, media library, player states and system/dark/light themes. Synthetic data only; no API, audio, router changes or IPK inclusion.
-
-- Schoolbell specification 1.13: isolated Linux C player adapter and a test child without an audio device; 13 host process/fault groups, FD checks and inherited flock after owner death. No Lua binding, core, madplay/audio or router changes; IPK unchanged.
-
-- Schoolbell specification 1.12: isolated Lua SBPE codec and player API model with injected operations. 32 host test groups cover frames, generations, deadlines/outcomes, quotas and cleanup. No native binding, processes, sound, core or router changes; IPK unchanged.
-
-- Schoolbell specification 1.11 fixes SBPE/v1 big-endian, generations, attempt counters and parameter ranges. TC-61–65 are planned; requirements only, no code/audio/router changes.
-
-- Schoolbell specification 1.10 defines result/error fields, executable-identity exec evidence, a 16-byte frame and 64/64/8/8 budgets. TC-56–60 are planned; requirements only, code and router unchanged.
-
-- Schoolbell specification 1.9 accepts native player mechanisms and begin/poll/release, inherited flock FD, stdin media, a 2000 ms timeout and /dev/null. TC-50–55 are planned; madplay properties require verification. Code and router unchanged.
-
-- Schoolbell specification 1.8 accepts the system player contract: launching/exit, retained media revisions and blocking after failures. TC-43–49 are planned; implementation, sound, IPK and router are unchanged.
-
-- Schoolbell specification 1.7: isolated Lua playback queue, per-resource FIFO, monotonic TTL/UTC, owner cancellation and an injectable player. 24 host test groups; unknown outcomes retain the resource. No core/process/audio/router integration; media-only IPK unchanged.
-
-- Schoolbell specification 1.6: isolated Lua calendar with fixed/annual modes, quiet dates, midnight preliminary bells and gap/fold rejection. 29 groups, 14,404 independent date vectors and original 15+6 across a full leap year. No core/audio/router integration; media-only IPK unchanged, full parity remains pending.
 
 - Isolated Linux C I/O primitives: single calls, raw 8N1, TCP, poll/eventfd and cleanup; separate build and host/fault tests TC-142/143. Specification 1.33. No Lua binding, target ABI/IPK, modbusd or router changes.
 
@@ -172,13 +58,9 @@ Specification 1.75: replace schedule/plan/media quotas with shared file admissio
 
 - Core specification 1.13 records accepted multiport rounds: independent port states, a shared barrier, ready-response and event servicing during waits, and single-port compatibility. TC-74–83 are planned; transport and firmware are unchanged.
 
-- Split CI into docs/core/demo/schoolbell with change selection and mandatory ci-gate. Added a pinned specification validator, local link checks, selection/gate regressions and separate package builds; make all retains full coverage.
-
 - Added an isolated Lua event/subscription registry: sessions, atomic replacement, generations, namespace checks and independent snapshots, with 17 tests in make all. Specification 1.11 records partial coverage. The module is not wired into modbusd; public IPC is not operational yet.
 
 - Specification 1.10 accepts the local event v1 profile and adds configurable safe-read retries, IPC servicing during waits and compatible read batching. TC-61–71 are planned; runtime unchanged.
-
-- Promoted the core/schoolbell development sequence to TODO; core specification 1.9 and schoolbell 1.4 define common API boundaries and bell feature parity. New scenarios remain planned; runtime unchanged.
 
 ### Added
 
@@ -197,8 +79,6 @@ Specification 1.75: replace schedule/plan/media quotas with shared file admissio
 ### Changed
 
 - MR3020 MOTD retains its original logo with system/network/peripheral/application sections, interactive/board guards, shell isolation and manual --show. Original retained under legacy. Approved bench installation and SSH checks passed; reboot was not tested.
-
-- Split specifications by owner: core 1.5, demo and schoolbell 1.0, with independent README/changelogs and test namespaces. Preserved requirement migration traceability; runtime unchanged.
 
 - Organized documentation with an index and completed-stage archive; remaining early-plan proposals moved to TODO. Original untracked notes are retained in a local archive without publication.
 
@@ -231,7 +111,6 @@ imply a published Git tag or release.
 - Tested counter wrap, bursts, stale snapshots, lost acknowledgements, handler errors/infinite loops and queue limits.
 - Installed core 0.4.0 on the router; core/demo and topic CLI regression checks passed. Eleven physical button events produced eleven successful alternating LED commands, with no repeats during two-second holds.
 - Restart established count 11 as the new baseline without sending a command. Temporary IPK and opkg list cache were cleaned.
-
 
 ### bluepill-cli-stage-9
 

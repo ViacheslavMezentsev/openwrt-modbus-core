@@ -18,7 +18,6 @@ def verify(component, out):
     package, name, executable = {
         'core': ('pkg', 'modbus-rtu-core', ['usr/bin/modbusd','usr/bin/modbus','etc/init.d/modbus-rtu-core','www/cgi-bin/modbus-core-status']),
         'demo': ('pkg-demo', 'modbus-demo', ['usr/bin/modbus-demo','etc/init.d/modbus-demo','www/cgi-bin/modbus-demo-status']),
-        'schoolbell': ('pkg-schoolbell', 'modbus-schoolbell', []),
     }[component]
     source = ROOT/package
     controls = (source/'CONTROL/control').read_text()
@@ -62,7 +61,6 @@ def verify(component, out):
                         assert data.extractfile(target).read() == path.read_bytes(), target+' payload mismatch'
             for path in executable:
                 assert data.getmember('./'+path).mode & 0o111, path+' not executable'
-    if component == 'schoolbell': run(sys.executable, str(ROOT/'scripts/verify-schoolbell.py'), str(out))
     print('[verify-component]', component, 'OK')
 
 

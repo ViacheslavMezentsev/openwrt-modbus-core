@@ -9,9 +9,9 @@
 Publish IPKs and one `release-<profile>.json` / `release-<profile>.sig` pair per platform as **Assets of the same GitHub Release**, not on Pages. For example:
 
 ```text
-modbus-schoolbell_5.1.2_all.ipk
+modbus-sample-app_5.1.2_all.ipk
 modbus-rover_1.0.0_all.ipk
-modbus-schoolbell-clock_1.0.0_mipsel_24kc.ipk
+modbus-sample-app-clock_1.0.0_mipsel_24kc.ipk
 release-openwrt-19.07.9-ramips-mt76x8.json
 release-openwrt-19.07.9-ramips-mt76x8.sig
 ```

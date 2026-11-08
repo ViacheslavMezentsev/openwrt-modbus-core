@@ -1,21 +1,5 @@
 # openwrt-modbus-core
 
-[Schoolbell user guide](docs/packages/schoolbell/USER_GUIDE.en.md) — schoolbell 5.0.32 (host checked; router remains 5.0.31).
-
-Schoolbell 5.0.31: target opkg compatibility fixes (no stat dependency, explicit archive directories, owned LuCI cache invalidation). Installation, recovery downgrade and upgrade preserve data and leave automatic bells off; no clock/NTP changes.
-
-Schoolbell 5.0.28: complete engineering IPK and pinned offline bundle; host lifecycle tests, no target installation. [Packaging](docs/packages/schoolbell/PACKAGING.en.md).
-
-5.0.27: clock-result lock contention is pending, not failure; bounded GET waiting, no POST replay. Storage errors are distinct from busy.
-
-Schoolbell 5.0.26: host-only time confirmation/bypass UI and native dependency. Reusable [router clock-drift skill](skills/router-clock-drift/SKILL.md); no hardware logs committed.
-
-Schoolbell 5.0.12: persisted router playback attenuation in Settings; takes effect on the next bell while Mute cancels the current one. The system mixer is unchanged.
-
-Automatic bells: independent fixed/annual bell service, explicit saved-plan activation, Mute and no catch-up playback. Reboot/timezone changes require checking the clock and reactivation. System time and NTP are unchanged.
-
-
-
 [Русский](README.md)
 
 A lightweight Lua automation core for OpenWrt with Modbus RTU, state caching,
@@ -116,18 +100,10 @@ Bench validation results, limitations and upgrade/rollback guidance:
 
 Documentation and archive index: [docs](docs/README.en.md).
 
-Schoolbell sample preview: `make build-schoolbell` (also built by `make all`).
-See [package status](docs/packages/schoolbell/README.en.md); no scheduler/player yet.
-Build verification requires Python 3.8+ on the host.
-
 [CI — component checks](docs/CI.en.md)
 
-Schoolbell specification 1.7: isolated Lua playback queue, per-resource FIFO, monotonic TTL/UTC, owner cancellation and an injectable player. 24 host test groups; unknown outcomes retain the resource. No core/process/audio/router integration; media-only IPK unchanged. [API](docs/packages/schoolbell/PLAYBACK_QUEUE.en.md).
+Project website: [build and publication](site/README.en.md).
 
-- [Schoolbell manual sound check page](packages/schoolbell/router-page/README.en.md).
+## Related project
 
-- [Schoolbell saved schedule editor](docs/packages/schoolbell/SCHEDULE_EDITOR.en.md).
-
-- [Schoolbell annual calendar](docs/packages/schoolbell/ANNUAL_CALENDAR.en.md).
-
-Website and interactive demo: [build and publication](site/README.en.md).
+[Schoolbell — configurable musical bell](https://github.com/ViacheslavMezentsev/schoolbell). Development, packages and Pages live in their own repository. [Historical archive](docs/archive/schoolbell/README.en.md).

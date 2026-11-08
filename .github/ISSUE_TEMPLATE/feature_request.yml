@@ -10,7 +10,6 @@ body:
     attributes:
       label: Компонент / Component
       options:
-        - schoolbell
         - core
         - demo
         - rover

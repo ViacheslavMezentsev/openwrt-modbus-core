@@ -21,7 +21,7 @@
 
 - [Ядро](core/README.md): ТЗ 1.8 и собственная история.
 - [Demo](packages/demo/README.md): ТЗ 1.1, требования и проверки потребителя.
-- [Schoolbell](packages/schoolbell/README.md): ТЗ 1.3, границы будущего пакета.
+- [Schoolbell — independent project](https://github.com/ViacheslavMezentsev/schoolbell).
 - [Rover](packages/rover/README.md): ТЗ 1.0, колёсный ровер, видео/Wi-Fi; проект требований.
 
 Каждый компонент ведёт свои README RU/EN, CHANGELOG RU/EN и русское ТЗ.

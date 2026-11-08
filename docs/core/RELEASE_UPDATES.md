@@ -2,7 +2,7 @@
 
 [English](RELEASE_UPDATES.en.md)
 
-26.10.2026. Требования, **без реализации**. Нормативный владелец — [ТЗ ядра](TECHNICAL_SPECIFICATION.md), 6.11, ревизия 1.35. Требования интерфейса «Школьника» — [ТЗ пакета](../packages/schoolbell/TECHNICAL_SPECIFICATION.md), 4.8, ревизия 1.55. Наличие IPK и GitHub Release не означает готовность автоматического обновлятора.
+26.10.2026. Требования, **без реализации**. Нормативный владелец — [ТЗ ядра](TECHNICAL_SPECIFICATION.md), 6.11, ревизия 1.35. Требования интерфейса «Школьника» — [ТЗ пакета](https://github.com/ViacheslavMezentsev/schoolbell), 4.8, ревизия 1.55. Наличие IPK и GitHub Release не означает готовность автоматического обновлятора.
 
 ## Что видит пользователь
 
@@ -20,10 +20,10 @@
 | --- | --- |
 | Отображаемое имя | Школьник, без версии в имени |
 | Идентичность расширения | publisher `ViacheslavMezentsev`, name `schoolbell` |
-| opkg Package | `modbus-schoolbell` |
+| opkg Package | `modbus-sample-app` |
 | Версия приложения | `major.minor.patch`; численное сравнение тройки |
-| IPK | `modbus-schoolbell_<version>_all.ipk` |
-| Нативная зависимость | `modbus-schoolbell-clock`, независимая версия/архитектура |
+| IPK | `modbus-sample-app_<version>_all.ipk` |
+| Нативная зависимость | `modbus-sample-app-clock`, независимая версия/архитектура |
 | Источник | публичные Releases `ViacheslavMezentsev/openwrt-modbus-core` |
 
 Идентичность package.json — будущий контракт, не новый установленный файл. Имена существующих IPK не меняются. GitHub tag/name не используются как версия приложения: общий релиз может содержать разные версии ядра и нескольких пакетов. Не все расширения обязаны иметь ту же грамматику версии, что schoolbell; их сравнение требует объявленного поддерживаемого профиля. opkg-зависимости сохраняют свою штатную грамматику. `all` не доказывает переносимость native/kmod.

@@ -130,4 +130,4 @@ The final handover identifies implemented and owner-confirmed behavior, host and
 target evidence and missing checks, installed version/bell state/data preservation,
 branch/SHA and commands (or push held), and the next small TODO stage.
 After “merged”, inspect Git again. A short successful check is not unattended
-service acceptance; use the separate [Shkolnik acceptance programme](packages/schoolbell/ACCEPTANCE.en.md).
+service acceptance; use the separate [Shkolnik acceptance programme](https://github.com/ViacheslavMezentsev/schoolbell).

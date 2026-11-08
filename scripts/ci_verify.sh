@@ -72,9 +72,7 @@ if LUAC_BIN="$(find_tool luac5.1 luac)"; then
         "$PROJECT_ROOT/pkg/usr/bin/modbusd" \
         "$PROJECT_ROOT/pkg/usr/bin/modbus" \
         "$PROJECT_ROOT/pkg-demo/usr/bin/modbus-demo" \
-        "$PROJECT_ROOT"/scripts/test_*.lua \
-        "$PROJECT_ROOT"/packages/schoolbell/lua/schoolbell/*.lua \
-        "$PROJECT_ROOT"/packages/schoolbell/tests/*.lua
+        "$PROJECT_ROOT"/scripts/test_*.lua
     do
         "$LUAC_BIN" -p "$file"
     done
@@ -91,7 +89,7 @@ grep -q '^Depends: .*modbus-rtu-core' "$PROJECT_ROOT/pkg-demo/CONTROL/control"
 
 echo "[verify] checking package artifacts"
 found_ipk=0
-for ipk in "$OUT_DIR"/*.ipk; do
+for ipk in "$OUT_DIR"/modbus-rtu-core_*.ipk "$OUT_DIR"/modbus-demo_*.ipk; do
     [ -f "$ipk" ] || continue
     found_ipk=1
     tar -tzf "$ipk" | grep -qx "\./debian-binary"
@@ -126,6 +124,6 @@ done
     exit 1
 }
 
-python3 "$PROJECT_ROOT/scripts/verify-schoolbell.py" "$OUT_DIR"
+
 
 echo "[verify] OK"

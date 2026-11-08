@@ -13,13 +13,13 @@ fi
 rm -rf "$REPO_DIR"
 mkdir -p "$REPO_DIR"
 
-set -- "$SOURCE_DIR"/*.ipk
+set -- "$SOURCE_DIR"/modbus-rtu-core_*.ipk "$SOURCE_DIR"/modbus-demo_*.ipk
 [ -f "$1" ] || {
     echo "ERROR: no .ipk files found in $SOURCE_DIR" >&2
     exit 1
 }
 
-cp "$SOURCE_DIR"/*.ipk "$REPO_DIR"/
+cp "$SOURCE_DIR"/modbus-rtu-core_*.ipk "$SOURCE_DIR"/modbus-demo_*.ipk "$REPO_DIR"/
 opkg-make-index "$REPO_DIR" > "$REPO_DIR/Packages"
 gzip -kf "$REPO_DIR/Packages"
 

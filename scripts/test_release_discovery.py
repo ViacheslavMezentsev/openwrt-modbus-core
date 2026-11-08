@@ -9,11 +9,11 @@ from release_manifest import (Rejected, decode, validate, verified_manifest, com
 from release_discovery import Discovery, Response, DEADLINE_MS, FRESH_MS
 
 REPO = 'example/extensions'
-ID = 'example/schoolbell'
+ID = 'example/sample-app'
 PUBLIC = bytes(range(32))
 KEY_ID = hashlib.sha256(PUBLIC).hexdigest()
 KEYS = {KEY_ID: dict(public=PUBLIC, repositories=[REPO], publishers=['example'])}
-REGISTRY = {ID: dict(repository=REPO, package='modbus-schoolbell', version_scheme='semver3'),
+REGISTRY = {ID: dict(repository=REPO, package='modbus-sample-app', version_scheme='semver3'),
             'example/rover': dict(repository=REPO, package='modbus-rover', version_scheme='semver3')}
 
 
@@ -40,12 +40,12 @@ def opkg(a, b):
     return (x > y) - (x < y)
 
 
-def package(name='modbus-schoolbell', version='5.2.0', depends=None):
+def package(name='modbus-sample-app', version='5.2.0', depends=None):
     return dict(name=name, version=version, architecture='all', asset=name + '_' + version + '_all.ipk',
                 bytes=32, sha256=hashlib.sha256((name + version).encode()).hexdigest(), depends=depends or [])
 
 
-def component(name='schoolbell', package_name='modbus-schoolbell'):
+def component(name='sample-app', package_name='modbus-sample-app'):
     return dict(publisher='example', name=name, package=package_name, version_scheme='semver3',
                 upgrade_from=[dict(min_inclusive='5.0.0', max_exclusive='6.0.0')],
                 requires_core_api=None, data_policy=dict(action='preserve', rollback='package_only'))
@@ -61,7 +61,7 @@ def manifest(version='5.2.0', tag='release-a'):
 
 def local():
     return dict(platform=manifest()['platform'], installed={
-        'modbus-schoolbell': dict(version='5.1.2', depends=[]),
+        'modbus-sample-app': dict(version='5.1.2', depends=[]),
         'modbus-rover': dict(version='1.0.0', depends=[])}, core_apis=[], migrations=[])
 
 
@@ -206,9 +206,9 @@ class ManifestTests(unittest.TestCase):
             if kind == 'package': doc['packages'] *= 2
             elif kind == 'component': doc['components'] *= 2
             elif kind == 'asset': doc['packages'].append(dict(package('lib'), asset=doc['packages'][0]['asset']))
-            elif kind == 'cycle': doc['packages'][0]['depends'] = [dep('modbus-schoolbell')]
+            elif kind == 'cycle': doc['packages'][0]['depends'] = [dep('modbus-sample-app')]
             elif kind == 'dangling': doc['packages'][0]['depends'] = [dep('absent')]
-            else: doc['platform']['firmware'] = [dict(name='modbus-schoolbell', version='5.1.2')]
+            else: doc['platform']['firmware'] = [dict(name='modbus-sample-app', version='5.1.2')]
             with self.subTest(kind=kind): self.reject(doc)
 
     def test_versions_and_upgrade_ranges(self):
@@ -247,18 +247,18 @@ class DependencyTests(unittest.TestCase):
         doc['packages'].append(package('libshared', '2.0.0'))
         ctx['installed']['libshared'] = dict(version='1.0.0', depends=[])
         ctx['installed']['modbus-rover']['depends'] = [dep('libshared', 'lt', '2.0.0')]
-        self.assertEqual(compatible(doc, doc['components'][0], ctx, opkg), ['modbus-schoolbell'])
+        self.assertEqual(compatible(doc, doc['components'][0], ctx, opkg), ['modbus-sample-app'])
         doc['packages'][0]['depends'][0]['version'] = '2.0.0'
         with self.assertRaisesRegex(Rejected, 'dependency_conflict'):
             compatible(doc, doc['components'][0], ctx, opkg)
         ctx['installed']['modbus-rover']['depends'] = []
-        self.assertEqual(compatible(doc, doc['components'][0], ctx, opkg), ['libshared', 'modbus-schoolbell'])
+        self.assertEqual(compatible(doc, doc['components'][0], ctx, opkg), ['libshared', 'modbus-sample-app'])
 
     def test_only_selected_module_closure(self):
         doc = manifest()
         doc['packages'] += [package('modbus-rover', '2.0.0'), package('unused', '1.0.0')]
         doc['components'].append(component('rover', 'modbus-rover'))
-        self.assertEqual(compatible(doc, doc['components'][0], local(), opkg), ['modbus-schoolbell'])
+        self.assertEqual(compatible(doc, doc['components'][0], local(), opkg), ['modbus-sample-app'])
 
     def test_profile_api_migration_and_arch(self):
         for kind in ('platform', 'api', 'migration', 'arch', 'firmware', 'upgrade'):
@@ -410,7 +410,7 @@ class DiscoveryTests(unittest.TestCase):
         h.start(); self.assertIsNone(h.status()['result']); self.assertIsNone(h.status()['candidate'])
         old = h.drain(); self.assertEqual(old['last_success']['result'], 'update_available')
         self.assertNotIn('last_success', old['last_success'])
-        ctx = local(); ctx['installed']['modbus-schoolbell']['version'] = '5.2.0'
+        ctx = local(); ctx['installed']['modbus-sample-app']['version'] = '5.2.0'
         h.model.replace_context(ctx, KEYS)
         self.assertIsNone(h.status()['last_success']); self.assertIsNone(h.status()['candidate'])
         self.assertIsNone(Harness().status()['age_seconds'])

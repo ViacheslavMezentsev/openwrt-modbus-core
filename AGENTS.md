@@ -77,7 +77,7 @@ English workflow: [DEVELOPMENT.en.md](docs/DEVELOPMENT.en.md).
 
 ## Владельцы требований
 
-- Ядро: `docs/core/`; demo: `docs/packages/demo/`; schoolbell: `docs/packages/schoolbell/`.
+- Ядро: `docs/core/`; demo: `docs/packages/demo/`; Школьник: https://github.com/ViacheslavMezentsev/schoolbell (отдельный проект; здесь только исторический архив).
 - Каждый компонент ведёт своё русское ТЗ, README и CHANGELOG RU/EN.
 - Номера требований/TC локальны документу; в комментарии указывать имя компонента.
 - Общий API принадлежит ядру, прикладная политика — пакету. В ТЗ пакета фиксировать

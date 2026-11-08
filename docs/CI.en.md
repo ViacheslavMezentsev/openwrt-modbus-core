@@ -12,14 +12,12 @@ Existing GitHub required-check settings are not changed automatically.
 | Changes | Jobs in addition to always-run docs/ci-gate |
 | --- | --- |
 | README/CHANGELOG and ordinary Markdown guides | No component jobs |
-| Core code, firmware, core contracts, AGENTS.md | core + demo + schoolbell |
+| Core code, firmware, core contracts, AGENTS.md | core + demo |
 | Demo code/tests, specification and other contract documents | demo |
-| Schoolbell code/media/verifier, specification and other contract documents | schoolbell |
 | Makefile, shared scripts, CI, dependencies, unknown paths | All components |
 
 Component README/CHANGELOG files are overviews; other files under `docs/core/`
 and `docs/packages/<package>/` are conservatively treated as contracts. Core
-changes test consumers without asserting hardware compatibility. Schoolbell is
 still media-only: its job verifies MP3/manifest and package contents, not a working
 bell. Demo tests use current core modules. Firmware changes run available core
 regressions; Arduino compilation remains separate, as do hardware tests.
@@ -36,12 +34,11 @@ There is no workflow-level paths-ignore that could suppress the final status.
   strict validation of all three specifications, selection/gate regression tests.
 - `core`: C++ button test, core Lua tests/syntax, IPK build and verification.
 - `demo`: actual demo-loop Lua test, syntax, its IPK build and verification.
-- `schoolbell`: preview build, pinned media hashes and exact IPK contents.
 - `ci-gate`: requires changes/docs and every selected component to succeed.
   Failure, cancellation or unexpected skips fail the gate. Only explicitly
   unselected jobs may be skipped; missing/invalid selection outputs fail closed.
 
-Separate `core-ipk`, `demo-ipk` and `schoolbell-ipk` artifacts contain packages
+Separate `core-ipk`, `demo-ipk` artifacts contain packages
 and checksums. Docs-only pushes do not publish new IPKs. CI performs no router
 installations, playback, serial access or hardware reboots.
 
@@ -51,14 +48,13 @@ installations, playback, serial access or hardware reboots.
 make check-docs check-ci
 make ci-core
 make ci-demo
-make ci-schoolbell
 make all
 ```
 
 Requires Python 3.8+, Lua 5.1/luac5.1, g++ and standard make/tar/sha256sum tools.
 Core/demo component targets fail if mandatory Lua is unavailable; core also
 requires a C++ compiler. A skipped mandatory test is not PASS. Outputs are isolated
-in `out/ci-core`, `out/ci-demo`, `out/ci-schoolbell`. `make all` retains the full
+in `out/ci-core`, `out/ci-demo`. `make all` retains the full
 previous run and additionally checks documentation and CI policy.
 
 The specification validator is vendored unchanged under
@@ -76,6 +72,5 @@ Selection/gate regressions live in scripts/test_ci.py.
 
 Core host tests also compile isolated Linux C I/O primitives: a C99 compiler, Linux headers and coreutils timeout are required; missing tools fail the test. The native library is not included in the script-only IPK.
 
-Schoolbell CI now installs Lua 5.1 and runs make test-schoolbell: calendar tests and an independent Python datetime oracle; media-only IPK verification remains separate. Changes under packages/schoolbell/ and scripts/test-schoolbell.sh select schoolbell.
 
-The documentation job runs `make check-site`: build, local links, label contrast and demo model checks (Python 3 and Node.js). GitHub Pages deployment is a separate manual workflow restricted to main; see the [site guide](../site/README.en.md).
+The documentation job runs `make check-site`: core landing, local links and stale-asset cleanup checks (Python 3). GitHub Pages deployment is a separate manual workflow restricted to main; see the [site guide](../site/README.en.md).

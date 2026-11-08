@@ -14,7 +14,6 @@ jobs:
     outputs:
       core: ${{ steps.select.outputs.core }}
       demo: ${{ steps.select.outputs.demo }}
-      schoolbell: ${{ steps.select.outputs.schoolbell }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,26 +62,9 @@ jobs:
           if-no-files-found: error
           path: out/ci-demo/*
 
-  schoolbell:
-    needs: changes
-    if: needs.changes.outputs.schoolbell == 'true'
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install schoolbell test dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lua5.1 liblua5.1-0-dev python3 gcc libc6-dev make
-      - run: make ci-schoolbell
-      - uses: actions/upload-artifact@v4
-        with:
-          name: schoolbell-ipk
-          if-no-files-found: error
-          path: out/ci-schoolbell/*
-
   ci-gate:
     if: ${{ always() }}
-    needs: [changes, docs, core, demo, schoolbell]
+    needs: [changes, docs, core, demo]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4

@@ -6,7 +6,7 @@ from pathlib import Path
 import re
 import subprocess
 
-COMPONENTS = ('core', 'demo', 'schoolbell')
+COMPONENTS = ('core', 'demo')
 
 
 def select(paths):
@@ -22,14 +22,10 @@ def select(paths):
             selected.update(COMPONENTS)
         elif path.startswith('docs/packages/demo/') and not overview:
             selected.add('demo')
-        elif path.startswith('docs/packages/schoolbell/') and not overview:
-            selected.add('schoolbell')
         elif path.endswith('.md') and (path.startswith(('docs/', 'firmware/', 'packages/')) or '/' not in path):
             pass
         elif path.startswith('pkg-demo/') or path == 'scripts/test_demo.lua':
             selected.add('demo')
-        elif path.startswith(('pkg-schoolbell/', 'packages/schoolbell/')) or path in ('scripts/verify-schoolbell.py', 'scripts/test-schoolbell.sh'):
-            selected.add('schoolbell')
         else:
             # Core, firmware, build/CI scripts and every unclassified path.
             selected.update(COMPONENTS)

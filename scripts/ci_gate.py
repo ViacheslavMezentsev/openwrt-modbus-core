@@ -10,7 +10,7 @@ def errors(needs):
         if needs.get(name, {}).get('result') != 'success':
             problems.append(name + ': mandatory job did not succeed')
     plan = needs.get('changes', {}).get('outputs', {})
-    for name in ('core', 'demo', 'schoolbell'):
+    for name in ('core', 'demo'):
         selected = plan.get(name)
         result = needs.get(name, {}).get('result')
         if selected not in ('true', 'false'):

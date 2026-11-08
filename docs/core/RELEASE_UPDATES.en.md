@@ -2,7 +2,7 @@
 
 [Русский](RELEASE_UPDATES.md)
 
-26 October 2026. **Requirements only; not implemented.** Normative ownership: [core specification](TECHNICAL_SPECIFICATION.md), section 6.11, revision 1.35; Shkolnik UI: [package specification](../packages/schoolbell/TECHNICAL_SPECIFICATION.md), section 4.8, revision 1.55.
+26 October 2026. **Requirements only; not implemented.** Normative ownership: [core specification](TECHNICAL_SPECIFICATION.md), section 6.11, revision 1.35; Shkolnik UI: [package specification](https://github.com/ViacheslavMezentsev/schoolbell), section 4.8, revision 1.55.
 
 ## User journey
 
@@ -16,10 +16,10 @@ An administrator chooses Prepare Update, reviews dependencies, space, backup and
 | --- | --- |
 | Display name | Shkolnik, without a version suffix |
 | Extension identity | publisher `ViacheslavMezentsev`, name `schoolbell` |
-| opkg Package | `modbus-schoolbell` |
+| opkg Package | `modbus-sample-app` |
 | Application version | `major.minor.patch`, numerical tuple comparison |
-| IPK | `modbus-schoolbell_<version>_all.ipk` |
-| Native dependency | `modbus-schoolbell-clock`, independently versioned/architectured |
+| IPK | `modbus-sample-app_<version>_all.ipk` |
+| Native dependency | `modbus-sample-app-clock`, independently versioned/architectured |
 | Repository | public Releases of `ViacheslavMezentsev/openwrt-modbus-core` |
 
 This is a future package.json identity mapping, not an installed manifest change. Existing IPK names remain. A repository release can contain several independently versioned components, so its tag or `/releases/latest` is not a package version. Other extensions need an explicitly supported version grammar; opkg dependencies keep their own grammar. Changed bytes require a new application patch version.

@@ -17,30 +17,24 @@ class SelectionTests(unittest.TestCase):
 
     def test_docs_only(self):
         for path in ('README.md', 'docs/DEVELOPMENT.md', 'docs/packages/demo/README.md',
-                     'packages/schoolbell/media/README.en.md'):
+                     'docs/packages/rover/README.en.md'):
             self.assertEqual(self.chosen([path]), set())
 
     def test_packages(self):
         for path in ('pkg-demo/usr/bin/modbus-demo', 'scripts/test_demo.lua',
                      'docs/packages/demo/TECHNICAL_SPECIFICATION.md', 'docs/packages/demo/EVENT_API.md'):
             self.assertEqual(self.chosen([path]), {'demo'})
-        for path in ('pkg-schoolbell/CONTROL/control', 'packages/schoolbell/media/0.mp3',
-                     'scripts/verify-schoolbell.py', 'scripts/test-schoolbell.sh',
-                     'packages/schoolbell/lua/schoolbell/calendar.lua',
-                     'packages/schoolbell/tests/test_calendar.lua',
-                     'docs/packages/schoolbell/TECHNICAL_SPECIFICATION.md'):
-            self.assertEqual(self.chosen([path]), {'schoolbell'})
 
     def test_shared_and_contracts(self):
         for path in ('pkg/usr/lib/modbus/json.lua', 'Makefile', '.github/workflows/ci.yml',
                      'scripts/ci_paths.py', 'scripts/run-tests.sh', 'AGENTS.md',
                      'docs/core/EVENT_API.md', 'docs/core/new-contract.md', 'docs/core/TECHNICAL_SPECIFICATION.md',
                      'docs/TECHNICAL_SPECIFICATION.md', 'new-unknown/file', 'pkg/README.md'):
-            self.assertEqual(self.chosen([path]), {'core', 'demo', 'schoolbell'}, path)
+            self.assertEqual(self.chosen([path]), {'core', 'demo'}, path)
 
     def test_union_fallback_empty(self):
-        self.assertEqual(self.chosen(['pkg-demo/x', 'pkg-schoolbell/x']), {'demo', 'schoolbell'})
-        self.assertEqual(self.chosen(None), {'core', 'demo', 'schoolbell'})
+        self.assertEqual(self.chosen(['pkg-demo/x', 'pkg/x']), {'core', 'demo'})
+        self.assertEqual(self.chosen(None), {'core', 'demo'})
         self.assertEqual(self.chosen([]), set())
         self.assertIsNone(changed_paths('0'*40, 'a'*40))
         self.assertIsNone(changed_paths('--bad', 'a'*40))
@@ -55,20 +49,20 @@ class SelectionTests(unittest.TestCase):
             git('init'); (root/'pkg-demo').mkdir(); (root/'pkg-demo/old').write_text('old')
             (root/'pkg-demo/deleted').write_text('deleted')
             git('add', '.'); git('commit', '-m', 'before'); before = git('rev-parse', 'HEAD')
-            (root/'pkg-schoolbell').mkdir(); (root/'pkg-demo/old').rename(root/'pkg-schoolbell/new')
+            (root/'pkg').mkdir(); (root/'pkg-demo/old').rename(root/'pkg/new')
             (root/'pkg-demo/deleted').unlink(); git('add', '-A'); git('commit', '-m', 'after')
             head = git('rev-parse', 'HEAD')
             paths = changed_paths(before, head, root)
-            self.assertEqual(set(paths), {'pkg-demo/old', 'pkg-demo/deleted', 'pkg-schoolbell/new'})
-            self.assertEqual(self.chosen(paths), {'demo', 'schoolbell'})
+            self.assertEqual(set(paths), {'pkg-demo/old', 'pkg-demo/deleted', 'pkg/new'})
+            self.assertEqual(self.chosen(paths), {'core', 'demo'})
             self.assertIsNone(changed_paths('a'*40, head, root))
 
 
 class GateTests(unittest.TestCase):
     def needs(self):
-        return {'changes': {'result': 'success', 'outputs': {'core':'true','demo':'false','schoolbell':'false'}},
+        return {'changes': {'result': 'success', 'outputs': {'core':'true','demo':'false'}},
                 'docs': {'result':'success'}, 'core': {'result':'success'},
-                'demo': {'result':'skipped'}, 'schoolbell': {'result':'skipped'}}
+                'demo': {'result':'skipped'}}
 
     def test_success_and_selected_failure(self):
         good = self.needs(); self.assertEqual(errors(good), [])

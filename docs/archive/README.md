@@ -24,3 +24,5 @@
 сохранность UCI не являются текущими гарантиями. Актуальная доставка — JSONL;
 границы восстановления описаны в ТЗ и VALIDATION. Команды из архива не запускать
 как установочную инструкцию; публикацию feed и релизов этот этап не выполняет.
+
+[Schoolbell development snapshot](schoolbell/README.md) — retired sources and integration history; current work lives in [schoolbell](https://github.com/ViacheslavMezentsev/schoolbell).

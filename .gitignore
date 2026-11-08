@@ -24,3 +24,6 @@ Thumbs.db
 # Local Python validation caches.
 __pycache__/
 *.pyc
+
+# Public source snapshot of the extracted application (not a device backup).
+!docs/archive/schoolbell/snapshot.tar.gz

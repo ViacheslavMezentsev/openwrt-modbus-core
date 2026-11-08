@@ -24,3 +24,5 @@ Early FIFO examples, uninterrupted reload, resource estimates and unconditional
 UCI preservation are not current guarantees. Delivery uses JSONL; recovery limits
 are documented in the specification and VALIDATION. Archive commands are not
 installation instructions; no feed or release is published by this cleanup.
+
+[Schoolbell development snapshot](schoolbell/README.en.md) — retired sources and integration history; current work lives in [schoolbell](https://github.com/ViacheslavMezentsev/schoolbell).
